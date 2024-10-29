@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "start": "expo start",
     "prebuild": "expo prebuild --platform android",
-    "build": "eas build --platform android --profile preview --local",
+    "build": "NODE_ENV=development eas build --platform android --profile preview --local",
     "format": "prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "npx ts-node db/migrate.ts"
