@@ -1,7 +1,10 @@
-import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { Pressable } from "react-native";
+
+import { type VariantProps, cva } from "class-variance-authority";
+
+import { cn } from "@/lib/utils";
+
 import { TextClassContext } from "./text";
 
 const buttonVariants = cva(
@@ -22,7 +25,7 @@ const buttonVariants = cva(
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8 native:h-14",
         icon: "h-10 w-10",
-        number: "rounded-full items-center justify-center h-24 w-24",
+        circle: "rounded-full p-2 w-12 h-12",
       },
     },
     defaultVariants: {
@@ -49,7 +52,7 @@ const buttonTextVariants = cva(
         sm: "",
         lg: "native:text-lg",
         icon: "",
-        number: "native:text-4xl",
+        circle: "",
       },
     },
     defaultVariants: {

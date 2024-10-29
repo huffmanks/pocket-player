@@ -1,8 +1,7 @@
-import { ChevronDownIcon } from "@/lib/icons";
-import { cn } from "@/lib/utils";
-import * as AccordionPrimitive from "@rn-primitives/accordion";
 import * as React from "react";
 import { Platform, Pressable, View } from "react-native";
+
+import * as AccordionPrimitive from "@rn-primitives/accordion";
 import Animated, {
   Extrapolation,
   FadeIn,
@@ -14,6 +13,10 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from "react-native-reanimated";
+
+import { ChevronDownIcon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
+
 import { TextClassContext } from "./text";
 
 const Accordion = React.forwardRef<

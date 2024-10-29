@@ -1,41 +1,34 @@
-import { Link, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
+import { View } from "react-native";
 
+import { CloudUploadIcon, VideoIcon } from "@/lib/icons";
+
+import { OpenSettings } from "@/components/open-settings";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
-import { CloudUploadIcon, SettingsIcon, VideoIcon } from "@/lib/icons";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "black",
-        headerRight: () => <ThemeToggle />,
+        tabBarActiveTintColor: "#14b8a6",
+        tabBarInactiveTintColor: "#fff",
+        headerRight: () => (
+          <View className="flex-row items-center pr-2">
+            <ThemeToggle />
+            <OpenSettings />
+          </View>
+        ),
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: "Upload",
-          tabBarIcon: () => (
+          tabBarIcon: ({ color }) => (
             <CloudUploadIcon
-              className="text-teal-500"
+              color={color}
               size={28}
               strokeWidth={1.25}
             />
-          ),
-          headerRight: () => (
-            <Link
-              href="/modal"
-              asChild>
-              <Button
-                variant="ghost"
-                size="icon">
-                <SettingsIcon
-                  className="text-teal-500"
-                  size={28}
-                  strokeWidth={1.25}
-                />
-              </Button>
-            </Link>
           ),
         }}
       />
@@ -43,9 +36,9 @@ export default function TabLayout() {
         name="videos"
         options={{
           title: "Videos",
-          tabBarIcon: () => (
+          tabBarIcon: ({ color }) => (
             <VideoIcon
-              className="text-teal-500"
+              color={color}
               size={28}
               strokeWidth={1.25}
             />

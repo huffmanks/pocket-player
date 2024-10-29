@@ -5,7 +5,16 @@ module.exports = {
   bracketSameLine: true,
   singleAttributePerLine: true,
   trailingComma: "es5",
-  plugins: ["prettier-plugin-organize-imports", "prettier-plugin-tailwindcss"],
+  importOrder: [
+    "^(react|react-native|expo(-[a-zA-Z-]*)?)$",
+    "<THIRD_PARTY_MODULES>",
+    "^@/(?!components)(.*)$",
+    "^@/components/(.*)$",
+    "^[./]",
+  ],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
   tailwindConfig: "./tailwind.config.ts",
   tailwindAttributes: ["className"],
+  plugins: ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
 };

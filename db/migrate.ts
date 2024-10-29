@@ -1,9 +1,8 @@
-import { drizzle, type SQLJsDatabase } from "drizzle-orm/sql-js";
+import { type SQLJsDatabase, drizzle } from "drizzle-orm/sql-js";
+import { migrate } from "drizzle-orm/sql-js/migrator";
 import fs from "node:fs";
 import path from "node:path";
 import initSqlJs from "sql.js";
-
-import { migrate } from "drizzle-orm/sql-js/migrator";
 
 export let db: SQLJsDatabase;
 

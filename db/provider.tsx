@@ -1,6 +1,7 @@
+import { type PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
+
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import type { SQLJsDatabase } from "drizzle-orm/sql-js";
-import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 
 import { initialize } from "./drizzle";
 

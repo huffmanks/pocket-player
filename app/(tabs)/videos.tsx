@@ -1,17 +1,17 @@
-import { useScrollToTop } from "@react-navigation/native";
-import { FlashList } from "@shopify/flash-list";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { Stack } from "expo-router";
 import { useCallback, useRef } from "react";
 import { ScrollView, View } from "react-native";
 
+import { useScrollToTop } from "@react-navigation/native";
+import { FlashList } from "@shopify/flash-list";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+
 import { useMigrationHelper } from "@/db/drizzle";
 import { useDatabase } from "@/db/provider";
-import { videos } from "@/db/schema";
+import { VideoMeta, videos } from "@/db/schema";
 
 import ErrorMessage from "@/components/error-message";
 import { Text } from "@/components/ui/text";
-import VideoItem, { VideoMeta } from "@/components/video-item";
+import VideoItem from "@/components/video-item";
 
 export default function HomeScreen() {
   const { success, error } = useMigrationHelper();
@@ -57,7 +57,6 @@ function ScreenContent() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Videos" }} />
       <View className="relative h-full">
         <ScrollView
           contentContainerClassName="mx-auto w-full max-w-lg p-6"

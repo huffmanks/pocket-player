@@ -1,19 +1,18 @@
-import "@/global.css";
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ThemeProvider, type Theme } from "@react-navigation/native";
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { type Theme, ThemeProvider } from "@react-navigation/native";
+import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { DatabaseProvider } from "@/db/provider";
+import "@/global.css";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { NAV_THEME } from "@/lib/constants";
 import { useColorScheme } from "@/lib/useColorScheme";
-
-import { PortalHost } from "@rn-primitives/portal";
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -78,8 +77,8 @@ export default function RootLayout() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="modal"
-                options={{ presentation: "modal" }}
+                name="settings"
+                options={{ presentation: "modal", title: "Settings" }}
               />
             </Stack>
           </GestureHandlerRootView>

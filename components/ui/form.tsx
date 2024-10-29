@@ -1,4 +1,6 @@
 import * as React from "react";
+import { View } from "react-native";
+
 import {
   Controller,
   ControllerProps,
@@ -8,18 +10,18 @@ import {
   Noop,
   useFormContext,
 } from "react-hook-form";
-import { View } from "react-native";
 import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
+
+import { cn } from "@/lib/utils";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { Select, type Option } from "@/components/ui/select";
+import { type Option, Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 
 const Form = FormProvider;
 

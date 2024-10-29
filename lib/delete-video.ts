@@ -1,7 +1,19 @@
+import * as FileSystem from "expo-file-system";
+
+import { eq } from "drizzle-orm";
+
 import { db } from "@/db/drizzle";
 import { videos } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import * as FileSystem from "expo-file-system";
+
+export async function favoriteVideo(videoId: string) {
+  try {
+    await db.update(videos).set({ isFavorite: true }).where(eq(videos.id, videoId));
+
+    console.log("Favoriting video successful!", videoId);
+  } catch (error) {
+    console.log("Error favoriting video:", error);
+  }
+}
 
 export async function deleteVideo(videoId: string) {
   try {

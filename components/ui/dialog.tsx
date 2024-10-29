@@ -1,9 +1,11 @@
-import { XIcon } from "@/lib/icons";
-import { cn } from "@/lib/utils";
-import * as DialogPrimitive from "@rn-primitives/dialog";
 import * as React from "react";
 import { Platform, StyleSheet, View } from "react-native";
+
+import * as DialogPrimitive from "@rn-primitives/dialog";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+
+import { XIcon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 
 const Dialog = DialogPrimitive.Root;
 
