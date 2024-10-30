@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b56aa82d-c3fb-47e2-ab36-6fcae634ba64",
+  "id": "f364077b-ddfd-46ca-8802-55b38276b75d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "videos": {
@@ -22,8 +22,15 @@
           "autoincrement": false,
           "default": "'Untitled'"
         },
-        "fileUri": {
-          "name": "fileUri",
+        "videoUri": {
+          "name": "videoUri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "thumbUri": {
+          "name": "thumbUri",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -43,7 +50,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "'2024-10-29T20:46:29.154Z'"
+          "default": "'2024-10-30T03:29:15.315Z'"
         }
       },
       "indexes": {},

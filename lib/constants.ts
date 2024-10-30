@@ -1,3 +1,5 @@
+import { documentDirectory } from "expo-file-system";
+
 export const NAV_THEME = {
   light: {
     background: "hsl(0 0% 100%)",
@@ -16,3 +18,7 @@ export const NAV_THEME = {
     text: "hsl(0 0% 98%)",
   },
 };
+
+export const VIDEOS_DIR = `${documentDirectory}videos/`;
+
+export const DB_TABLES = ["videos"];

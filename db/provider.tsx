@@ -16,6 +16,7 @@ export function DatabaseProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (db) return;
+
     initialize().then((newDb) => {
       setDb(newDb);
     });

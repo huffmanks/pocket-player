@@ -18,21 +18,29 @@ export async function favoriteVideo(videoId: string) {
 export async function deleteVideo(videoId: string) {
   try {
     const [video] = await db
-      .select({ fileUri: videos.fileUri })
+      .select({ videoUri: videos.videoUri, thumbUri: videos.thumbUri })
       .from(videos)
       .where(eq(videos.id, videoId));
 
-    if (!video || !video.fileUri) {
+    if (!video || !video.videoUri) {
       console.log("Video not found in the database");
       return;
     }
 
-    const fileInfo = await FileSystem.getInfoAsync(video.fileUri);
-    if (fileInfo.exists) {
-      await FileSystem.deleteAsync(video.fileUri);
-      console.log("File deleted successfully:", video.fileUri);
+    const videoInfo = await FileSystem.getInfoAsync(video.videoUri);
+    if (videoInfo.exists) {
+      await FileSystem.deleteAsync(video.videoUri);
+      console.log("Video deleted successfully:", video.videoUri);
     } else {
-      console.log("File not found:", video.fileUri);
+      console.log("Video not found:", video.videoUri);
+    }
+
+    const thumbInfo = await FileSystem.getInfoAsync(video.thumbUri);
+    if (thumbInfo.exists) {
+      await FileSystem.deleteAsync(video.thumbUri);
+      console.log("Thumb deleted successfully:", video.thumbUri);
+    } else {
+      console.log("Thumb not found:", video.thumbUri);
     }
 
     await db.delete(videos).where(eq(videos.id, videoId));

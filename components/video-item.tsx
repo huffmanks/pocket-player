@@ -1,4 +1,4 @@
-import { Video } from "expo-av";
+import { ResizeMode, Video } from "expo-av";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 
@@ -104,9 +104,11 @@ export default function VideoItem({ item }: { item: VideoMeta }) {
       </View>
       <TouchableOpacity onPress={() => setIsPlaying((prev) => !prev)}>
         <Video
-          style={{ height: 200 }}
+          style={{ width: "100%", height: 200 }}
           className="w-full"
-          source={{ uri: item.fileUri }}
+          resizeMode={ResizeMode.COVER}
+          source={{ uri: item.videoUri }}
+          posterSource={{ uri: item.thumbUri }}
           isLooping
           shouldPlay={isPlaying}
           isMuted={!isPlaying}

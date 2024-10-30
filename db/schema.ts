@@ -8,7 +8,8 @@ export const videos = sqliteTable("videos", {
     .$defaultFn(() => createId())
     .primaryKey(),
   title: text("title").default("Untitled").notNull(),
-  fileUri: text("fileUri").notNull(),
+  videoUri: text("videoUri").notNull(),
+  thumbUri: text("thumbUri").notNull(),
   isFavorite: integer({ mode: "boolean" }).default(false),
   createdAt: text("created_at").default(new Date().toISOString()),
 });

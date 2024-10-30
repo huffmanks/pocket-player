@@ -5,7 +5,6 @@ import { useScrollToTop } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
-import { useMigrationHelper } from "@/db/drizzle";
 import { useDatabase } from "@/db/provider";
 import { VideoMeta, videos } from "@/db/schema";
 
@@ -14,24 +13,6 @@ import { Text } from "@/components/ui/text";
 import VideoItem from "@/components/video-item";
 
 export default function HomeScreen() {
-  const { success, error } = useMigrationHelper();
-
-  if (error) {
-    return (
-      <ErrorMessage
-        message="Migration error:"
-        errorMessage={error.message}
-      />
-    );
-  }
-  if (!success) {
-    return <ErrorMessage message="Migration is in progress..." />;
-  }
-
-  return <ScreenContent />;
-}
-
-function ScreenContent() {
   const { db } = useDatabase();
   // @ts-expect-error
   const { data, error } = useLiveQuery(db?.select().from(videos));

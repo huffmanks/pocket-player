@@ -1,5 +1,6 @@
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
+import * as VideoThumbnails from "expo-video-thumbnails";
 import { useRef } from "react";
 import { ScrollView, View } from "react-native";
 
@@ -10,6 +11,7 @@ import * as z from "zod";
 
 import { useDatabase } from "@/db/provider";
 import { videos } from "@/db/schema";
+import { VIDEOS_DIR } from "@/lib/constants";
 import { FileVideoIcon, PlusIcon, TrashIcon } from "@/lib/icons";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
 import { cn } from "@/lib/utils";
@@ -19,14 +21,13 @@ import { Form, FormField, FormInput } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
-const VIDEOS_DIR = `${FileSystem.documentDirectory}videos/`;
-
 const formSchema = z.object({
   videos: z
     .array(
       z.object({
         title: z.string().min(3, { message: "Title must be at least 3 characters." }),
-        fileUri: z.string().min(1, { message: "Must have at file uploaded." }),
+        videoUri: z.string().min(1, { message: "Must have at file uploaded." }),
+        thumbUri: z.string().min(1, { message: "Must have at file uploaded." }),
       })
     )
     .min(1, { message: "Must have at least one video." }),
@@ -44,13 +45,16 @@ export default function VideoForm() {
       videos: [
         {
           title: "",
-          fileUri: "",
+          videoUri: "",
+          thumbUri: "",
         },
       ],
     },
   });
 
-  async function selectVideoFile(setFileUri: (uri: string) => void) {
+  async function selectVideoFile(
+    setFileUris: (uris: { videoUri: string; thumbUri: string }) => void
+  ) {
     await ensureDirectory(VIDEOS_DIR);
     if (!(await requestPermissions())) return;
 
@@ -61,9 +65,15 @@ export default function VideoForm() {
 
     if (result.assets && result.assets.length) {
       const { uri, name } = result.assets[0];
-      const fileUri = `${VIDEOS_DIR}${name}`;
-      await FileSystem.copyAsync({ from: uri, to: fileUri });
-      setFileUri(fileUri);
+      const videoUri = `${VIDEOS_DIR}${name}`;
+      await FileSystem.copyAsync({ from: uri, to: videoUri });
+
+      const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(videoUri, { time: 1000 });
+
+      const thumbFileUri = `${VIDEOS_DIR}${name.replace(/\.[^/.]+$/, ".jpg")}`;
+      await FileSystem.moveAsync({ from: thumbUri, to: thumbFileUri });
+
+      setFileUris({ videoUri, thumbUri });
     }
   }
 
@@ -72,7 +82,11 @@ export default function VideoForm() {
 
     await db.transaction(async (tx) => {
       for (const video of values.videos) {
-        await tx.insert(videos).values({ title: video.title, fileUri: video.fileUri });
+        await tx.insert(videos).values({
+          title: video.title,
+          videoUri: video.videoUri,
+          thumbUri: video.thumbUri,
+        });
       }
     });
 
@@ -123,12 +137,17 @@ export default function VideoForm() {
                     <View className="flex-1">
                       <FormField
                         control={form.control}
-                        name={`videos.${index}.fileUri`}
+                        name={`videos.${index}.videoUri`}
                         render={({ field }) => (
                           <View>
                             <Button
                               variant="secondary"
-                              onPress={() => selectVideoFile(field.onChange)}>
+                              onPress={() =>
+                                selectVideoFile(({ videoUri, thumbUri }) => {
+                                  field.onChange(videoUri);
+                                  form.setValue(`videos.${index}.thumbUri`, thumbUri);
+                                })
+                              }>
                               <View className="flex flex-row items-center gap-2">
                                 <FileVideoIcon
                                   className="text-teal-500"
@@ -173,7 +192,7 @@ export default function VideoForm() {
               <Button
                 variant="secondary"
                 size="circle"
-                onPress={() => append({ title: "", fileUri: "" })}>
+                onPress={() => append({ title: "", videoUri: "", thumbUri: "" })}>
                 <PlusIcon
                   className="text-teal-500"
                   size={28}
