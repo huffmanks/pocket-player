@@ -6,7 +6,7 @@ import initSqlJs from "sql.js";
 import { useDatabase } from "@/db/provider";
 
 export const initialize = async (): Promise<SQLJsDatabase> => {
-  console.log("initialze web");
+  console.log("initialze web sql");
   const sqlPromise = initSqlJs({
     locateFile: (file) => `https://sql.js.org/dist/${file}`,
   });

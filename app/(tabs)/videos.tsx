@@ -17,7 +17,7 @@ export default function HomeScreen() {
   // @ts-expect-error
   const { data, error } = useLiveQuery(db?.select().from(videos));
 
-  console.log(data);
+  console.log("___ HomeScreen data ___", data);
 
   const ref = useRef(null);
   useScrollToTop(ref);

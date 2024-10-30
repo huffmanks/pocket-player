@@ -7,7 +7,13 @@ import { videos } from "@/db/schema";
 
 export async function favoriteVideo(videoId: string) {
   try {
-    await db.update(videos).set({ isFavorite: true }).where(eq(videos.id, videoId));
+    const [video] = await db
+      .select({ id: videos.id, isFavorite: videos.isFavorite })
+      .from(videos)
+      .where(eq(videos.id, videoId));
+
+    if (!video) return;
+    await db.update(videos).set({ isFavorite: !video.isFavorite }).where(eq(videos.id, video.id));
 
     console.log("Favoriting video successful!", videoId);
   } catch (error) {
@@ -22,30 +28,20 @@ export async function deleteVideo(videoId: string) {
       .from(videos)
       .where(eq(videos.id, videoId));
 
-    if (!video || !video.videoUri) {
-      console.log("Video not found in the database");
-      return;
-    }
+    if (!video || !video.videoUri) return;
 
+    // Delete video file
     const videoInfo = await FileSystem.getInfoAsync(video.videoUri);
-    if (videoInfo.exists) {
-      await FileSystem.deleteAsync(video.videoUri);
-      console.log("Video deleted successfully:", video.videoUri);
-    } else {
-      console.log("Video not found:", video.videoUri);
-    }
+    if (videoInfo.exists) await FileSystem.deleteAsync(video.videoUri);
 
+    // Delete thumbnail file
     const thumbInfo = await FileSystem.getInfoAsync(video.thumbUri);
-    if (thumbInfo.exists) {
-      await FileSystem.deleteAsync(video.thumbUri);
-      console.log("Thumb deleted successfully:", video.thumbUri);
-    } else {
-      console.log("Thumb not found:", video.thumbUri);
-    }
+    if (thumbInfo.exists) await FileSystem.deleteAsync(video.thumbUri);
 
+    // Delete database entry
     await db.delete(videos).where(eq(videos.id, videoId));
-    console.log("Database entry deleted successfully:", videoId);
   } catch (error) {
-    console.log("Error deleting video:", error);
+    console.error("Error deleting video:", error);
+    throw error;
   }
 }

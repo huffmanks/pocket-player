@@ -4,6 +4,7 @@ import {
   ChevronRightIcon,
   ChevronUpIcon,
   CloudUploadIcon,
+  DatabaseIcon,
   EllipsisVerticalIcon,
   FileVideoIcon,
   MoonStarIcon,
@@ -15,6 +16,7 @@ import {
   StarIcon,
   SunIcon,
   TrashIcon,
+  TvIcon,
   VideoIcon,
   XIcon,
 } from "lucide-react-native";
@@ -35,6 +37,9 @@ export { ChevronUpIcon };
 
 iconWithClassName(CloudUploadIcon);
 export { CloudUploadIcon };
+
+iconWithClassName(DatabaseIcon);
+export { DatabaseIcon };
 
 iconWithClassName(EllipsisVerticalIcon);
 export { EllipsisVerticalIcon };
@@ -68,6 +73,9 @@ export { SettingsIcon };
 
 iconWithClassName(TrashIcon);
 export { TrashIcon };
+
+iconWithClassName(TvIcon);
+export { TvIcon };
 
 iconWithClassName(VideoIcon);
 export { VideoIcon };

@@ -10,11 +10,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      "expo-document-picker",
       "expo-av",
       "expo-file-system",
-      "expo-media-library"
+      "expo-dev-client",
+      "expo-document-picker",
+      "expo-media-library",
+      "expo-navigation-bar",
+      "expo-router",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -28,9 +31,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.expovideo"

@@ -68,10 +68,12 @@ export default function VideoForm() {
       const videoUri = `${VIDEOS_DIR}${name}`;
       await FileSystem.copyAsync({ from: uri, to: videoUri });
 
-      const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(videoUri, { time: 1000 });
+      const { uri: thumbFileUri } = await VideoThumbnails.getThumbnailAsync(videoUri, {
+        time: 1000,
+      });
 
-      const thumbFileUri = `${VIDEOS_DIR}${name.replace(/\.[^/.]+$/, ".jpg")}`;
-      await FileSystem.moveAsync({ from: thumbUri, to: thumbFileUri });
+      const thumbUri = `${VIDEOS_DIR}${name.replace(/\.[^/.]+$/, ".jpg")}`;
+      await FileSystem.moveAsync({ from: thumbFileUri, to: thumbUri });
 
       setFileUris({ videoUri, thumbUri });
     }

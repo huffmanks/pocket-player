@@ -1,22 +1,19 @@
 import * as FileSystem from "expo-file-system";
-import { Platform } from "react-native";
-
-import { DB_TABLES, VIDEOS_DIR } from "@/lib/constants";
 
 import { db } from "./drizzle";
+import { videos } from "./schema";
 
-function resetTable(tables: string[]) {
+export async function resetTable() {
   try {
-    for (const table of tables) {
-      db.$client.execSync(`DROP TABLE IF EXISTS ${table};`);
-    }
+    await db.delete(videos);
+
     console.log("Tables dropped successfully.");
   } catch (error) {
     console.error("Failed to drop tables:", error);
   }
 }
 
-async function clearDirectory(directoryUri: string) {
+export async function clearDirectory(directoryUri: string) {
   try {
     const files = await FileSystem.readDirectoryAsync(directoryUri);
     for (const file of files) {
@@ -26,12 +23,5 @@ async function clearDirectory(directoryUri: string) {
     console.log("Directory cleared successfully.");
   } catch (error) {
     console.error(`Failed to clear directory ${directoryUri}:`, error);
-  }
-}
-
-export async function drop() {
-  if (Platform.OS === "android") {
-    resetTable(DB_TABLES);
-    await clearDirectory(VIDEOS_DIR);
   }
 }

@@ -1,12 +1,11 @@
-import { ResizeMode, Video } from "expo-av";
-import { useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { Link, router } from "expo-router";
+import { Image, View } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { VideoMeta } from "@/db/schema";
 import { deleteVideo, favoriteVideo } from "@/lib/delete-video";
-import { EllipsisVerticalIcon, PencilIcon, StarIcon, TrashIcon } from "@/lib/icons";
+import { EllipsisVerticalIcon, PencilIcon, StarIcon, TrashIcon, TvIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -22,8 +21,6 @@ import {
 import { Text } from "@/components/ui/text";
 
 export default function VideoItem({ item }: { item: VideoMeta }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-
   const insets = useSafeAreaInsets();
 
   const contentInsets = {
@@ -42,8 +39,8 @@ export default function VideoItem({ item }: { item: VideoMeta }) {
   }
 
   return (
-    <View>
-      <View className="flex-row items-center justify-between gap-4">
+    <View className="flex-1">
+      <View className="mb-4 flex-row items-center justify-between gap-4">
         <Text
           className="text-lg font-medium"
           numberOfLines={1}>
@@ -68,7 +65,19 @@ export default function VideoItem({ item }: { item: VideoMeta }) {
             <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="gap-4">
+              <DropdownMenuItem
+                className="gap-4"
+                onPress={() => router.push(`/watch/${item.id}`)}>
+                <TvIcon
+                  className="text-foreground"
+                  size={20}
+                  strokeWidth={1.25}
+                />
+                <Text>Watch</Text>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="gap-4"
+                onPress={() => router.push(`/edit/${item.id}`)}>
                 <PencilIcon
                   className="text-foreground"
                   size={20}
@@ -102,19 +111,16 @@ export default function VideoItem({ item }: { item: VideoMeta }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </View>
-      <TouchableOpacity onPress={() => setIsPlaying((prev) => !prev)}>
-        <Video
-          style={{ width: "100%", height: 200 }}
-          className="w-full"
-          resizeMode={ResizeMode.COVER}
-          source={{ uri: item.videoUri }}
-          posterSource={{ uri: item.thumbUri }}
-          isLooping
-          shouldPlay={isPlaying}
-          isMuted={!isPlaying}
-          useNativeControls={isPlaying}
+      <Link
+        className="flex-1"
+        href={{ pathname: "/(aux)/watch/[id]", params: { id: item.id } }}>
+        <Image
+          className="flex-1"
+          style={{ width: "100%", height: 400 }}
+          source={{ uri: item.thumbUri }}
+          resizeMode="contain"
         />
-      </TouchableOpacity>
+      </Link>
     </View>
   );
 }
