@@ -26,6 +26,7 @@ const buttonVariants = cva(
         lg: "h-11 rounded-md px-8 native:h-14",
         icon: "h-10 w-10",
         circle: "rounded-full p-2 w-12 h-12",
+        unset: "",
       },
     },
     defaultVariants: {
@@ -53,6 +54,7 @@ const buttonTextVariants = cva(
         lg: "native:text-lg",
         icon: "",
         circle: "",
+        unset: "",
       },
     },
     defaultVariants: {

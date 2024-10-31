@@ -11,7 +11,7 @@ export default function EditModal() {
   return (
     <View className="mx-auto flex-1 justify-center p-10">
       <Text>
-        Edit screen <Text className="font-medium text-primary-foreground">{id}</Text>
+        Edit screen <Text className="font-medium text-teal-500">{id}</Text>
       </Text>
     </View>
   );

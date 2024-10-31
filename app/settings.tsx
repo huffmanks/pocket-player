@@ -27,7 +27,7 @@ export default function SettingsModal() {
 
   return (
     <>
-      <View className="mx-auto w-full  flex-1 p-10">
+      <View className="mx-auto w-full max-w-lg p-6">
         <Text className="mb-4">Are you sure you want to permanently erase everything?</Text>
 
         <Button

@@ -1,6 +1,8 @@
-import { Link, router } from "expo-router";
-import { Image, View } from "react-native";
+import { router } from "expo-router";
+import { memo } from "react";
+import { Image, Pressable, View } from "react-native";
 
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { VideoMeta } from "@/db/schema";
@@ -20,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Text } from "@/components/ui/text";
 
-export default function VideoItem({ item }: { item: VideoMeta }) {
+function VideoItem({ item }: { item: VideoMeta }) {
   const insets = useSafeAreaInsets();
 
   const contentInsets = {
@@ -39,19 +41,38 @@ export default function VideoItem({ item }: { item: VideoMeta }) {
   }
 
   return (
-    <View className="flex-1">
-      <View className="mb-4 flex-row items-center justify-between gap-4">
-        <Text
-          className="text-lg font-medium"
-          numberOfLines={1}>
-          {item.title}
-        </Text>
+    <Animated.View
+      className="mb-8 flex-row items-start gap-4"
+      entering={FadeIn}
+      exiting={FadeOut}>
+      <Pressable onPress={() => router.push(`/(aux)/watch/${item.id}`)}>
+        <Image
+          style={{ width: 225, height: 125 }}
+          source={{ uri: item.thumbUri }}
+          resizeMode="cover"
+        />
+      </Pressable>
+      <View className="flex-1 flex-row justify-between gap-4">
+        <View className="w-4/5">
+          <Text
+            className="mb-2 text-lg font-medium"
+            numberOfLines={2}>
+            {item.title}
+          </Text>
+
+          <Text
+            className="text-sm text-muted-foreground"
+            numberOfLines={3}>
+            {item.title}
+          </Text>
+        </View>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className="p-2"
-              variant="ghost">
+              className="px-0.5 py-1"
+              variant="ghost"
+              size="unset">
               <EllipsisVerticalIcon
                 className="text-foreground"
                 size={20}
@@ -111,16 +132,8 @@ export default function VideoItem({ item }: { item: VideoMeta }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </View>
-      <Link
-        className="flex-1"
-        href={{ pathname: "/(aux)/watch/[id]", params: { id: item.id } }}>
-        <Image
-          className="flex-1"
-          style={{ width: "100%", height: 400 }}
-          source={{ uri: item.thumbUri }}
-          resizeMode="contain"
-        />
-      </Link>
-    </View>
+    </Animated.View>
   );
 }
+
+export default memo(VideoItem);

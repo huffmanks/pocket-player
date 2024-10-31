@@ -22,9 +22,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Upload",
+          title: "Videos",
           tabBarIcon: ({ color }) => (
-            <CloudUploadIcon
+            <VideoIcon
               color={color}
               size={28}
               strokeWidth={1.25}
@@ -33,11 +33,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="videos"
+        name="upload"
         options={{
-          title: "Videos",
+          title: "Upload",
           tabBarIcon: ({ color }) => (
-            <VideoIcon
+            <CloudUploadIcon
               color={color}
               size={28}
               strokeWidth={1.25}

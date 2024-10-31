@@ -32,13 +32,14 @@ export default function WatchModal() {
     <View className="w-full flex-1">
       <Video
         ref={videoRef}
-        style={{ width: "100%", height: 300, alignSelf: "center" }}
+        style={{ flex: 1 }}
         source={{
           uri: videoUri,
         }}
         useNativeControls
         resizeMode={ResizeMode.CONTAIN}
         isLooping
+        shouldPlay
         onPlaybackStatusUpdate={(prev) => setStatus(prev)}
       />
     </View>
