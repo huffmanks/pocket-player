@@ -8,6 +8,7 @@ import { type Theme, ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+import { UserInactivityProvider } from "@/context/user-inactivity";
 import { DatabaseProvider } from "@/db/provider";
 import "@/global.css";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
@@ -71,20 +72,18 @@ export default function RootLayout() {
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
           <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
           <GestureHandlerRootView style={{ flex: 1 }}>
-            <Stack>
-              <Stack.Screen
-                name="(aux)"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="(tabs)"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="settings"
-                options={{ presentation: "modal", title: "Settings" }}
-              />
-            </Stack>
+            <UserInactivityProvider>
+              <Stack>
+                <Stack.Screen
+                  name="(modals)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+            </UserInactivityProvider>
           </GestureHandlerRootView>
         </ThemeProvider>
       </DatabaseProvider>

@@ -4,7 +4,7 @@ import { SettingsIcon } from "@/lib/icons";
 
 import { Button } from "@/components/ui/button";
 
-export function OpenSettings() {
+export default function OpenSettings() {
   return (
     <Link
       href="/settings"

@@ -7,7 +7,7 @@ import { MoonStarIcon, SunIcon } from "@/lib/icons";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { cn } from "@/lib/utils";
 
-export function ThemeToggle() {
+export default function ThemeToggle() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
   return (
     <Pressable

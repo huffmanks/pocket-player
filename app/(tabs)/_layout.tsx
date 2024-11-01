@@ -3,8 +3,8 @@ import { View } from "react-native";
 
 import { CloudUploadIcon, VideoIcon } from "@/lib/icons";
 
-import { OpenSettings } from "@/components/open-settings";
-import { ThemeToggle } from "@/components/theme-toggle";
+import OpenSettings from "@/components/open-settings";
+import ThemeToggle from "@/components/theme-toggle";
 
 export default function TabLayout() {
   return (
