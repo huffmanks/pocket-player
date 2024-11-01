@@ -5,6 +5,7 @@ import {
   ChevronUpIcon,
   CloudUploadIcon,
   DatabaseIcon,
+  DeleteIcon,
   EllipsisVerticalIcon,
   FileVideoIcon,
   MoonStarIcon,
@@ -12,6 +13,7 @@ import {
   PencilIcon,
   PlayIcon,
   PlusIcon,
+  ScanFaceIcon,
   SettingsIcon,
   StarIcon,
   SunIcon,
@@ -41,6 +43,9 @@ export { CloudUploadIcon };
 iconWithClassName(DatabaseIcon);
 export { DatabaseIcon };
 
+iconWithClassName(DeleteIcon);
+export { DeleteIcon };
+
 iconWithClassName(EllipsisVerticalIcon);
 export { EllipsisVerticalIcon };
 
@@ -61,6 +66,9 @@ export { PlayIcon };
 
 iconWithClassName(PlusIcon);
 export { PlusIcon };
+
+iconWithClassName(ScanFaceIcon);
+export { ScanFaceIcon };
 
 iconWithClassName(StarIcon);
 export { StarIcon };

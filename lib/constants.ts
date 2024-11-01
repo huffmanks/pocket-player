@@ -22,3 +22,5 @@ export const NAV_THEME = {
 export const VIDEOS_DIR = `${documentDirectory}videos/`;
 
 export const DB_TABLES = ["videos"];
+
+export const LOCK_TIME = 3000;

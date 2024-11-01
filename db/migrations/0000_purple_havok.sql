@@ -4,5 +4,5 @@ CREATE TABLE `videos` (
 	`videoUri` text NOT NULL,
 	`thumbUri` text NOT NULL,
 	`isFavorite` integer DEFAULT false,
-	`created_at` text DEFAULT '2024-10-30T16:44:06.317Z'
+	`created_at` text DEFAULT '2024-11-01T15:42:43.114Z'
 );

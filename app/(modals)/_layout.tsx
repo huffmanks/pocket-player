@@ -16,11 +16,11 @@ export default function ModalLayout() {
         options={{ presentation: "modal", title: "Settings" }}
       />
       <Stack.Screen
-        name="lock"
+        name="privacy"
         options={{ headerShown: false, animation: "none" }}
       />
       <Stack.Screen
-        name="privacy"
+        name="lock"
         options={{ headerShown: false, animation: "none" }}
       />
     </Stack>

@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "expo-video",
-    "slug": "expo-video",
+    "name": "Video Player",
+    "slug": "video-player-app",
     "version": "1.0.0",
-    "scheme": "expo-video",
+    "scheme": "video-player-app",
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -36,12 +36,14 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#09090b"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.expovideo"
+      "bundleIdentifier": "com.anonymous.videoplayerapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -53,13 +55,15 @@
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.INTERNET"
+        "android.permission.INTERNET",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
       ],
-      "package": "com.anonymous.expovideo"
+      "package": "com.anonymous.videoplayerapp"
     },
     "extra": {
       "eas": {
-        "projectId": "3806df52-596c-4f78-a06f-5b0e4e0aebd4"
+        "projectId": "281e8b25-a139-475d-889f-92bfa9fde7e8"
       }
     }
   }

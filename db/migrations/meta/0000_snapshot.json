@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "89bf3bb4-ddd4-499d-a2d7-64f9c3e018d6",
+  "id": "6243cfff-4ccc-491f-93b6-36ff88579c5e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "videos": {
@@ -50,7 +50,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "'2024-10-30T16:44:06.317Z'"
+          "default": "'2024-11-01T15:42:43.114Z'"
         }
       },
       "indexes": {},

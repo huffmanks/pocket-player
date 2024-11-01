@@ -1,6 +1,6 @@
 {
   "cesVersion": "2.11.25",
-  "projectName": "expo-video",
+  "projectName": "video-player-app",
   "packages": [
     {
       "name": "expo-router",
