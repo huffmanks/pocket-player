@@ -8,3 +8,9 @@
 8. HeaderShown false on watch screen.
 9. Create playlist/queue screen.
 10. Settings screen preferences for default mute, auto play, looping, etc.
+11. Tabs not active color should be white for dark and black for light.
+12. Settings screen data logo should be text-foreground.
+13. Videos screen add padding horizontal.
+14. Tabs bar add padding top.
+15. Passcode delete icon should be gray when disabled.
+16. Make passcode faster more responsive. Seems sluggish.
