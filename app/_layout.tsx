@@ -8,7 +8,7 @@ import { type Theme, ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { UserInactivityProvider } from "@/context/user-inactivity";
+import { LockScreenProvider } from "@/context/lock-screen-provider";
 import { DatabaseProvider } from "@/db/provider";
 import "@/global.css";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
@@ -38,6 +38,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     (async () => {
+      await AsyncStorage.setItem("isLocked", "true");
+
       const theme = await AsyncStorage.getItem("theme");
       if (Platform.OS === "web") {
         document.documentElement.classList.add("bg-background");
@@ -69,10 +71,10 @@ export default function RootLayout() {
   return (
     <>
       <DatabaseProvider>
-        <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-          <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <UserInactivityProvider>
+        <LockScreenProvider>
+          <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+            <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
+            <GestureHandlerRootView style={{ flex: 1 }}>
               <Stack>
                 <Stack.Screen
                   name="(modals)"
@@ -83,9 +85,9 @@ export default function RootLayout() {
                   options={{ headerShown: false }}
                 />
               </Stack>
-            </UserInactivityProvider>
-          </GestureHandlerRootView>
-        </ThemeProvider>
+            </GestureHandlerRootView>
+          </ThemeProvider>
+        </LockScreenProvider>
       </DatabaseProvider>
       <PortalHost />
     </>

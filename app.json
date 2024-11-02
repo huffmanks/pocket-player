@@ -11,13 +11,12 @@
     },
     "plugins": [
       "expo-av",
-      "expo-file-system",
       "expo-dev-client",
       "expo-document-picker",
+      "expo-file-system",
       "expo-media-library",
       "expo-navigation-bar",
       "expo-router",
-      "expo-video",
       "expo-screen-orientation",
       [
         "expo-local-authentication",
@@ -38,9 +37,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#09090b"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.videoplayerapp"

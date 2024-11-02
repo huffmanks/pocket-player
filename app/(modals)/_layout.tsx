@@ -4,12 +4,12 @@ export default function ModalLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="watch"
-        options={{ headerShown: false }}
+        name="watch/[id]"
+        options={{ presentation: "modal", title: "Watch" }}
       />
       <Stack.Screen
-        name="edit"
-        options={{ headerShown: false }}
+        name="edit/[id]"
+        options={{ presentation: "modal", title: "Edit" }}
       />
       <Stack.Screen
         name="settings"

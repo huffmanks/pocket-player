@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView, TouchableOpacity, View } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -20,7 +21,7 @@ import { Text } from "@/components/ui/text";
 
 export default function LockModal() {
   const [code, setCode] = useState<number[]>([]);
-  const codeLength = Array(6).fill(0);
+  const codeLength = Array(4).fill(0);
   const router = useRouter();
 
   const offset = useSharedValue(0);
@@ -34,12 +35,15 @@ export default function LockModal() {
   const TIME = 80;
 
   useEffect(() => {
-    if (code.length === 6) {
+    if (code.length === 4) {
       setCode([]);
 
-      // Refactor using expo-secure-store
-      if (code.join("") === "111111") {
+      if (code.join("") === "1111") {
         router.replace("/");
+
+        (async () => {
+          await setUnlocked();
+        })();
       } else {
         offset.value = withSequence(
           withTiming(-OFFSET, { duration: TIME / 2 }),
@@ -69,6 +73,7 @@ export default function LockModal() {
 
     if (success) {
       router.replace("/");
+      await setUnlocked();
     } else {
       handleErrorShake();
     }
@@ -76,6 +81,10 @@ export default function LockModal() {
 
   async function handleErrorShake() {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  }
+
+  async function setUnlocked() {
+    await AsyncStorage.setItem("isLocked", "false");
   }
 
   return (

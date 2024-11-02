@@ -45,7 +45,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
       className="mb-8 flex-row items-start gap-4"
       entering={FadeIn}
       exiting={FadeOut}>
-      <Pressable onPress={() => router.push(`/(aux)/watch/${item.id}`)}>
+      <Pressable onPress={() => router.push(`/(modals)/watch/${item.id}`)}>
         <Image
           style={{ width: 225, height: 125 }}
           source={{ uri: item.thumbUri }}
