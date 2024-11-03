@@ -16,7 +16,6 @@
       "expo-media-library",
       "expo-navigation-bar",
       "expo-router",
-      "expo-screen-orientation",
       "expo-video",
       [
         "expo-local-authentication",

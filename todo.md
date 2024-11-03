@@ -12,6 +12,7 @@
 4. On AppState background dismiss all models, toasts and alert dialogs.
 5. Video player: Add loop and mute buttons to controls.
 6. Watch screen: remove headerShown false. Add presentation model and title to be video title.
+7. Settings toggle enablePasscode isn't working properly.
 
 ## Styles
 
@@ -34,3 +35,12 @@
    - Title
    - Description
    - Tags
+
+"pnpm": {
+"peerDependencyRules": {
+"overrides": {
+"react-native-svg": "15.2.0",
+"react-native-safe-area-context": "4.10.1"
+}
+}
+},

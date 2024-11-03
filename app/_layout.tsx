@@ -6,12 +6,13 @@ import { Platform } from "react-native";
 import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Toaster } from "sonner-native";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { DARK_THEME, LIGHT_THEME } from "@/lib/constants";
-import { lockScreenStorage, settingsStorage, themeStorage } from "@/lib/storage";
+import { themeStorage } from "@/lib/storage";
 import { DatabaseProvider } from "@/providers/database-provider";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
 
@@ -29,8 +30,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     (async () => {
-      lockScreenStorage.set("isLocked", settingsStorage.getBoolean("enablePasscode") || false);
-
       const theme = themeStorage.getString("theme");
 
       if (Platform.OS === "web") {
@@ -81,6 +80,10 @@ export default function RootLayout() {
                   options={{ headerShown: false }}
                 />
               </Stack>
+              {/* <Toaster
+                theme={colorScheme === "light" ? "light" : "dark"}
+                richColors
+              /> */}
             </GestureHandlerRootView>
           </ThemeProvider>
         </LockScreenProvider>

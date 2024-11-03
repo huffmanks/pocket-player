@@ -1,9 +1,10 @@
 import { router } from "expo-router";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { Image, Pressable, View } from "react-native";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { toast } from "sonner-native";
 
 import { deleteVideo, favoriteVideo } from "@/actions/video";
 import { VideoMeta } from "@/db/schema";
@@ -33,13 +34,27 @@ function VideoItem({ item }: { item: VideoMeta }) {
   };
 
   async function handleFavorite() {
-    await favoriteVideo(item.id);
+    const { message, type } = await favoriteVideo(item.id);
+
+    if (type === "success") {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
   }
 
   async function handleDelete() {
-    await deleteVideo(item.id);
+    const { message, type } = await deleteVideo(item.id);
+
+    if (type === "success") {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
   }
 
+  // const renderedContent = useMemo(
+  //   () => (
   return (
     <Animated.View
       className="mb-8 flex-row items-start gap-4"
@@ -134,6 +149,11 @@ function VideoItem({ item }: { item: VideoMeta }) {
       </View>
     </Animated.View>
   );
+  //   ),
+  //   [item]
+  // );
+
+  // return renderedContent;
 }
 
 export default memo(VideoItem);

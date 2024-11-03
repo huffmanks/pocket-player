@@ -4,30 +4,27 @@ import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 import { MasonryFlashList, MasonryFlashListRef } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { toast } from "sonner-native";
 
 import { useMigrationHelper } from "@/db/drizzle";
 import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { useDatabase } from "@/providers/database-provider";
 
-import ErrorMessage from "@/components/error-message";
 import { Text } from "@/components/ui/text";
 import VideoItem from "@/components/video-item";
 
 export default function HomeScreen() {
   const { success, error } = useMigrationHelper();
 
-  if (error) {
-    return (
-      <ErrorMessage
-        message="Migration error:"
-        errorMessage={error.message}
-      />
-    );
+  if (!success) {
+    // toast.info("Migration is in progress...");
+    console.info("Migration is in progress...");
   }
 
-  if (!success) {
-    return <ErrorMessage message="Migration is in progress..." />;
+  if (error) {
+    // toast.error("Migration error: " + error.message);
+    console.error("Migration error: " + error.message);
   }
 
   return <ScreenContent />;
@@ -62,7 +59,8 @@ function ScreenContent() {
   );
 
   if (error) {
-    return <ErrorMessage message="Error loading data." />;
+    console.log("Error loading data.");
+    // toast.error("Error loading data.");
   }
 
   const duplicatedData = data.concat(data, data, data);

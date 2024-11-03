@@ -2,13 +2,14 @@ import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Platform, View } from "react-native";
 
+import { toast } from "sonner-native";
+
 import { initialize, useMigrationHelper } from "@/db/drizzle";
 import { clearDirectory, resetTable } from "@/db/drop";
 import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
 import { DatabaseIcon, KeyRoundIcon } from "@/lib/icons";
 import { settingsStorage } from "@/lib/storage";
 
-import OrientationRadio from "@/components/orientation-radio";
 import SettingSwitch from "@/components/setting-switch";
 import {
   AlertDialog,
@@ -27,14 +28,12 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 
-if (settingsStorage.getBoolean("mute") === undefined) settingsStorage.set("mute", false);
-if (settingsStorage.getBoolean("loop") === undefined) settingsStorage.set("loop", false);
-if (settingsStorage.getBoolean("autoplay") === undefined) settingsStorage.set("autoplay", false);
-if (settingsStorage.getString("orientation") === undefined)
-  settingsStorage.set("orientation", "portrait");
+// if (settingsStorage.getBoolean("mute") === undefined) settingsStorage.set("mute", false);
+// if (settingsStorage.getBoolean("loop") === undefined) settingsStorage.set("loop", false);
+// if (settingsStorage.getBoolean("autoplay") === undefined) settingsStorage.set("autoplay", false);
 
-if (settingsStorage.getBoolean("enablePasscode") === undefined)
-  settingsStorage.set("enablePasscode", false);
+// if (settingsStorage.getBoolean("enablePasscode") === undefined)
+//   settingsStorage.set("enablePasscode", false);
 
 export default function SettingsModal() {
   const [enablePasscode, setEnablePasscode] = useState(
@@ -46,15 +45,21 @@ export default function SettingsModal() {
   const { success, error } = useMigrationHelper();
 
   async function dropDatabase() {
-    await clearDirectory(VIDEOS_DIR);
-    await resetTable();
+    const operations = [await clearDirectory(VIDEOS_DIR), await resetTable()];
 
+    const hasError = operations.find((op) => op.type === "error");
+    if (hasError) {
+      toast.error(hasError.message);
+      return;
+    }
+
+    operations.forEach((op) => toast.success(op.message));
     initialize();
 
-    if (error) {
-      console.error("Migration failed:", error);
+    if (!success) {
+      toast.info("Migration is in progress...");
     } else {
-      console.log("Database migration succeeded:", success);
+      error ? toast.error("Migration failed.") : toast.success("Database migration succeeded.");
     }
   }
 
@@ -75,7 +80,6 @@ export default function SettingsModal() {
               label={item.label}
             />
           ))}
-          <OrientationRadio />
         </View>
 
         <Separator className="mb-6" />
