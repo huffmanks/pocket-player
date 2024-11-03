@@ -28,13 +28,6 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 
-// if (settingsStorage.getBoolean("mute") === undefined) settingsStorage.set("mute", false);
-// if (settingsStorage.getBoolean("loop") === undefined) settingsStorage.set("loop", false);
-// if (settingsStorage.getBoolean("autoplay") === undefined) settingsStorage.set("autoplay", false);
-
-// if (settingsStorage.getBoolean("enablePasscode") === undefined)
-//   settingsStorage.set("enablePasscode", false);
-
 export default function SettingsModal() {
   const [enablePasscode, setEnablePasscode] = useState(
     settingsStorage.getBoolean("enablePasscode") || false
@@ -45,22 +38,26 @@ export default function SettingsModal() {
   const { success, error } = useMigrationHelper();
 
   async function dropDatabase() {
-    const operations = [await clearDirectory(VIDEOS_DIR), await resetTable()];
-
-    const hasError = operations.find((op) => op.type === "error");
-    if (hasError) {
-      toast.error(hasError.message);
-      return;
-    }
-
-    operations.forEach((op) => toast.success(op.message));
+    await clearDirectory(VIDEOS_DIR);
+    await resetTable();
     initialize();
 
-    if (!success) {
-      toast.info("Migration is in progress...");
-    } else {
-      error ? toast.error("Migration failed.") : toast.success("Database migration succeeded.");
-    }
+    // const operations = [await clearDirectory(VIDEOS_DIR), await resetTable()];
+
+    // const hasError = operations.find((op) => op.type === "error");
+    // if (hasError) {
+    //   toast.error(hasError.message);
+    //   return;
+    // }
+
+    // operations.forEach((op) => toast.success(op.message));
+    // initialize();
+
+    // if (!success) {
+    //   toast.info("Migration is in progress...");
+    // } else {
+    //   error ? toast.error("Migration failed.") : toast.success("Database migration succeeded.");
+    // }
   }
 
   function handleEnablePasscode() {

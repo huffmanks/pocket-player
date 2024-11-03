@@ -24,7 +24,7 @@ export default function HomeScreen() {
 
   if (error) {
     // toast.error("Migration error: " + error.message);
-    console.error("Migration error: " + error.message);
+    console.error("Migration error.");
   }
 
   return <ScreenContent />;

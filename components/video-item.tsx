@@ -36,21 +36,21 @@ function VideoItem({ item }: { item: VideoMeta }) {
   async function handleFavorite() {
     const { message, type } = await favoriteVideo(item.id);
 
-    if (type === "success") {
-      toast.success(message);
-    } else {
-      toast.error(message);
-    }
+    // if (type === "success") {
+    //   toast.success(message);
+    // } else {
+    //   toast.error(message);
+    // }
   }
 
   async function handleDelete() {
     const { message, type } = await deleteVideo(item.id);
 
-    if (type === "success") {
-      toast.success(message);
-    } else {
-      toast.error(message);
-    }
+    // if (type === "success") {
+    //   toast.success(message);
+    // } else {
+    //   toast.error(message);
+    // }
   }
 
   // const renderedContent = useMemo(
