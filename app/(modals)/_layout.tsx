@@ -5,7 +5,7 @@ export default function ModalLayout() {
     <Stack>
       <Stack.Screen
         name="watch/[id]"
-        options={{ presentation: "modal", title: "Watch" }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="edit/[id]"
@@ -14,10 +14,6 @@ export default function ModalLayout() {
       <Stack.Screen
         name="settings"
         options={{ presentation: "modal", title: "Settings" }}
-      />
-      <Stack.Screen
-        name="privacy"
-        options={{ headerShown: false, animation: "none" }}
       />
       <Stack.Screen
         name="lock"

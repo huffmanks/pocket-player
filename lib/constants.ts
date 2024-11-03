@@ -1,5 +1,7 @@
 import { documentDirectory } from "expo-file-system";
 
+import { type Theme } from "@react-navigation/native";
+
 export const NAV_THEME = {
   light: {
     background: "hsl(0 0% 100%)",
@@ -19,8 +21,36 @@ export const NAV_THEME = {
   },
 };
 
+export const LIGHT_THEME: Theme = {
+  dark: false,
+  colors: NAV_THEME.light,
+};
+
+export const DARK_THEME: Theme = {
+  dark: true,
+  colors: NAV_THEME.dark,
+};
+
 export const VIDEOS_DIR = `${documentDirectory}videos/`;
+export const ESTIMATED_VIDEO_ITEM_HEIGHT = 157;
 
 export const DB_TABLES = ["videos"];
 
 export const LOCK_SCREEN_TIMEOUT = 15000;
+export const ERROR_SHAKE_OFFSET = 20;
+export const ERROR_SHAKE_TIME = 80;
+
+export const settingsSwitches = [
+  {
+    id: "mute",
+    label: "Mute",
+  },
+  {
+    id: "loop",
+    label: "Loop",
+  },
+  {
+    id: "autoplay",
+    label: "Autoplay",
+  },
+];

@@ -9,12 +9,12 @@ import { useScrollToTop } from "@react-navigation/native";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { useDatabase } from "@/db/provider";
 import { videos } from "@/db/schema";
 import { VIDEOS_DIR } from "@/lib/constants";
 import { FileVideoIcon, PlusIcon, TrashIcon } from "@/lib/icons";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
 import { cn } from "@/lib/utils";
+import { useDatabase } from "@/providers/database-provider";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormInput } from "@/components/ui/form";
@@ -144,8 +144,8 @@ export default function VideoForm() {
                           <View>
                             <Button
                               variant="secondary"
-                              onPress={() =>
-                                selectVideoFile(({ videoUri, thumbUri }) => {
+                              onPress={async () =>
+                                await selectVideoFile(({ videoUri, thumbUri }) => {
                                   field.onChange(videoUri);
                                   form.setValue(`videos.${index}.thumbUri`, thumbUri);
                                 })

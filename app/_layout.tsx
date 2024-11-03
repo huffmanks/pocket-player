@@ -3,26 +3,17 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { type Theme, ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { LockScreenProvider } from "@/context/lock-screen-provider";
-import { DatabaseProvider } from "@/db/provider";
 import "@/global.css";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
-import { NAV_THEME } from "@/lib/constants";
-import { useColorScheme } from "@/lib/useColorScheme";
-
-const LIGHT_THEME: Theme = {
-  dark: false,
-  colors: NAV_THEME.light,
-};
-const DARK_THEME: Theme = {
-  dark: true,
-  colors: NAV_THEME.dark,
-};
+import { DARK_THEME, LIGHT_THEME } from "@/lib/constants";
+import { lockScreenStorage, settingsStorage, themeStorage } from "@/lib/storage";
+import { DatabaseProvider } from "@/providers/database-provider";
+import { LockScreenProvider } from "@/providers/lock-screen-provider";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -38,26 +29,31 @@ export default function RootLayout() {
 
   useEffect(() => {
     (async () => {
-      await AsyncStorage.setItem("isLocked", "true");
+      lockScreenStorage.set("isLocked", settingsStorage.getBoolean("enablePasscode") || false);
 
-      const theme = await AsyncStorage.getItem("theme");
+      const theme = themeStorage.getString("theme");
+
       if (Platform.OS === "web") {
         document.documentElement.classList.add("bg-background");
       }
+
       if (!theme) {
         setAndroidNavigationBar(colorScheme);
-        AsyncStorage.setItem("theme", colorScheme);
+        themeStorage.set("theme", colorScheme);
         setIsColorSchemeLoaded(true);
         return;
       }
+
       const colorTheme = theme === "dark" ? "dark" : "light";
       setAndroidNavigationBar(colorTheme);
+
       if (colorTheme !== colorScheme) {
         setColorScheme(colorTheme);
 
         setIsColorSchemeLoaded(true);
         return;
       }
+
       setIsColorSchemeLoaded(true);
     })().finally(() => {
       SplashScreen.hideAsync();

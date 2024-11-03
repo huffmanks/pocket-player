@@ -8,6 +8,7 @@ import {
   DeleteIcon,
   EllipsisVerticalIcon,
   FileVideoIcon,
+  KeyRoundIcon,
   MoonStarIcon,
   PauseIcon,
   PencilIcon,
@@ -51,6 +52,9 @@ export { EllipsisVerticalIcon };
 
 iconWithClassName(FileVideoIcon);
 export { FileVideoIcon };
+
+iconWithClassName(KeyRoundIcon);
+export { KeyRoundIcon };
 
 iconWithClassName(MoonStarIcon);
 export { MoonStarIcon };

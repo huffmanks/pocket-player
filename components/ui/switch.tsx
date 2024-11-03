@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { useColorScheme } from "@/lib/useColorScheme";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { cn } from "@/lib/utils";
 
 const SwitchWeb = React.forwardRef<

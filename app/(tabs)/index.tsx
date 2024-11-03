@@ -6,14 +6,13 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useMigrationHelper } from "@/db/drizzle";
-import { useDatabase } from "@/db/provider";
 import { VideoMeta, videos } from "@/db/schema";
+import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
+import { useDatabase } from "@/providers/database-provider";
 
 import ErrorMessage from "@/components/error-message";
 import { Text } from "@/components/ui/text";
 import VideoItem from "@/components/video-item";
-
-const ITEM_HEIGHT = 157;
 
 export default function HomeScreen() {
   const { success, error } = useMigrationHelper();
@@ -44,15 +43,15 @@ function ScreenContent() {
 
   const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetY = event.nativeEvent.contentOffset.y;
-    const snapToIndex = Math.round(contentOffsetY / ITEM_HEIGHT);
-    const newY = snapToIndex * ITEM_HEIGHT;
+    const snapToIndex = Math.round(contentOffsetY / ESTIMATED_VIDEO_ITEM_HEIGHT);
+    const newY = snapToIndex * ESTIMATED_VIDEO_ITEM_HEIGHT;
 
     flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
   };
 
   const renderItem = useCallback(
     ({ item, index }: { item: VideoMeta; index: number }) => (
-      <View className="px-1">
+      <View className="px-2">
         <VideoItem
           key={`${item.id}-${index}`}
           item={item}
@@ -76,7 +75,7 @@ function ScreenContent() {
         <MasonryFlashList
           data={duplicatedData}
           renderItem={renderItem}
-          estimatedItemSize={ITEM_HEIGHT}
+          estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
           onScrollEndDrag={handleScrollEndDrag}
           ListEmptyComponent={<Text className="p-5">No videos uploaded.</Text>}
         />

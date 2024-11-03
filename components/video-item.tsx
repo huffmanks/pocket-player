@@ -5,8 +5,8 @@ import { Image, Pressable, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { deleteVideo, favoriteVideo } from "@/actions/video";
 import { VideoMeta } from "@/db/schema";
-import { deleteVideo, favoriteVideo } from "@/lib/delete-video";
 import { EllipsisVerticalIcon, PencilIcon, StarIcon, TrashIcon, TvIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 

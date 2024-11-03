@@ -10,7 +10,6 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-av",
       "expo-dev-client",
       "expo-document-picker",
       "expo-file-system",
@@ -18,6 +17,7 @@
       "expo-navigation-bar",
       "expo-router",
       "expo-screen-orientation",
+      "expo-video",
       [
         "expo-local-authentication",
         {

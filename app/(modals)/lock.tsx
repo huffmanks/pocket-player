@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView, TouchableOpacity, View } from "react-native";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -13,7 +12,9 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
 import { DeleteIcon, ScanFaceIcon } from "@/lib/icons";
+import { lockScreenStorage } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
 import KeypadRow from "@/components/keypad-row";
@@ -31,27 +32,23 @@ export default function LockModal() {
     };
   });
 
-  const OFFSET = 20;
-  const TIME = 80;
-
   useEffect(() => {
     if (code.length === 4) {
       setCode([]);
 
       if (code.join("") === "1111") {
+        lockScreenStorage.set("isLocked", false);
         router.replace("/");
-
-        (async () => {
-          await setUnlocked();
-        })();
       } else {
         offset.value = withSequence(
-          withTiming(-OFFSET, { duration: TIME / 2 }),
-          withRepeat(withTiming(OFFSET, { duration: TIME }), 4, true),
-          withTiming(0, { duration: TIME / 2 })
+          withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
+          withRepeat(withTiming(ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME }), 4, true),
+          withTiming(0, { duration: ERROR_SHAKE_TIME / 2 })
         );
 
-        handleErrorShake();
+        (async () => {
+          await handleErrorShake();
+        })();
       }
     }
   }, [code]);
@@ -72,19 +69,15 @@ export default function LockModal() {
     setCode([]);
 
     if (success) {
+      lockScreenStorage.set("isLocked", false);
       router.replace("/");
-      await setUnlocked();
     } else {
-      handleErrorShake();
+      await handleErrorShake();
     }
   }
 
   async function handleErrorShake() {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-  }
-
-  async function setUnlocked() {
-    await AsyncStorage.setItem("isLocked", "false");
   }
 
   return (
@@ -130,7 +123,7 @@ export default function LockModal() {
             onPress={handleBackspacePress}>
             <DeleteIcon
               size={26}
-              className="text-foreground"
+              className={cn("text-foreground", code.length < 1 && "text-muted-foreground")}
             />
           </TouchableOpacity>
         </View>

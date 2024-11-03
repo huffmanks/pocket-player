@@ -3,7 +3,7 @@ import { type PropsWithChildren, createContext, useContext, useEffect, useState 
 import type { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import type { SQLJsDatabase } from "drizzle-orm/sql-js";
 
-import { initialize } from "./drizzle";
+import { initialize } from "@/db/drizzle";
 
 type ContextType = { db: SQLJsDatabase | ExpoSQLiteDatabase | null };
 

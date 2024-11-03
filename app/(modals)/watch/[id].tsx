@@ -1,28 +1,30 @@
-import { AVPlaybackStatus, ResizeMode, Video } from "expo-av";
 import { useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { useEffect, useRef, useState } from "react";
-import { View } from "react-native";
+import { useEffect, useState } from "react";
 
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db/drizzle";
 import { videos } from "@/db/schema";
+import { settingsStorage } from "@/lib/storage";
+
+import VideoPlayer from "@/components/video-player";
 
 export default function WatchModal() {
-  const [status, setStatus] = useState<AVPlaybackStatus>({} as AVPlaybackStatus);
-  const [videoUri, setVideoUri] = useState("");
+  const [videoSource, setVideoSource] = useState("");
 
   const { id } = useLocalSearchParams<{ id: string }>();
-  const videoRef = useRef<Video>(null);
 
   useEffect(() => {
     const fetchVideo = async () => {
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
-      setVideoUri(video?.videoUri || "");
-      videoRef?.current?.presentFullscreenPlayer();
+      setVideoSource(video?.videoUri || "");
 
-      await ScreenOrientation.unlockAsync();
+      const orientation =
+        settingsStorage.getString("orientation") === "landscape"
+          ? ScreenOrientation.OrientationLock.LANDSCAPE
+          : ScreenOrientation.OrientationLock.DEFAULT;
+      await ScreenOrientation.lockAsync(orientation);
     };
 
     fetchVideo().catch((error) => console.error("Failed to fetch video:", error));
@@ -34,20 +36,7 @@ export default function WatchModal() {
     };
   }, [id]);
 
-  return (
-    <View className="w-full flex-1">
-      <Video
-        ref={videoRef}
-        style={{ flex: 1 }}
-        source={{
-          uri: videoUri,
-        }}
-        useNativeControls
-        resizeMode={ResizeMode.CONTAIN}
-        isLooping
-        shouldPlay
-        onPlaybackStatusUpdate={(prev) => setStatus(prev)}
-      />
-    </View>
-  );
+  if (!videoSource) return null;
+
+  return <VideoPlayer videoSource={videoSource} />;
 }
