@@ -9,10 +9,17 @@
 3. Update error messages and add toasts
    - import { toast } from 'sonner-native';
    - [Sonner native](https://github.com/gunnartorfis/sonner-native)
+4. On AppState background dismiss all models, toasts and alert dialogs.
+5. Video player: Add loop and mute buttons to controls.
+6. Watch screen: remove headerShown false. Add presentation model and title to be video title.
 
 ## Styles
 
 1. Tabs bar: add padding top.
+2. Reset data button > delete data
+3. Alert dialog delete text-foreground.
+4. Settings: add subtitle under video player > Default settings.
+5. Passcode create button icon text-foreground. It's white on light.
 
 ## New features
 
