@@ -8,6 +8,8 @@
 2. AppState status background: dismiss all models, toasts and alert dialogs.
 3. Video player: Add loop and mute buttons to controls.
 4. Video item: delete dropdown needs to have confirmation alert dialog.
+5. Settings enable passcode: require creating passcode or disable it until created.
+6. Videos screen: allow swipe up to refresh. Add refresh to flashlist. Also switch to flashlist.
 
 ## Styles
 
