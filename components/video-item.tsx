@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import { Image, Pressable, View } from "react-native";
+import { memo } from "react";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Text } from "@/components/ui/text";
 
-export default function VideoItem({ item }: { item: VideoMeta }) {
+function VideoItem({ item }: { item: VideoMeta }) {
   const insets = useSafeAreaInsets();
 
   const contentInsets = {
@@ -151,3 +152,5 @@ export default function VideoItem({ item }: { item: VideoMeta }) {
     </Animated.View>
   );
 }
+
+export default memo(VideoItem);
