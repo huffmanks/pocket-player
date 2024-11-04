@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
-import { MasonryFlashList, MasonryFlashListRef } from "@shopify/flash-list";
+import { FlashList, FlashListRef } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
@@ -44,7 +44,7 @@ const [refreshing, setRefreshing] = useState(false);
   // @ts-expect-error
   const { data, error } = useLiveQuery(db?.select().from(videos));
 
-  const flashListRef = useRef<MasonryFlashListRef<VideoMeta> | null>(null);
+  const flashListRef = useRef<FlashListRef<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
 
   const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -78,8 +78,11 @@ const [refreshing, setRefreshing] = useState(false);
       <View
         style={{ paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full">
-        <MasonryFlashList
+        <FlashList
           data={duplicatedData}
+keyExtractor={(item) => {
+        return item.id;
+      }}
           renderItem={renderItem}
          refreshing={refreshing}
 onRefresh={onRefresh}
