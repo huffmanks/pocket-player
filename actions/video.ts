@@ -12,12 +12,18 @@ export async function favoriteVideo(videoId: string) {
       .from(videos)
       .where(eq(videos.id, videoId));
 
-    if (!video) throw Error;
+    if (!video) return { message: "Error adding video to favorites.", type: "error" };
     await db.update(videos).set({ isFavorite: !video.isFavorite }).where(eq(videos.id, video.id));
 
-    return { message: `${video.title} has been added to favorites.`, type: "success" };
+    const variantText = !video.isFavorite ? "added to" : "removed from";
+
+    return {
+      message: `${video.title} has been ${variantText} favorites.`,
+      type: "success",
+      added: !video.isFavorite,
+    };
   } catch (error) {
-    console.error("Error adding video to favorites.\n", error);
+    console.error("Error adding video to favorites: ", error);
     return { message: "Error adding video to favorites.", type: "error" };
   }
 }
@@ -29,7 +35,7 @@ export async function deleteVideo(videoId: string) {
       .from(videos)
       .where(eq(videos.id, videoId));
 
-    if (!video || !video.videoUri) throw Error;
+    if (!video || !video.videoUri) return { message: "Error deleting video.", type: "error" };
 
     // Delete video file
     const videoInfo = await FileSystem.getInfoAsync(video.videoUri);
@@ -43,7 +49,7 @@ export async function deleteVideo(videoId: string) {
     await db.delete(videos).where(eq(videos.id, videoId));
     return { message: `${video.title} has been deleted.`, type: "success" };
   } catch (error) {
-    console.error("Error deleting video.\n", error);
+    console.error("Error deleting video: ", error);
     return { message: "Error deleting video.", type: "error" };
   }
 }

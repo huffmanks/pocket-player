@@ -1,11 +1,11 @@
 import { View } from "react-native";
 
-import VideoForm from "@/components/video-form";
+import UploadForm from "@/components/forms/upload-video";
 
 export default function UploadScreen() {
   return (
     <View>
-      <VideoForm />
+      <UploadForm />
     </View>
   );
 }

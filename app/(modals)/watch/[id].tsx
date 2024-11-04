@@ -10,18 +10,23 @@ import { videos } from "@/db/schema";
 import VideoPlayer from "@/components/video-player";
 
 export default function WatchModal() {
-  const [videoSource, setVideoSource] = useState("");
+  const [videoSource, setVideoSource] = useState<string | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
   useEffect(() => {
     const fetchVideo = async () => {
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
-      setVideoSource(video?.videoUri || "");
+      if (video && video?.videoUri) {
+        setVideoSource(video.videoUri);
+      }
     };
 
-    fetchVideo().catch((_error) => toast.error("Failed to find video source."));
-  }, [id]);
+    fetchVideo().catch((error) => {
+      console.error("Failed to find video source: ", error);
+      toast.error("Failed to find video source.");
+    });
+  }, []);
 
   if (!videoSource) return null;
 

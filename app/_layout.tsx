@@ -12,7 +12,7 @@ import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { DARK_THEME, LIGHT_THEME } from "@/lib/constants";
-import { themeStorage } from "@/lib/storage";
+import { lockScreenStorage, settingsStorage, themeStorage } from "@/lib/storage";
 import { DatabaseProvider } from "@/providers/database-provider";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
 
@@ -30,6 +30,10 @@ export default function RootLayout() {
 
   useEffect(() => {
     (async () => {
+      if (settingsStorage.getBoolean("enablePasscode")) {
+        lockScreenStorage.set("isLocked", true);
+      }
+
       const theme = themeStorage.getString("theme");
 
       if (Platform.OS === "web") {
@@ -80,10 +84,12 @@ export default function RootLayout() {
                   options={{ headerShown: false }}
                 />
               </Stack>
-              {/* <Toaster
+              <Toaster
                 theme={colorScheme === "light" ? "light" : "dark"}
                 richColors
-              /> */}
+                position="top-center"
+                offset={120}
+              />
             </GestureHandlerRootView>
           </ThemeProvider>
         </LockScreenProvider>

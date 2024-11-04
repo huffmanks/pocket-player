@@ -18,13 +18,13 @@ export default function HomeScreen() {
   const { success, error } = useMigrationHelper();
 
   if (!success) {
-    // toast.info("Migration is in progress...");
     console.info("Migration is in progress...");
+    return <Text>Migration is in progress...</Text>;
   }
 
   if (error) {
-    // toast.error("Migration error: " + error.message);
     console.error("Migration error.");
+    return <Text>Migration error.</Text>;
   }
 
   return <ScreenContent />;
@@ -59,11 +59,11 @@ function ScreenContent() {
   );
 
   if (error) {
-    console.log("Error loading data.");
-    // toast.error("Error loading data.");
+    console.error("Error loading data.");
+    toast.error("Error loading data.");
   }
 
-  const duplicatedData = data.concat(data, data, data);
+  const duplicatedData = data.concat(data, data, data, data);
 
   return (
     <>

@@ -9,12 +9,15 @@ import {
   EllipsisVerticalIcon,
   FileVideoIcon,
   KeyRoundIcon,
+  ListMusicIcon,
   MoonStarIcon,
   PauseIcon,
   PencilIcon,
   PlayIcon,
   PlusIcon,
+  RefreshCcwIcon,
   ScanFaceIcon,
+  SendIcon,
   SettingsIcon,
   StarIcon,
   SunIcon,
@@ -56,6 +59,9 @@ export { FileVideoIcon };
 iconWithClassName(KeyRoundIcon);
 export { KeyRoundIcon };
 
+iconWithClassName(ListMusicIcon);
+export { ListMusicIcon };
+
 iconWithClassName(MoonStarIcon);
 export { MoonStarIcon };
 
@@ -71,8 +77,14 @@ export { PlayIcon };
 iconWithClassName(PlusIcon);
 export { PlusIcon };
 
+iconWithClassName(RefreshCcwIcon);
+export { RefreshCcwIcon };
+
 iconWithClassName(ScanFaceIcon);
 export { ScanFaceIcon };
+
+iconWithClassName(SendIcon);
+export { SendIcon };
 
 iconWithClassName(StarIcon);
 export { StarIcon };

@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { memo, useMemo } from "react";
 import { Image, Pressable, View } from "react-native";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -23,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Text } from "@/components/ui/text";
 
-function VideoItem({ item }: { item: VideoMeta }) {
+export default function VideoItem({ item }: { item: VideoMeta }) {
   const insets = useSafeAreaInsets();
 
   const contentInsets = {
@@ -34,27 +33,29 @@ function VideoItem({ item }: { item: VideoMeta }) {
   };
 
   async function handleFavorite() {
-    const { message, type } = await favoriteVideo(item.id);
+    const { message, type, added } = await favoriteVideo(item.id);
 
-    // if (type === "success") {
-    //   toast.success(message);
-    // } else {
-    //   toast.error(message);
-    // }
+    if (type === "success") {
+      if (added) {
+        toast.success(message);
+      } else {
+        toast.error(message);
+      }
+    } else {
+      toast.error(message);
+    }
   }
 
   async function handleDelete() {
     const { message, type } = await deleteVideo(item.id);
 
-    // if (type === "success") {
-    //   toast.success(message);
-    // } else {
-    //   toast.error(message);
-    // }
+    if (type === "success") {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
   }
 
-  // const renderedContent = useMemo(
-  //   () => (
   return (
     <Animated.View
       className="mb-8 flex-row items-start gap-4"
@@ -78,7 +79,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
           <Text
             className="text-sm text-muted-foreground"
             numberOfLines={3}>
-            {item.title}
+            {item.description ? item.description : "No description"}
           </Text>
         </View>
 
@@ -149,11 +150,4 @@ function VideoItem({ item }: { item: VideoMeta }) {
       </View>
     </Animated.View>
   );
-  //   ),
-  //   [item]
-  // );
-
-  // return renderedContent;
 }
-
-export default memo(VideoItem);

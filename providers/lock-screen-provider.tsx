@@ -10,6 +10,8 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
+    if (!settingsStorage.getBoolean("enablePasscode")) return;
+
     const subscription = AppState.addEventListener("change", handleAppStateChange);
 
     const isLocked = lockScreenStorage.getBoolean("isLocked");
@@ -38,7 +40,8 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     }
 
     return () => {
-      lockScreenStorage.set("isLocked", settingsStorage.getBoolean("enablePasscode") || false);
+      const isLockedValue = settingsStorage.getBoolean("enablePasscode") ?? false;
+      lockScreenStorage.set("isLocked", isLockedValue);
       subscription.remove();
     };
   }, []);

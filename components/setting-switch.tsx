@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import { settingsStorage } from "@/lib/storage";
@@ -13,24 +13,22 @@ interface SettingSwitchProps {
 }
 
 export default function SettingSwitch({ id, defaultChecked = false, label }: SettingSwitchProps) {
-  const defaultCheckedValue = settingsStorage.getBoolean(id) || defaultChecked;
-  const [checked, setChecked] = useState(defaultCheckedValue);
+  const [checked, setChecked] = useState(settingsStorage.getBoolean(id) ?? defaultChecked);
 
-  function handlePress() {
-    settingsStorage.set(id, !checked);
-    setChecked((prev) => !prev);
-  }
+  useEffect(() => {
+    settingsStorage.set(id, checked === true ? true : false);
+  }, [checked, id]);
 
   return (
     <View className="flex-row items-center gap-6">
       <Switch
         checked={checked}
-        onCheckedChange={handlePress}
+        onCheckedChange={setChecked}
         nativeID={id}
       />
       <Label
         nativeID={id}
-        onPress={handlePress}>
+        onPress={() => setChecked((prev) => !prev)}>
         {label}
       </Label>
     </View>

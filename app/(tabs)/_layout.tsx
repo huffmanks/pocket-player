@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import { View } from "react-native";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { CloudUploadIcon, VideoIcon } from "@/lib/icons";
+import { CloudUploadIcon, ListMusicIcon, StarIcon, VideoIcon } from "@/lib/icons";
 
 import OpenSettings from "@/components/open-settings";
 import ThemeToggle from "@/components/theme-toggle";
@@ -41,6 +41,32 @@ export default function TabLayout() {
           title: "Upload",
           tabBarIcon: ({ color }) => (
             <CloudUploadIcon
+              color={color}
+              size={28}
+              strokeWidth={1.25}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="favorites"
+        options={{
+          title: "Favorites",
+          tabBarIcon: ({ color }) => (
+            <StarIcon
+              color={color}
+              size={28}
+              strokeWidth={1.25}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="playlists"
+        options={{
+          title: "Playlists",
+          tabBarIcon: ({ color }) => (
+            <ListMusicIcon
               color={color}
               size={28}
               strokeWidth={1.25}

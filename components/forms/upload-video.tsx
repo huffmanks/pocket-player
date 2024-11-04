@@ -12,7 +12,7 @@ import * as z from "zod";
 
 import { videos } from "@/db/schema";
 import { VIDEOS_DIR } from "@/lib/constants";
-import { FileVideoIcon } from "@/lib/icons";
+import { FileVideoIcon, SendIcon } from "@/lib/icons";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
 import { useDatabase } from "@/providers/database-provider";
 
@@ -32,7 +32,7 @@ const formSchema = z.object({
     .min(1, { message: "Must have at least one video." }),
 });
 
-export default function VideoForm() {
+export default function UploadForm() {
   const { db } = useDatabase();
 
   const ref = useRef(null);
@@ -75,7 +75,9 @@ export default function VideoForm() {
           const thumbUri = `${VIDEOS_DIR}${name.replace(/\.[^/.]+$/, ".jpg")}`;
           await FileSystem.moveAsync({ from: thumbFileUri, to: thumbUri });
 
-          return { title: name, videoUri, thumbUri };
+          const title = name.replace(/(\.[^/.]+)$/, "");
+
+          return { title, videoUri, thumbUri };
         })
       );
 
@@ -106,7 +108,7 @@ export default function VideoForm() {
     form.reset();
   }
 
-  console.log(form.getValues("videos"));
+  const uploadedVideos = form.watch("videos");
 
   return (
     <View className="relative h-full">
@@ -118,15 +120,17 @@ export default function VideoForm() {
         contentInset={{ top: 12 }}>
         <View className="mx-auto mb-8 min-h-1 w-full max-w-md">
           <Form {...form}>
-            <View className="mb-8">
+            <View className="mb-12">
               <View className="flex-1">
                 <FormField
                   control={form.control}
                   name="videos"
                   render={({ field }) => (
-                    <View>
+                    <View className="justify-center rounded-md bg-secondary">
                       <Button
-                        variant="secondary"
+                        className="p-8"
+                        variant="ghost"
+                        size="unset"
                         onPress={async () =>
                           await selectVideoFiles((videos) => {
                             videos.forEach((video, index) => {
@@ -136,30 +140,45 @@ export default function VideoForm() {
                             });
                           })
                         }>
-                        <View className="flex flex-row items-center gap-2">
+                        <View className="items-center justify-center gap-4">
                           <FileVideoIcon
                             className="text-teal-500"
-                            size={20}
-                            strokeWidth={1.25}
+                            size={40}
+                            strokeWidth={1.5}
                           />
-                          <Text>{field.value.length > 0 ? "Replace" : "Upload"}</Text>
+                          <Text className="native:text-xl">Upload</Text>
                         </View>
                       </Button>
-                      {/* <Text
+                      {uploadedVideos[0].videoUri && (
+                        <View className="flex-1 gap-2 px-4 pb-8">
+                          {uploadedVideos.map((item) => (
+                            <Text
+                              key={item.videoUri}
                               numberOfLines={1}
-                              className="pt-1 text-sm text-muted-foreground">
-                              {field.value}
-                            </Text> */}
+                              className="text-muted-foreground">
+                              {item.title}: {item.videoUri}
+                            </Text>
+                          ))}
+                        </View>
+                      )}
                     </View>
                   )}
                 />
               </View>
             </View>
-            <View className="ml-auto">
+            <View>
               <Button
-                onPress={form.handleSubmit(onSubmit)}
-                className="bg-teal-500">
-                <Text>Submit</Text>
+                className="bg-teal-600"
+                size="lg"
+                onPress={form.handleSubmit(onSubmit)}>
+                <View className="flex-row items-center gap-4">
+                  <SendIcon
+                    className="text-foreground"
+                    size={28}
+                    strokeWidth={1.25}
+                  />
+                  <Text className="native:text-base text-foreground">Submit</Text>
+                </View>
               </Button>
             </View>
           </Form>

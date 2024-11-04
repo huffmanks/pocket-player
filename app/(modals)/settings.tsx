@@ -1,8 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Platform, View } from "react-native";
-
-import { toast } from "sonner-native";
 
 import { initialize, useMigrationHelper } from "@/db/drizzle";
 import { clearDirectory, resetTable } from "@/db/drop";
@@ -23,9 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 
 export default function SettingsModal() {
@@ -35,74 +31,70 @@ export default function SettingsModal() {
   const [hasPasscode, setHasPasscode] = useState(
     settingsStorage.getNumber("passcode") ? true : false
   );
+
   const { success, error } = useMigrationHelper();
 
   async function dropDatabase() {
     await clearDirectory(VIDEOS_DIR);
     await resetTable();
+
     initialize();
 
-    // const operations = [await clearDirectory(VIDEOS_DIR), await resetTable()];
-
-    // const hasError = operations.find((op) => op.type === "error");
-    // if (hasError) {
-    //   toast.error(hasError.message);
-    //   return;
-    // }
-
-    // operations.forEach((op) => toast.success(op.message));
-    // initialize();
-
-    // if (!success) {
-    //   toast.info("Migration is in progress...");
-    // } else {
-    //   error ? toast.error("Migration failed.") : toast.success("Database migration succeeded.");
-    // }
+    if (error) {
+      console.error("Migration failed: ", error);
+    } else {
+      console.log("Database migration succeeded.");
+    }
   }
 
-  function handleEnablePasscode() {
-    settingsStorage.set("enablePasscode", !enablePasscode);
-    setEnablePasscode((prev) => !prev);
-  }
+  useEffect(() => {
+    const listener = settingsStorage.addOnValueChangedListener((changedKey) => {
+      const newValue = settingsStorage.getBoolean(changedKey) as boolean;
+
+      if (changedKey === "enablePasscode") {
+        setEnablePasscode(newValue);
+      }
+    });
+
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
   return (
     <>
       <View className="mx-auto w-full max-w-lg p-6">
         <View className="mb-6 gap-6">
-          <Text className="mb-4 text-xl font-semibold">Video player</Text>
+          <View>
+            <Text className="mb-1 text-xl font-semibold">Video player</Text>
+            <Text className="mb-2 text-lg text-muted-foreground">Default settings</Text>
+          </View>
           {settingsSwitches.map((item) => (
             <SettingSwitch
-              key={item.id}
+              key={"settings-screen_" + item.id}
               id={item.id}
               label={item.label}
             />
           ))}
         </View>
 
-        <Separator className="mb-6" />
+        <Separator className="mb-6 mt-2" />
 
         <View className="mb-6 gap-6">
           <Text className="mb-4 text-xl font-semibold">Passcode</Text>
 
-          <View className="flex-row items-center gap-6">
-            <Switch
-              checked={enablePasscode}
-              onCheckedChange={handleEnablePasscode}
-              nativeID="enablePasscode"
-            />
-            <Label
-              nativeID="enablePasscode"
-              onPress={handleEnablePasscode}>
-              Enable passcode
-            </Label>
-          </View>
+          <SettingSwitch
+            key="setttings-screen_enablePasscode"
+            id="enablePasscode"
+            label="Enable passcode"
+          />
 
           {enablePasscode && (
             <Button
               variant="secondary"
               className="flex flex-row items-center justify-center gap-4">
               <KeyRoundIcon
-                className="text-white"
+                className="text-foreground"
                 size={20}
                 strokeWidth={1.25}
               />
@@ -111,7 +103,7 @@ export default function SettingsModal() {
           )}
         </View>
 
-        <Separator className="mb-6" />
+        <Separator className="mb-6 mt-2" />
 
         <View className="gap-6">
           <Text className="mb-4 text-xl font-semibold">Danger zone</Text>
@@ -126,7 +118,7 @@ export default function SettingsModal() {
                   size={20}
                   strokeWidth={1.25}
                 />
-                <Text>Reset Data</Text>
+                <Text>Delete data</Text>
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -143,7 +135,7 @@ export default function SettingsModal() {
                 <AlertDialogAction
                   className="bg-destructive"
                   onPress={async () => await dropDatabase()}>
-                  <Text className="text-foreground">Delete</Text>
+                  <Text className="text-white">Delete</Text>
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

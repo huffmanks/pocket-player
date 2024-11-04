@@ -1,9 +1,207 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "6243cfff-4ccc-491f-93b6-36ff88579c5e",
+  "id": "98250f37-69b7-4850-bdbb-dc6db548d9d5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "playlist_videos": {
+      "name": "playlist_videos",
+      "columns": {
+        "playlist_id": {
+          "name": "playlist_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "video_id": {
+          "name": "video_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "playlist_videos_playlist_id_playlists_id_fk": {
+          "name": "playlist_videos_playlist_id_playlists_id_fk",
+          "tableFrom": "playlist_videos",
+          "tableTo": "playlists",
+          "columnsFrom": [
+            "playlist_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "playlist_videos_video_id_videos_id_fk": {
+          "name": "playlist_videos_video_id_videos_id_fk",
+          "tableFrom": "playlist_videos",
+          "tableTo": "videos",
+          "columnsFrom": [
+            "video_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "playlists": {
+      "name": "playlists",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2024-11-04T02:50:39.512Z'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2024-11-04T02:50:39.512Z'"
+        }
+      },
+      "indexes": {
+        "playlists_title_unique": {
+          "name": "playlists_title_unique",
+          "columns": [
+            "title"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "tags": {
+      "name": "tags",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2024-11-04T02:50:39.513Z'"
+        }
+      },
+      "indexes": {
+        "tags_title_unique": {
+          "name": "tags_title_unique",
+          "columns": [
+            "title"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "video_tags": {
+      "name": "video_tags",
+      "columns": {
+        "tag_id": {
+          "name": "tag_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "video_id": {
+          "name": "video_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "video_tags_tag_id_tags_id_fk": {
+          "name": "video_tags_tag_id_tags_id_fk",
+          "tableFrom": "video_tags",
+          "tableTo": "tags",
+          "columnsFrom": [
+            "tag_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "video_tags_video_id_videos_id_fk": {
+          "name": "video_tags_video_id_videos_id_fk",
+          "tableFrom": "video_tags",
+          "tableTo": "videos",
+          "columnsFrom": [
+            "video_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "videos": {
       "name": "videos",
       "columns": {
@@ -21,6 +219,14 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'Untitled'"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
         },
         "videoUri": {
           "name": "videoUri",
@@ -40,7 +246,7 @@
           "name": "isFavorite",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": false
         },
@@ -48,9 +254,17 @@
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-01T15:42:43.114Z'"
+          "default": "'2024-11-04T02:50:39.503Z'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'2024-11-04T02:50:39.510Z'"
         }
       },
       "indexes": {},
