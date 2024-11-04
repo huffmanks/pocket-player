@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { MasonryFlashList, MasonryFlashListRef } from "@shopify/flash-list";
@@ -31,6 +31,15 @@ export default function HomeScreen() {
 }
 
 function ScreenContent() {
+const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+
   const { db } = useDatabase();
   // @ts-expect-error
   const { data, error } = useLiveQuery(db?.select().from(videos));
@@ -50,7 +59,6 @@ function ScreenContent() {
     ({ item, index }: { item: VideoMeta; index: number }) => (
       <View className="px-2">
         <VideoItem
-          key={`${item.id}-${index}`}
           item={item}
         />
       </View>
@@ -73,7 +81,9 @@ function ScreenContent() {
         <MasonryFlashList
           data={duplicatedData}
           renderItem={renderItem}
-          estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
+         refreshing={refreshing}
+onRefresh={onRefresh}
+estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
           onScrollEndDrag={handleScrollEndDrag}
           ListEmptyComponent={<Text className="p-5">No videos uploaded.</Text>}
         />
