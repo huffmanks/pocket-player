@@ -9,6 +9,9 @@
 3. Video player: Add loop and mute buttons to controls.
 4. Settings enable passcode: require creating passcode or disable it until created.
 5. Move useMigration to DatabaseProvider. Not sure if it will work.
+6. Playlists screen: switch to use useLiveQuery and don't show error toast unless error.
+7. Home screen: Migration in progress text should have p-5.
+8. Forms: trim whitespace on all input values.
 
 ## Styles
 
