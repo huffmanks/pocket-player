@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 
 import { eq } from "drizzle-orm";
@@ -10,7 +10,8 @@ import { videos } from "@/db/schema";
 import VideoPlayer from "@/components/video-player";
 
 export default function WatchModal() {
-  const [videoSource, setVideoSource] = useState<string | null>(null);
+  const [screenTitle, setScreenTitle] = useState<string | null>(null);
+  const [videoSources, setVideoSources] = useState<string[] | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
@@ -18,7 +19,8 @@ export default function WatchModal() {
     const fetchVideo = async () => {
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
       if (video && video?.videoUri) {
-        setVideoSource(video.videoUri);
+        setVideoSources([video.videoUri]);
+        setScreenTitle(video.title);
       }
     };
 
@@ -28,7 +30,12 @@ export default function WatchModal() {
     });
   }, []);
 
-  if (!videoSource) return null;
+  if (!videoSources || !screenTitle) return null;
 
-  return <VideoPlayer videoSource={videoSource} />;
+  return (
+    <>
+      <Stack.Screen options={{ title: screenTitle }} />
+      <VideoPlayer videoSources={videoSources} />
+    </>
+  );
 }

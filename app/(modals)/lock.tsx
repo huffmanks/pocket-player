@@ -88,7 +88,7 @@ export default function LockModal() {
         style={animatedStyle}>
         {codeLength.map((_, index) => (
           <View
-            key={index}
+            key={`code-dots_${index}`}
             className={cn("size-5 rounded-xl", code[index] ? "bg-teal-500" : "bg-gray-500")}></View>
         ))}
       </Animated.View>

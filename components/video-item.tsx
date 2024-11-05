@@ -73,8 +73,9 @@ function VideoItem({ item }: { item: VideoMeta }) {
       className="mb-8 flex-row items-start gap-4"
       entering={FadeIn}
       exiting={FadeOut}>
-      <Pressable onPress={() => router.push(`/(modals)/(video)/watch/${item.id}`)}>
+      <Pressable onPress={() => router.push(`/(modals)/videos/watch/${item.id}`)}>
         <Image
+          className="rounded-sm"
           style={{ width: 225, height: 125 }}
           source={{ uri: item.thumbUri }}
           resizeMode="cover"
@@ -116,7 +117,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="gap-4"
-                onPress={() => router.push(`/(modals)/(video)/watch/${item.id}`)}>
+                onPress={() => router.push(`/(modals)/videos/watch/${item.id}`)}>
                 <TvIcon
                   className="text-foreground"
                   size={20}
@@ -126,7 +127,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="gap-4"
-                onPress={() => router.push(`/(modals)/(video)/edit/${item.id}`)}>
+                onPress={() => router.push(`/(modals)/videos/edit/${item.id}`)}>
                 <PencilIcon
                   className="text-foreground"
                   size={20}

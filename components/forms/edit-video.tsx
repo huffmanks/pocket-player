@@ -11,7 +11,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 
 import { addOrCreateTagsForVideo } from "@/actions/tag";
-import { VideoInfo } from "@/app/(modals)/(video)/edit/[id]";
+import { VideoInfo } from "@/app/(modals)/videos/edit/[id]";
 import { videos } from "@/db/schema";
 import { RefreshCcwIcon } from "@/lib/icons";
 import { useDatabase } from "@/providers/database-provider";
@@ -21,10 +21,19 @@ import { Form, FormField, FormInput, FormSwitch, FormTextarea } from "@/componen
 import { Text } from "@/components/ui/text";
 
 const formSchema = z.object({
-  title: z.string().min(3, { message: "Title must be at least 3 characters." }),
-  description: z.string().or(z.literal("")),
+  title: z
+    .string()
+    .min(3, { message: "Title must be at least 3 characters." })
+    .transform((val) => val.trim()),
+  description: z
+    .string()
+    .or(z.literal(""))
+    .transform((val) => val.trim()),
   isFavorite: z.boolean(),
-  tags: z.string().or(z.literal("")),
+  tags: z
+    .string()
+    .or(z.literal(""))
+    .transform((val) => val.trim()),
 });
 
 interface EditFormProps {
@@ -51,18 +60,20 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
     if (!db) return;
 
     try {
+      const parsedValues = formSchema.parse(values);
+
       await db.transaction(async (tx) => {
         await tx
           .update(videos)
           .set({
-            title: values.title,
-            description: values.description,
-            isFavorite: values.isFavorite,
+            title: parsedValues.title,
+            description: parsedValues.description,
+            isFavorite: parsedValues.isFavorite,
             updatedAt: new Date().toISOString(),
           })
           .where(eq(videos.id, videoInfo.videoId));
 
-        const tagTitles = values.tags.split(",");
+        const tagTitles = parsedValues.tags.split(",").map((tag) => tag.trim());
 
         await addOrCreateTagsForVideo(tx, videoInfo.videoId, tagTitles);
       });

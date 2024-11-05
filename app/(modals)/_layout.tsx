@@ -1,27 +1,47 @@
 import { Stack } from "expo-router";
+import { View } from "react-native";
+
+import OpenSettings from "@/components/open-settings";
+import ThemeToggle from "@/components/theme-toggle";
 
 export default function ModalLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerRight: () => (
+          <View className="flex-row items-center pr-2">
+            <ThemeToggle />
+            <OpenSettings />
+          </View>
+        ),
+      }}>
       <Stack.Screen
-        name="(playlist)/edit/[id]"
+        name="playlists/watch/[id]"
+        options={{ animation: "slide_from_bottom" }}
+      />
+      <Stack.Screen
+        name="playlists/view/[id]"
+        options={{ animation: "slide_from_bottom", title: "Playlist" }}
+      />
+      <Stack.Screen
+        name="playlists/edit/[id]"
         options={{ presentation: "modal", title: "Edit playlist" }}
       />
       <Stack.Screen
-        name="(playlist)/create"
+        name="playlists/create"
         options={{ presentation: "modal", title: "Create playlist" }}
       />
       <Stack.Screen
-        name="(video)/watch/[id]"
-        options={{ presentation: "modal", title: "Watch video" }}
+        name="videos/watch/[id]"
+        options={{ animation: "slide_from_bottom" }}
       />
       <Stack.Screen
-        name="(video)/edit/[id]"
+        name="videos/edit/[id]"
         options={{ presentation: "modal", title: "Edit video" }}
       />
       <Stack.Screen
         name="lock"
-        options={{ headerShown: false, animation: "none" }}
+        options={{ headerShown: false, animation: "fade" }}
       />
       <Stack.Screen
         name="settings"

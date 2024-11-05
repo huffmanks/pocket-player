@@ -12,7 +12,7 @@ export default function KeypadRow({ numbers, handleNumberPress }: KeypadRowProps
     <View className="flex-row justify-between">
       {numbers.map((number) => (
         <TouchableOpacity
-          key={number}
+          key={`keypad-row_${number}`}
           onPress={() => handleNumberPress(number)}>
           <Text className="text-4xl">{number}</Text>
         </TouchableOpacity>

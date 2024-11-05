@@ -8,9 +8,8 @@ export default function EditPlaylistScreen() {
 
   return (
     <View className="p-4">
-      <Text>
-        Edit playlist <Text className="text-teal-500">{id}</Text>
-      </Text>
+      <Text>Edit playlist screen.</Text>
+      <Text className="text-teal-500">{id}</Text>
     </View>
   );
 }

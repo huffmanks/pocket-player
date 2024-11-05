@@ -7,7 +7,7 @@ import { ScrollView, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
@@ -25,13 +25,18 @@ const formSchema = z.object({
   videos: z
     .array(
       z.object({
-        title: z.string().min(1, { message: "Each video must have a title." }),
-        videoUri: z.string().min(1, { message: "Each video must have a video file URI." }),
-        thumbUri: z.string().min(1, { message: "Each video must have a thumb file URI." }),
+        title: z.string().min(1),
+        videoUri: z.string().min(1),
+        thumbUri: z.string().min(1),
       })
     )
-    .min(1, { message: "Must have at least one video." }),
+    .nonempty({ message: "Must upload at least one video." })
+    .refine((videos) => videos.some((video) => video.title && video.videoUri && video.thumbUri), {
+      message: "Must upload at least one video.",
+    }),
 });
+
+type FormData = z.infer<typeof formSchema>;
 
 export default function UploadForm() {
   const { db } = useDatabase();
@@ -39,7 +44,7 @@ export default function UploadForm() {
   const ref = useRef(null);
   useScrollToTop(ref);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       videos: [
@@ -86,7 +91,7 @@ export default function UploadForm() {
     }
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormData) {
     if (!db) return;
 
     try {
@@ -109,6 +114,14 @@ export default function UploadForm() {
     form.reset();
 
     router.push("/");
+  }
+
+  function handleErrors(errors: FieldErrors<FormData>) {
+    const errorMessage = errors.videos?.message;
+
+    if (errorMessage) {
+      toast.error(errorMessage);
+    }
   }
 
   const uploadedVideos = form.watch("videos");
@@ -156,7 +169,7 @@ export default function UploadForm() {
                         <View className="flex-1 gap-2 px-4 pb-8">
                           {uploadedVideos.map((item) => (
                             <Text
-                              key={item.videoUri}
+                              key={`upload-video_${item.videoUri}`}
                               numberOfLines={1}
                               className="text-muted-foreground">
                               {item.title}: {item.videoUri}
@@ -173,7 +186,7 @@ export default function UploadForm() {
               <Button
                 className="bg-teal-600"
                 size="lg"
-                onPress={form.handleSubmit(onSubmit)}>
+                onPress={form.handleSubmit(onSubmit, handleErrors)}>
                 <View className="flex-row items-center gap-4">
                   <SendIcon
                     className="text-white"

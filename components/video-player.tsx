@@ -1,12 +1,14 @@
 import { VideoView, useVideoPlayer } from "expo-video";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 
 import { settingsStorage } from "@/lib/storage";
 
-export default function VideoPlayer({ videoSource }: { videoSource: string }) {
+export default function VideoPlayer({ videoSources }: { videoSources: string[] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const videoRef = useRef(null);
-  const player = useVideoPlayer(videoSource, (player) => {
+
+  const player = useVideoPlayer(videoSources[currentIndex], (player) => {
     player.loop = settingsStorage.getBoolean("loop") || false;
     player.muted = settingsStorage.getBoolean("mute") || false;
 
@@ -14,6 +16,19 @@ export default function VideoPlayer({ videoSource }: { videoSource: string }) {
       player.play();
     }
   });
+
+  useEffect(() => {
+    const subscription = player.addListener("playToEnd", () => {
+      if (currentIndex < videoSources.length - 1) {
+        setCurrentIndex((prevIndex) => prevIndex + 1);
+        player.replace(videoSources[currentIndex + 1]);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [player]);
 
   return (
     <View className="flex-1">

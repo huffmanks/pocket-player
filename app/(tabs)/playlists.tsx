@@ -7,7 +7,9 @@ import { toast } from "sonner-native";
 import { PlaylistMeta, playlists } from "@/db/schema";
 import { useDatabase } from "@/providers/database-provider";
 
+import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { H2 } from "@/components/ui/typography";
 
 export default function PlaylistsScreen() {
   const { db } = useDatabase();
@@ -21,23 +23,49 @@ export default function PlaylistsScreen() {
     toast.error("Error loading data.");
   }
 
+  if (!data || data.length === 0) {
+    return (
+      <View className="mt-2 p-5">
+        <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
+        <Text className="mb-12">Your playlists will be displayed here.</Text>
+        <Link
+          href="/(modals)/playlists/create"
+          asChild>
+          <Button size="lg">
+            <Text>Create a playlist</Text>
+          </Button>
+        </Link>
+      </View>
+    );
+  }
+
   return (
     <View className="p-5">
-      <Link
-        href="/(modals)/(playlist)/create"
-        className="mb-6 text-teal-500 underline">
-        Create a playlist
-      </Link>
-
-      <Text className="text-medium text-lg text-foreground">List of all your playlists.</Text>
-      {data.map((item) => (
-        <Link
-          key={item.id}
-          href={`/(modals)/(playlist)/edit/${item.id}`}
-          className="mb-6 text-teal-500 underline">
-          {item.title}
-        </Link>
-      ))}
+      {data &&
+        data.map((item) => (
+          <View
+            key={`playlists_${item.id}`}
+            className="mb-8 gap-4">
+            <H2 className="text-teal-500">{item.title}</H2>
+            <View className="flex-row gap-4">
+              <Link
+                href={`/(modals)/playlists/edit/${item.id}`}
+                className="mb-6 text-lg text-foreground underline">
+                Edit
+              </Link>
+              <Link
+                href={`/(modals)/playlists/view/${item.id}`}
+                className="mb-6 text-lg text-foreground underline">
+                View
+              </Link>
+              <Link
+                href={`/(modals)/playlists/watch/${item.id}`}
+                className="mb-6 text-lg text-foreground underline">
+                Watch
+              </Link>
+            </View>
+          </View>
+        ))}
     </View>
   );
 }

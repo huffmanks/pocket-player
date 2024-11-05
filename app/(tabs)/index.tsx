@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
@@ -11,7 +12,9 @@ import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { useDatabase } from "@/providers/database-provider";
 
+import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
 export default function HomeScreen() {
@@ -19,24 +22,26 @@ export default function HomeScreen() {
 
   if (!success) {
     console.info("Migration is in progress...");
-    return <Text>Migration is in progress...</Text>;
+    return <Text className="p-5">Migration is in progress...</Text>;
   }
 
   if (error) {
     console.error("Migration error.");
-    return <Text>Migration error.</Text>;
+    return <Text className="p-5">Migration error.</Text>;
   }
 
-  return <ScreenContent />;
+  if (success && !error) {
+    return <ScreenContent />;
+  }
 }
 
 function ScreenContent() {
   const [refreshing, setRefreshing] = useState(false);
-  const [key, setKey] = useState(0);
+  const [keyIndex, setKeyIndex] = useState(0);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setKey((prev) => prev + 1);
+    setKeyIndex((prev) => prev + 1);
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -74,11 +79,11 @@ function ScreenContent() {
   return (
     <>
       <View
-        style={{ paddingBottom: insets.bottom + 84 }}
+        style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full">
         <FlashList
           data={data}
-          key={key}
+          key={`videos_${keyIndex}`}
           keyExtractor={(item, index) => {
             return item.id + index;
           }}
@@ -87,9 +92,25 @@ function ScreenContent() {
           onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
           onScrollEndDrag={handleScrollEndDrag}
-          ListEmptyComponent={<Text className="p-5">No videos uploaded.</Text>}
+          ListEmptyComponent={<ListEmptyComponent />}
         />
       </View>
     </>
+  );
+}
+
+function ListEmptyComponent() {
+  return (
+    <View className="mt-2 p-5">
+      <H2 className="mb-4 text-teal-500">No videos yet!</H2>
+      <Text className="mb-12">Your videos will be displayed here.</Text>
+      <Link
+        href="/(tabs)/upload"
+        asChild>
+        <Button size="lg">
+          <Text>Upload videos</Text>
+        </Button>
+      </Link>
+    </View>
   );
 }

@@ -88,7 +88,7 @@ export default function RootLayout() {
                 theme={colorScheme === "light" ? "light" : "dark"}
                 richColors
                 position="top-center"
-                offset={120}
+                offset={60}
               />
             </GestureHandlerRootView>
           </ThemeProvider>

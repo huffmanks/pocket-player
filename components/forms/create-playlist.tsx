@@ -1,13 +1,14 @@
+import { router } from "expo-router";
 import { useRef } from "react";
 import { ScrollView, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
-import { useFieldArray, useForm } from "react-hook-form";
+import { FieldErrors, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { VideoData } from "@/app/(modals)/(playlist)/create";
+import { VideoData } from "@/app/(modals)/playlists/create";
 import { playlistVideos, playlists } from "@/db/schema";
 import { SendIcon, XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -19,18 +20,29 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
 const formSchema = z.object({
-  title: z.string().min(3, { message: "Title must be at least 3 characters." }),
-  description: z.string().or(z.literal("")),
+  title: z
+    .string()
+    .min(3, { message: "Title must be at least 3 characters." })
+    .transform((val) => val.trim()),
+  description: z
+    .string()
+    .or(z.literal(""))
+    .transform((val) => val.trim()),
   videos: z
     .array(
       z.object({
-        title: z.string().min(1, { message: "Title is required." }),
+        title: z.string().min(1),
         isSelected: z.boolean(),
-        videoId: z.string().min(1, { message: "Video id is required." }),
+        videoId: z.string().min(1),
       })
     )
-    .min(1, { message: "Must select at least one video." }),
+    .nonempty({ message: "Must select at least one video." })
+    .refine((videos) => videos.some((video) => video.title && video.isSelected && video.videoId), {
+      message: "Must select at least one video.",
+    }),
 });
+
+type FormData = z.infer<typeof formSchema>;
 
 interface CreatePlaylistFormProps {
   videoData: VideoData[];
@@ -41,7 +53,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
   const ref = useRef(null);
   useScrollToTop(ref);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -50,16 +62,18 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormData) {
     if (!db) return;
 
     try {
+      const parsedValues = formSchema.parse(values);
+
       await db.transaction(async (tx) => {
         const [createdPlaylist] = await tx
           .insert(playlists)
           .values({
-            title: values.title,
-            description: values.description,
+            title: parsedValues.title,
+            description: parsedValues.description,
             updatedAt: new Date().toISOString(),
           })
           .returning();
@@ -77,9 +91,19 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
       });
 
       toast.success(`${values.title} playlist created successfully.`);
+
+      router.dismiss();
     } catch (error) {
       console.error(error);
       toast.error("Error creating playlist!");
+    }
+  }
+
+  function handleErrors(errors: FieldErrors<FormData>) {
+    const errorMessage = errors?.videos?.root?.message ? errors.videos.root.message : undefined;
+
+    if (errorMessage) {
+      toast.error(errorMessage);
     }
   }
 
@@ -134,7 +158,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
                   </Text>
                   {fields.map((fieldItem, index) => (
                     <View
-                      key={`create-playlist-${index}`}
+                      key={`create-playlist_${fieldItem.id}`}
                       className="gap-2">
                       <View className="flex-row items-center justify-between gap-2">
                         <View className="flex-1 flex-row items-center gap-4">
@@ -177,7 +201,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
               <Button
                 className="bg-teal-600"
                 size="lg"
-                onPress={form.handleSubmit(onSubmit)}>
+                onPress={form.handleSubmit(onSubmit, handleErrors)}>
                 <View className="flex-row items-center gap-4">
                   <SendIcon
                     className="text-white"
