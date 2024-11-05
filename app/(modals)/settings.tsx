@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Platform, View } from "react-native";
 
 import { initialize, useMigrationHelper } from "@/db/drizzle";
-import { clearDirectory, resetTable } from "@/db/drop";
+import { clearDirectory, resetTables } from "@/db/drop";
 import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
 import { DatabaseIcon, KeyRoundIcon } from "@/lib/icons";
 import { settingsStorage } from "@/lib/storage";
@@ -36,7 +36,7 @@ export default function SettingsModal() {
 
   async function dropDatabase() {
     await clearDirectory(VIDEOS_DIR);
-    await resetTable();
+    await resetTables();
 
     initialize();
 

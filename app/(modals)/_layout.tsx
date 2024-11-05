@@ -4,20 +4,28 @@ export default function ModalLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="watch/[id]"
-        options={{ presentation: "modal", title: "Watch" }}
+        name="(playlist)/edit/[id]"
+        options={{ presentation: "modal", title: "Edit playlist" }}
       />
       <Stack.Screen
-        name="edit/[id]"
-        options={{ presentation: "modal", title: "Edit" }}
+        name="(playlist)/create"
+        options={{ presentation: "modal", title: "Create playlist" }}
       />
       <Stack.Screen
-        name="settings"
-        options={{ presentation: "modal", title: "Settings" }}
+        name="(video)/watch/[id]"
+        options={{ presentation: "modal", title: "Watch video" }}
+      />
+      <Stack.Screen
+        name="(video)/edit/[id]"
+        options={{ presentation: "modal", title: "Edit video" }}
       />
       <Stack.Screen
         name="lock"
         options={{ headerShown: false, animation: "none" }}
+      />
+      <Stack.Screen
+        name="settings"
+        options={{ presentation: "modal", title: "Settings" }}
       />
     </Stack>
   );

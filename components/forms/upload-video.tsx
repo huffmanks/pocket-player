@@ -1,5 +1,6 @@
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
+import { router } from "expo-router";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import { useRef } from "react";
 import { ScrollView, View } from "react-native";
@@ -106,6 +107,8 @@ export default function UploadForm() {
     }
 
     form.reset();
+
+    router.push("/");
   }
 
   const uploadedVideos = form.watch("videos");
@@ -173,11 +176,11 @@ export default function UploadForm() {
                 onPress={form.handleSubmit(onSubmit)}>
                 <View className="flex-row items-center gap-4">
                   <SendIcon
-                    className="text-foreground"
+                    className="text-white"
                     size={28}
                     strokeWidth={1.25}
                   />
-                  <Text className="native:text-base text-foreground">Submit</Text>
+                  <Text className="native:text-base text-white">Submit</Text>
                 </View>
               </Button>
             </View>

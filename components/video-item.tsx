@@ -1,6 +1,6 @@
 import { router } from "expo-router";
-import { Image, Pressable, View } from "react-native";
 import { memo } from "react";
+import { Image, Pressable, View } from "react-native";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,6 +11,17 @@ import { VideoMeta } from "@/db/schema";
 import { EllipsisVerticalIcon, PencilIcon, StarIcon, TrashIcon, TvIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -51,7 +62,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
     const { message, type } = await deleteVideo(item.id);
 
     if (type === "success") {
-      toast.success(message);
+      toast.error(message);
     } else {
       toast.error(message);
     }
@@ -62,7 +73,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
       className="mb-8 flex-row items-start gap-4"
       entering={FadeIn}
       exiting={FadeOut}>
-      <Pressable onPress={() => router.push(`/(modals)/watch/${item.id}`)}>
+      <Pressable onPress={() => router.push(`/(modals)/(video)/watch/${item.id}`)}>
         <Image
           style={{ width: 225, height: 125 }}
           source={{ uri: item.thumbUri }}
@@ -105,7 +116,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="gap-4"
-                onPress={() => router.push(`/watch/${item.id}`)}>
+                onPress={() => router.push(`/(modals)/(video)/watch/${item.id}`)}>
                 <TvIcon
                   className="text-foreground"
                   size={20}
@@ -115,7 +126,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="gap-4"
-                onPress={() => router.push(`/edit/${item.id}`)}>
+                onPress={() => router.push(`/(modals)/(video)/edit/${item.id}`)}>
                 <PencilIcon
                   className="text-foreground"
                   size={20}
@@ -136,16 +147,44 @@ function VideoItem({ item }: { item: VideoMeta }) {
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="gap-4"
-              onPress={handleDelete}>
-              <TrashIcon
-                className="text-destructive"
-                size={20}
-                strokeWidth={1.25}
-              />
-              <Text>Delete</Text>
-            </DropdownMenuItem>
+
+            <AlertDialog>
+              <DropdownMenuItem>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    style={{ margin: -8 }}
+                    className="w-full flex-1 flex-row justify-start gap-4 rounded-sm p-2"
+                    size="unset"
+                    variant="ghost">
+                    <TrashIcon
+                      className="text-destructive"
+                      size={20}
+                      strokeWidth={1.25}
+                    />
+                    <Text className="native:text-lg font-normal">Delete</Text>
+                  </Button>
+                </AlertDialogTrigger>
+              </DropdownMenuItem>
+
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the video.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    <Text>Cancel</Text>
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive"
+                    onPress={handleDelete}>
+                    <Text className="text-white">Delete</Text>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </DropdownMenuContent>
         </DropdownMenu>
       </View>

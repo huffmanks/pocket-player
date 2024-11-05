@@ -3,6 +3,7 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   ChevronUpIcon,
+  ChevronsUpDownIcon,
   CloudUploadIcon,
   DatabaseIcon,
   DeleteIcon,
@@ -17,6 +18,7 @@ import {
   PlusIcon,
   RefreshCcwIcon,
   ScanFaceIcon,
+  SearchIcon,
   SendIcon,
   SettingsIcon,
   StarIcon,
@@ -40,6 +42,9 @@ export { ChevronRightIcon };
 
 iconWithClassName(ChevronUpIcon);
 export { ChevronUpIcon };
+
+iconWithClassName(ChevronsUpDownIcon);
+export { ChevronsUpDownIcon };
 
 iconWithClassName(CloudUploadIcon);
 export { CloudUploadIcon };
@@ -82,6 +87,9 @@ export { RefreshCcwIcon };
 
 iconWithClassName(ScanFaceIcon);
 export { ScanFaceIcon };
+
+iconWithClassName(SearchIcon);
+export { SearchIcon };
 
 iconWithClassName(SendIcon);
 export { SendIcon };

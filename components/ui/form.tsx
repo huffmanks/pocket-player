@@ -296,7 +296,7 @@ const FormCheckbox = React.forwardRef<
 
   return (
     <FormItem className="px-1">
-      <View className="flex-row items-center gap-3">
+      <View className="flex-row items-center gap-4">
         <Checkbox
           ref={ref}
           aria-labelledby={formItemNativeID}
@@ -312,7 +312,7 @@ const FormCheckbox = React.forwardRef<
         />
         {!!label && (
           <FormLabel
-            className="pb-0"
+            className="native:pb-0"
             nativeID={formItemNativeID}
             onPress={handleOnLabelPress}>
             {label}

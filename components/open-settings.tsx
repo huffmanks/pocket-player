@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export default function OpenSettings() {
   return (
     <Link
-      href="/settings"
+      href="/(modals)/settings"
       asChild>
       <Button
         variant="ghost"

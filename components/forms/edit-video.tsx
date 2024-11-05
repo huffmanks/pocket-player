@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useRef } from "react";
 import { ScrollView, View } from "react-native";
 import { Image } from "react-native";
@@ -10,7 +11,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 
 import { addOrCreateTagsForVideo } from "@/actions/tag";
-import { VideoInfo } from "@/app/(modals)/edit/[id]";
+import { VideoInfo } from "@/app/(modals)/(video)/edit/[id]";
 import { videos } from "@/db/schema";
 import { RefreshCcwIcon } from "@/lib/icons";
 import { useDatabase } from "@/providers/database-provider";
@@ -67,6 +68,8 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       });
 
       toast.success(`${values.title} updated successfully.`);
+
+      router.push("/");
     } catch (error) {
       console.error(error);
       toast.error(`Error updating ${values.title}!`);
@@ -154,11 +157,11 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                 onPress={form.handleSubmit(onSubmit)}>
                 <View className="flex-row items-center gap-4">
                   <RefreshCcwIcon
-                    className="text-foreground"
+                    className="text-white"
                     size={28}
                     strokeWidth={1.25}
                   />
-                  <Text className="native:text-base text-foreground">Update</Text>
+                  <Text className="native:text-base text-white">Update</Text>
                 </View>
               </Button>
             </View>
