@@ -29,4 +29,4 @@
 1. Settings modal: create/update passcode.
 2. Videos/favorites screen: add filter and sort.
 3. Video item: add tags below description.
-4. Playlists view: ability to reorder the videos. also need to add an order field to the playlist so they can be orderedBy.
+4. Playlists view: ability to reorder the videos. also need to add an order field to the playlist so they can be orderedBy. [react-native-reorderable-list](https://github.com/omahili/react-native-reorderable-list)
