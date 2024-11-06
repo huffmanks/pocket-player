@@ -4,11 +4,6 @@
     "slug": "video-player-app",
     "version": "1.0.0",
     "scheme": "video-player-app",
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
-    },
     "plugins": [
       "expo-dev-client",
       "expo-document-picker",
@@ -29,22 +24,58 @@
       "tsconfigPaths": true
     },
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icons/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#09090b"
     },
     "assetBundlePatterns": ["**/*"],
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/icons/web_favicon.ico",
+      "icons": [
+        {
+          "src": "./assets/icons/web_icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "./assets/icons/web_icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        },
+        {
+          "src": "./assets/icons/web_icon-192-maskable.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        },
+        {
+          "src": "./assets/icons/web_icon-512-maskable.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "maskable"
+        },
+        {
+          "src": "./assets/icons/web_apple-touch-icon.png",
+          "sizes": "180x180",
+          "type": "image/png",
+          "purpose": "apple-touch-icon"
+        }
+      ]
+    },
     "ios": {
+      "icon": "./assets/icons/ios_app-icon-marketing.png",
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.videoplayerapp"
     },
     "android": {
+      "icon": "./assets/icons/android_adaptive-icon-foreground.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/icons/android_adaptive-icon-foreground.png",
+        "backgroundColor": "#09090b"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
