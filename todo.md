@@ -13,10 +13,10 @@
 7. Playlist view: titles go off screen. Need to make image a little less wide and make both row items flex-1.
 8. Playlists screen: needs create FAB icon.
 9. Add icons to buttons.
-  - Playlist view: watch
-  - Playlists screen: create playlist
-  - Create playlist - empty list component: upload videos
-  - Home screen - empty list component: upload videos
+   - Playlist view: watch
+   - Playlists screen: create playlist
+   - Create playlist: empty list component: upload videos
+   - Home screen: empty list component: upload videos
 10. Add toast to delete data button.
 
 ## Styles
