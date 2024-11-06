@@ -6,6 +6,7 @@ import { Platform } from "react-native";
 import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toaster } from "sonner-native";
 
 import "@/global.css";
@@ -68,12 +69,12 @@ export default function RootLayout() {
   }
 
   return (
-    <>
-      <DatabaseProvider>
-        <LockScreenProvider>
-          <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-            <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-            <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <DatabaseProvider>
+          <LockScreenProvider>
+            <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+              <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
               <Stack>
                 <Stack.Screen
                   name="(modals)"
@@ -90,11 +91,11 @@ export default function RootLayout() {
                 position="top-center"
                 offset={60}
               />
-            </GestureHandlerRootView>
-          </ThemeProvider>
-        </LockScreenProvider>
-      </DatabaseProvider>
-      <PortalHost />
-    </>
+            </ThemeProvider>
+          </LockScreenProvider>
+        </DatabaseProvider>
+        <PortalHost />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

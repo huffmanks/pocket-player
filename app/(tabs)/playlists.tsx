@@ -1,33 +1,44 @@
 import { Link } from "expo-router";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { toast } from "sonner-native";
 
-import { PlaylistMeta, playlists } from "@/db/schema";
-import { useDatabase } from "@/providers/database-provider";
+import { db } from "@/db/drizzle";
+import { playlists } from "@/db/schema";
 
+import PlaylistSortable, { PlaylistMeta } from "@/components/playlist-sortable";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 
 export default function PlaylistsScreen() {
-  const { db } = useDatabase();
-  const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
-    // @ts-expect-error
-    db?.select().from(playlists)
-  );
+  const [data, setData] = useState<PlaylistMeta[] | null>(null);
 
-  if (error) {
-    console.error("Error loading data.");
-    toast.error("Error loading data.");
-  }
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      const playlistData = await db.select().from(playlists);
+      setData(playlistData);
+    };
 
-  if (!data || data.length === 0) {
+    fetchPlaylists().catch((error) => {
+      console.error("Failed to any playlists: ", error);
+      toast.error("Failed to any playlists.");
+    });
+  }, []);
+
+  if (!data) {
     return (
-      <View className="mt-2 p-5">
+      <View>
         <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
         <Text className="mb-12">Your playlists will be displayed here.</Text>
+      </View>
+    );
+  }
+
+  return (
+    <>
+      <View className="mb-4 mt-2 p-5">
         <Link
           href="/(modals)/playlists/create"
           asChild>
@@ -36,36 +47,7 @@ export default function PlaylistsScreen() {
           </Button>
         </Link>
       </View>
-    );
-  }
-
-  return (
-    <View className="p-5">
-      {data &&
-        data.map((item) => (
-          <View
-            key={`playlists_${item.id}`}
-            className="mb-8 gap-4">
-            <H2 className="text-teal-500">{item.title}</H2>
-            <View className="flex-row gap-4">
-              <Link
-                href={`/(modals)/playlists/edit/${item.id}`}
-                className="mb-6 text-lg text-foreground underline">
-                Edit
-              </Link>
-              <Link
-                href={`/(modals)/playlists/view/${item.id}`}
-                className="mb-6 text-lg text-foreground underline">
-                View
-              </Link>
-              <Link
-                href={`/(modals)/playlists/watch/${item.id}`}
-                className="mb-6 text-lg text-foreground underline">
-                Watch
-              </Link>
-            </View>
-          </View>
-        ))}
-    </View>
+      <PlaylistSortable initData={data} />
+    </>
   );
 }
