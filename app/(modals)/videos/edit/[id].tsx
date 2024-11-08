@@ -30,7 +30,7 @@ export default function EditModal() {
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
 
       const videoTags = await getTagsForVideo(id);
-      const tags = videoTags ? videoTags.map((videoTag) => videoTag.tags.title).join(",") : "";
+      const tags = videoTags ? videoTags.map((videoTag) => videoTag.title).join(",") : "";
 
       setVideoInfo({
         videoId: video.id,

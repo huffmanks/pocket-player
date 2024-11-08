@@ -53,7 +53,12 @@ export async function addOrCreateTagsForVideo(
 
 export async function getTagsForVideo(videoId: string) {
   return await db
-    .select()
+    .select({
+      id: tags.id,
+      title: tags.title,
+      createdAt: tags.createdAt,
+      videoId: videoTags.videoId,
+    })
     .from(tags)
     .innerJoin(videoTags, eq(videoTags.tagId, tags.id))
     .where(eq(videoTags.videoId, videoId));

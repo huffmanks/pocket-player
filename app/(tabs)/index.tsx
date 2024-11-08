@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
@@ -14,6 +14,7 @@ import { CloudUploadIcon } from "@/lib/icons";
 import { useDatabase } from "@/providers/database-provider";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
@@ -39,6 +40,8 @@ export default function HomeScreen() {
 function ScreenContent() {
   const [refreshing, setRefreshing] = useState(false);
   const [keyIndex, setKeyIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState<VideoMeta[]>([]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -49,8 +52,19 @@ function ScreenContent() {
   }, []);
 
   const { db } = useDatabase();
-  // @ts-expect-error
-  const { data, error } = useLiveQuery(db?.select().from(videos));
+  const { data, error }: { data: VideoMeta[]; error: Error | undefined } = useLiveQuery(
+    // @ts-expect-error
+    db?.select().from(videos)
+  );
+
+  useEffect(() => {
+    if (data) {
+      const filtered = data.filter((item) =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredData(filtered);
+    }
+  }, [searchQuery, data]);
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
@@ -82,8 +96,15 @@ function ScreenContent() {
       <View
         style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full">
+        <Input
+          className="mb-8"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search videos"
+        />
         <FlashList
-          data={data}
+          data={filteredData}
+          // data={data}
           key={`videos_${keyIndex}`}
           keyExtractor={(item, index) => {
             return item.id + index;

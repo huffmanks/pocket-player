@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 
@@ -45,21 +45,33 @@ export const tags = sqliteTable("tags", {
 export const TagSchema = createSelectSchema(tags);
 export type TagMeta = z.infer<typeof TagSchema>;
 
-export const playlistVideos = sqliteTable("playlist_videos", {
-  playlistId: text("playlist_id")
-    .notNull()
-    .references(() => playlists.id, { onDelete: "cascade" }),
-  videoId: text("video_id")
-    .notNull()
-    .references(() => videos.id, { onDelete: "cascade" }),
-  order: integer("order").default(0).notNull(),
-});
+export const playlistVideos = sqliteTable(
+  "playlist_videos",
+  {
+    playlistId: text("playlist_id")
+      .notNull()
+      .references(() => playlists.id, { onDelete: "cascade" }),
+    videoId: text("video_id")
+      .notNull()
+      .references(() => videos.id, { onDelete: "cascade" }),
+    order: integer("order").default(1).notNull(),
+  },
+  (t) => ({
+    uniquePlaylistVideo: unique().on(t.playlistId, t.videoId),
+  })
+);
 
-export const videoTags = sqliteTable("video_tags", {
-  tagId: text("tag_id")
-    .notNull()
-    .references(() => tags.id, { onDelete: "cascade" }),
-  videoId: text("video_id")
-    .notNull()
-    .references(() => videos.id, { onDelete: "cascade" }),
-});
+export const videoTags = sqliteTable(
+  "video_tags",
+  {
+    tagId: text("tag_id")
+      .notNull()
+      .references(() => tags.id, { onDelete: "cascade" }),
+    videoId: text("video_id")
+      .notNull()
+      .references(() => videos.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    uniqueVideoTag: unique().on(t.tagId, t.videoId),
+  })
+);

@@ -3,7 +3,21 @@ import * as FileSystem from "expo-file-system";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db/drizzle";
-import { videos } from "@/db/schema";
+import { playlistVideos, videos } from "@/db/schema";
+
+export async function videoIsInPlaylist(videoId: string) {
+  try {
+    const [playlistVideo] = await db
+      .select()
+      .from(playlistVideos)
+      .where(eq(playlistVideos.videoId, videoId));
+
+    return { type: "success", value: playlistVideo ? true : false };
+  } catch (error) {
+    console.error("Error finding video in playlist: ", error);
+    return { type: "error", value: null };
+  }
+}
 
 export async function favoriteVideo(videoId: string) {
   try {

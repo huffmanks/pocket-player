@@ -49,10 +49,22 @@ export default function PlaylistsScreen() {
   const renderItem = useCallback(
     ({ item, index }: { item: PlaylistMeta; index: number }) => (
       <View className="mb-5 flex-row items-center justify-between gap-4 rounded-md bg-secondary p-4">
-        <View>
-          <Text className="text-lg font-medium text-foreground">{item.title}</Text>
-          <Text className="text-muted-foreground">{item.description}</Text>
-        </View>
+        <Link
+          className="flex-1"
+          href={`/(modals)/playlists/view/${item.id}`}>
+          <View className="flex-1">
+            <Text
+              className="text-lg font-medium text-foreground"
+              numberOfLines={1}>
+              {item.title}
+            </Text>
+            <Text
+              className="text-muted-foreground"
+              numberOfLines={1}>
+              {item.description}
+            </Text>
+          </View>
+        </Link>
         <PlaylistDropdown item={item} />
       </View>
     ),
