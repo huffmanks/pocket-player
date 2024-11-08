@@ -33,6 +33,7 @@ export const DARK_THEME: Theme = {
 
 export const VIDEOS_DIR = `${documentDirectory}videos/`;
 export const ESTIMATED_VIDEO_ITEM_HEIGHT = 157;
+export const ESTIMATED_PLAYLIST_HEIGHT = 40;
 
 export const DB_TABLES = ["videos"];
 

@@ -19,4 +19,4 @@ const run = async () => {
   const buffer = Buffer.from(data);
   fs.writeFileSync(path.resolve(".", "public/database.sqlite"), buffer);
 };
-run().catch(console.log);
+run().catch(console.info);

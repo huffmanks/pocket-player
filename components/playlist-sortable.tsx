@@ -1,50 +1,72 @@
-import React, { useState } from "react";
-import { ListRenderItemInfo, Pressable, Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ListRenderItemInfo } from "react-native";
 
+import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import ReorderableList, {
-  ReorderableListItem,
   ReorderableListReorderEvent,
   reorderItems,
-  useReorderableDrag,
 } from "react-native-reorderable-list";
 
-export type PlaylistMeta = {
+import { playlistVideos, videos } from "@/db/schema";
+import { useDatabase } from "@/providers/database-provider";
+
+import PlaylistItem from "@/components/playlist-item";
+
+export type VideoMetaWithOrder = {
+  key: string;
+  order: number;
   id: string;
-  key?: string;
   title: string;
   description: string;
+  videoUri: string;
+  thumbUri: string;
+  isFavorite: boolean;
   createdAt: string;
   updatedAt: string;
 };
 
-const Card: React.FC<PlaylistMeta> = React.memo(({ id, title, description }) => {
-  const drag = useReorderableDrag();
+export default function PlaylistSortable({ playlistId }: { playlistId: string }) {
+  const [data, setData] = useState<VideoMetaWithOrder[] | null>(null);
 
-  return (
-    <ReorderableListItem>
-      <Pressable
-        className="m-2 h-24 items-center justify-center rounded-md bg-secondary"
-        onLongPress={drag}>
-        <Text className="text-foreground">{title}</Text>
-        <Text className="text-foreground">{description}</Text>
-      </Pressable>
-    </ReorderableListItem>
+  const { db } = useDatabase();
+  const { data: liveData, error } = useLiveQuery(
+    // @ts-expect-error
+    db?.select({
+        order: playlistVideos.order,
+        createdAt: videos.createdAt,
+        description: videos.description,
+        id: videos.id,
+        isFavorite: videos.isFavorite,
+        thumbUri: videos.thumbUri,
+        title: videos.title,
+        updatedAt: videos.updatedAt,
+        videoUri: videos.videoUri,
+      })
+      .from(videos)
+      .innerJoin(playlistVideos, eq(playlistVideos.videoId, videos.id))
+      .where(eq(playlistVideos.playlistId, playlistId))
+      .orderBy(playlistVideos.order)
   );
-});
 
-export default function PlaylistSortable({ initData }: { initData: PlaylistMeta[] }) {
-  const [data, setData] = useState<PlaylistMeta[]>(initData);
+  useEffect(() => {
+    if (liveData) {
+      setData(liveData);
+    }
+  }, [liveData]);
 
-  const renderItem = ({ item }: ListRenderItemInfo<PlaylistMeta>) => <Card {...item} />;
+  const renderItem = ({ item }: ListRenderItemInfo<VideoMetaWithOrder>) => (
+    <PlaylistItem item={item} />
+  );
 
   const handleReorder = ({ from, to }: ReorderableListReorderEvent) => {
-    const newData = reorderItems(data, from, to);
+    const newData = reorderItems(data!, from, to);
     setData(newData);
   };
 
   return (
     <ReorderableList
-      data={data}
+      data={data!}
       onReorder={handleReorder}
       renderItem={renderItem}
       keyExtractor={(item) => {

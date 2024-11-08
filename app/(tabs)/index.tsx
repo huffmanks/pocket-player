@@ -10,6 +10,7 @@ import { toast } from "sonner-native";
 import { useMigrationHelper } from "@/db/drizzle";
 import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
+import { CloudUploadIcon } from "@/lib/icons";
 import { useDatabase } from "@/providers/database-provider";
 
 import { Button } from "@/components/ui/button";
@@ -107,8 +108,15 @@ function ListEmptyComponent() {
       <Link
         href="/(tabs)/upload"
         asChild>
-        <Button size="lg">
-          <Text>Upload videos</Text>
+        <Button
+          size="lg"
+          className="flex flex-row items-center justify-center gap-4">
+          <CloudUploadIcon
+            className="text-background"
+            size={20}
+            strokeWidth={1.25}
+          />
+          <Text>Upload</Text>
         </Button>
       </Link>
     </View>

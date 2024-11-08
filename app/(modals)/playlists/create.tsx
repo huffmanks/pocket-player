@@ -6,6 +6,7 @@ import { toast } from "sonner-native";
 
 import { db } from "@/db/drizzle";
 import { videos } from "@/db/schema";
+import { CloudUploadIcon } from "@/lib/icons";
 
 import CreatePlaylistForm from "@/components/forms/create-playlist";
 import { Button } from "@/components/ui/button";
@@ -48,8 +49,15 @@ export default function CreatePlaylistScreen() {
         <Link
           href="/(tabs)/upload"
           asChild>
-          <Button size="lg">
-            <Text>Upload videos</Text>
+          <Button
+            size="lg"
+            className="flex flex-row items-center justify-center gap-4">
+            <CloudUploadIcon
+              className="text-background"
+              size={20}
+              strokeWidth={1.25}
+            />
+            <Text>Upload</Text>
           </Button>
         </Link>
       </View>

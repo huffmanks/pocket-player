@@ -1,53 +1,124 @@
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
+import { FlashList } from "@shopify/flash-list";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { db } from "@/db/drizzle";
-import { playlists } from "@/db/schema";
+import { PlaylistMeta, playlists } from "@/db/schema";
+import { ESTIMATED_PLAYLIST_HEIGHT } from "@/lib/constants";
+import { ListMusicIcon } from "@/lib/icons";
+import { useDatabase } from "@/providers/database-provider";
 
-import PlaylistSortable, { PlaylistMeta } from "@/components/playlist-sortable";
+import PlaylistDropdown from "@/components/playlist-dropdown";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 
 export default function PlaylistsScreen() {
-  const [data, setData] = useState<PlaylistMeta[] | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [keyIndex, setKeyIndex] = useState(0);
 
-  useEffect(() => {
-    const fetchPlaylists = async () => {
-      const playlistData = await db.select().from(playlists);
-      setData(playlistData);
-    };
-
-    fetchPlaylists().catch((error) => {
-      console.error("Failed to any playlists: ", error);
-      toast.error("Failed to any playlists.");
-    });
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setKeyIndex((prev) => prev + 1);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
   }, []);
 
-  if (!data) {
-    return (
-      <View>
-        <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
-        <Text className="mb-12">Your playlists will be displayed here.</Text>
+  const { db } = useDatabase();
+  const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
+    // @ts-expect-error
+    db?.select().from(playlists)
+  );
+
+  const flashListRef = useRef<FlashList<PlaylistMeta> | null>(null);
+  const insets = useSafeAreaInsets();
+
+  const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const contentOffsetY = event.nativeEvent.contentOffset.y;
+    const snapToIndex = Math.round(contentOffsetY / ESTIMATED_PLAYLIST_HEIGHT);
+    const newY = snapToIndex * ESTIMATED_PLAYLIST_HEIGHT;
+
+    flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
+  };
+
+  const renderItem = useCallback(
+    ({ item, index }: { item: PlaylistMeta; index: number }) => (
+      <View className="mb-5 flex-row items-center justify-between gap-4 rounded-md bg-secondary p-4">
+        <View>
+          <Text className="text-lg font-medium text-foreground">{item.title}</Text>
+          <Text className="text-muted-foreground">{item.description}</Text>
+        </View>
+        <PlaylistDropdown item={item} />
       </View>
-    );
+    ),
+    []
+  );
+
+  if (error) {
+    console.error("Error loading data.");
+    toast.error("Error loading data.");
   }
 
   return (
     <>
-      <View className="mb-4 mt-2 p-5">
-        <Link
-          href="/(modals)/playlists/create"
-          asChild>
-          <Button size="lg">
-            <Text>Create a playlist</Text>
-          </Button>
-        </Link>
+      <View
+        style={{ paddingBottom: insets.bottom + 84 }}
+        className="relative min-h-full px-5 pt-6">
+        <FlashList
+          data={data}
+          key={`playlists_${keyIndex}`}
+          keyExtractor={(item, index) => {
+            return item.id + index;
+          }}
+          renderItem={renderItem}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          estimatedItemSize={ESTIMATED_PLAYLIST_HEIGHT}
+          onScrollEndDrag={handleScrollEndDrag}
+          ListHeaderComponent={<ListHeaderComponent isEmpty={!data || !data.length} />}
+          ListEmptyComponent={<ListEmptyComponent />}
+        />
       </View>
-      <PlaylistSortable initData={data} />
+    </>
+  );
+}
+
+function ListHeaderComponent({ isEmpty = false }: { isEmpty?: boolean }) {
+  if (isEmpty) return null;
+
+  return (
+    <View className="mb-10">
+      <Link
+        href="/(modals)/playlists/create"
+        asChild>
+        <Button
+          size="lg"
+          className="flex flex-row items-center justify-center gap-4">
+          <ListMusicIcon
+            className="text-background"
+            size={20}
+            strokeWidth={1.25}
+          />
+          <Text>Create playlist</Text>
+        </Button>
+      </Link>
+    </View>
+  );
+}
+
+function ListEmptyComponent() {
+  return (
+    <>
+      <View>
+        <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
+        <Text className="mb-12">Your platylists will be displayed here.</Text>
+      </View>
+      <ListHeaderComponent />
     </>
   );
 }

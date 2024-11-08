@@ -52,6 +52,7 @@ export const playlistVideos = sqliteTable("playlist_videos", {
   videoId: text("video_id")
     .notNull()
     .references(() => videos.id, { onDelete: "cascade" }),
+  order: integer("order").default(0).notNull(),
 });
 
 export const videoTags = sqliteTable("video_tags", {

@@ -80,10 +80,11 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
         const videoInserts = values.videos
           .filter((video) => video.isSelected)
-          .map((video) =>
+          .map((video, index) =>
             tx.insert(playlistVideos).values({
               playlistId: createdPlaylist.id,
               videoId: video.videoId,
+              order: index,
             })
           );
 

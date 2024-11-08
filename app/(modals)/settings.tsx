@@ -2,6 +2,8 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Platform, View } from "react-native";
 
+import { toast } from "sonner-native";
+
 import { initialize, useMigrationHelper } from "@/db/drizzle";
 import { clearDirectory, resetTables } from "@/db/drop";
 import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
@@ -35,15 +37,22 @@ export default function SettingsModal() {
   const { success, error } = useMigrationHelper();
 
   async function dropDatabase() {
-    await clearDirectory(VIDEOS_DIR);
-    await resetTables();
+    try {
+      await clearDirectory(VIDEOS_DIR);
+      await resetTables();
 
-    initialize();
+      if (error) {
+        console.error("Migration failed:", error);
+        toast.error("Migration failed.");
+        return;
+      }
 
-    if (error) {
-      console.error("Migration failed: ", error);
-    } else {
-      console.log("Database migration succeeded.");
+      await initialize();
+      console.info("Database initialized.");
+      toast.success("Database initialized.");
+    } catch (err) {
+      console.error("Database operation failed:", err);
+      toast.error("Database operation failed.");
     }
   }
 
