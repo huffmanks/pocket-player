@@ -15,6 +15,7 @@
 
 1. Tabs bar: add padding top.
 2. Standardize safe area view and padding for all screens.
+3. /(modals)/playlists/create: No videos component align with other screens.
 
 ## New features
 

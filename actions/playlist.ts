@@ -3,14 +3,6 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db/drizzle";
 import { playlistVideos, playlists } from "@/db/schema";
 
-export async function getPlaylists() {
-  try {
-    return await db.select().from(playlists);
-  } catch (error) {
-    console.error("Error fetching playlists: ", error);
-  }
-}
-
 export async function addToPlaylist({
   playlistId,
   videoId,

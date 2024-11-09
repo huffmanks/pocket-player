@@ -67,7 +67,7 @@ export default function PlaylistDropdown({ item }: { item: PlaylistMeta }) {
       <DropdownMenuContent
         insets={contentInsets}
         className="native:w-72 w-64">
-        <DropdownMenuLabel>Playlist | {item.title}</DropdownMenuLabel>
+        <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem

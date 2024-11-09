@@ -2,11 +2,10 @@ import { Image, Pressable, Text } from "react-native";
 
 import { ReorderableListItem, useReorderableDrag } from "react-native-reorderable-list";
 
-import { VideoMeta } from "@/db/schema";
-
+import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 import VideoDropdown from "@/components/video-dropdown";
 
-export default function PlaylistItem({ item }: { item: VideoMeta }) {
+export default function PlaylistItem({ item }: { item: VideoMetaForPlaylist }) {
   const drag = useReorderableDrag();
 
   return (

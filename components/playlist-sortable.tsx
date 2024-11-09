@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ListRenderItemInfo } from "react-native";
 
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import ReorderableList, {
   ReorderableListReorderEvent,
@@ -13,35 +13,38 @@ import { useDatabase } from "@/providers/database-provider";
 
 import PlaylistItem from "@/components/playlist-item";
 
-export type VideoMetaWithOrder = {
+export type VideoMetaForPlaylist = {
   key: string;
-  order: number;
   id: string;
   title: string;
   description: string;
+  isFavorite: boolean;
   videoUri: string;
   thumbUri: string;
-  isFavorite: boolean;
   createdAt: string;
   updatedAt: string;
+  order: number;
+  hasPlaylist: number;
 };
 
 export default function PlaylistSortable({ playlistId }: { playlistId: string }) {
-  const [data, setData] = useState<VideoMetaWithOrder[] | null>(null);
+  const [data, setData] = useState<VideoMetaForPlaylist[] | null>(null);
 
   const { db } = useDatabase();
   const { data: liveData, error } = useLiveQuery(
     // @ts-expect-error
     db?.select({
-        order: playlistVideos.order,
-        createdAt: videos.createdAt,
-        description: videos.description,
+        key: videos.id,
         id: videos.id,
+        title: videos.title,
+        description: videos.description,
         isFavorite: videos.isFavorite,
         thumbUri: videos.thumbUri,
-        title: videos.title,
-        updatedAt: videos.updatedAt,
         videoUri: videos.videoUri,
+        createdAt: videos.createdAt,
+        updatedAt: videos.updatedAt,
+        order: playlistVideos.order,
+        hasPlaylist: sql`1`,
       })
       .from(videos)
       .innerJoin(playlistVideos, eq(playlistVideos.videoId, videos.id))
@@ -55,7 +58,7 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
     }
   }, [liveData]);
 
-  const renderItem = ({ item }: ListRenderItemInfo<VideoMetaWithOrder>) => (
+  const renderItem = ({ item }: ListRenderItemInfo<VideoMetaForPlaylist>) => (
     <PlaylistItem item={item} />
   );
 
@@ -69,10 +72,7 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
       data={data!}
       onReorder={handleReorder}
       renderItem={renderItem}
-      keyExtractor={(item) => {
-        item.key = item.id;
-        return item.key;
-      }}
+      keyExtractor={(item) => item.key}
     />
   );
 }

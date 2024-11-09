@@ -2,48 +2,28 @@ import { router } from "expo-router";
 import { memo, useEffect, useState } from "react";
 import { Image, Pressable, View } from "react-native";
 
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { toast } from "sonner-native";
 
-import { getPlaylists } from "@/actions/playlist";
-import { getTagsForVideo } from "@/actions/tag";
-import { PlaylistMeta, VideoMeta } from "@/db/schema";
-import { getRandomTwoItems } from "@/lib/utils";
+import { VideoMetaWithExtras } from "@/app/(tabs)";
+import { PlaylistMeta, TagMeta, playlists } from "@/db/schema";
+import { useDatabase } from "@/providers/database-provider";
 
 import { Badge } from "@/components/ui/badge";
 import { Text } from "@/components/ui/text";
 import VideoDropdown from "@/components/video-dropdown";
 
-type TagMetaWithVideoId = {
-  id: string;
-  title: string;
-  createdAt: string;
-  videoId: string;
-};
-
-function VideoItem({ item }: { item: VideoMeta }) {
-  const [tags, setTags] = useState<TagMetaWithVideoId[] | null>(null);
-  const [playlists, setPlaylists] = useState<PlaylistMeta[] | null>(null);
+function VideoItem({ item }: { item: VideoMetaWithExtras }) {
+  const [tags, setTags] = useState<TagMeta[] | []>([]);
+  const { db } = useDatabase();
+  const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
+    // @ts-expect-error
+    db?.select().from(playlists)
+  );
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const tagsForVideo = await getTagsForVideo(item.id);
-        const twoTags = getRandomTwoItems(tagsForVideo);
-        setTags(twoTags);
-
-        const playlistData = await getPlaylists();
-        if (!playlistData) return;
-
-        setPlaylists(playlistData);
-      } catch (error) {
-        console.error("Failed to find tags: ", error);
-        toast.error("Failed to find tags.");
-      }
-    };
-
-    fetchItems();
-  }, [item.id]);
+    setTags(JSON.parse(item.tags as unknown as string));
+  }, [item.tags]);
 
   return (
     <Animated.View
@@ -72,6 +52,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
             {item.description ? item.description : "No description"}
           </Text>
           {tags &&
+            tags.length > 0 &&
             tags.map((tag) => (
               <Badge key={tag.id}>
                 <Text>{tag.title}</Text>
@@ -80,7 +61,7 @@ function VideoItem({ item }: { item: VideoMeta }) {
         </View>
         <VideoDropdown
           item={item}
-          playlists={playlists}
+          playlists={data}
         />
       </View>
     </Animated.View>

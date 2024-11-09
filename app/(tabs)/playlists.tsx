@@ -79,8 +79,8 @@ export default function PlaylistsScreen() {
   return (
     <>
       <View
-        style={{ paddingBottom: insets.bottom + 84 }}
-        className="relative min-h-full px-5 pt-6">
+        style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
+        className="relative min-h-full px-5">
         <FlashList
           data={data}
           key={`playlists_${keyIndex}`}
@@ -126,9 +126,9 @@ function ListHeaderComponent({ isEmpty = false }: { isEmpty?: boolean }) {
 function ListEmptyComponent() {
   return (
     <>
-      <View>
+      <View className="pt-5">
         <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
-        <Text className="mb-12">Your platylists will be displayed here.</Text>
+        <Text className="mb-12">Your playlists will be displayed here.</Text>
       </View>
       <ListHeaderComponent />
     </>

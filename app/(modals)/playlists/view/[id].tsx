@@ -37,7 +37,7 @@ export default function ViewPlaylistScreen() {
     <View className="p-5">
       <View className="mb-10">
         <Link
-          href="/(modals)/playlists/create"
+          href={`/(modals)/playlists/watch/${id}`}
           asChild>
           <Button
             size="lg"
