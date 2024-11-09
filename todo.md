@@ -10,6 +10,12 @@
 4. Settings enable passcode: require creating passcode or disable it until created.
 5. Move useMigration to DatabaseProvider. Not sure if it will work.
 6. When playlist videos reorderd update database.
+7. Alert dialogs: update message.
+8. Playlist video item: should not be able to delete video but just remove from playlist.
+9. Remove tags everywhere.
+10. video item dropdown: is not updating playlist sub menu.
+11. no data components are not working properly.
+12. dropdowns: delete button doesn't look correct.
 
 ## Styles
 
