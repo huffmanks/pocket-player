@@ -8,8 +8,7 @@ import { toast } from "sonner-native";
 
 import { addToPlaylist, removeFromPlaylist } from "@/actions/playlist";
 import { deleteVideo, favoriteVideo } from "@/actions/video";
-import { VideoMetaWithExtras } from "@/app/(tabs)";
-import { PlaylistMeta } from "@/db/schema";
+import { PlaylistMeta, VideoMeta } from "@/db/schema";
 import {
   EllipsisVerticalIcon,
   ListMusicIcon,
@@ -20,7 +19,6 @@ import {
 } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
-import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,21 +45,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface VideoDropdownProps {
-  item: VideoMetaWithExtras | VideoMetaForPlaylist;
-  playlists?: PlaylistMeta[];
+  item: VideoMeta;
+  isInPlaylist: boolean;
+  playlists: PlaylistMeta[];
+  onRefresh: () => void;
 }
 
-export default function VideoDropdown({ item, playlists }: VideoDropdownProps) {
-  const [playlistsExist, setPlaylistsExist] = useState(playlists && playlists.length > 0);
-  const [isInPlaylist, setIsInPlaylist] = useState(item.hasPlaylist === 1 ? true : false);
+export default function VideoDropdown({
+  item,
+  isInPlaylist,
+  playlists,
+  onRefresh,
+}: VideoDropdownProps) {
+  const [playlistsExist, setPlaylistsExist] = useState(!!playlists && playlists.length > 0);
 
   useEffect(() => {
     setPlaylistsExist(playlists && playlists.length > 0);
   }, [playlists]);
-
-  useEffect(() => {
-    setIsInPlaylist(item.hasPlaylist === 1 ? true : false);
-  }, [item.hasPlaylist]);
 
   const insets = useSafeAreaInsets();
 
@@ -90,8 +90,8 @@ export default function VideoDropdown({ item, playlists }: VideoDropdownProps) {
     const { message, type } = await addToPlaylist({ playlistId, videoId: item.id });
 
     if (type === "success") {
-      setIsInPlaylist(true);
       toast.success(message);
+      onRefresh();
     } else {
       toast.error(message);
     }
@@ -101,8 +101,8 @@ export default function VideoDropdown({ item, playlists }: VideoDropdownProps) {
     const { message, type } = await removeFromPlaylist({ videoId: item.id });
 
     if (type === "success") {
-      setIsInPlaylist(false);
       toast.error(message);
+      onRefresh();
     } else {
       toast.error(message);
     }
@@ -170,65 +170,61 @@ export default function VideoDropdown({ item, playlists }: VideoDropdownProps) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
-        {isInPlaylist ||
-          (playlistsExist && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                {isInPlaylist && (
-                  <DropdownMenuItem
-                    className="gap-4"
-                    onPress={handleRemoveFromPlaylist}>
-                    <ListMusicIcon
-                      className="text-foreground"
-                      size={20}
-                      strokeWidth={1.25}
-                    />
-                    <Text
-                      className="text-foreground"
-                      numberOfLines={1}>
-                      Remove from playlist
-                    </Text>
-                  </DropdownMenuItem>
-                )}
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          {isInPlaylist ? (
+            <DropdownMenuItem
+              className="gap-4"
+              onPress={handleRemoveFromPlaylist}>
+              <ListMusicIcon
+                className="text-foreground"
+                size={20}
+                strokeWidth={1.25}
+              />
+              <Text
+                className="text-foreground"
+                numberOfLines={1}>
+                Remove from playlist
+              </Text>
+            </DropdownMenuItem>
+          ) : (
+            playlistsExist && (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Text className="text-foreground">Add to playlist</Text>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <Animated.View entering={FadeIn.duration(200)}>
+                    {playlists?.map((playlist) => (
+                      <DropdownMenuItem
+                        key={`add-to-playlist_${playlist.id}`}
+                        className="gap-4"
+                        onPress={() => handleAddToPlaylist(playlist.id)}>
+                        <ListMusicIcon
+                          className="text-foreground"
+                          size={20}
+                          strokeWidth={1.25}
+                        />
+                        <Text
+                          className="text-foreground"
+                          numberOfLines={1}>
+                          {playlist.title}
+                        </Text>
+                      </DropdownMenuItem>
+                    ))}
+                  </Animated.View>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            )
+          )}
+        </DropdownMenuGroup>
 
-                {playlistsExist && !isInPlaylist && (
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <Text className="text-foreground">Add to playlist</Text>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <Animated.View entering={FadeIn.duration(200)}>
-                        {playlists &&
-                          playlists.map((playlist) => (
-                            <DropdownMenuItem
-                              key={`add-to-playlist_${playlist.id}`}
-                              className="gap-4"
-                              onPress={() => handleAddToPlaylist(playlist.id)}>
-                              <ListMusicIcon
-                                className="text-foreground"
-                                size={20}
-                                strokeWidth={1.25}
-                              />
-                              <Text
-                                className="text-foreground"
-                                numberOfLines={1}>
-                                {playlist.title}
-                              </Text>
-                            </DropdownMenuItem>
-                          ))}
-                      </Animated.View>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-                )}
-              </DropdownMenuGroup>
-            </>
-          ))}
         <DropdownMenuSeparator />
         <AlertDialog>
           <DropdownMenuItem>
             <AlertDialogTrigger asChild>
               <Button
+                style={{ margin: -8 }}
                 className="w-full flex-1 flex-row justify-start gap-4 rounded-sm p-2"
                 size="unset"
                 variant="ghost">

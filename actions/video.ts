@@ -1,12 +1,9 @@
 import * as FileSystem from "expo-file-system";
 
-import { eq, sql } from "drizzle-orm";
-import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import { SQLJsDatabase } from "drizzle-orm/sql-js";
+import { eq } from "drizzle-orm";
 
 import { db } from "@/db/drizzle";
-import { playlistVideos, tags, videoTags, videos } from "@/db/schema";
-import { AnySQLiteSelect } from "drizzle-orm/sqlite-core";
+import { videos } from "@/db/schema";
 
 export async function favoriteVideo(videoId: string) {
   try {
@@ -55,81 +52,4 @@ export async function deleteVideo(videoId: string) {
     console.error("Error deleting video: ", error);
     return { message: "Error deleting video.", type: "error" };
   }
-}
-
-export function getHomeScreenQuery(
-  database: ExpoSQLiteDatabase<Record<string, never>> | SQLJsDatabase | null
-) {
-  // @ts-expect-error
-  return database?.select({
-      id: videos.id,
-      title: videos.title,
-      description: videos.description,
-      isFavorite: videos.isFavorite,
-      thumbUri: videos.thumbUri,
-      videoUri: videos.videoUri,
-      createdAt: videos.createdAt,
-      updatedAt: videos.updatedAt,
-      hasPlaylist: sql`EXISTS (
-  SELECT 1 FROM ${playlistVideos}
-  WHERE ${playlistVideos.videoId} = ${videos.id}
-)`,
-      tags: sql<string>`COALESCE(
-  (
-    SELECT CASE
-      WHEN COUNT(*) = 0 THEN '[]'
-      ELSE json_group_array(
-        json_object(
-          'id', ${tags.id},
-          'title', ${tags.title}
-        )
-      )
-    END
-    FROM ${videoTags}
-    JOIN ${tags} ON ${tags.id} = ${videoTags.tagId}
-    WHERE ${videoTags.videoId} = ${videos.id}
-  ),
-  '[]'
-)`,
-    })
-    .from(videos) as AnySQLiteSelect;
-}
-
-export function getFavoritesScreenQuery(
-  database: ExpoSQLiteDatabase<Record<string, never>> | SQLJsDatabase | null
-) {
-  // @ts-expect-error
-  return database?.select({
-      id: videos.id,
-      title: videos.title,
-      description: videos.description,
-      isFavorite: videos.isFavorite,
-      thumbUri: videos.thumbUri,
-      videoUri: videos.videoUri,
-      createdAt: videos.createdAt,
-      updatedAt: videos.updatedAt,
-      hasPlaylist: sql`EXISTS (
-  SELECT 1 FROM ${playlistVideos}
-  WHERE ${playlistVideos.videoId} = ${videos.id}
-)`,
-      tags: sql<string>`COALESCE(
-  (
-    SELECT CASE
-      WHEN COUNT(*) = 0 THEN '[]'
-      ELSE json_group_array(
-        json_object(
-          'id', ${tags.id},
-          'title', ${tags.title}
-        )
-      )
-    END
-    FROM ${videoTags}
-    JOIN ${tags} ON ${tags.id} = ${videoTags.tagId}
-    WHERE ${videoTags.videoId} = ${videos.id}
-  ),
-  '[]'
-)`,
-    })
-    .from(videos)
-    .where(eq(videos.isFavorite, true)) as AnySQLiteSelect;
 }

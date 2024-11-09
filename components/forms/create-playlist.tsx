@@ -113,7 +113,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
   return (
     <View className="relative h-full">
       <ScrollView
-        contentContainerClassName="mx-auto w-full max-w-lg p-6"
+        contentContainerClassName="mx-auto w-full max-w-lg pt-2 px-1 pb-5"
         showsVerticalScrollIndicator={true}
         className="bg-background"
         automaticallyAdjustContentInsets={false}

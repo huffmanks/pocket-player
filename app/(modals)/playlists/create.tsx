@@ -36,16 +36,16 @@ export default function CreatePlaylistScreen() {
     };
 
     fetchVideos().catch((error) => {
-      console.error("Failed to find video: ", error);
-      toast.error("Failed to find video.");
+      console.error("Failed to find videos: ", error);
+      toast.error("Failed to find videos.");
     });
   }, []);
 
   if (!videoData || !videoData.length)
     return (
-      <View className="mt-2 p-5">
+      <View className="px-5 pt-4">
         <H2 className="mb-4 text-teal-500">No videos yet!</H2>
-        <Text className="mb-12">Your videos will be displayed here.</Text>
+        <Text className="mb-12">Upload some videos to create a playlist.</Text>
         <Link
           href="/(tabs)/upload"
           asChild>
@@ -64,7 +64,7 @@ export default function CreatePlaylistScreen() {
     );
 
   return (
-    <View>
+    <View className="px-5 pt-4">
       <CreatePlaylistForm videoData={videoData} />
     </View>
   );

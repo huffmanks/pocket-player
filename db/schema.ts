@@ -34,17 +34,6 @@ export const playlists = sqliteTable("playlists", {
 export const PlaylistSchema = createSelectSchema(playlists);
 export type PlaylistMeta = z.infer<typeof PlaylistSchema>;
 
-export const tags = sqliteTable("tags", {
-  id: text("id")
-    .$defaultFn(() => createId())
-    .primaryKey(),
-  title: text("title").unique().notNull(),
-  createdAt: text("created_at").default(new Date().toISOString()).notNull(),
-});
-
-export const TagSchema = createSelectSchema(tags);
-export type TagMeta = z.infer<typeof TagSchema>;
-
 export const playlistVideos = sqliteTable(
   "playlist_videos",
   {
@@ -61,17 +50,5 @@ export const playlistVideos = sqliteTable(
   })
 );
 
-export const videoTags = sqliteTable(
-  "video_tags",
-  {
-    tagId: text("tag_id")
-      .notNull()
-      .references(() => tags.id, { onDelete: "cascade" }),
-    videoId: text("video_id")
-      .notNull()
-      .references(() => videos.id, { onDelete: "cascade" }),
-  },
-  (t) => ({
-    uniqueVideoTag: unique().on(t.tagId, t.videoId),
-  })
-);
+export const PlaylistVideosSchema = createSelectSchema(playlistVideos);
+export type PlaylistVideosMeta = z.infer<typeof PlaylistVideosSchema>;

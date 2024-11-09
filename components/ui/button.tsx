@@ -5,7 +5,7 @@ import { type VariantProps, cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-import { TextClassContext } from "./text";
+import { TextClassContext } from "@/components/ui/text";
 
 const buttonVariants = cva(
   "group flex items-center justify-center rounded-md web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",

@@ -5,7 +5,6 @@ import { View } from "react-native";
 import { eq } from "drizzle-orm";
 import { toast } from "sonner-native";
 
-import { getTagsForVideo } from "@/actions/tag";
 import { db } from "@/db/drizzle";
 import { videos } from "@/db/schema";
 
@@ -17,7 +16,6 @@ export interface VideoInfo {
   description: string;
   thumbUri: string;
   isFavorite: boolean;
-  tags: string;
 }
 
 export default function EditModal() {
@@ -29,16 +27,12 @@ export default function EditModal() {
     const fetchVideo = async () => {
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
 
-      const videoTags = await getTagsForVideo(id);
-      const tags = videoTags ? videoTags.map((videoTag) => videoTag.title).join(",") : "";
-
       setVideoInfo({
         videoId: video.id,
         title: video.title,
         description: video.description,
         thumbUri: video.thumbUri,
         isFavorite: video.isFavorite,
-        tags,
       });
     };
 

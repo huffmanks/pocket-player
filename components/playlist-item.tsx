@@ -3,9 +3,14 @@ import { Image, Pressable, Text } from "react-native";
 import { ReorderableListItem, useReorderableDrag } from "react-native-reorderable-list";
 
 import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
-import VideoDropdown from "@/components/video-dropdown";
+import PlaylistVideoDropdown from "@/components/playlist-video-dropdown";
 
-export default function PlaylistItem({ item }: { item: VideoMetaForPlaylist }) {
+interface PlaylistItemProps {
+  item: VideoMetaForPlaylist;
+  onRefresh: () => void;
+}
+
+export default function PlaylistItem({ item, onRefresh }: PlaylistItemProps) {
   const drag = useReorderableDrag();
 
   return (
@@ -25,7 +30,10 @@ export default function PlaylistItem({ item }: { item: VideoMetaForPlaylist }) {
           {item.title}
         </Text>
       </Pressable>
-      <VideoDropdown item={item} />
+      <PlaylistVideoDropdown
+        item={item}
+        onRefresh={onRefresh}
+      />
     </ReorderableListItem>
   );
 }

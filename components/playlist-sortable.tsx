@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { ListRenderItemInfo } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import {
+  FlatList,
+  ListRenderItemInfo,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from "react-native";
 
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import ReorderableList, {
   ReorderableListReorderEvent,
   reorderItems,
 } from "react-native-reorderable-list";
 
+import { updatePlaylistOrder } from "@/actions/playlist";
 import { playlistVideos, videos } from "@/db/schema";
+import { ESTIMATED_PLAYLIST_ITEM_HEIGHT } from "@/lib/constants";
 import { useDatabase } from "@/providers/database-provider";
 
 import PlaylistItem from "@/components/playlist-item";
@@ -18,20 +25,27 @@ export type VideoMetaForPlaylist = {
   id: string;
   title: string;
   description: string;
-  isFavorite: boolean;
   videoUri: string;
   thumbUri: string;
+  isFavorite: boolean;
   createdAt: string;
   updatedAt: string;
-  order: number;
-  hasPlaylist: number;
 };
 
 export default function PlaylistSortable({ playlistId }: { playlistId: string }) {
-  const [data, setData] = useState<VideoMetaForPlaylist[] | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [keyIndex, setKeyIndex] = useState(0);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setKeyIndex((prev) => prev + 1);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 200);
+  }, []);
 
   const { db } = useDatabase();
-  const { data: liveData, error } = useLiveQuery(
+  const { data }: { data: VideoMetaForPlaylist[] } = useLiveQuery(
     // @ts-expect-error
     db?.select({
         key: videos.id,
@@ -43,8 +57,6 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
         videoUri: videos.videoUri,
         createdAt: videos.createdAt,
         updatedAt: videos.updatedAt,
-        order: playlistVideos.order,
-        hasPlaylist: sql`1`,
       })
       .from(videos)
       .innerJoin(playlistVideos, eq(playlistVideos.videoId, videos.id))
@@ -52,27 +64,39 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
       .orderBy(playlistVideos.order)
   );
 
-  useEffect(() => {
-    if (liveData) {
-      setData(liveData);
-    }
-  }, [liveData]);
+  const reorderableListRef = useRef<FlatList<VideoMetaForPlaylist> | null>(null);
+
+  const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const contentOffsetY = event.nativeEvent.contentOffset.y;
+    const snapToIndex = Math.round(contentOffsetY / ESTIMATED_PLAYLIST_ITEM_HEIGHT);
+    const newY = snapToIndex * ESTIMATED_PLAYLIST_ITEM_HEIGHT;
+
+    reorderableListRef.current?.scrollToOffset({ offset: newY, animated: true });
+  };
 
   const renderItem = ({ item }: ListRenderItemInfo<VideoMetaForPlaylist>) => (
-    <PlaylistItem item={item} />
+    <PlaylistItem
+      item={item}
+      onRefresh={onRefresh}
+    />
   );
 
-  const handleReorder = ({ from, to }: ReorderableListReorderEvent) => {
+  const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
     const newData = reorderItems(data!, from, to);
-    setData(newData);
+    const { message } = await updatePlaylistOrder({ playlistId, videoItems: newData });
+    console.log(message, newData);
   };
 
   return (
     <ReorderableList
+      key={`playlist-reorderable_${keyIndex}`}
       data={data!}
-      onReorder={handleReorder}
-      renderItem={renderItem}
       keyExtractor={(item) => item.key}
+      renderItem={renderItem}
+      onReorder={handleReorder}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      onScrollEndDrag={handleScrollEndDrag}
     />
   );
 }

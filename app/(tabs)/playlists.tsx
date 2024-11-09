@@ -92,7 +92,7 @@ export default function PlaylistsScreen() {
           onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_PLAYLIST_HEIGHT}
           onScrollEndDrag={handleScrollEndDrag}
-          ListHeaderComponent={<ListHeaderComponent isEmpty={!data || !data.length} />}
+          ListHeaderComponent={<ListHeaderComponent hasData={!!data && data.length > 0} />}
           ListEmptyComponent={<ListEmptyComponent />}
         />
       </View>
@@ -100,8 +100,8 @@ export default function PlaylistsScreen() {
   );
 }
 
-function ListHeaderComponent({ isEmpty = false }: { isEmpty?: boolean }) {
-  if (isEmpty) return null;
+function ListHeaderComponent({ hasData }: { hasData: boolean }) {
+  if (!hasData) return null;
 
   return (
     <View className="mb-10">
@@ -130,7 +130,7 @@ function ListEmptyComponent() {
         <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
         <Text className="mb-12">Your playlists will be displayed here.</Text>
       </View>
-      <ListHeaderComponent />
+      <ListHeaderComponent hasData />
     </>
   );
 }

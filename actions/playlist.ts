@@ -1,7 +1,9 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db/drizzle";
 import { playlistVideos, playlists } from "@/db/schema";
+
+import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 
 export async function addToPlaylist({
   playlistId,
@@ -34,6 +36,32 @@ export async function removeFromPlaylist({ videoId }: { videoId: string }) {
   } catch (error) {
     console.error("Error removing video from playlist: ", error);
     return { message: "Error removing video from playlist.", type: "error" };
+  }
+}
+
+export async function updatePlaylistOrder({
+  playlistId,
+  videoItems,
+}: {
+  playlistId: string;
+  videoItems: VideoMetaForPlaylist[];
+}) {
+  try {
+    await db.transaction((tx) =>
+      Promise.all(
+        videoItems.map((item, index) =>
+          tx
+            .update(playlistVideos)
+            .set({ order: index })
+            .where(
+              and(eq(playlistVideos.playlistId, playlistId), eq(playlistVideos.videoId, item.id))
+            )
+        )
+      )
+    );
+    return { message: "success" };
+  } catch (error) {
+    return { message: "error" };
   }
 }
 

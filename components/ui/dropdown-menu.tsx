@@ -6,7 +6,7 @@ import * as DropdownMenuPrimitive from "@rn-primitives/dropdown-menu";
 import { CheckIcon, ChevronDownIcon, ChevronRightIcon, ChevronUpIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
-import { TextClassContext } from "./text";
+import { TextClassContext } from "@/components/ui/text";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 

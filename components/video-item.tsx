@@ -1,29 +1,27 @@
 import { router } from "expo-router";
-import { memo, useEffect, useState } from "react";
 import { Image, Pressable, View } from "react-native";
 
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
-import { VideoMetaWithExtras } from "@/app/(tabs)";
-import { PlaylistMeta, TagMeta, playlists } from "@/db/schema";
+import { PlaylistMeta, VideoMeta, playlists } from "@/db/schema";
 import { useDatabase } from "@/providers/database-provider";
 
-import { Badge } from "@/components/ui/badge";
 import { Text } from "@/components/ui/text";
 import VideoDropdown from "@/components/video-dropdown";
 
-function VideoItem({ item }: { item: VideoMetaWithExtras }) {
-  const [tags, setTags] = useState<TagMeta[] | []>([]);
+interface VideoItemProps {
+  item: VideoMeta;
+  isInPlaylist: boolean;
+  onRefresh: () => void;
+}
+
+function VideoItem({ item, isInPlaylist, onRefresh }: VideoItemProps) {
   const { db } = useDatabase();
   const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
     // @ts-expect-error
     db?.select().from(playlists)
   );
-
-  useEffect(() => {
-    setTags(JSON.parse(item.tags as unknown as string));
-  }, [item.tags]);
 
   return (
     <Animated.View
@@ -51,21 +49,16 @@ function VideoItem({ item }: { item: VideoMetaWithExtras }) {
             numberOfLines={3}>
             {item.description ? item.description : "No description"}
           </Text>
-          {tags &&
-            tags.length > 0 &&
-            tags.map((tag) => (
-              <Badge key={tag.id}>
-                <Text>{tag.title}</Text>
-              </Badge>
-            ))}
         </View>
         <VideoDropdown
           item={item}
+          isInPlaylist={isInPlaylist}
           playlists={data}
+          onRefresh={onRefresh}
         />
       </View>
     </Animated.View>
   );
 }
 
-export default memo(VideoItem);
+export default VideoItem;

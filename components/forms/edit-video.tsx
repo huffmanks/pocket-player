@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import { useRef } from "react";
-import { ScrollView, View } from "react-native";
-import { Image } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
@@ -10,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { addOrCreateTagsForVideo } from "@/actions/tag";
 import { VideoInfo } from "@/app/(modals)/videos/edit/[id]";
 import { videos } from "@/db/schema";
 import { RefreshCcwIcon } from "@/lib/icons";
@@ -30,10 +28,6 @@ const formSchema = z.object({
     .or(z.literal(""))
     .transform((val) => val.trim()),
   isFavorite: z.boolean(),
-  tags: z
-    .string()
-    .or(z.literal(""))
-    .transform((val) => val.trim()),
 });
 
 interface EditFormProps {
@@ -52,7 +46,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       title: videoInfo.title ?? "",
       description: videoInfo.description ?? "",
       isFavorite: videoInfo.isFavorite ?? false,
-      tags: videoInfo.tags ?? "",
     },
   });
 
@@ -72,10 +65,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
             updatedAt: new Date().toISOString(),
           })
           .where(eq(videos.id, videoInfo.videoId));
-
-        const tagTitles = parsedValues.tags.split(",").map((tag) => tag.trim());
-
-        await addOrCreateTagsForVideo(tx, videoInfo.videoId, tagTitles);
       });
 
       toast.success(`${values.title} updated successfully.`);
@@ -140,21 +129,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                   render={({ field }) => (
                     <FormSwitch
                       label="Add to favorites?"
-                      {...field}
-                    />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="tags"
-                  render={({ field }) => (
-                    <FormInput
-                      label="Tags"
-                      autoFocus={false}
-                      selectTextOnFocus={true}
-                      placeholder="short, comedy, etc."
-                      autoCapitalize="none"
                       {...field}
                     />
                   )}

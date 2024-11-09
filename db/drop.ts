@@ -1,13 +1,12 @@
 import * as FileSystem from "expo-file-system";
 
 import { db } from "@/db/drizzle";
-import { playlists, tags, videos } from "@/db/schema";
+import { playlists, videos } from "@/db/schema";
 
 export async function resetTables() {
   try {
     await db.delete(videos).returning();
     await db.delete(playlists).returning();
-    await db.delete(tags).returning();
 
     return { message: "Videos deleted from the database successfully.", type: "success" };
   } catch (error) {

@@ -7,8 +7,8 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { getHomeScreenQuery } from "@/actions/video";
 import { useMigrationHelper } from "@/db/drizzle";
+import { PlaylistVideosMeta, VideoMeta, playlistVideos, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon, SearchIcon } from "@/lib/icons";
 import { useDatabase } from "@/providers/database-provider";
@@ -37,41 +37,30 @@ export default function HomeScreen() {
   }
 }
 
-export type VideoMetaWithExtras = {
-  id: string;
-  title: string;
-  description: string;
-  videoUri: string;
-  thumbUri: string;
-  isFavorite: boolean;
-  createdAt: string;
-  updatedAt: string;
-  hasPlaylist: number;
-  tags: {
-    id: string;
-    title: string;
-  }[];
-};
-
 function ScreenContent() {
   const [refreshing, setRefreshing] = useState(false);
   const [keyIndex, setKeyIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredData, setFilteredData] = useState<VideoMetaWithExtras[]>([]);
+  const [filteredData, setFilteredData] = useState<VideoMeta[]>([]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setKeyIndex((prev) => prev + 1);
     setTimeout(() => {
       setRefreshing(false);
-    }, 1000);
+    }, 200);
   }, []);
 
   const { db } = useDatabase();
-  const query = getHomeScreenQuery(db);
 
-  const { data, error }: { data: VideoMetaWithExtras[]; error: Error | undefined } =
-    useLiveQuery(query);
+  const { data, error }: { data: VideoMeta[]; error: Error | undefined } =
+    // @ts-expect-error
+    useLiveQuery(db?.select().from(videos).orderBy(videos.updatedAt));
+
+  const { data: playlistVideosData } = useLiveQuery(
+    // @ts-expect-error
+    db?.select().from(playlistVideos)
+  );
 
   useEffect(() => {
     if (data) {
@@ -82,7 +71,7 @@ function ScreenContent() {
     }
   }, [searchQuery, data]);
 
-  const flashListRef = useRef<FlashList<VideoMetaWithExtras> | null>(null);
+  const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
 
   const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -94,12 +83,21 @@ function ScreenContent() {
   };
 
   const renderItem = useCallback(
-    ({ item, index }: { item: VideoMetaWithExtras; index: number }) => (
-      <View className="px-2">
-        <VideoItem item={item} />
-      </View>
-    ),
-    []
+    ({ item }: { item: VideoMeta }) => {
+      const isInPlaylist = playlistVideosData.some(
+        (p: PlaylistVideosMeta) => p.videoId === item.id
+      );
+      return (
+        <View className="px-2">
+          <VideoItem
+            item={item}
+            isInPlaylist={isInPlaylist}
+            onRefresh={onRefresh}
+          />
+        </View>
+      );
+    },
+    [playlistVideosData]
   );
 
   if (error) {
@@ -112,7 +110,7 @@ function ScreenContent() {
       <View
         style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full">
-        {data?.length > 0 && (
+        {!!data && data.length > 0 && (
           <View className="mx-2 mb-8 flex-row items-center gap-4 rounded-md border border-input px-3">
             <SearchIcon
               className="text-muted-foreground"
@@ -128,17 +126,15 @@ function ScreenContent() {
           </View>
         )}
         <FlashList
-          data={filteredData}
+          data={searchQuery ? filteredData : data}
           key={`videos_${keyIndex}`}
-          keyExtractor={(item, index) => {
-            return item.id + index;
-          }}
+          keyExtractor={(item) => item.id}
           renderItem={renderItem}
           refreshing={refreshing}
           onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
           onScrollEndDrag={handleScrollEndDrag}
-          ListEmptyComponent={<ListEmptyComponent hasData={!data} />}
+          ListEmptyComponent={<ListEmptyComponent hasData={!!data && data.length > 0} />}
         />
       </View>
     </>

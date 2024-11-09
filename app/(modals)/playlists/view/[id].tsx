@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import { eq } from "drizzle-orm";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { db } from "@/db/drizzle";
@@ -17,6 +18,7 @@ export default function ViewPlaylistScreen() {
   const [playlist, setPlaylist] = useState<PlaylistMeta | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const fetchPlaylist = async () => {
@@ -26,15 +28,17 @@ export default function ViewPlaylistScreen() {
     };
 
     fetchPlaylist().catch((error) => {
-      console.error("Failed to find playlist or video sources: ", error);
-      toast.error("Failed to find playlist or video sources.");
+      console.error("Failed to find playlist: ", error);
+      toast.error("Failed to find playlist.");
     });
   }, []);
 
   if (!playlist) return null;
 
   return (
-    <View className="p-5">
+    <View
+      style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
+      className="relative min-h-full px-5">
       <View className="mb-10">
         <Link
           href={`/(modals)/playlists/watch/${id}`}

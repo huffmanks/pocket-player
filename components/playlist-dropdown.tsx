@@ -30,7 +30,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function PlaylistDropdown({ item }: { item: PlaylistMeta }) {
+interface PlaylistDropdownProps {
+  item: PlaylistMeta;
+}
+
+export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
   const insets = useSafeAreaInsets();
 
   const contentInsets = {
@@ -116,7 +120,7 @@ export default function PlaylistDropdown({ item }: { item: PlaylistMeta }) {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the video.
+                This action cannot be undone. This will permanently delete the playlist.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
