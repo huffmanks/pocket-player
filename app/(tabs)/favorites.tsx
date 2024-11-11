@@ -7,7 +7,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { PlaylistVideosMeta, VideoMeta, playlistVideos, videos } from "@/db/schema";
+import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { SearchIcon } from "@/lib/icons";
 import { useDatabaseStore } from "@/lib/store";
@@ -27,11 +27,10 @@ export default function FavoritesScreen() {
   const insets = useSafeAreaInsets();
   const db = useDatabaseStore.getState().db;
 
-  const { data, error }: { data: VideoMeta[]; error: Error | undefined } = useLiveQuery(
+  const videoQuery = useLiveQuery(
     db.select().from(videos).where(eq(videos.isFavorite, true)).orderBy(videos.updatedAt)
   );
-
-  const { data: playlistVideosData } = useLiveQuery(db.select().from(playlistVideos));
+  const { data, error } = videoQuery;
 
   useEffect(() => {
     if (data) {
@@ -58,23 +57,16 @@ export default function FavoritesScreen() {
     flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
   };
 
-  const renderItem = useCallback(
-    ({ item, index }: { item: VideoMeta; index: number }) => {
-      const isInPlaylist = playlistVideosData.some(
-        (p: PlaylistVideosMeta) => p.videoId === item.id
-      );
-      return (
-        <View className="px-2">
-          <VideoItem
-            item={item}
-            isInPlaylist={isInPlaylist}
-            onRefresh={onRefresh}
-          />
-        </View>
-      );
-    },
-    [playlistVideosData]
-  );
+  const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
+    return (
+      <View className="px-2">
+        <VideoItem
+          item={item}
+          onRefresh={onRefresh}
+        />
+      </View>
+    );
+  }, []);
 
   if (error) {
     console.error("Error loading data.");
@@ -86,7 +78,7 @@ export default function FavoritesScreen() {
       <View
         style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full">
-        {!!data && data.length > 0 && (
+        {!!data && data?.length > 0 && (
           <View className="mx-2 mb-8 flex-row items-center gap-4 rounded-md border border-input px-3">
             <SearchIcon
               className="text-muted-foreground"
@@ -104,15 +96,13 @@ export default function FavoritesScreen() {
         <FlashList
           data={searchQuery ? filteredData : data}
           key={`favorites_${keyIndex}`}
-          keyExtractor={(item, index) => {
-            return item.id + index;
-          }}
+          keyExtractor={(item) => item.id}
           renderItem={renderItem}
           refreshing={refreshing}
           onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
           onScrollEndDrag={handleScrollEndDrag}
-          ListEmptyComponent={<ListEmptyComponent hasData={!!data && data.length > 0} />}
+          ListEmptyComponent={<ListEmptyComponent hasData={!!data && data?.length > 0} />}
         />
       </View>
     </>

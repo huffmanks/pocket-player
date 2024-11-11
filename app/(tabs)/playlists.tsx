@@ -30,9 +30,9 @@ export default function PlaylistsScreen() {
   }, []);
 
   const db = useDatabaseStore.getState().db;
-  const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
-    db.select().from(playlists)
-  );
+
+  const playlistQuery = useLiveQuery(db.select().from(playlists));
+  const { data, error } = playlistQuery;
 
   const flashListRef = useRef<FlashList<PlaylistMeta> | null>(null);
   const insets = useSafeAreaInsets();

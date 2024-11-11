@@ -16,7 +16,7 @@
    - [onRefresh](/components/playlist-sortable.tsx#L63)
    - [handleReorder](/components/playlist-sortable.tsx#L86)
 6. Use SearchStore for filtering searches.
-7.
+7. Switch settings and security stores to react-native-mmkv.
 
 ## Styles
 

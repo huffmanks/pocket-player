@@ -40,7 +40,8 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
 
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
   const db = useDatabaseStore.getState().db;
-  const { data }: { data: VideoMetaForPlaylist[] } = useLiveQuery(
+
+  const videoForPlaylistQuery = useLiveQuery(
     db
       .select({
         id: videos.id,
@@ -59,6 +60,7 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
       .where(eq(playlistVideos.playlistId, playlistId))
       .orderBy(playlistVideos.order)
   );
+  const { data, error } = videoForPlaylistQuery;
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
