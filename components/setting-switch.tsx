@@ -1,22 +1,41 @@
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
-import { settingsStorage } from "@/lib/storage";
+import { useSettingsStore } from "@/lib/store";
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
+export type SettingId = "autoplay" | "mute" | "loop" | "enablePasscode";
+
 interface SettingSwitchProps {
-  id: string;
+  id: SettingId;
   defaultChecked?: boolean;
   label: string;
 }
 
 export default function SettingSwitch({ id, defaultChecked = false, label }: SettingSwitchProps) {
-  const [checked, setChecked] = useState(settingsStorage.getBoolean(id) ?? defaultChecked);
+  const { autoPlay, mute, loop, setAutoPlay, setLoop, setMute } = useSettingsStore();
+
+  const settingsMap = {
+    autoplay: autoPlay,
+    mute: mute,
+    loop: loop,
+  } as const;
+
+  const settersMap = {
+    autoplay: setAutoPlay,
+    mute: setMute,
+    loop: setLoop,
+  } as const;
+
+  const [checked, setChecked] = useState(
+    settingsMap[id as keyof typeof settingsMap] ?? defaultChecked
+  );
 
   useEffect(() => {
-    settingsStorage.set(id, checked === true ? true : false);
+    const setter = settersMap[id as keyof typeof settersMap];
+    setter(checked);
   }, [checked, id]);
 
   return (

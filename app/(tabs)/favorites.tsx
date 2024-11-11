@@ -10,7 +10,7 @@ import { toast } from "sonner-native";
 import { PlaylistVideosMeta, VideoMeta, playlistVideos, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { SearchIcon } from "@/lib/icons";
-import { useDatabase } from "@/providers/database-provider";
+import { useDatabaseStore } from "@/lib/store";
 
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -23,25 +23,15 @@ export default function FavoritesScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState<VideoMeta[]>([]);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setKeyIndex((prev) => prev + 1);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 200);
-  }, []);
-
-  const { db } = useDatabase();
+  const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
+  const insets = useSafeAreaInsets();
+  const { db } = useDatabaseStore();
 
   const { data, error }: { data: VideoMeta[]; error: Error | undefined } = useLiveQuery(
-    // @ts-expect-error
-    db?.select().from(videos).where(eq(videos.isFavorite, true)).orderBy(videos.updatedAt)
+    db.select().from(videos).where(eq(videos.isFavorite, true)).orderBy(videos.updatedAt)
   );
 
-  const { data: playlistVideosData } = useLiveQuery(
-    // @ts-expect-error
-    db?.select().from(playlistVideos)
-  );
+  const { data: playlistVideosData } = useLiveQuery(db.select().from(playlistVideos));
 
   useEffect(() => {
     if (data) {
@@ -52,8 +42,13 @@ export default function FavoritesScreen() {
     }
   }, [searchQuery, data]);
 
-  const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
-  const insets = useSafeAreaInsets();
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setKeyIndex((prev) => prev + 1);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 200);
+  }, []);
 
   const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetY = event.nativeEvent.contentOffset.y;

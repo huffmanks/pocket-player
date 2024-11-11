@@ -2,6 +2,8 @@ import { documentDirectory } from "expo-file-system";
 
 import { type Theme } from "@react-navigation/native";
 
+import { SettingId } from "@/components/setting-switch";
+
 export const NAV_THEME = {
   light: {
     background: "hsl(0 0% 100%)",
@@ -36,13 +38,11 @@ export const ESTIMATED_VIDEO_ITEM_HEIGHT = 157;
 export const ESTIMATED_PLAYLIST_HEIGHT = 40;
 export const ESTIMATED_PLAYLIST_ITEM_HEIGHT = 80;
 
-export const DB_TABLES = ["videos"];
-
 export const LOCK_SCREEN_TIMEOUT = 15000;
 export const ERROR_SHAKE_OFFSET = 20;
 export const ERROR_SHAKE_TIME = 80;
 
-export const settingsSwitches = [
+export const settingsSwitches: { id: SettingId; label: string }[] = [
   {
     id: "mute",
     label: "Mute",

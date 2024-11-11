@@ -4,15 +4,13 @@ import { Image, ScrollView, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
-import { eq } from "drizzle-orm";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { VideoInfo } from "@/app/(modals)/videos/edit/[id]";
-import { videos } from "@/db/schema";
+import { VideoMeta } from "@/db/schema";
 import { RefreshCcwIcon } from "@/lib/icons";
-import { useDatabase } from "@/providers/database-provider";
+import { useVideoStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormInput, FormSwitch, FormTextarea } from "@/components/ui/form";
@@ -31,11 +29,11 @@ const formSchema = z.object({
 });
 
 interface EditFormProps {
-  videoInfo: VideoInfo;
+  videoInfo: VideoMeta;
 }
 
 export default function EditVideoForm({ videoInfo }: EditFormProps) {
-  const { db } = useDatabase();
+  const { updateVideo } = useVideoStore();
 
   const ref = useRef(null);
   useScrollToTop(ref);
@@ -50,22 +48,10 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!db) return;
-
     try {
       const parsedValues = formSchema.parse(values);
 
-      await db.transaction(async (tx) => {
-        await tx
-          .update(videos)
-          .set({
-            title: parsedValues.title,
-            description: parsedValues.description,
-            isFavorite: parsedValues.isFavorite,
-            updatedAt: new Date().toISOString(),
-          })
-          .where(eq(videos.id, videoInfo.videoId));
-      });
+      await updateVideo({ id: videoInfo.id, values: parsedValues });
 
       toast.success(`${values.title} updated successfully.`);
 

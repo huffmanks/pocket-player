@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { eq } from "drizzle-orm";
 import { toast } from "sonner-native";
 
-import { db } from "@/db/drizzle";
 import { videos } from "@/db/schema";
+import { useDatabaseStore } from "@/lib/store";
 
 import VideoPlayer from "@/components/video-player";
 
@@ -14,6 +14,7 @@ export default function WatchModal() {
   const [videoSources, setVideoSources] = useState<string[] | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { db } = useDatabaseStore();
 
   useEffect(() => {
     const fetchVideo = async () => {

@@ -14,7 +14,7 @@ import Animated, {
 
 import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
 import { DeleteIcon, ScanFaceIcon } from "@/lib/icons";
-import { lockScreenStorage } from "@/lib/storage";
+import { useSecurityStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import KeypadRow from "@/components/keypad-row";
@@ -24,6 +24,7 @@ export default function LockModal() {
   const [code, setCode] = useState<number[]>([]);
   const codeLength = Array(4).fill(0);
   const router = useRouter();
+  const { setIsLocked } = useSecurityStore();
 
   const offset = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {
@@ -37,7 +38,7 @@ export default function LockModal() {
       setCode([]);
 
       if (code.join("") === "1111") {
-        lockScreenStorage.set("isLocked", false);
+        setIsLocked(false);
         router.replace("/");
       } else {
         offset.value = withSequence(
@@ -69,7 +70,7 @@ export default function LockModal() {
     setCode([]);
 
     if (success) {
-      lockScreenStorage.set("isLocked", false);
+      setIsLocked(false);
       router.replace("/");
     } else {
       await handleErrorShake();

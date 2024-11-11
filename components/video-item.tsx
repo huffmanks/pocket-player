@@ -5,7 +5,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 import { PlaylistMeta, VideoMeta, playlists } from "@/db/schema";
-import { useDatabase } from "@/providers/database-provider";
+import { useDatabaseStore } from "@/lib/store";
 
 import { Text } from "@/components/ui/text";
 import VideoDropdown from "@/components/video-dropdown";
@@ -17,10 +17,9 @@ interface VideoItemProps {
 }
 
 function VideoItem({ item, isInPlaylist, onRefresh }: VideoItemProps) {
-  const { db } = useDatabase();
+  const { db } = useDatabaseStore();
   const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
-    // @ts-expect-error
-    db?.select().from(playlists)
+    db.select().from(playlists)
   );
 
   return (

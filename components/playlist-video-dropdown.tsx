@@ -4,9 +4,8 @@ import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { removeFromPlaylist } from "@/actions/playlist";
-import { favoriteVideo } from "@/actions/video";
 import { EllipsisVerticalIcon, ListMusicIcon, PencilIcon, StarIcon } from "@/lib/icons";
+import { usePlaylistStore, useVideoStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
@@ -28,6 +27,8 @@ interface VideoDropdownProps {
 
 export default function PlaylistVideoDropdown({ item, onRefresh }: VideoDropdownProps) {
   const insets = useSafeAreaInsets();
+  const { toggleFavorite } = useVideoStore();
+  const { removeVideoFromPlaylist } = usePlaylistStore();
 
   const contentInsets = {
     top: insets.top,
@@ -37,23 +38,22 @@ export default function PlaylistVideoDropdown({ item, onRefresh }: VideoDropdown
   };
 
   async function handleFavorite() {
-    const { message, type, added } = await favoriteVideo(item.id);
+    const { message, status } = await toggleFavorite(item.id);
 
-    if (type === "success") {
-      if (added) {
-        toast.success(message);
-      } else {
-        toast.error(message);
-      }
+    if (status === "success") {
+      toast.success(message);
     } else {
       toast.error(message);
     }
   }
 
   async function handleRemoveFromPlaylist() {
-    const { message, type } = await removeFromPlaylist({ videoId: item.id });
+    const { message, status } = await removeVideoFromPlaylist({
+      playlistId: item.playlistId,
+      videoId: item.id,
+    });
 
-    if (type === "success") {
+    if (status === "success") {
       toast.error(message);
       onRefresh();
     } else {

@@ -6,8 +6,6 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { addToPlaylist, removeFromPlaylist } from "@/actions/playlist";
-import { deleteVideo, favoriteVideo } from "@/actions/video";
 import { PlaylistMeta, VideoMeta } from "@/db/schema";
 import {
   EllipsisVerticalIcon,
@@ -17,6 +15,7 @@ import {
   TrashIcon,
   TvIcon,
 } from "@/lib/icons";
+import { usePlaylistStore, useVideoStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import {
@@ -58,6 +57,8 @@ export default function VideoDropdown({
   onRefresh,
 }: VideoDropdownProps) {
   const [playlistsExist, setPlaylistsExist] = useState(!!playlists && playlists.length > 0);
+  const { toggleFavorite, deleteVideo } = useVideoStore();
+  const { addVideoToPlaylist, removeVideoFromPlaylist } = usePlaylistStore();
 
   useEffect(() => {
     setPlaylistsExist(playlists && playlists.length > 0);
@@ -73,23 +74,19 @@ export default function VideoDropdown({
   };
 
   async function handleFavorite() {
-    const { message, type, added } = await favoriteVideo(item.id);
+    const { message, status } = await toggleFavorite(item.id);
 
-    if (type === "success") {
-      if (added) {
-        toast.success(message);
-      } else {
-        toast.error(message);
-      }
+    if (status === "success") {
+      toast.success(message);
     } else {
       toast.error(message);
     }
   }
 
   async function handleAddToPlaylist(playlistId: string) {
-    const { message, type } = await addToPlaylist({ playlistId, videoId: item.id });
+    const { message, status } = await addVideoToPlaylist({ playlistId, videoId: item.id });
 
-    if (type === "success") {
+    if (status === "success") {
       toast.success(message);
       onRefresh();
     } else {
@@ -98,9 +95,9 @@ export default function VideoDropdown({
   }
 
   async function handleRemoveFromPlaylist() {
-    const { message, type } = await removeFromPlaylist({ videoId: item.id });
+    const { message, status } = await removeVideoFromPlaylist({ videoId: item.id });
 
-    if (type === "success") {
+    if (status === "success") {
       toast.error(message);
       onRefresh();
     } else {
@@ -109,9 +106,9 @@ export default function VideoDropdown({
   }
 
   async function handleDelete() {
-    const { message, type } = await deleteVideo(item.id);
+    const { message, status } = await deleteVideo(item.id);
 
-    if (type === "success") {
+    if (status === "success") {
       toast.error(message);
     } else {
       toast.error(message);

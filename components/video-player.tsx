@@ -2,19 +2,20 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 
-import { settingsStorage } from "@/lib/storage";
+import { useSettingsStore } from "@/lib/store";
 
 export default function VideoPlayer({ videoSources }: { videoSources: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const videoRef = useRef(null);
+  const { autoPlay, mute, loop } = useSettingsStore();
 
   const isPlaylist = videoSources.length > 1;
 
   const player = useVideoPlayer(videoSources[currentIndex], (player) => {
-    player.loop = !isPlaylist && (settingsStorage.getBoolean("loop") ?? false);
-    player.muted = settingsStorage.getBoolean("mute") || false;
+    player.loop = !isPlaylist && (loop ?? false);
+    player.muted = mute || false;
 
-    if (settingsStorage.getBoolean("autoplay") || isPlaylist) {
+    if (autoPlay || isPlaylist) {
       player.play();
     }
   });

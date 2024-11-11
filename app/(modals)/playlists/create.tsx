@@ -4,9 +4,9 @@ import { View } from "react-native";
 
 import { toast } from "sonner-native";
 
-import { db } from "@/db/drizzle";
 import { videos } from "@/db/schema";
 import { CloudUploadIcon } from "@/lib/icons";
+import { useDatabaseStore } from "@/lib/store";
 
 import CreatePlaylistForm from "@/components/forms/create-playlist";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ export interface VideoData {
 
 export default function CreatePlaylistScreen() {
   const [videoData, setVideoData] = useState<VideoData[] | null>(null);
+
+  const { db } = useDatabaseStore();
 
   useEffect(() => {
     const fetchVideos = async () => {

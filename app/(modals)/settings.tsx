@@ -1,14 +1,13 @@
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Platform, View } from "react-native";
 
 import { toast } from "sonner-native";
 
-import { initialize, useMigrationHelper } from "@/db/drizzle";
 import { clearDirectory, resetTables } from "@/db/drop";
 import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
 import { DatabaseIcon, KeyRoundIcon } from "@/lib/icons";
-import { settingsStorage } from "@/lib/storage";
+import { useAppStore, useSecurityStore } from "@/lib/store";
 
 import SettingSwitch from "@/components/setting-switch";
 import {
@@ -27,27 +26,16 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
 export default function SettingsModal() {
-  const [enablePasscode, setEnablePasscode] = useState(
-    settingsStorage.getBoolean("enablePasscode") || false
-  );
-  const [hasPasscode, setHasPasscode] = useState(
-    settingsStorage.getNumber("passcode") ? true : false
-  );
-
-  const { success, error } = useMigrationHelper();
+  const { setAppLoadedOnce } = useAppStore();
+  const { passcode, enablePasscode, setEnablePasscode } = useSecurityStore();
 
   async function dropDatabase() {
     try {
       await clearDirectory(VIDEOS_DIR);
       await resetTables();
 
-      if (error) {
-        console.error("Migration failed:", error);
-        toast.error("Migration failed.");
-        return;
-      }
+      setAppLoadedOnce(false);
 
-      await initialize();
       console.info("Database initialized.");
       toast.success("Database initialized.");
     } catch (err) {
@@ -57,16 +45,14 @@ export default function SettingsModal() {
   }
 
   useEffect(() => {
-    const listener = settingsStorage.addOnValueChangedListener((changedKey) => {
-      const newValue = settingsStorage.getBoolean(changedKey) as boolean;
-
-      if (changedKey === "enablePasscode") {
-        setEnablePasscode(newValue);
+    const unsubscribe = useSecurityStore.subscribe((state, prevState) => {
+      if (state.enablePasscode !== prevState.enablePasscode) {
+        setEnablePasscode(state.enablePasscode);
       }
     });
 
     return () => {
-      listener.remove();
+      unsubscribe();
     };
   }, []);
 
@@ -107,7 +93,7 @@ export default function SettingsModal() {
                 size={20}
                 strokeWidth={1.25}
               />
-              <Text>{hasPasscode ? "Update" : "Create"}</Text>
+              <Text>{passcode !== null ? "Update" : "Create"}</Text>
             </Button>
           )}
         </View>

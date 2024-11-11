@@ -5,35 +5,22 @@ import { View } from "react-native";
 import { eq } from "drizzle-orm";
 import { toast } from "sonner-native";
 
-import { db } from "@/db/drizzle";
-import { videos } from "@/db/schema";
+import { VideoMeta, videos } from "@/db/schema";
+import { useDatabaseStore } from "@/lib/store";
 
 import EditVideoForm from "@/components/forms/edit-video";
 
-export interface VideoInfo {
-  videoId: string;
-  title: string;
-  description: string;
-  thumbUri: string;
-  isFavorite: boolean;
-}
-
 export default function EditModal() {
-  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
+  const [videoInfo, setVideoInfo] = useState<VideoMeta | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { db } = useDatabaseStore();
 
   useEffect(() => {
     const fetchVideo = async () => {
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
 
-      setVideoInfo({
-        videoId: video.id,
-        title: video.title,
-        description: video.description,
-        thumbUri: video.thumbUri,
-        isFavorite: video.isFavorite,
-      });
+      setVideoInfo(video);
     };
 
     fetchVideo().catch((error) => {

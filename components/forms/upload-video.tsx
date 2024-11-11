@@ -11,11 +11,10 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { videos } from "@/db/schema";
 import { VIDEOS_DIR } from "@/lib/constants";
 import { FileVideoIcon, SendIcon } from "@/lib/icons";
+import { useVideoStore } from "@/lib/store";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
-import { useDatabase } from "@/providers/database-provider";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
@@ -36,15 +35,15 @@ const formSchema = z.object({
     }),
 });
 
-type FormData = z.infer<typeof formSchema>;
+export type UploadVideosFormData = z.infer<typeof formSchema>;
 
 export default function UploadForm() {
-  const { db } = useDatabase();
+  const { uploadVideos } = useVideoStore();
 
   const ref = useRef(null);
   useScrollToTop(ref);
 
-  const form = useForm<FormData>({
+  const form = useForm<UploadVideosFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       videos: [
@@ -91,20 +90,9 @@ export default function UploadForm() {
     }
   }
 
-  async function onSubmit(values: FormData) {
-    if (!db) return;
-
+  async function onSubmit(values: UploadVideosFormData) {
     try {
-      await db.transaction(async (tx) => {
-        for (const video of values.videos) {
-          await tx.insert(videos).values({
-            title: video.title,
-            videoUri: video.videoUri,
-            thumbUri: video.thumbUri,
-          });
-        }
-      });
-
+      await uploadVideos(values);
       toast.success("Videos added successfully.");
     } catch (error) {
       console.error(error);
@@ -116,7 +104,7 @@ export default function UploadForm() {
     router.push("/");
   }
 
-  function handleErrors(errors: FieldErrors<FormData>) {
+  function handleErrors(errors: FieldErrors<UploadVideosFormData>) {
     const errorMessage = errors.videos?.message;
 
     if (errorMessage) {

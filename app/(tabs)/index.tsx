@@ -4,14 +4,15 @@ import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { useMigrationHelper } from "@/db/drizzle";
+import migrations from "@/db/migrations/migrations";
 import { PlaylistVideosMeta, VideoMeta, playlistVideos, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon, SearchIcon } from "@/lib/icons";
-import { useDatabase } from "@/providers/database-provider";
+import { useAppStore, useDatabaseStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,13 @@ import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
 export default function HomeScreen() {
-  const { success, error } = useMigrationHelper();
+  const { appLoadedOnce, setAppLoadedOnce } = useAppStore();
+  const { db } = useDatabaseStore();
+  const { success, error } = !appLoadedOnce
+    ? useMigrations(db, migrations)
+    : { success: true, error: null };
+
+  setAppLoadedOnce(true);
 
   if (!success) {
     console.info("Migration is in progress...");
@@ -51,16 +58,13 @@ function ScreenContent() {
     }, 200);
   }, []);
 
-  const { db } = useDatabase();
+  const { db } = useDatabaseStore();
 
-  const { data, error }: { data: VideoMeta[]; error: Error | undefined } =
-    // @ts-expect-error
-    useLiveQuery(db?.select().from(videos).orderBy(videos.updatedAt));
-
-  const { data: playlistVideosData } = useLiveQuery(
-    // @ts-expect-error
-    db?.select().from(playlistVideos)
+  const { data, error }: { data: VideoMeta[]; error: Error | undefined } = useLiveQuery(
+    db.select().from(videos).orderBy(videos.updatedAt)
   );
+
+  const { data: playlistVideosData } = useLiveQuery(db.select().from(playlistVideos));
 
   useEffect(() => {
     if (data) {

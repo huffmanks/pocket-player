@@ -3,35 +3,35 @@ import { ReactNode, useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
 
 import { LOCK_SCREEN_TIMEOUT } from "@/lib/constants";
-import { lockScreenStorage, settingsStorage } from "@/lib/storage";
+import { useSecurityStore } from "@/lib/store";
 
 export function LockScreenProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const appState = useRef(AppState.currentState);
 
+  const { backgroundTime, enablePasscode, isLocked, setBackgroundTime, setIsLocked } =
+    useSecurityStore();
+
   useEffect(() => {
-    if (!settingsStorage.getBoolean("enablePasscode")) return;
+    if (!enablePasscode) return;
 
     const subscription = AppState.addEventListener("change", handleAppStateChange);
 
-    const isLocked = lockScreenStorage.getBoolean("isLocked");
-
-    if (isLocked !== false) {
-      lockScreenStorage.set("isLocked", true);
+    if (isLocked) {
       router.push("/(modals)/lock");
     }
 
     function handleAppStateChange(nextAppState: AppStateStatus) {
-      if (settingsStorage.getBoolean("enablePasscode")) return;
+      if (enablePasscode) return;
 
       if (nextAppState === "background") {
-        lockScreenStorage.set("backgroundTime", Date.now());
+        setBackgroundTime();
       } else if (nextAppState === "active") {
-        const backgroundTime = lockScreenStorage.getNumber("backgroundTime") || 0;
-        const elapsedTime = Date.now() - backgroundTime;
+        const newTime = backgroundTime || 0;
+        const elapsedTime = Date.now() - newTime;
 
         if (elapsedTime > LOCK_SCREEN_TIMEOUT) {
-          lockScreenStorage.set("isLocked", true);
+          setIsLocked(true);
           router.push("/(modals)/lock");
         }
       }
@@ -40,8 +40,8 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     }
 
     return () => {
-      const isLockedValue = settingsStorage.getBoolean("enablePasscode") ?? false;
-      lockScreenStorage.set("isLocked", isLockedValue);
+      const isLockedValue = enablePasscode ?? false;
+      setIsLocked(isLockedValue);
       subscription.remove();
     };
   }, []);

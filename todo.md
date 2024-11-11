@@ -8,13 +8,11 @@
 2. AppState status background: dismiss all models, toasts and alert dialogs.
 3. Video player: Add loop and mute buttons to controls.
 4. Settings enable passcode: require creating passcode or disable it until created.
-5. Move useMigration to DatabaseProvider. Not sure if it will work.
-6. Playlist view:
+5. Playlist view:
    - When removing video from playlist data is stale.
    - When playlist videos reorderd update database. Not working.
-   - [onRefresh](/components/playlist-sortable.tsx#L39)
-   - [handleReorder](/components/playlist-sortable.tsx#L84)
-   - [updatePlaylistOrder](/actions/playlist.ts#L42)
+   - [onRefresh](/components/playlist-sortable.tsx#L63)
+   - [handleReorder](/components/playlist-sortable.tsx#L86)
 
 ## Styles
 

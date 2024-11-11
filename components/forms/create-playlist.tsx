@@ -9,10 +9,9 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 
 import { VideoData } from "@/app/(modals)/playlists/create";
-import { playlistVideos, playlists } from "@/db/schema";
 import { SendIcon, XIcon } from "@/lib/icons";
+import { usePlaylistStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { useDatabase } from "@/providers/database-provider";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormCheckbox, FormField, FormInput, FormTextarea } from "@/components/ui/form";
@@ -42,18 +41,18 @@ const formSchema = z.object({
     }),
 });
 
-type FormData = z.infer<typeof formSchema>;
+export type CreatePlaylistFormData = z.infer<typeof formSchema>;
 
 interface CreatePlaylistFormProps {
   videoData: VideoData[];
 }
 
 export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProps) {
-  const { db } = useDatabase();
+  const { addPlaylist } = usePlaylistStore();
   const ref = useRef(null);
   useScrollToTop(ref);
 
-  const form = useForm<FormData>({
+  const form = useForm<CreatePlaylistFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -62,45 +61,22 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
     },
   });
 
-  async function onSubmit(values: FormData) {
-    if (!db) return;
-
+  async function onSubmit(values: CreatePlaylistFormData) {
     try {
       const parsedValues = formSchema.parse(values);
 
-      await db.transaction(async (tx) => {
-        const [createdPlaylist] = await tx
-          .insert(playlists)
-          .values({
-            title: parsedValues.title,
-            description: parsedValues.description,
-            updatedAt: new Date().toISOString(),
-          })
-          .returning();
-
-        const videoInserts = values.videos
-          .filter((video) => video.isSelected)
-          .map((video, index) =>
-            tx.insert(playlistVideos).values({
-              playlistId: createdPlaylist.id,
-              videoId: video.videoId,
-              order: index,
-            })
-          );
-
-        await Promise.all(videoInserts);
-      });
+      await addPlaylist(parsedValues);
 
       toast.success(`${values.title} playlist created successfully.`);
 
-      router.dismiss();
+      router.dismissAll();
     } catch (error) {
       console.error(error);
       toast.error("Error creating playlist!");
     }
   }
 
-  function handleErrors(errors: FieldErrors<FormData>) {
+  function handleErrors(errors: FieldErrors<CreatePlaylistFormData>) {
     const errorMessage = errors?.videos?.root?.message ? errors.videos.root.message : undefined;
 
     if (errorMessage) {

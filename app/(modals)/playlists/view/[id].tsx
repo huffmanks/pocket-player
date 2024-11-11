@@ -6,9 +6,9 @@ import { eq } from "drizzle-orm";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { db } from "@/db/drizzle";
 import { PlaylistMeta, playlists } from "@/db/schema";
 import { TvIcon } from "@/lib/icons";
+import { useDatabaseStore } from "@/lib/store";
 
 import PlaylistSortable from "@/components/playlist-sortable";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ export default function ViewPlaylistScreen() {
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
+  const { db } = useDatabaseStore();
 
   useEffect(() => {
     const fetchPlaylist = async () => {

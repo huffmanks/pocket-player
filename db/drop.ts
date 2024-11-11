@@ -1,10 +1,12 @@
 import * as FileSystem from "expo-file-system";
 
-import { db } from "@/db/drizzle";
 import { playlists, videos } from "@/db/schema";
+import { useDatabaseStore } from "@/lib/store";
 
 export async function resetTables() {
   try {
+    const { db } = useDatabaseStore();
+
     await db.delete(videos).returning();
     await db.delete(playlists).returning();
 

@@ -1,0 +1,364 @@
+import { and, eq } from "drizzle-orm";
+import { create } from "zustand";
+
+import { db as drizzleDb } from "@/db/drizzle";
+import { PlaylistMeta, VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
+
+import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
+import { UploadVideosFormData } from "@/components/forms/upload-video";
+import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
+
+type DatabaseStore = {
+  db: typeof drizzleDb;
+};
+
+export const useDatabaseStore = create<DatabaseStore>((set) => ({
+  db: drizzleDb,
+}));
+
+type AppStoreState = {
+  appLoadedOnce: boolean;
+  setAppLoadedOnce: (bool: boolean) => void;
+};
+
+export const useAppStore = create<AppStoreState>((set) => ({
+  appLoadedOnce: false,
+  setAppLoadedOnce: (bool) => set({ appLoadedOnce: bool }),
+}));
+
+type VideoStoreState = {
+  videos: VideoMeta[];
+  uploadVideos: (
+    values: UploadVideosFormData
+  ) => Promise<{ status: "success" | "error"; message: string }>;
+  updateVideo: ({
+    id,
+    values,
+  }: {
+    id: string;
+    values: Partial<VideoMeta>;
+  }) => Promise<{ status: "success" | "error"; message: string }>;
+  deleteVideo: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
+  toggleFavorite: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
+};
+
+export const useVideoStore = create<VideoStoreState>((set) => ({
+  videos: [],
+  uploadVideos: async (values) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+
+      await db.transaction(async (tx) => {
+        const newVideos: VideoMeta[] = [];
+
+        for (const video of values.videos) {
+          const result = await tx.insert(videos).values({
+            title: video.title,
+            videoUri: video.videoUri,
+            thumbUri: video.thumbUri,
+          });
+
+          const createdVideo = {
+            id: result.lastInsertRowId.toString(),
+            title: video.title,
+            videoUri: video.videoUri,
+            thumbUri: video.thumbUri,
+            description: "",
+            isFavorite: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+
+          newVideos.push(createdVideo);
+        }
+
+        set((state) => ({
+          videos: [...state.videos, ...newVideos],
+        }));
+      });
+
+      return { status: "success", message: "Videos successfully uploaded." };
+    } catch (error) {
+      console.error("Error creating video: ", error);
+      return { status: "error", message: "Failed to create video." };
+    }
+  },
+  updateVideo: async ({ id, values }) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+      const [updatedVideo] = await db
+        .update(videos)
+        .set(values)
+        .where(eq(videos.id, id))
+        .returning();
+      set((state) => ({
+        videos: state.videos.map((v) => (updatedVideo.id === id ? { ...v, ...updatedVideo } : v)),
+      }));
+      return { status: "success", message: `Video ${updatedVideo.title} successfully updated.` };
+    } catch (error) {
+      console.error("Error updating video: ", error);
+      return { status: "error", message: "Failed to update video." };
+    }
+  },
+  deleteVideo: async (id) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+      const [deletedVideo] = await db.delete(videos).where(eq(videos.id, id)).returning();
+      set((state) => ({ videos: state.videos.filter((v) => deletedVideo.id !== id) }));
+      return { status: "success", message: `Video ${deletedVideo.title} successfully deleted.` };
+    } catch (error) {
+      console.error("Error deleting video: ", error);
+      return { status: "error", message: "Failed to delete video." };
+    }
+  },
+  toggleFavorite: async (id) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+      const [video] = await db.select().from(videos).where(eq(videos.id, id));
+      const updatedFavoriteStatus = !video.isFavorite;
+      await db.update(videos).set({ isFavorite: updatedFavoriteStatus }).where(eq(videos.id, id));
+      set((state) => ({
+        videos: state.videos.map((v) =>
+          video.id === id ? { ...v, isFavorite: updatedFavoriteStatus } : v
+        ),
+      }));
+      return { status: "success", message: `Video ${video.title}'s favorite status toggled.` };
+    } catch (error) {
+      console.error("Error toggling favorite: ", error);
+      return { status: "error", message: "Failed to toggle favorite video." };
+    }
+  },
+}));
+
+type PlaylistStoreState = {
+  playlists: PlaylistMeta[];
+  addPlaylist: (
+    values: CreatePlaylistFormData
+  ) => Promise<{ status: "success" | "error"; message: string }>;
+  updatePlaylist: ({
+    id,
+    values,
+  }: {
+    id: string;
+    values: Partial<PlaylistMeta>;
+  }) => Promise<{ status: "success" | "error"; message: string }>;
+  deletePlaylist: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
+  addVideoToPlaylist: ({
+    playlistId,
+    videoId,
+    order,
+  }: {
+    playlistId: string;
+    videoId: string;
+    order?: number;
+  }) => Promise<{ status: "success" | "error"; message: string }>;
+  removeVideoFromPlaylist: ({
+    playlistId,
+    videoId,
+  }: {
+    playlistId?: string;
+    videoId: string;
+  }) => Promise<{ status: "success" | "error"; message: string }>;
+  updatePlaylistOrder: ({
+    playlistId,
+    videosOrder,
+  }: {
+    playlistId: string;
+    videosOrder: VideoMetaForPlaylist[];
+  }) => Promise<{ status: "success" | "error"; message: string }>;
+};
+
+export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
+  playlists: [],
+  addPlaylist: async (values) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+
+      await db.transaction(async (tx) => {
+        const [createdPlaylist] = await tx
+          .insert(playlists)
+          .values({
+            title: values.title,
+            description: values.description,
+            updatedAt: new Date().toISOString(),
+          })
+          .returning();
+
+        const videoInserts = values.videos
+          .filter((video) => video.isSelected)
+          .map((video, index) =>
+            tx.insert(playlistVideos).values({
+              playlistId: createdPlaylist.id,
+              videoId: video.videoId,
+              order: index,
+            })
+          );
+
+        await Promise.all(videoInserts);
+
+        set((state) => ({
+          playlists: [
+            ...state.playlists,
+            {
+              ...createdPlaylist,
+              videos: values.videos.filter((video) => video.isSelected),
+            },
+          ],
+        }));
+      });
+
+      return {
+        status: "success",
+        message: "Playlist created successfully.",
+      };
+    } catch (error) {
+      console.error("Error creating playlist: ", error);
+      return { status: "error", message: "Failed to create playlist." };
+    }
+  },
+  updatePlaylist: async ({ id, values }) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+      const [updatedPlaylist] = await db
+        .update(playlists)
+        .set(values)
+        .where(eq(playlists.id, id))
+        .returning();
+      set((state) => ({
+        playlists: state.playlists.map((p) =>
+          updatedPlaylist.id === id ? { ...p, ...updatedPlaylist } : p
+        ),
+      }));
+      return {
+        status: "success",
+        message: `Playlist ${updatedPlaylist.title}updated successfully.`,
+      };
+    } catch (error) {
+      console.error("Error updating playlist: ", error);
+      return { status: "error", message: "Failed to update playlist." };
+    }
+  },
+  deletePlaylist: async (id) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+      const [deletedPlaylist] = await db.delete(playlists).where(eq(playlists.id, id)).returning();
+      set((state) => ({ playlists: state.playlists.filter((p) => deletedPlaylist.id !== id) }));
+      return {
+        status: "success",
+        message: `Playlist ${deletedPlaylist.title} deleted successfully.`,
+      };
+    } catch (error) {
+      console.error("Error deleting playlist: ", error);
+      return { status: "error", message: "Failed to delete playlist." };
+    }
+  },
+  addVideoToPlaylist: async ({ playlistId, videoId, order = 1 }) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+      await db.insert(playlistVideos).values({ playlistId, videoId, order });
+      return { status: "success", message: "Video added to playlist successfully." };
+    } catch (error) {
+      console.error("Error adding video to playlist: ", error);
+      return { status: "error", message: "Failed to add video to playlist." };
+    }
+  },
+  removeVideoFromPlaylist: async ({ playlistId, videoId }) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+      await db
+        .delete(playlistVideos)
+        .where(
+          and(
+            eq(playlistVideos.videoId, videoId),
+            ...(playlistId ? [eq(playlistVideos.playlistId, playlistId)] : [])
+          )
+        );
+
+      return { status: "success", message: "Video removed from playlist successfully." };
+    } catch (error) {
+      console.error("Error removing video from playlist: ", error);
+      return { status: "error", message: "Failed to remove video from playlist." };
+    }
+  },
+  updatePlaylistOrder: async ({ playlistId, videosOrder }) => {
+    try {
+      const { db } = useDatabaseStore.getState();
+      await db.transaction(async (tx) => {
+        Promise.all(
+          videosOrder.map(async (video, index) => {
+            await tx
+              .update(playlistVideos)
+              .set({ order: index })
+              .where(
+                and(eq(playlistVideos.playlistId, playlistId), eq(playlistVideos.videoId, video.id))
+              );
+          })
+        );
+      });
+      return { status: "success", message: "Playlist order updated successfully." };
+    } catch (error) {
+      console.error("Error updating playlist order: ", error);
+      return { status: "error", message: "Failed to update playlist order." };
+    }
+  },
+}));
+
+type SettingsStoreState = {
+  autoPlay: boolean;
+  loop: boolean;
+  mute: boolean;
+  theme: "light" | "dark";
+  setAutoPlay: (autoPlay: boolean) => void;
+  setLoop: (loop: boolean) => void;
+  setMute: (mute: boolean) => void;
+  setTheme: (theme: "light" | "dark") => void;
+};
+
+export const useSettingsStore = create<SettingsStoreState>((set) => ({
+  autoPlay: false,
+  loop: false,
+  mute: false,
+  theme: "dark",
+  setAutoPlay: (autoPlay) => set({ autoPlay }),
+  setLoop: (loop) => set({ loop }),
+  setMute: (mute) => set({ mute }),
+  setTheme: (theme) => set({ theme }),
+}));
+
+type SecurityStoreState = {
+  backgroundTime: number | null;
+  isLocked: boolean;
+  enablePasscode: boolean;
+  passcode: number | null;
+  setBackgroundTime: () => void;
+  setPasscode: (code: number) => void;
+  setIsLocked: (lock: boolean) => void;
+  setEnablePasscode: (enable: boolean) => void;
+};
+
+export const useSecurityStore = create<SecurityStoreState>((set) => ({
+  backgroundTime: null,
+  isLocked: false,
+  enablePasscode: false,
+  passcode: null,
+  setBackgroundTime: () => set({ backgroundTime: Date.now() }),
+  setPasscode: (code) => set({ passcode: code }),
+  setIsLocked: (lock) => set({ isLocked: lock }),
+  setEnablePasscode: (enable) => set({ enablePasscode: enable }),
+}));
+
+type SearchStoreState = {
+  filter: string;
+  sortBy: "createdAt" | "updatedAt";
+  sortDirection: "asc" | "desc";
+  setFilter: (filter: string) => void;
+  setSort: (sortBy?: "createdAt" | "updatedAt", direction?: "asc" | "desc") => void;
+};
+
+export const useSearchStore = create<SearchStoreState>((set) => ({
+  filter: "",
+  sortBy: "updatedAt",
+  sortDirection: "desc",
+  setFilter: (filter) => set({ filter }),
+  setSort: (sortBy = "updatedAt", direction = "desc") => set({ sortBy, sortDirection: direction }),
+}));

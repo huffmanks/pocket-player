@@ -4,9 +4,9 @@ import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { deletePlaylist } from "@/actions/playlist";
 import { PlaylistMeta } from "@/db/schema";
 import { EllipsisVerticalIcon, PencilIcon, TrashIcon, TvIcon } from "@/lib/icons";
+import { usePlaylistStore } from "@/lib/store";
 
 import {
   AlertDialog,
@@ -36,6 +36,7 @@ interface PlaylistDropdownProps {
 
 export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
   const insets = useSafeAreaInsets();
+  const { deletePlaylist } = usePlaylistStore();
 
   const contentInsets = {
     top: insets.top,
@@ -45,9 +46,9 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
   };
 
   async function handleDelete() {
-    const { message, type } = await deletePlaylist(item.id);
+    const { message, status } = await deletePlaylist(item.id);
 
-    if (type === "success") {
+    if (status === "success") {
       toast.error(message);
     } else {
       toast.error(message);

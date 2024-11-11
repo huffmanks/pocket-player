@@ -10,7 +10,7 @@ import { toast } from "sonner-native";
 import { PlaylistMeta, playlists } from "@/db/schema";
 import { ESTIMATED_PLAYLIST_HEIGHT } from "@/lib/constants";
 import { ListMusicIcon } from "@/lib/icons";
-import { useDatabase } from "@/providers/database-provider";
+import { useDatabaseStore } from "@/lib/store";
 
 import PlaylistDropdown from "@/components/playlist-dropdown";
 import { Button } from "@/components/ui/button";
@@ -29,10 +29,9 @@ export default function PlaylistsScreen() {
     }, 1000);
   }, []);
 
-  const { db } = useDatabase();
+  const { db } = useDatabaseStore();
   const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
-    // @ts-expect-error
-    db?.select().from(playlists)
+    db.select().from(playlists)
   );
 
   const flashListRef = useRef<FlashList<PlaylistMeta> | null>(null);
