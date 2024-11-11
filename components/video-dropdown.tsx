@@ -1,12 +1,15 @@
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import { Text } from "react-native";
 
+import { count, eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
 
-import { PlaylistMeta, VideoMeta } from "@/db/schema";
+import { db } from "@/db/drizzle";
+import { VideoMeta, playlistVideos, playlists } from "@/db/schema";
 import {
   EllipsisVerticalIcon,
   ListMusicIcon,
@@ -45,26 +48,29 @@ import {
 
 interface VideoDropdownProps {
   item: VideoMeta;
-  isInPlaylist: boolean;
-  playlists: PlaylistMeta[];
   onRefresh: () => void;
 }
 
-export default function VideoDropdown({
-  item,
-  isInPlaylist,
-  playlists,
-  onRefresh,
-}: VideoDropdownProps) {
-  const [playlistsExist, setPlaylistsExist] = useState(!!playlists && playlists.length > 0);
-  const { toggleFavorite, deleteVideo } = useVideoStore();
-  const { addVideoToPlaylist, removeVideoFromPlaylist } = usePlaylistStore();
-
-  useEffect(() => {
-    setPlaylistsExist(playlists && playlists.length > 0);
-  }, [playlists]);
-
+export default function VideoDropdown({ item, onRefresh }: VideoDropdownProps) {
   const insets = useSafeAreaInsets();
+
+  const { toggleFavorite, deleteVideo } = useVideoStore(
+    useShallow((state) => ({
+      toggleFavorite: state.toggleFavorite,
+      deleteVideo: state.deleteVideo,
+    }))
+  );
+  const { addVideoToPlaylist, removeVideoFromPlaylist } = usePlaylistStore(
+    useShallow((state) => ({
+      addVideoToPlaylist: state.addVideoToPlaylist,
+      removeVideoFromPlaylist: state.removeVideoFromPlaylist,
+    }))
+  );
+
+  const playlistQuery = useLiveQuery(db.select().from(playlists));
+  const isInPlaylist = useLiveQuery(
+    db.select({ count: count() }).from(playlistVideos).where(eq(playlistVideos.videoId, item.id))
+  );
 
   const contentInsets = {
     top: insets.top,
@@ -75,7 +81,6 @@ export default function VideoDropdown({
 
   async function handleFavorite() {
     const { message, status } = await toggleFavorite(item.id);
-
     if (status === "success") {
       toast.success(message);
     } else {
@@ -167,51 +172,58 @@ export default function VideoDropdown({
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
-        <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {isInPlaylist ? (
-            <DropdownMenuItem
-              className="gap-4"
-              onPress={handleRemoveFromPlaylist}>
-              <ListMusicIcon
-                className="text-foreground"
-                size={20}
-                strokeWidth={1.25}
-              />
-              <Text
-                className="text-foreground"
-                numberOfLines={1}>
-                Remove from playlist
-              </Text>
-            </DropdownMenuItem>
+          {isInPlaylist?.data?.[0]?.count > 0 ? (
+            <>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                className="gap-4"
+                onPress={handleRemoveFromPlaylist}>
+                <ListMusicIcon
+                  className="text-foreground"
+                  size={20}
+                  strokeWidth={1.25}
+                />
+                <Text
+                  className="text-foreground"
+                  numberOfLines={1}>
+                  Remove from playlist
+                </Text>
+              </DropdownMenuItem>
+            </>
           ) : (
-            playlistsExist && (
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Text className="text-foreground">Add to playlist</Text>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <Animated.View entering={FadeIn.duration(200)}>
-                    {playlists?.map((playlist) => (
-                      <DropdownMenuItem
-                        key={`add-to-playlist_${playlist.id}`}
-                        className="gap-4"
-                        onPress={() => handleAddToPlaylist(playlist.id)}>
-                        <ListMusicIcon
-                          className="text-foreground"
-                          size={20}
-                          strokeWidth={1.25}
-                        />
-                        <Text
-                          className="text-foreground"
-                          numberOfLines={1}>
-                          {playlist.title}
-                        </Text>
-                      </DropdownMenuItem>
-                    ))}
-                  </Animated.View>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
+            playlistQuery.data &&
+            playlistQuery.data.length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Text className="text-foreground">Add to playlist</Text>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <Animated.View entering={FadeIn.duration(200)}>
+                      {playlistQuery.data.map((playlist) => (
+                        <DropdownMenuItem
+                          key={`add-to-playlist_${playlist.id}`}
+                          className="gap-4"
+                          onPress={() => handleAddToPlaylist(playlist.id)}>
+                          <ListMusicIcon
+                            className="text-foreground"
+                            size={20}
+                            strokeWidth={1.25}
+                          />
+                          <Text
+                            className="text-foreground"
+                            numberOfLines={1}>
+                            {playlist.title}
+                          </Text>
+                        </DropdownMenuItem>
+                      ))}
+                    </Animated.View>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+              </>
             )
           )}
         </DropdownMenuGroup>

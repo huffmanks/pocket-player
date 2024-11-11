@@ -1,27 +1,19 @@
 import { router } from "expo-router";
 import { Image, Pressable, View } from "react-native";
 
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
-import { PlaylistMeta, VideoMeta, playlists } from "@/db/schema";
-import { useDatabaseStore } from "@/lib/store";
+import { VideoMeta } from "@/db/schema";
 
 import { Text } from "@/components/ui/text";
 import VideoDropdown from "@/components/video-dropdown";
 
 interface VideoItemProps {
   item: VideoMeta;
-  isInPlaylist: boolean;
   onRefresh: () => void;
 }
 
-function VideoItem({ item, isInPlaylist, onRefresh }: VideoItemProps) {
-  const { db } = useDatabaseStore();
-  const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
-    db.select().from(playlists)
-  );
-
+function VideoItem({ item, onRefresh }: VideoItemProps) {
   return (
     <Animated.View
       className="mb-8 flex-row items-start gap-4"
@@ -51,8 +43,6 @@ function VideoItem({ item, isInPlaylist, onRefresh }: VideoItemProps) {
         </View>
         <VideoDropdown
           item={item}
-          isInPlaylist={isInPlaylist}
-          playlists={data}
           onRefresh={onRefresh}
         />
       </View>

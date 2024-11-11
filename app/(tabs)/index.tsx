@@ -7,9 +7,10 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
 
 import migrations from "@/db/migrations/migrations";
-import { PlaylistVideosMeta, VideoMeta, playlistVideos, videos } from "@/db/schema";
+import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon, SearchIcon } from "@/lib/icons";
 import { useAppStore, useDatabaseStore } from "@/lib/store";
@@ -21,16 +22,21 @@ import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
 export default function HomeScreen() {
-  const { appLoadedOnce, setAppLoadedOnce } = useAppStore();
-  const { db } = useDatabaseStore();
-  const { success, error } = !appLoadedOnce
-    ? useMigrations(db, migrations)
-    : { success: true, error: null };
+  const { appLoadedOnce, setAppLoadedOnce } = useAppStore(
+    useShallow((state) => ({
+      appLoadedOnce: state.appLoadedOnce,
+      setAppLoadedOnce: state.setAppLoadedOnce,
+    }))
+  );
+  const db = useDatabaseStore.getState().db;
 
-  setAppLoadedOnce(true);
+  const { success, error } = useMigrations(db, migrations);
 
-  if (!success) {
-    console.info("Migration is in progress...");
+  useEffect(() => {
+    if (!appLoadedOnce) setAppLoadedOnce(true);
+  }, [appLoadedOnce]);
+
+  if (!appLoadedOnce || !success) {
     return <Text className="p-5">Migration is in progress...</Text>;
   }
 
@@ -39,9 +45,7 @@ export default function HomeScreen() {
     return <Text className="p-5">Migration error.</Text>;
   }
 
-  if (success && !error) {
-    return <ScreenContent />;
-  }
+  return <ScreenContent />;
 }
 
 function ScreenContent() {
@@ -58,13 +62,10 @@ function ScreenContent() {
     }, 200);
   }, []);
 
-  const { db } = useDatabaseStore();
+  const db = useDatabaseStore.getState().db;
 
-  const { data, error }: { data: VideoMeta[]; error: Error | undefined } = useLiveQuery(
-    db.select().from(videos).orderBy(videos.updatedAt)
-  );
-
-  const { data: playlistVideosData } = useLiveQuery(db.select().from(playlistVideos));
+  const videoQuery = useLiveQuery(db.select().from(videos).orderBy(videos.updatedAt));
+  const { data, error } = videoQuery;
 
   useEffect(() => {
     if (data) {
@@ -86,23 +87,16 @@ function ScreenContent() {
     flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
   };
 
-  const renderItem = useCallback(
-    ({ item }: { item: VideoMeta }) => {
-      const isInPlaylist = playlistVideosData.some(
-        (p: PlaylistVideosMeta) => p.videoId === item.id
-      );
-      return (
-        <View className="px-2">
-          <VideoItem
-            item={item}
-            isInPlaylist={isInPlaylist}
-            onRefresh={onRefresh}
-          />
-        </View>
-      );
-    },
-    [playlistVideosData]
-  );
+  const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
+    return (
+      <View className="px-2">
+        <VideoItem
+          item={item}
+          onRefresh={onRefresh}
+        />
+      </View>
+    );
+  }, []);
 
   if (error) {
     console.error("Error loading data.");
@@ -114,7 +108,7 @@ function ScreenContent() {
       <View
         style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full">
-        {!!data && data.length > 0 && (
+        {!!data && data?.length > 0 && (
           <View className="mx-2 mb-8 flex-row items-center gap-4 rounded-md border border-input px-3">
             <SearchIcon
               className="text-muted-foreground"
@@ -138,7 +132,7 @@ function ScreenContent() {
           onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
           onScrollEndDrag={handleScrollEndDrag}
-          ListEmptyComponent={<ListEmptyComponent hasData={!!data && data.length > 0} />}
+          ListEmptyComponent={<ListEmptyComponent hasData={!!data && data?.length > 0} />}
         />
       </View>
     </>

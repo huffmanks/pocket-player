@@ -14,7 +14,7 @@ export default function WatchPlaylistScreen() {
   const [videoSources, setVideoSources] = useState<string[] | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { db } = useDatabaseStore();
+  const db = useDatabaseStore.getState().db;
 
   useEffect(() => {
     const fetchPlaylist = async () => {

@@ -14,7 +14,7 @@ export default function WatchModal() {
   const [videoSources, setVideoSources] = useState<string[] | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { db } = useDatabaseStore();
+  const db = useDatabaseStore.getState().db;
 
   useEffect(() => {
     const fetchVideo = async () => {

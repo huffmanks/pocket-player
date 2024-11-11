@@ -14,7 +14,7 @@ export default function EditModal() {
   const [videoInfo, setVideoInfo] = useState<VideoMeta | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { db } = useDatabaseStore();
+  const db = useDatabaseStore.getState().db;
 
   useEffect(() => {
     const fetchVideo = async () => {

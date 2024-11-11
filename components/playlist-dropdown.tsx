@@ -36,7 +36,7 @@ interface PlaylistDropdownProps {
 
 export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
   const insets = useSafeAreaInsets();
-  const { deletePlaylist } = usePlaylistStore();
+  const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
 
   const contentInsets = {
     top: insets.top,

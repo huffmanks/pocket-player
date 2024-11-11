@@ -8,11 +8,15 @@
 2. AppState status background: dismiss all models, toasts and alert dialogs.
 3. Video player: Add loop and mute buttons to controls.
 4. Settings enable passcode: require creating passcode or disable it until created.
-5. Playlist view:
-   - When removing video from playlist data is stale.
+5. Sale data:
+   - Playlist view: Remove video from playlist, still appearing in list.
+   - Playlist view: Remove video from playlist, not updating on home screen video dropdown.
+   - Playlists screen: Delete playlist, not updating on home screen video dropdown.
    - When playlist videos reorderd update database. Not working.
    - [onRefresh](/components/playlist-sortable.tsx#L63)
    - [handleReorder](/components/playlist-sortable.tsx#L86)
+6. Use SearchStore for filtering searches.
+7.
 
 ## Styles
 

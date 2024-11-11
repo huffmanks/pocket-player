@@ -8,6 +8,7 @@ import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toaster } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -28,40 +29,32 @@ export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
 
-  const { theme, setTheme } = useSettingsStore();
-  const { enablePasscode, setIsLocked } = useSecurityStore();
+  const { theme, setTheme } = useSettingsStore(
+    useShallow((state) => ({ theme: state.theme, setTheme: state.setTheme }))
+  );
+  const { enablePasscode, setIsLocked } = useSecurityStore(
+    useShallow((state) => ({
+      enablePasscode: state.enablePasscode,
+      setIsLocked: state.setIsLocked,
+    }))
+  );
 
   useEffect(() => {
-    (async () => {
-      if (enablePasscode) {
-        setIsLocked(true);
-      }
+    async function initializeLayout() {
+      if (enablePasscode) setIsLocked(true);
+      if (Platform.OS === "web") document.documentElement.classList.add("bg-background");
 
-      if (Platform.OS === "web") {
-        document.documentElement.classList.add("bg-background");
-      }
+      const navColorScheme = theme || colorScheme;
+      setAndroidNavigationBar(navColorScheme);
+      setTheme(navColorScheme);
 
-      if (!theme) {
-        setAndroidNavigationBar(colorScheme);
-        setTheme(colorScheme);
-        setIsColorSchemeLoaded(true);
-        return;
-      }
-
-      setAndroidNavigationBar(theme);
-
-      if (theme !== colorScheme) {
-        setColorScheme(theme);
-
-        setIsColorSchemeLoaded(true);
-        return;
-      }
+      if (theme !== colorScheme) setColorScheme(navColorScheme);
 
       setIsColorSchemeLoaded(true);
-    })().finally(() => {
-      SplashScreen.hideAsync();
-    });
-  }, []);
+    }
+
+    initializeLayout().finally(SplashScreen.hideAsync);
+  }, [colorScheme, theme, enablePasscode]);
 
   if (!isColorSchemeLoaded) {
     return null;

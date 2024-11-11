@@ -25,7 +25,7 @@ export default function FavoritesScreen() {
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
-  const { db } = useDatabaseStore();
+  const db = useDatabaseStore.getState().db;
 
   const { data, error }: { data: VideoMeta[]; error: Error | undefined } = useLiveQuery(
     db.select().from(videos).where(eq(videos.isFavorite, true)).orderBy(videos.updatedAt)

@@ -24,7 +24,7 @@ export default function LockModal() {
   const [code, setCode] = useState<number[]>([]);
   const codeLength = Array(4).fill(0);
   const router = useRouter();
-  const { setIsLocked } = useSecurityStore();
+  const setIsLocked = useSecurityStore((state) => state.setIsLocked);
 
   const offset = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {

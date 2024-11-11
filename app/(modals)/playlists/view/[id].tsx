@@ -19,7 +19,7 @@ export default function ViewPlaylistScreen() {
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
-  const { db } = useDatabaseStore();
+  const db = useDatabaseStore.getState().db;
 
   useEffect(() => {
     const fetchPlaylist = async () => {

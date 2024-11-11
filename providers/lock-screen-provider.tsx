@@ -2,6 +2,8 @@ import { useRouter } from "expo-router";
 import { ReactNode, useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { LOCK_SCREEN_TIMEOUT } from "@/lib/constants";
 import { useSecurityStore } from "@/lib/store";
 
@@ -10,7 +12,15 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
   const appState = useRef(AppState.currentState);
 
   const { backgroundTime, enablePasscode, isLocked, setBackgroundTime, setIsLocked } =
-    useSecurityStore();
+    useSecurityStore(
+      useShallow((state) => ({
+        backgroundTime: state.backgroundTime,
+        enablePasscode: state.enablePasscode,
+        isLocked: state.isLocked,
+        setBackgroundTime: state.setBackgroundTime,
+        setIsLocked: state.setIsLocked,
+      }))
+    );
 
   useEffect(() => {
     if (!enablePasscode) return;

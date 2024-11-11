@@ -38,7 +38,7 @@ const formSchema = z.object({
 export type UploadVideosFormData = z.infer<typeof formSchema>;
 
 export default function UploadForm() {
-  const { uploadVideos } = useVideoStore();
+  const uploadVideos = useVideoStore((state) => state.uploadVideos);
 
   const ref = useRef(null);
   useScrollToTop(ref);

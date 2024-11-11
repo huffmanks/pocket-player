@@ -33,7 +33,7 @@ interface EditFormProps {
 }
 
 export default function EditVideoForm({ videoInfo }: EditFormProps) {
-  const { updateVideo } = useVideoStore();
+  const updateVideo = useVideoStore((state) => state.updateVideo);
 
   const ref = useRef(null);
   useScrollToTop(ref);

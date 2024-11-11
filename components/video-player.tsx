@@ -2,12 +2,16 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { useSettingsStore } from "@/lib/store";
 
 export default function VideoPlayer({ videoSources }: { videoSources: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const videoRef = useRef(null);
-  const { autoPlay, mute, loop } = useSettingsStore();
+  const { autoPlay, mute, loop } = useSettingsStore(
+    useShallow((state) => ({ autoPlay: state.autoPlay, mute: state.mute, loop: state.loop }))
+  );
 
   const isPlaylist = videoSources.length > 1;
 

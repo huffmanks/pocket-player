@@ -22,7 +22,7 @@ export interface VideoData {
 export default function CreatePlaylistScreen() {
   const [videoData, setVideoData] = useState<VideoData[] | null>(null);
 
-  const { db } = useDatabaseStore();
+  const db = useDatabaseStore.getState().db;
 
   useEffect(() => {
     const fetchVideos = async () => {

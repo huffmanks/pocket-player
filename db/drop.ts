@@ -5,7 +5,7 @@ import { useDatabaseStore } from "@/lib/store";
 
 export async function resetTables() {
   try {
-    const { db } = useDatabaseStore();
+    const db = useDatabaseStore.getState().db;
 
     await db.delete(videos).returning();
     await db.delete(playlists).returning();

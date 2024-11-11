@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 export default function ThemeToggle() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
-  const { setTheme } = useSettingsStore();
+  const setTheme = useSettingsStore((state) => state.setTheme);
 
   function handlePress() {
     const newTheme = isDarkColorScheme ? "light" : "dark";

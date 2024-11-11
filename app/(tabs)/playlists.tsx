@@ -29,7 +29,7 @@ export default function PlaylistsScreen() {
     }, 1000);
   }, []);
 
-  const { db } = useDatabaseStore();
+  const db = useDatabaseStore.getState().db;
   const { data, error }: { data: PlaylistMeta[]; error: Error | undefined } = useLiveQuery(
     db.select().from(playlists)
   );

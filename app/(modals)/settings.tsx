@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Platform, View } from "react-native";
 
 import { toast } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
 
 import { clearDirectory, resetTables } from "@/db/drop";
 import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
@@ -26,8 +27,14 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
 export default function SettingsModal() {
-  const { setAppLoadedOnce } = useAppStore();
-  const { passcode, enablePasscode, setEnablePasscode } = useSecurityStore();
+  const setAppLoadedOnce = useAppStore((state) => state.setAppLoadedOnce);
+  const { passcode, enablePasscode, setEnablePasscode } = useSecurityStore(
+    useShallow((state) => ({
+      passcode: state.passcode,
+      enablePasscode: state.enablePasscode,
+      setEnablePasscode: state.setEnablePasscode,
+    }))
+  );
 
   async function dropDatabase() {
     try {

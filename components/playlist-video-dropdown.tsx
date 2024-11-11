@@ -27,8 +27,8 @@ interface VideoDropdownProps {
 
 export default function PlaylistVideoDropdown({ item, onRefresh }: VideoDropdownProps) {
   const insets = useSafeAreaInsets();
-  const { toggleFavorite } = useVideoStore();
-  const { removeVideoFromPlaylist } = usePlaylistStore();
+  const toggleFavorite = useVideoStore((state) => state.toggleFavorite);
+  const removeVideoFromPlaylist = usePlaylistStore((state) => state.removeVideoFromPlaylist);
 
   const contentInsets = {
     top: insets.top,

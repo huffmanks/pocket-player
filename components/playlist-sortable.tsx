@@ -38,8 +38,8 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
 
   const reorderableListRef = useRef<FlatList<VideoMetaForPlaylist> | null>(null);
 
-  const { updatePlaylistOrder } = usePlaylistStore();
-  const { db } = useDatabaseStore();
+  const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
+  const db = useDatabaseStore.getState().db;
   const { data }: { data: VideoMetaForPlaylist[] } = useLiveQuery(
     db
       .select({

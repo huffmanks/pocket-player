@@ -48,7 +48,7 @@ interface CreatePlaylistFormProps {
 }
 
 export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProps) {
-  const { addPlaylist } = usePlaylistStore();
+  const addPlaylist = usePlaylistStore((state) => state.addPlaylist);
   const ref = useRef(null);
   useScrollToTop(ref);
 
@@ -69,7 +69,10 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
       toast.success(`${values.title} playlist created successfully.`);
 
-      router.dismissAll();
+      if (router.canDismiss()) {
+        router.dismissAll();
+      }
+      router.push("/(tabs)/playlists");
     } catch (error) {
       console.error(error);
       toast.error("Error creating playlist!");

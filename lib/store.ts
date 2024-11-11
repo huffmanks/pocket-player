@@ -46,7 +46,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
   videos: [],
   uploadVideos: async (values) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
 
       await db.transaction(async (tx) => {
         const newVideos: VideoMeta[] = [];
@@ -85,7 +85,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
   },
   updateVideo: async ({ id, values }) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
       const [updatedVideo] = await db
         .update(videos)
         .set(values)
@@ -102,7 +102,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
   },
   deleteVideo: async (id) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
       const [deletedVideo] = await db.delete(videos).where(eq(videos.id, id)).returning();
       set((state) => ({ videos: state.videos.filter((v) => deletedVideo.id !== id) }));
       return { status: "success", message: `Video ${deletedVideo.title} successfully deleted.` };
@@ -113,7 +113,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
   },
   toggleFavorite: async (id) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
       const updatedFavoriteStatus = !video.isFavorite;
       await db.update(videos).set({ isFavorite: updatedFavoriteStatus }).where(eq(videos.id, id));
@@ -131,7 +131,6 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
 }));
 
 type PlaylistStoreState = {
-  playlists: PlaylistMeta[];
   addPlaylist: (
     values: CreatePlaylistFormData
   ) => Promise<{ status: "success" | "error"; message: string }>;
@@ -169,13 +168,12 @@ type PlaylistStoreState = {
 };
 
 export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
-  playlists: [],
   addPlaylist: async (values) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
 
-      await db.transaction(async (tx) => {
-        const [createdPlaylist] = await tx
+      const createdPlaylist = await db.transaction(async (tx) => {
+        const [created] = await tx
           .insert(playlists)
           .values({
             title: values.title,
@@ -188,7 +186,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
           .filter((video) => video.isSelected)
           .map((video, index) =>
             tx.insert(playlistVideos).values({
-              playlistId: createdPlaylist.id,
+              playlistId: created.id,
               videoId: video.videoId,
               order: index,
             })
@@ -196,20 +194,12 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 
         await Promise.all(videoInserts);
 
-        set((state) => ({
-          playlists: [
-            ...state.playlists,
-            {
-              ...createdPlaylist,
-              videos: values.videos.filter((video) => video.isSelected),
-            },
-          ],
-        }));
+        return created;
       });
 
       return {
         status: "success",
-        message: "Playlist created successfully.",
+        message: `Playlist ${createdPlaylist.title} created successfully.`,
       };
     } catch (error) {
       console.error("Error creating playlist: ", error);
@@ -218,20 +208,16 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
   },
   updatePlaylist: async ({ id, values }) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
       const [updatedPlaylist] = await db
         .update(playlists)
         .set(values)
         .where(eq(playlists.id, id))
         .returning();
-      set((state) => ({
-        playlists: state.playlists.map((p) =>
-          updatedPlaylist.id === id ? { ...p, ...updatedPlaylist } : p
-        ),
-      }));
+
       return {
         status: "success",
-        message: `Playlist ${updatedPlaylist.title}updated successfully.`,
+        message: `Playlist ${updatedPlaylist.title} updated successfully.`,
       };
     } catch (error) {
       console.error("Error updating playlist: ", error);
@@ -240,9 +226,9 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
   },
   deletePlaylist: async (id) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
       const [deletedPlaylist] = await db.delete(playlists).where(eq(playlists.id, id)).returning();
-      set((state) => ({ playlists: state.playlists.filter((p) => deletedPlaylist.id !== id) }));
+
       return {
         status: "success",
         message: `Playlist ${deletedPlaylist.title} deleted successfully.`,
@@ -254,8 +240,9 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
   },
   addVideoToPlaylist: async ({ playlistId, videoId, order = 1 }) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
       await db.insert(playlistVideos).values({ playlistId, videoId, order });
+
       return { status: "success", message: "Video added to playlist successfully." };
     } catch (error) {
       console.error("Error adding video to playlist: ", error);
@@ -264,7 +251,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
   },
   removeVideoFromPlaylist: async ({ playlistId, videoId }) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
       await db
         .delete(playlistVideos)
         .where(
@@ -282,9 +269,9 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
   },
   updatePlaylistOrder: async ({ playlistId, videosOrder }) => {
     try {
-      const { db } = useDatabaseStore.getState();
+      const db = useDatabaseStore.getState().db;
       await db.transaction(async (tx) => {
-        Promise.all(
+        await Promise.all(
           videosOrder.map(async (video, index) => {
             await tx
               .update(playlistVideos)
