@@ -10,10 +10,9 @@ import VideoDropdown from "@/components/video-dropdown";
 
 interface VideoItemProps {
   item: VideoMeta;
-  onRefresh: () => void;
 }
 
-function VideoItem({ item, onRefresh }: VideoItemProps) {
+function VideoItem({ item }: VideoItemProps) {
   return (
     <Animated.View
       className="mb-8 flex-row items-start gap-4"
@@ -41,10 +40,7 @@ function VideoItem({ item, onRefresh }: VideoItemProps) {
             {item.description ? item.description : "No description"}
           </Text>
         </View>
-        <VideoDropdown
-          item={item}
-          onRefresh={onRefresh}
-        />
+        <VideoDropdown item={item} />
       </View>
     </Animated.View>
   );

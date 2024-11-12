@@ -17,7 +17,7 @@ export default function ModalLayout() {
       }}>
       <Stack.Screen
         name="playlists/watch/[id]"
-        options={{ animation: "slide_from_bottom" }}
+        options={{ animation: "slide_from_bottom", title: "Watch playlist" }}
       />
       <Stack.Screen
         name="playlists/view/[id]"

@@ -1,53 +1,30 @@
-import { Stack, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 
 import { eq } from "drizzle-orm";
-import { toast } from "sonner-native";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
-import { playlistVideos, playlists, videos } from "@/db/schema";
+import { playlistVideos, videos } from "@/db/schema";
 import { useDatabaseStore } from "@/lib/store";
 
 import VideoPlayer from "@/components/video-player";
 
 export default function WatchPlaylistScreen() {
-  const [screenTitle, setScreenTitle] = useState<string | null>(null);
-  const [videoSources, setVideoSources] = useState<string[] | null>(null);
-
   const { id } = useLocalSearchParams<{ id: string }>();
+
   const db = useDatabaseStore.getState().db;
 
-  useEffect(() => {
-    const fetchPlaylist = async () => {
-      const [playlistData] = await db.select().from(playlists).where(eq(playlists.id, id));
-
-      const videosData = await db
-        .select()
-        .from(videos)
-        .innerJoin(playlistVideos, eq(playlistVideos.videoId, videos.id))
-        .where(eq(playlistVideos.playlistId, playlistData.id));
-
-      if (videosData[0] && videosData[0]?.videos?.videoUri) {
-        const tmpVideoSources = videosData.map((item) => item.videos.videoUri);
-        setVideoSources(tmpVideoSources);
-      }
-
-      if (playlistData?.title) {
-        setScreenTitle(playlistData.title);
-      }
-    };
-
-    fetchPlaylist().catch((error) => {
-      console.error("Failed to find video source: ", error);
-      toast.error("Failed to find video source.");
-    });
-  }, []);
-
-  if (!videoSources || !screenTitle) return null;
+  const playlistVideosQuery = useLiveQuery(
+    db
+      .select()
+      .from(videos)
+      .innerJoin(playlistVideos, eq(playlistVideos.videoId, videos.id))
+      .where(eq(playlistVideos.playlistId, id))
+      .orderBy(playlistVideos.order)
+  );
 
   return (
     <>
-      <Stack.Screen options={{ title: screenTitle }} />
-      <VideoPlayer videoSources={videoSources} />
+      <VideoPlayer videoSources={playlistVideosQuery.data.map((item) => item.videos.videoUri)} />
     </>
   );
 }

@@ -32,7 +32,6 @@ export default function PlaylistsScreen() {
   const db = useDatabaseStore.getState().db;
 
   const playlistQuery = useLiveQuery(db.select().from(playlists));
-  const { data, error } = playlistQuery;
 
   const flashListRef = useRef<FlashList<PlaylistMeta> | null>(null);
   const insets = useSafeAreaInsets();
@@ -46,7 +45,7 @@ export default function PlaylistsScreen() {
   };
 
   const renderItem = useCallback(
-    ({ item, index }: { item: PlaylistMeta; index: number }) => (
+    ({ item }: { item: PlaylistMeta }) => (
       <View className="mb-5 flex-row items-center justify-between gap-4 rounded-md bg-secondary p-4">
         <Link
           className="flex-1"
@@ -57,11 +56,13 @@ export default function PlaylistsScreen() {
               numberOfLines={1}>
               {item.title}
             </Text>
-            <Text
-              className="text-muted-foreground"
-              numberOfLines={1}>
-              {item.description}
-            </Text>
+            {item.description && (
+              <Text
+                className="text-muted-foreground"
+                numberOfLines={1}>
+                {item.description}
+              </Text>
+            )}
           </View>
         </Link>
         <PlaylistDropdown item={item} />
@@ -70,7 +71,7 @@ export default function PlaylistsScreen() {
     []
   );
 
-  if (error) {
+  if (playlistQuery.error) {
     console.error("Error loading data.");
     toast.error("Error loading data.");
   }
@@ -81,7 +82,7 @@ export default function PlaylistsScreen() {
         style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full px-5">
         <FlashList
-          data={data}
+          data={playlistQuery.data}
           key={`playlists_${keyIndex}`}
           keyExtractor={(item, index) => {
             return item.id + index;
@@ -91,7 +92,9 @@ export default function PlaylistsScreen() {
           onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_PLAYLIST_HEIGHT}
           onScrollEndDrag={handleScrollEndDrag}
-          ListHeaderComponent={<ListHeaderComponent hasData={!!data && data.length > 0} />}
+          ListHeaderComponent={
+            <ListHeaderComponent hasData={playlistQuery.data && playlistQuery.data.length > 0} />
+          }
           ListEmptyComponent={<ListEmptyComponent />}
         />
       </View>

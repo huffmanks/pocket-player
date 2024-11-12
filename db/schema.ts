@@ -1,4 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
+import { relations } from "drizzle-orm";
 import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
@@ -17,9 +18,6 @@ export const videos = sqliteTable("videos", {
   updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
 });
 
-export const VideoSchema = createSelectSchema(videos);
-export type VideoMeta = z.infer<typeof VideoSchema>;
-
 export const playlists = sqliteTable("playlists", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -30,9 +28,6 @@ export const playlists = sqliteTable("playlists", {
   createdAt: text("created_at").default(new Date().toISOString()).notNull(),
   updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
 });
-
-export const PlaylistSchema = createSelectSchema(playlists);
-export type PlaylistMeta = z.infer<typeof PlaylistSchema>;
 
 export const playlistVideos = sqliteTable(
   "playlist_videos",
@@ -50,5 +45,28 @@ export const playlistVideos = sqliteTable(
   })
 );
 
+export const VideoSchema = createSelectSchema(videos);
+export type VideoMeta = z.infer<typeof VideoSchema>;
+export const PlaylistSchema = createSelectSchema(playlists);
+export type PlaylistMeta = z.infer<typeof PlaylistSchema>;
 export const PlaylistVideosSchema = createSelectSchema(playlistVideos);
 export type PlaylistVideosMeta = z.infer<typeof PlaylistVideosSchema>;
+
+export const videosRelations = relations(videos, ({ many }) => ({
+  playlists: many(playlistVideos),
+}));
+
+export const playlistsRelations = relations(playlists, ({ many }) => ({
+  videos: many(playlistVideos),
+}));
+
+export const playlistVideosRelations = relations(playlistVideos, ({ one }) => ({
+  playlist: one(playlists, {
+    fields: [playlistVideos.playlistId],
+    references: [playlists.id],
+  }),
+  video: one(videos, {
+    fields: [playlistVideos.videoId],
+    references: [videos.id],
+  }),
+}));

@@ -1,9 +1,10 @@
-import { useCallback, useRef, useState } from "react";
+import { useRef } from "react";
 import {
   FlatList,
   ListRenderItemInfo,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  View,
 } from "react-native";
 
 import { eq } from "drizzle-orm";
@@ -33,9 +34,6 @@ export type VideoMetaForPlaylist = {
 };
 
 export default function PlaylistSortable({ playlistId }: { playlistId: string }) {
-  const [refreshing, setRefreshing] = useState(false);
-  const [keyIndex, setKeyIndex] = useState(0);
-
   const reorderableListRef = useRef<FlatList<VideoMetaForPlaylist> | null>(null);
 
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
@@ -58,17 +56,9 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
       .from(videos)
       .innerJoin(playlistVideos, eq(playlistVideos.videoId, videos.id))
       .where(eq(playlistVideos.playlistId, playlistId))
-      .orderBy(playlistVideos.order)
+      .orderBy(playlistVideos.order),
+    [playlistId]
   );
-  const { data, error } = videoForPlaylistQuery;
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setKeyIndex((prev) => prev + 1);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 200);
-  }, []);
 
   const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetY = event.nativeEvent.contentOffset.y;
@@ -79,26 +69,22 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<VideoMetaForPlaylist>) => (
-    <PlaylistItem
-      item={item}
-      onRefresh={onRefresh}
-    />
+    <PlaylistItem item={item} />
   );
 
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
-    const newData = reorderItems(data!, from, to);
+    const newData = reorderItems(videoForPlaylistQuery.data, from, to);
     await updatePlaylistOrder({ playlistId, videosOrder: newData });
   };
 
   return (
     <ReorderableList
-      key={`playlist-reorderable_${keyIndex}`}
-      data={data!}
+      key={`playlist-reorderable_${playlistId}`}
+      data={videoForPlaylistQuery.data}
       keyExtractor={(item) => item.key}
       renderItem={renderItem}
       onReorder={handleReorder}
-      refreshing={refreshing}
-      onRefresh={onRefresh}
+      ListFooterComponent={<View style={{ paddingTop: ESTIMATED_PLAYLIST_ITEM_HEIGHT + 16 }} />}
       onScrollEndDrag={handleScrollEndDrag}
     />
   );

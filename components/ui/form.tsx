@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import {
   Controller,
@@ -295,29 +295,33 @@ const FormCheckbox = React.forwardRef<
   }
 
   return (
-    <FormItem className="px-1">
-      <View className="flex-row items-center gap-4">
-        <Checkbox
-          ref={ref}
-          aria-labelledby={formItemNativeID}
-          aria-describedby={
-            !error
-              ? `${formDescriptionNativeID}`
-              : `${formDescriptionNativeID} ${formMessageNativeID}`
-          }
-          aria-invalid={!!error}
-          onCheckedChange={onChange}
-          checked={value}
-          {...props}
-        />
-        {!!label && (
-          <FormLabel
-            className="native:pb-0"
-            nativeID={formItemNativeID}
-            onPress={handleOnLabelPress}>
-            {label}
-          </FormLabel>
-        )}
+    <FormItem className="flex flex-1 px-1">
+      <View className="flex flex-1">
+        <Pressable
+          onPress={handleOnLabelPress}
+          className="flex flex-1 flex-row items-center gap-4">
+          <Checkbox
+            ref={ref}
+            aria-labelledby={formItemNativeID}
+            aria-describedby={
+              !error
+                ? `${formDescriptionNativeID}`
+                : `${formDescriptionNativeID} ${formMessageNativeID}`
+            }
+            aria-invalid={!!error}
+            onCheckedChange={onChange}
+            checked={value}
+            {...props}
+          />
+          {!!label && (
+            <FormLabel
+              numberOfLines={1}
+              className="native:pb-0"
+              nativeID={formItemNativeID}>
+              {label}
+            </FormLabel>
+          )}
+        </Pressable>
       </View>
       {!!description && <FormDescription>{description}</FormDescription>}
       <FormMessage />

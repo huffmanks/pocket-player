@@ -94,14 +94,16 @@ export default function UploadForm() {
     try {
       await uploadVideos(values);
       toast.success("Videos added successfully.");
+
+      form.reset();
+      if (router.canDismiss()) {
+        router.dismissAll();
+      }
+      router.push("/");
     } catch (error) {
       console.error(error);
       toast.error("Error submitting form.");
     }
-
-    form.reset();
-
-    router.push("/");
   }
 
   function handleErrors(errors: FieldErrors<UploadVideosFormData>) {

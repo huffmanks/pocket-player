@@ -11,8 +11,8 @@ CREATE TABLE `playlists` (
 	`id` text PRIMARY KEY NOT NULL,
 	`title` text NOT NULL,
 	`description` text DEFAULT '' NOT NULL,
-	`created_at` text DEFAULT '2024-11-09T07:42:36.206Z' NOT NULL,
-	`updated_at` text DEFAULT '2024-11-09T07:42:36.206Z' NOT NULL
+	`created_at` text DEFAULT '2024-11-12T18:34:00.577Z' NOT NULL,
+	`updated_at` text DEFAULT '2024-11-12T18:34:00.577Z' NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `playlists_title_unique` ON `playlists` (`title`);--> statement-breakpoint
@@ -23,6 +23,6 @@ CREATE TABLE `videos` (
 	`videoUri` text NOT NULL,
 	`thumbUri` text NOT NULL,
 	`isFavorite` integer DEFAULT false NOT NULL,
-	`created_at` text DEFAULT '2024-11-09T07:42:36.193Z' NOT NULL,
-	`updated_at` text DEFAULT '2024-11-09T07:42:36.202Z' NOT NULL
+	`created_at` text DEFAULT '2024-11-12T18:34:00.574Z' NOT NULL,
+	`updated_at` text DEFAULT '2024-11-12T18:34:00.576Z' NOT NULL
 );

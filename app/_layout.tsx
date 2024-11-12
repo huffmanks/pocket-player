@@ -79,7 +79,7 @@ export default function RootLayout() {
             <Toaster
               theme={colorScheme === "light" ? "light" : "dark"}
               richColors
-              position="top-center"
+              position="bottom-center"
               offset={60}
             />
           </ThemeProvider>

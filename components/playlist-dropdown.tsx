@@ -72,7 +72,7 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
       <DropdownMenuContent
         insets={contentInsets}
         className="native:w-72 w-64">
-        <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
+        <DropdownMenuLabel numberOfLines={1}>{item.title}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
@@ -112,7 +112,7 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
                   size={20}
                   strokeWidth={1.25}
                 />
-                <Text className="native:text-lg font-normal text-foreground">Delete</Text>
+                <Text className="native:text-base font-normal text-foreground">Delete</Text>
               </Button>
             </AlertDialogTrigger>
           </DropdownMenuItem>

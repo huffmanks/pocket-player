@@ -54,13 +54,8 @@ function ScreenContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState<VideoMeta[]>([]);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setKeyIndex((prev) => prev + 1);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 200);
-  }, []);
+  const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
+  const insets = useSafeAreaInsets();
 
   const db = useDatabaseStore.getState().db;
 
@@ -76,8 +71,13 @@ function ScreenContent() {
     }
   }, [searchQuery, data]);
 
-  const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
-  const insets = useSafeAreaInsets();
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setKeyIndex((prev) => prev + 1);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 200);
+  }, []);
 
   const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetY = event.nativeEvent.contentOffset.y;
@@ -90,10 +90,7 @@ function ScreenContent() {
   const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
     return (
       <View className="px-2">
-        <VideoItem
-          item={item}
-          onRefresh={onRefresh}
-        />
+        <VideoItem item={item} />
       </View>
     );
   }, []);

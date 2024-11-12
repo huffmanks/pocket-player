@@ -48,11 +48,17 @@ import {
 
 interface VideoDropdownProps {
   item: VideoMeta;
-  onRefresh: () => void;
 }
 
-export default function VideoDropdown({ item, onRefresh }: VideoDropdownProps) {
+export default function VideoDropdown({ item }: VideoDropdownProps) {
   const insets = useSafeAreaInsets();
+
+  const contentInsets = {
+    top: insets.top,
+    bottom: insets.bottom,
+    left: 12,
+    right: 12,
+  };
 
   const { toggleFavorite, deleteVideo } = useVideoStore(
     useShallow((state) => ({
@@ -69,15 +75,11 @@ export default function VideoDropdown({ item, onRefresh }: VideoDropdownProps) {
 
   const playlistQuery = useLiveQuery(db.select().from(playlists));
   const isInPlaylist = useLiveQuery(
-    db.select({ count: count() }).from(playlistVideos).where(eq(playlistVideos.videoId, item.id))
+    db
+      .select({ count: count(), videoId: playlistVideos.videoId })
+      .from(playlistVideos)
+      .where(eq(playlistVideos.videoId, item.id))
   );
-
-  const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
-    left: 12,
-    right: 12,
-  };
 
   async function handleFavorite() {
     const { message, status } = await toggleFavorite(item.id);
@@ -93,7 +95,6 @@ export default function VideoDropdown({ item, onRefresh }: VideoDropdownProps) {
 
     if (status === "success") {
       toast.success(message);
-      onRefresh();
     } else {
       toast.error(message);
     }
@@ -104,7 +105,6 @@ export default function VideoDropdown({ item, onRefresh }: VideoDropdownProps) {
 
     if (status === "success") {
       toast.error(message);
-      onRefresh();
     } else {
       toast.error(message);
     }
@@ -137,7 +137,7 @@ export default function VideoDropdown({ item, onRefresh }: VideoDropdownProps) {
       <DropdownMenuContent
         insets={contentInsets}
         className="native:w-72 w-64">
-        <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
+        <DropdownMenuLabel numberOfLines={1}>{item.title}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
@@ -242,7 +242,7 @@ export default function VideoDropdown({ item, onRefresh }: VideoDropdownProps) {
                   size={20}
                   strokeWidth={1.25}
                 />
-                <Text className="native:text-lg font-normal text-foreground">Delete</Text>
+                <Text className="native:text-base font-normal text-foreground">Delete</Text>
               </Button>
             </AlertDialogTrigger>
           </DropdownMenuItem>

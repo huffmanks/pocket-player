@@ -31,11 +31,11 @@ export default function WatchModal() {
     });
   }, []);
 
-  if (!videoSources || !screenTitle) return null;
+  if (!videoSources) return null;
 
   return (
     <>
-      <Stack.Screen options={{ title: screenTitle }} />
+      <Stack.Screen options={{ title: screenTitle ?? "Watch video" }} />
       <VideoPlayer videoSources={videoSources} />
     </>
   );

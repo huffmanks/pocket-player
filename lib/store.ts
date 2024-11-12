@@ -1,12 +1,30 @@
 import { and, eq } from "drizzle-orm";
+import { MMKV } from "react-native-mmkv";
 import { create } from "zustand";
+import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 
+import { EditPlaylistInfo } from "@/app/(modals)/playlists/edit/[id]";
 import { db as drizzleDb } from "@/db/drizzle";
 import { PlaylistMeta, VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
 
 import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
 import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
+
+const settingsStorage = new MMKV({ id: "settings" });
+const securityStorage = new MMKV({ id: "security", encryptionKey: "your-encryption-key" });
+
+const settingsZustandStorage: StateStorage = {
+  setItem: (key, value) => settingsStorage.set(key, value),
+  getItem: (key) => settingsStorage.getString(key) ?? null,
+  removeItem: (key) => settingsStorage.delete(key),
+};
+
+const securityZustandStorage: StateStorage = {
+  setItem: (key, value) => securityStorage.set(key, value),
+  getItem: (key) => securityStorage.getString(key) ?? null,
+  removeItem: (key) => securityStorage.delete(key),
+};
 
 type DatabaseStore = {
   db: typeof drizzleDb;
@@ -142,6 +160,7 @@ type PlaylistStoreState = {
     values: Partial<PlaylistMeta>;
   }) => Promise<{ status: "success" | "error"; message: string }>;
   deletePlaylist: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
+  getPlaylistWithAllVideos: (id: string) => Promise<EditPlaylistInfo>;
   addVideoToPlaylist: ({
     playlistId,
     videoId,
@@ -238,6 +257,47 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
       return { status: "error", message: "Failed to delete playlist." };
     }
   },
+  getPlaylistWithAllVideos: async (id) => {
+    try {
+      const db = useDatabaseStore.getState().db;
+
+      const [playlist] = await db.select().from(playlists).where(eq(playlists.id, id));
+
+      const allVideos = await db.select().from(videos);
+
+      const matchingPlaylistVideos = await db
+        .select({
+          videoId: playlistVideos.videoId,
+        })
+        .from(playlistVideos)
+        .where(eq(playlistVideos.playlistId, id));
+
+      const selectedVideoIds = new Set(matchingPlaylistVideos.map((pv) => pv.videoId));
+
+      const transformedVideos = allVideos.map((video) => ({
+        videoId: video.id,
+        title: video.title,
+        isSelected: selectedVideoIds.has(video.id),
+      }));
+
+      return {
+        id: playlist.id,
+        title: playlist.title,
+        description: playlist.description,
+        videos: transformedVideos,
+      };
+    } catch (error) {
+      console.error("Error getting playlist and videos: ", error);
+      return {
+        status: "error",
+        message: "Playlist not found",
+        id: "",
+        title: "",
+        description: "",
+        videos: [],
+      };
+    }
+  },
   addVideoToPlaylist: async ({ playlistId, videoId, order = 1 }) => {
     try {
       const db = useDatabaseStore.getState().db;
@@ -301,16 +361,24 @@ type SettingsStoreState = {
   setTheme: (theme: "light" | "dark") => void;
 };
 
-export const useSettingsStore = create<SettingsStoreState>((set) => ({
-  autoPlay: false,
-  loop: false,
-  mute: false,
-  theme: "dark",
-  setAutoPlay: (autoPlay) => set({ autoPlay }),
-  setLoop: (loop) => set({ loop }),
-  setMute: (mute) => set({ mute }),
-  setTheme: (theme) => set({ theme }),
-}));
+export const useSettingsStore = create<SettingsStoreState>()(
+  persist(
+    (set) => ({
+      autoPlay: false,
+      loop: false,
+      mute: false,
+      theme: "dark",
+      setAutoPlay: (autoPlay) => set({ autoPlay }),
+      setLoop: (loop) => set({ loop }),
+      setMute: (mute) => set({ mute }),
+      setTheme: (theme) => set({ theme }),
+    }),
+    {
+      name: "settings-store",
+      storage: createJSONStorage(() => settingsZustandStorage),
+    }
+  )
+);
 
 type SecurityStoreState = {
   backgroundTime: number | null;
@@ -323,16 +391,24 @@ type SecurityStoreState = {
   setEnablePasscode: (enable: boolean) => void;
 };
 
-export const useSecurityStore = create<SecurityStoreState>((set) => ({
-  backgroundTime: null,
-  isLocked: false,
-  enablePasscode: false,
-  passcode: null,
-  setBackgroundTime: () => set({ backgroundTime: Date.now() }),
-  setPasscode: (code) => set({ passcode: code }),
-  setIsLocked: (lock) => set({ isLocked: lock }),
-  setEnablePasscode: (enable) => set({ enablePasscode: enable }),
-}));
+export const useSecurityStore = create<SecurityStoreState>()(
+  persist(
+    (set) => ({
+      backgroundTime: null,
+      isLocked: false,
+      enablePasscode: false,
+      passcode: null,
+      setBackgroundTime: () => set({ backgroundTime: Date.now() }),
+      setPasscode: (code) => set({ passcode: code }),
+      setIsLocked: (lock) => set({ isLocked: lock }),
+      setEnablePasscode: (enable) => set({ enablePasscode: enable }),
+    }),
+    {
+      name: "security-store",
+      storage: createJSONStorage(() => securityZustandStorage),
+    }
+  )
+);
 
 type SearchStoreState = {
   filter: string;
