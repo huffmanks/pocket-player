@@ -80,7 +80,7 @@ export default function RootLayout() {
               theme={colorScheme === "light" ? "light" : "dark"}
               richColors
               position="bottom-center"
-              offset={60}
+              offset={70}
             />
           </ThemeProvider>
         </LockScreenProvider>
