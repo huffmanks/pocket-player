@@ -5,7 +5,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TvIcon } from "@/lib/icons";
 
-import PlaylistSortable from "@/components/playlist-sortable";
+import PlaylistSortable from "@/components/rn-draglist";
+// import PlaylistSortable from "@/components/rn-draggable";
+// import PlaylistSortable from "@/components/playlist-sortable";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 
