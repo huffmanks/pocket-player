@@ -1,11 +1,5 @@
-import { useRef } from "react";
-import {
-  FlatList,
-  ListRenderItemInfo,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  View,
-} from "react-native";
+import { useCallback, useState } from "react";
+import { ListRenderItemInfo, View } from "react-native";
 
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -34,7 +28,7 @@ export type VideoMetaForPlaylist = {
 };
 
 export default function PlaylistSortable({ playlistId }: { playlistId: string }) {
-  const reorderableListRef = useRef<FlatList<VideoMetaForPlaylist> | null>(null);
+  const [keyIndex, setKeyIndex] = useState(0);
 
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
   const db = useDatabaseStore.getState().db;
@@ -57,20 +51,21 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
       .innerJoin(playlistVideos, eq(playlistVideos.videoId, videos.id))
       .where(eq(playlistVideos.playlistId, playlistId))
       .orderBy(playlistVideos.order),
-    [playlistId]
+    [keyIndex]
   );
 
-  const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const contentOffsetY = event.nativeEvent.contentOffset.y;
-    const snapToIndex = Math.round(contentOffsetY / ESTIMATED_PLAYLIST_ITEM_HEIGHT);
-    const newY = snapToIndex * ESTIMATED_PLAYLIST_ITEM_HEIGHT;
+  const onRefresh = useCallback(() => {
+    setKeyIndex((prev) => prev + 1);
+  }, []);
 
-    reorderableListRef.current?.scrollToOffset({ offset: newY, animated: true });
-  };
-
-  const renderItem = ({ item }: ListRenderItemInfo<VideoMetaForPlaylist>) => (
-    <PlaylistItem item={item} />
-  );
+  const renderItem = useCallback(({ item }: ListRenderItemInfo<VideoMetaForPlaylist>) => {
+    return (
+      <PlaylistItem
+        item={item}
+        onRefresh={onRefresh}
+      />
+    );
+  }, []);
 
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
     const newData = reorderItems(videoForPlaylistQuery.data, from, to);
@@ -85,7 +80,6 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
       renderItem={renderItem}
       onReorder={handleReorder}
       ListFooterComponent={<View style={{ paddingTop: ESTIMATED_PLAYLIST_ITEM_HEIGHT + 16 }} />}
-      onScrollEndDrag={handleScrollEndDrag}
     />
   );
 }

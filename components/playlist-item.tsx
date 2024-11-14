@@ -7,9 +7,10 @@ import PlaylistVideoDropdown from "@/components/playlist-video-dropdown";
 
 interface PlaylistItemProps {
   item: VideoMetaForPlaylist;
+  onRefresh: () => void;
 }
 
-export default function PlaylistItem({ item }: PlaylistItemProps) {
+export default function PlaylistItem({ item, onRefresh }: PlaylistItemProps) {
   const drag = useReorderableDrag();
 
   return (
@@ -29,7 +30,10 @@ export default function PlaylistItem({ item }: PlaylistItemProps) {
           {item.title}
         </Text>
       </Pressable>
-      <PlaylistVideoDropdown item={item} />
+      <PlaylistVideoDropdown
+        item={item}
+        onRefresh={onRefresh}
+      />
     </ReorderableListItem>
   );
 }

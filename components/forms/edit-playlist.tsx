@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useRef } from "react";
 import { ScrollView, View } from "react-native";
 
@@ -18,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
 const formSchema = z.object({
+  id: z.string(),
   title: z
     .string()
     .min(3, { message: "Title must be at least 3 characters." })
@@ -47,13 +49,14 @@ interface EditPlaylistFormProps {
 }
 
 export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormProps) {
-  const addPlaylist = usePlaylistStore((state) => state.addPlaylist);
+  const updatePlaylist = usePlaylistStore((state) => state.updatePlaylist);
   const ref = useRef(null);
   useScrollToTop(ref);
 
   const form = useForm<EditPlaylistFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: editPlaylistInfo.id,
       title: editPlaylistInfo.title,
       description: editPlaylistInfo.description,
       videos: editPlaylistInfo.videos,
@@ -61,18 +64,18 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
   });
 
   async function onSubmit(values: EditPlaylistFormData) {
-    // try {
-    //   const parsedValues = formSchema.parse(values);
-    //   await addPlaylist(parsedValues);
-    //   toast.success(`${values.title} playlist updated successfully.`);
-    //   if (router.canDismiss()) {
-    //     router.dismissAll();
-    //   }
-    //   router.push("/(tabs)/playlists");
-    // } catch (error) {
-    //   console.error(error);
-    //   toast.error("Error updating playlist!");
-    // }
+    try {
+      const parsedValues = formSchema.parse(values);
+      await updatePlaylist({ id: editPlaylistInfo.id, values: parsedValues });
+      toast.success(`${values.title} playlist updated successfully.`);
+      if (router.canDismiss()) {
+        router.dismissAll();
+      }
+      router.push("/(tabs)/playlists");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error updating playlist!");
+    }
   }
 
   function handleErrors(errors: FieldErrors<EditPlaylistFormData>) {

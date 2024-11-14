@@ -53,6 +53,8 @@
     "expo-video": "^1.2.7",
     "expo-video-thumbnails": "^8.0.0",
     "expo-web-browser": "~13.0.3",
+    "fuse": "^0.12.1",
+    "fuse.js": "^7.0.0",
     "lucide-react-native": "^0.453.0",
     "nativewind": "latest",
     "react": "18.2.0",
@@ -94,7 +96,9 @@
   "pnpm": {
     "peerDependencyRules": {
       "ignoreMissing": [
-        "react-native-svg"
+        "react-native-svg",
+        "@urql/core",
+        "vite"
       ],
       "overrides": {
         "react-native-svg": "15.2.0"

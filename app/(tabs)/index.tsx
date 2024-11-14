@@ -5,6 +5,7 @@ import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import Fuse from "fuse.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
@@ -64,10 +65,15 @@ function ScreenContent() {
 
   useEffect(() => {
     if (data) {
-      const filtered = data.filter((item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredData(filtered);
+      if (searchQuery) {
+        const fuse = new Fuse(data, {
+          keys: ["title"],
+          threshold: 0.5,
+        });
+        setFilteredData(fuse.search(searchQuery).map((result) => result.item));
+      } else {
+        setFilteredData(data);
+      }
     }
   }, [searchQuery, data]);
 

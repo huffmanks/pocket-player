@@ -9,13 +9,8 @@
 3. Video player: Add loop and mute buttons to controls.
 4. Settings enable passcode: require creating passcode or disable it until created.
 5. Stale data:
-   - Playlist view: Remove video from playlist, still appearing in list.
-   - Home screen: when video is in playlist and all playlists get deleted video dropdown still has remove from playlist action.
    - When playlist videos reorderd update database. Not working.
-   - [onRefresh](/components/playlist-sortable.tsx#L63)
    - [handleReorder](/components/playlist-sortable.tsx#L86)
-6. Use SearchStore for filtering searches.
-7. Switch settings and security stores to react-native-mmkv.
 
 ## Styles
 
@@ -25,4 +20,3 @@
 ## New features
 
 1. Settings modal: create/update passcode.
-2. Edit playlist: finish [onSubmit](/components/forms/edit-playlist.tsx#L63)

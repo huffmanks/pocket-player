@@ -1,11 +1,11 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, notInArray } from "drizzle-orm";
 import { MMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 
 import { EditPlaylistInfo } from "@/app/(modals)/playlists/edit/[id]";
 import { db as drizzleDb } from "@/db/drizzle";
-import { PlaylistMeta, VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
+import { VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
 
 import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
@@ -157,7 +157,7 @@ type PlaylistStoreState = {
     values,
   }: {
     id: string;
-    values: Partial<PlaylistMeta>;
+    values: EditPlaylistInfo;
   }) => Promise<{ status: "success" | "error"; message: string }>;
   deletePlaylist: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
   getPlaylistWithAllVideos: (id: string) => Promise<EditPlaylistInfo>;
@@ -228,11 +228,47 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
   updatePlaylist: async ({ id, values }) => {
     try {
       const db = useDatabaseStore.getState().db;
-      const [updatedPlaylist] = await db
-        .update(playlists)
-        .set(values)
-        .where(eq(playlists.id, id))
-        .returning();
+      const updatedPlaylist = await db.transaction(async (tx) => {
+        const [updated] = await tx
+          .update(playlists)
+          .set({
+            title: values.title,
+            description: values.description,
+            updatedAt: new Date().toISOString(),
+          })
+          .where(eq(playlists.id, id))
+          .returning();
+
+        const selectedVideoIds = values.videos
+          .filter((video) => video.isSelected)
+          .map((video) => video.videoId);
+
+        await tx
+          .delete(playlistVideos)
+          .where(
+            and(
+              eq(playlistVideos.playlistId, id),
+              notInArray(playlistVideos.videoId, selectedVideoIds)
+            )
+          );
+
+        const videoInserts = values.videos
+          .filter((video) => video.isSelected)
+          .map((video, index) =>
+            tx
+              .insert(playlistVideos)
+              .values({
+                playlistId: updated.id,
+                videoId: video.videoId,
+                order: index,
+              })
+              .onConflictDoNothing()
+          );
+
+        await Promise.all(videoInserts);
+
+        return updated;
+      });
 
       return {
         status: "success",
@@ -409,19 +445,3 @@ export const useSecurityStore = create<SecurityStoreState>()(
     }
   )
 );
-
-type SearchStoreState = {
-  filter: string;
-  sortBy: "createdAt" | "updatedAt";
-  sortDirection: "asc" | "desc";
-  setFilter: (filter: string) => void;
-  setSort: (sortBy?: "createdAt" | "updatedAt", direction?: "asc" | "desc") => void;
-};
-
-export const useSearchStore = create<SearchStoreState>((set) => ({
-  filter: "",
-  sortBy: "updatedAt",
-  sortDirection: "desc",
-  setFilter: (filter) => set({ filter }),
-  setSort: (sortBy = "updatedAt", direction = "desc") => set({ sortBy, sortDirection: direction }),
-}));
