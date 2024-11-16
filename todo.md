@@ -11,6 +11,7 @@
 5. Stale data:
    - When playlist videos reorderd update database. Not working.
    - [handleReorder](/components/playlist-sortable.tsx#L86)
+6. Test new video component library [react-native-vlc-player](https://github.com/ghondar/react-native-vlc-player) 
 
 ## Styles
 
