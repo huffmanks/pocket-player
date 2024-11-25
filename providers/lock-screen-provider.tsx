@@ -11,11 +11,12 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const appState = useRef(AppState.currentState);
 
-  const { backgroundTime, enablePasscode, isLocked, setBackgroundTime, setIsLocked } =
+  const { backgroundTime, enablePasscode, passcode, isLocked, setBackgroundTime, setIsLocked } =
     useSecurityStore(
       useShallow((state) => ({
         backgroundTime: state.backgroundTime,
         enablePasscode: state.enablePasscode,
+        passcode: state.passcode,
         isLocked: state.isLocked,
         setBackgroundTime: state.setBackgroundTime,
         setIsLocked: state.setIsLocked,
@@ -23,7 +24,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     );
 
   useEffect(() => {
-    if (!enablePasscode) return;
+    if (!enablePasscode || passcode === null) return;
 
     const subscription = AppState.addEventListener("change", handleAppStateChange);
 

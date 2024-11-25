@@ -44,6 +44,10 @@ export default function ModalLayout() {
         options={{ headerShown: false, animation: "fade" }}
       />
       <Stack.Screen
+        name="passcode"
+        options={{ presentation: "modal", title: "Passcode" }}
+      />
+      <Stack.Screen
         name="settings"
         options={{ presentation: "modal", title: "Settings" }}
       />

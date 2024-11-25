@@ -11,6 +11,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { useShallow } from "zustand/react/shallow";
 
 import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
 import { DeleteIcon, ScanFaceIcon } from "@/lib/icons";
@@ -24,7 +25,13 @@ export default function LockModal() {
   const [code, setCode] = useState<number[]>([]);
   const codeLength = Array(4).fill(0);
   const router = useRouter();
-  const setIsLocked = useSecurityStore((state) => state.setIsLocked);
+
+  const { passcode, setIsLocked } = useSecurityStore(
+    useShallow((state) => ({
+      passcode: state.passcode,
+      setIsLocked: state.setIsLocked,
+    }))
+  );
 
   const offset = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {
@@ -37,7 +44,7 @@ export default function LockModal() {
     if (code.length === 4) {
       setCode([]);
 
-      if (code.join("") === "1111") {
+      if (code.join("") === passcode) {
         setIsLocked(false);
         router.replace("/");
       } else {

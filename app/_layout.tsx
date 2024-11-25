@@ -32,16 +32,25 @@ export default function RootLayout() {
   const { theme, setTheme } = useSettingsStore(
     useShallow((state) => ({ theme: state.theme, setTheme: state.setTheme }))
   );
-  const { enablePasscode, setIsLocked } = useSecurityStore(
+  const { enablePasscode, passcode, setEnablePasscode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       enablePasscode: state.enablePasscode,
+      passcode: state.passcode,
+      setEnablePasscode: state.setEnablePasscode,
       setIsLocked: state.setIsLocked,
     }))
   );
 
   useEffect(() => {
     async function initializeLayout() {
-      if (enablePasscode) setIsLocked(true);
+      if (enablePasscode) {
+        if (passcode !== null) {
+          setIsLocked(true);
+        } else {
+          setEnablePasscode(false);
+        }
+      }
+
       if (Platform.OS === "web") document.documentElement.classList.add("bg-background");
 
       const navColorScheme = theme || colorScheme;
@@ -54,7 +63,7 @@ export default function RootLayout() {
     }
 
     initializeLayout().finally(SplashScreen.hideAsync);
-  }, [colorScheme, theme, enablePasscode]);
+  }, [colorScheme, theme]);
 
   if (!isColorSchemeLoaded) {
     return null;

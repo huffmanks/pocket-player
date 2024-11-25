@@ -420,9 +420,9 @@ type SecurityStoreState = {
   backgroundTime: number | null;
   isLocked: boolean;
   enablePasscode: boolean;
-  passcode: number | null;
+  passcode: string | null;
   setBackgroundTime: () => void;
-  setPasscode: (code: number) => void;
+  setPasscode: (code: string | null) => void;
   setIsLocked: (lock: boolean) => void;
   setEnablePasscode: (enable: boolean) => void;
 };

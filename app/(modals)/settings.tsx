@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { Platform, View } from "react-native";
@@ -91,18 +92,18 @@ export default function SettingsModal() {
             label="Enable passcode"
           />
 
-          {enablePasscode && (
-            <Button
-              variant="secondary"
-              className="flex flex-row items-center justify-center gap-4">
-              <KeyRoundIcon
-                className="text-foreground"
-                size={20}
-                strokeWidth={1.25}
-              />
-              <Text>{passcode !== null ? "Update" : "Create"}</Text>
-            </Button>
-          )}
+          <Button
+            disabled={!enablePasscode}
+            variant="secondary"
+            className="flex flex-row items-center justify-center gap-4"
+            onPress={() => router.push("/(modals)/passcode")}>
+            <KeyRoundIcon
+              className="text-foreground"
+              size={20}
+              strokeWidth={1.25}
+            />
+            <Text>{passcode !== null ? "Change" : "Create"}</Text>
+          </Button>
         </View>
 
         <Separator className="mb-6 mt-2" />

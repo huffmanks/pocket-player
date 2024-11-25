@@ -8,6 +8,8 @@ import {
   DatabaseIcon,
   DeleteIcon,
   EllipsisVerticalIcon,
+  EyeIcon,
+  EyeOffIcon,
   FileVideoIcon,
   KeyRoundIcon,
   ListMusicIcon,
@@ -57,6 +59,12 @@ export { DeleteIcon };
 
 iconWithClassName(EllipsisVerticalIcon);
 export { EllipsisVerticalIcon };
+
+iconWithClassName(EyeIcon);
+export { EyeIcon };
+
+iconWithClassName(EyeOffIcon);
+export { EyeOffIcon };
 
 iconWithClassName(FileVideoIcon);
 export { FileVideoIcon };
