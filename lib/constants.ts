@@ -23,14 +23,39 @@ export const NAV_THEME = {
   },
 };
 
+const fontStyle = {
+  fontFamily: "Arial",
+  fontWeight: "normal" as
+    | "normal"
+    | "bold"
+    | "100"
+    | "200"
+    | "300"
+    | "400"
+    | "500"
+    | "600"
+    | "700"
+    | "800"
+    | "900",
+};
+
+const fonts = {
+  regular: fontStyle,
+  medium: fontStyle,
+  bold: fontStyle,
+  heavy: fontStyle,
+};
+
 export const LIGHT_THEME: Theme = {
   dark: false,
   colors: NAV_THEME.light,
+  fonts,
 };
 
 export const DARK_THEME: Theme = {
   dark: true,
   colors: NAV_THEME.dark,
+  fonts,
 };
 
 export const VIDEOS_DIR = `${documentDirectory}videos/`;

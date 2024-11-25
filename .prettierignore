@@ -2,6 +2,7 @@ node_modules/
 
 # isnt being picked up from gitignore so added here:
 expo-env.d.ts
+nativewind-env.d.ts
 
 # static
 public/

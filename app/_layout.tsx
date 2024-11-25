@@ -20,7 +20,7 @@ import { LockScreenProvider } from "@/providers/lock-screen-provider";
 export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
-  initialRouteName: "index",
+  initialRouteName: "(tabs)",
 };
 
 SplashScreen.preventAutoHideAsync();

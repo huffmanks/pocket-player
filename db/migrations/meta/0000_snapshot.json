@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c800874e-5fd3-44e5-bb84-b8aafda4436f",
+  "id": "413fa73e-9b38-49af-a4b6-b2c2cdbe2ec9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "playlist_videos": {
@@ -103,7 +103,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-12T18:34:00.577Z'"
+          "default": "'2024-11-25T20:00:02.676Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -111,7 +111,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-12T18:34:00.577Z'"
+          "default": "'2024-11-25T20:00:02.676Z'"
         }
       },
       "indexes": {
@@ -182,7 +182,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-12T18:34:00.574Z'"
+          "default": "'2024-11-25T20:00:02.675Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -190,7 +190,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-12T18:34:00.576Z'"
+          "default": "'2024-11-25T20:00:02.676Z'"
         }
       },
       "indexes": {},

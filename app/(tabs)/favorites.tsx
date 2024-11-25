@@ -60,10 +60,7 @@ export default function FavoritesScreen() {
   const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
     return (
       <View className="px-2">
-        <VideoItem
-          item={item}
-          onRefresh={onRefresh}
-        />
+        <VideoItem item={item} />
       </View>
     );
   }, []);

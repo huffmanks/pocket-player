@@ -16,7 +16,7 @@ export default function PlaylistItem({ item, onRefresh }: PlaylistItemProps) {
   return (
     <ReorderableListItem className="mb-4 flex-row items-center justify-between gap-4 rounded-md bg-secondary pr-2">
       <Pressable
-        className="flex flex-1 flex-row items-center gap-4 "
+        className="flex flex-1 flex-row items-center gap-4"
         onLongPress={drag}>
         <Image
           className="rounded-l-md"

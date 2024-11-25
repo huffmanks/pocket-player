@@ -4,33 +4,15 @@
     "slug": "video-player-app",
     "version": "1.0.0",
     "scheme": "video-player-app",
-    "plugins": [
-      "expo-dev-client",
-      "expo-document-picker",
-      "expo-file-system",
-      "expo-media-library",
-      "expo-navigation-bar",
-      "expo-router",
-      "expo-video",
-      [
-        "expo-local-authentication",
-        {
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true,
-      "tsconfigPaths": true
-    },
     "orientation": "portrait",
+    "icon": "./assets/icons/ios_app-icon-marketing.png",
     "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/icons/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#09090b"
     },
-    "assetBundlePatterns": ["**/*"],
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -88,10 +70,18 @@
       ],
       "package": "com.anonymous.videoplayerapp"
     },
-    "extra": {
-      "eas": {
-        "projectId": "281e8b25-a139-475d-889f-92bfa9fde7e8"
-      }
+    "plugins": [
+      "expo-router",
+      "expo-video",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
