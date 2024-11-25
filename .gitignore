@@ -10,6 +10,8 @@ web-build/
 expo-env.d.ts
 android
 ios
+build-*.apk
+
 
 # Native
 *.orig.*
