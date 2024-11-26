@@ -1,3 +1,4 @@
+import { useKeepAwake } from "expo-keep-awake";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
@@ -12,6 +13,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
   const { autoPlay, mute, loop } = useSettingsStore(
     useShallow((state) => ({ autoPlay: state.autoPlay, mute: state.mute, loop: state.loop }))
   );
+
+  useKeepAwake();
 
   const isPlaylist = videoSources.length > 1;
 

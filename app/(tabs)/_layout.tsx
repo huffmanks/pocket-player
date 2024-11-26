@@ -1,12 +1,10 @@
 import { Tabs } from "expo-router";
-import { View } from "react-native";
 
 import { useClientOnlyValue } from "@/hooks/useClientOnlyValue";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { CloudUploadIcon, ListMusicIcon, StarIcon, VideoIcon } from "@/lib/icons";
 
-import OpenSettings from "@/components/open-settings";
-import ThemeToggle from "@/components/theme-toggle";
+import HeaderItems from "@/components/header-items";
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
@@ -17,12 +15,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: "#14b8a6",
         tabBarInactiveTintColor: colorScheme === "light" ? "#09090b" : "#fff",
         headerShown: useClientOnlyValue(false, true),
-        headerRight: () => (
-          <View className="flex-row items-center gap-2 pr-2">
-            <ThemeToggle />
-            <OpenSettings />
-          </View>
-        ),
+        headerRight: () => <HeaderItems />,
       }}>
       <Tabs.Screen
         name="index"

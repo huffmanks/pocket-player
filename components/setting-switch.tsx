@@ -28,11 +28,10 @@ export default function SettingSwitch({ id, defaultChecked = false, label }: Set
     }))
   );
 
-  const { enablePasscode, setEnablePasscode, setPasscode } = useSecurityStore(
+  const { enablePasscode, setEnablePasscode } = useSecurityStore(
     useShallow((state) => ({
       enablePasscode: state.enablePasscode,
       setEnablePasscode: state.setEnablePasscode,
-      setPasscode: state.setPasscode,
     }))
   );
 
@@ -55,15 +54,8 @@ export default function SettingSwitch({ id, defaultChecked = false, label }: Set
   );
 
   useEffect(() => {
-    if (id === "enablePasscode") {
-      if (!checked) {
-        setPasscode(null);
-      }
-      setEnablePasscode(checked);
-    } else {
-      const setter = settersMap[id as keyof typeof settersMap];
-      setter(checked);
-    }
+    const setter = settersMap[id as keyof typeof settersMap];
+    setter(checked);
   }, [checked, id]);
 
   return (

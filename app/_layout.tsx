@@ -27,53 +27,50 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
-  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
+  const [isAppReady, setIsAppReady] = useState(false);
 
   const { theme, setTheme } = useSettingsStore(
     useShallow((state) => ({ theme: state.theme, setTheme: state.setTheme }))
   );
-  const { enablePasscode, passcode, setEnablePasscode, setIsLocked } = useSecurityStore(
-    useShallow((state) => ({
-      enablePasscode: state.enablePasscode,
-      passcode: state.passcode,
-      setEnablePasscode: state.setEnablePasscode,
-      setIsLocked: state.setIsLocked,
-    }))
+  const { isLockable, setIsLocked } = useSecurityStore(
+    useShallow((state) => ({ isLockable: state.isLockable, setIsLocked: state.setIsLocked }))
   );
 
   useEffect(() => {
-    async function initializeLayout() {
-      if (enablePasscode) {
-        if (passcode !== null) {
-          setIsLocked(true);
-        } else {
-          setEnablePasscode(false);
-        }
-      }
+    const navColorScheme = theme || colorScheme;
 
-      if (Platform.OS === "web") document.documentElement.classList.add("bg-background");
+    if (Platform.OS === "web") document.documentElement.classList.add("bg-background");
 
-      const navColorScheme = theme || colorScheme;
-      setAndroidNavigationBar(navColorScheme);
-      setTheme(navColorScheme);
+    setAndroidNavigationBar(navColorScheme);
+    setTheme(navColorScheme);
 
-      if (theme !== colorScheme) setColorScheme(navColorScheme);
-
-      setIsColorSchemeLoaded(true);
-    }
-
-    initializeLayout().finally(SplashScreen.hideAsync);
+    if (theme !== colorScheme) setColorScheme(navColorScheme);
   }, [colorScheme, theme]);
 
-  if (!isColorSchemeLoaded) {
+  useEffect(() => {
+    async function checkLockState() {
+      if (isLockable) {
+        setIsLocked(true);
+      } else {
+        setIsLocked(false);
+      }
+
+      setIsAppReady(true);
+      await SplashScreen.hideAsync();
+    }
+
+    checkLockState();
+  }, []);
+
+  if (!isAppReady) {
     return null;
   }
 
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider style={{ flex: 1 }}>
-        <LockScreenProvider>
-          <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+        <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+          <LockScreenProvider>
             <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
             <Stack>
               <Stack.Screen
@@ -91,8 +88,8 @@ export default function RootLayout() {
               position="bottom-center"
               offset={70}
             />
-          </ThemeProvider>
-        </LockScreenProvider>
+          </LockScreenProvider>
+        </ThemeProvider>
         <PortalHost />
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -11,10 +11,11 @@ import { useScrollToTop } from "@react-navigation/native";
 import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { VIDEOS_DIR } from "@/lib/constants";
 import { FileVideoIcon, SendIcon } from "@/lib/icons";
-import { useVideoStore } from "@/lib/store";
+import { useSecurityStore, useVideoStore } from "@/lib/store";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
 import { formatDuration, formatFileSize } from "@/lib/utils";
 
@@ -57,6 +58,13 @@ export type UploadVideosFormData = z.infer<typeof formSchema>;
 export default function UploadForm() {
   const uploadVideos = useVideoStore((state) => state.uploadVideos);
 
+  const { setIsLocked, setIsLockDisabled } = useSecurityStore(
+    useShallow((state) => ({
+      setIsLocked: state.setIsLocked,
+      setIsLockDisabled: state.setIsLockDisabled,
+    }))
+  );
+
   const ref = useRef(null);
   useScrollToTop(ref);
 
@@ -88,38 +96,57 @@ export default function UploadForm() {
       }[]
     ) => void
   ) {
-    await ensureDirectory(VIDEOS_DIR);
-    if (!(await requestPermissions())) return;
+    try {
+      setIsLocked(false);
+      setIsLockDisabled(true);
 
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "video/*",
-      multiple: true,
-    });
+      await ensureDirectory(VIDEOS_DIR);
+      if (!(await requestPermissions())) return;
 
-    if (result.assets && result.assets.length) {
-      const videos = await Promise.all(
-        result.assets.map(async ({ uri, name }) => {
-          const videoUri = `${VIDEOS_DIR}${name}`;
-          await FileSystem.copyAsync({ from: uri, to: videoUri });
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "video/*",
+        multiple: true,
+      });
 
-          const { uri: thumbFileUri } = await VideoThumbnails.getThumbnailAsync(videoUri, {
-            time: 1000,
-          });
+      if (result.assets && result.assets.length) {
+        const videos = await Promise.all(
+          result.assets.map(async ({ uri, name }) => {
+            const videoUri = `${VIDEOS_DIR}${name}`;
+            await FileSystem.copyAsync({ from: uri, to: videoUri });
 
-          const thumbUri = `${VIDEOS_DIR}${name.replace(/\.[^/.]+$/, ".jpg")}`;
-          await FileSystem.moveAsync({ from: thumbFileUri, to: thumbUri });
+            const { uri: thumbFileUri } = await VideoThumbnails.getThumbnailAsync(videoUri, {
+              time: 1000,
+            });
 
-          const title = name.replace(/(\.[^/.]+)$/, "");
+            const thumbUri = `${VIDEOS_DIR}${name.replace(/\.[^/.]+$/, ".jpg")}`;
+            await FileSystem.moveAsync({ from: thumbFileUri, to: thumbUri });
 
-          const result = await getVideoInfoAsync(videoUri);
-          const duration = formatDuration(result.duration);
-          const fileSize = formatFileSize(result.fileSize);
+            const title = name.replace(/(\.[^/.]+)$/, "");
 
-          return { title, videoUri, thumbUri, duration, fileSize, orientation: result.orientation };
-        })
-      );
+            const result = await getVideoInfoAsync(videoUri);
+            const duration = formatDuration(result.duration);
+            const fileSize = formatFileSize(result.fileSize);
 
-      setVideoFields(videos);
+            return {
+              title,
+              videoUri,
+              thumbUri,
+              duration,
+              fileSize,
+              orientation: result.orientation,
+            };
+          })
+        );
+
+        setVideoFields(videos);
+      }
+    } catch (error) {
+      toast.error("Error trying to upload!");
+    } finally {
+      setTimeout(() => {
+        setIsLockDisabled(false);
+        setIsLocked(false);
+      }, 100);
     }
   }
 

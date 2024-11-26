@@ -12,9 +12,6 @@
    - [handleReorder](/components/playlist-sortable.tsx#L86)
 3. Generated video thumbnail should take into account if is portrait or landscape.
 4. Add auto full-screen to settings.
-5. Add keep awake to video player. import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
-6. If enabledPasscode should always lock when leaving the app.
-7. Add LockIcon to navbar to instantly lock the app.
 
 ## Features
 

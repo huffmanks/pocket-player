@@ -4,27 +4,36 @@ import { AppState, AppStateStatus } from "react-native";
 
 import { useShallow } from "zustand/react/shallow";
 
-import { LOCK_SCREEN_TIMEOUT } from "@/lib/constants";
 import { useSecurityStore } from "@/lib/store";
 
 export function LockScreenProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const appState = useRef(AppState.currentState);
 
-  const { backgroundTime, enablePasscode, passcode, isLocked, setBackgroundTime, setIsLocked } =
-    useSecurityStore(
-      useShallow((state) => ({
-        backgroundTime: state.backgroundTime,
-        enablePasscode: state.enablePasscode,
-        passcode: state.passcode,
-        isLocked: state.isLocked,
-        setBackgroundTime: state.setBackgroundTime,
-        setIsLocked: state.setIsLocked,
-      }))
-    );
+  const {
+    backgroundTime,
+    enablePasscode,
+    isLocked,
+    isLockable,
+    lockInterval,
+    isLockDisabled,
+    setBackgroundTime,
+    setIsLocked,
+  } = useSecurityStore(
+    useShallow((state) => ({
+      backgroundTime: state.backgroundTime,
+      enablePasscode: state.enablePasscode,
+      isLocked: state.isLocked,
+      isLockable: state.isLockable,
+      lockInterval: state.lockInterval,
+      isLockDisabled: state.isLockDisabled,
+      setBackgroundTime: state.setBackgroundTime,
+      setIsLocked: state.setIsLocked,
+    }))
+  );
 
   useEffect(() => {
-    if (!enablePasscode || passcode === null) return;
+    if (!isLockable) return;
 
     const subscription = AppState.addEventListener("change", handleAppStateChange);
 
@@ -33,7 +42,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     }
 
     function handleAppStateChange(nextAppState: AppStateStatus) {
-      if (enablePasscode) return;
+      if (!enablePasscode || isLockDisabled) return;
 
       if (nextAppState === "background") {
         setBackgroundTime();
@@ -41,7 +50,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
         const newTime = backgroundTime || 0;
         const elapsedTime = Date.now() - newTime;
 
-        if (elapsedTime > LOCK_SCREEN_TIMEOUT) {
+        if (elapsedTime > lockInterval) {
           setIsLocked(true);
           router.push("/(modals)/lock");
         }
@@ -51,11 +60,10 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     }
 
     return () => {
-      const isLockedValue = enablePasscode ?? false;
-      setIsLocked(isLockedValue);
+      setIsLocked(isLockable);
       subscription.remove();
     };
-  }, []);
+  }, [isLockDisabled]);
 
   return children;
 }

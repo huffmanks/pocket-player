@@ -13,6 +13,7 @@ import {
   FileVideoIcon,
   KeyRoundIcon,
   ListMusicIcon,
+  LockIcon,
   MoonStarIcon,
   PauseIcon,
   PencilIcon,
@@ -74,6 +75,9 @@ export { KeyRoundIcon };
 
 iconWithClassName(ListMusicIcon);
 export { ListMusicIcon };
+
+iconWithClassName(LockIcon);
+export { LockIcon };
 
 iconWithClassName(MoonStarIcon);
 export { MoonStarIcon };

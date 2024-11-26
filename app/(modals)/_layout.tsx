@@ -1,19 +1,12 @@
 import { Stack } from "expo-router";
-import { View } from "react-native";
 
-import OpenSettings from "@/components/open-settings";
-import ThemeToggle from "@/components/theme-toggle";
+import HeaderItems from "@/components/header-items";
 
 export default function ModalLayout() {
   return (
     <Stack
       screenOptions={{
-        headerRight: () => (
-          <View className="flex-row items-center gap-2 pr-2">
-            <ThemeToggle />
-            <OpenSettings />
-          </View>
-        ),
+        headerRight: () => <HeaderItems />,
       }}>
       <Stack.Screen
         name="playlists/watch/[id]"

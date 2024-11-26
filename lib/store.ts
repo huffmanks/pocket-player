@@ -11,6 +11,8 @@ import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
 import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 
+import { LOCK_INTERVAL_DEFAULT } from "./constants";
+
 const settingsStorage = new MMKV({ id: "settings" });
 const securityStorage = new MMKV({ id: "security", encryptionKey: "your-encryption-key" });
 
@@ -411,10 +413,15 @@ type SecurityStoreState = {
   isLocked: boolean;
   enablePasscode: boolean;
   passcode: string | null;
+  isLockable: boolean;
+  lockInterval: number;
+  isLockDisabled: boolean;
   setBackgroundTime: () => void;
   setPasscode: (code: string | null) => void;
   setIsLocked: (lock: boolean) => void;
   setEnablePasscode: (enable: boolean) => void;
+  setLockInterval: (milliseconds: number) => void;
+  setIsLockDisabled: (bool: boolean) => void;
 };
 
 export const useSecurityStore = create<SecurityStoreState>()(
@@ -424,10 +431,26 @@ export const useSecurityStore = create<SecurityStoreState>()(
       isLocked: false,
       enablePasscode: false,
       passcode: null,
+      isLockable: false,
+      lockInterval: LOCK_INTERVAL_DEFAULT,
+      isLockDisabled: false,
       setBackgroundTime: () => set({ backgroundTime: Date.now() }),
-      setPasscode: (code) => set({ passcode: code }),
+      setPasscode: (code) =>
+        set(() => {
+          return { passcode: code, isLockable: true, enablePasscode: true };
+        }),
       setIsLocked: (lock) => set({ isLocked: lock }),
-      setEnablePasscode: (enable) => set({ enablePasscode: enable }),
+      setEnablePasscode: (enable) =>
+        set((state) => {
+          const isLockable = enable && state.passcode !== null;
+          return {
+            enablePasscode: enable,
+            isLockable,
+            passcode: isLockable ? state.passcode : null,
+          };
+        }),
+      setLockInterval: (milliseconds) => set({ lockInterval: milliseconds }),
+      setIsLockDisabled: (bool) => set({ isLockDisabled: bool }),
     }),
     {
       name: "security-store",
