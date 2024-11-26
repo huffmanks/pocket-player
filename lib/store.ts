@@ -67,33 +67,23 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
       const db = useDatabaseStore.getState().db;
 
       await db.transaction(async (tx) => {
-        const newVideos: VideoMeta[] = [];
-
         for (const video of values.videos) {
-          const result = await tx.insert(videos).values({
+          await tx.insert(videos).values({
             title: video.title,
             videoUri: video.videoUri,
             thumbUri: video.thumbUri,
+            duration: video.duration,
+            fileSize: video.fileSize,
+            orientation: video.orientation,
           });
-
-          const createdVideo = {
-            id: result.lastInsertRowId.toString(),
-            title: video.title,
-            videoUri: video.videoUri,
-            thumbUri: video.thumbUri,
-            description: "",
-            isFavorite: false,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-
-          newVideos.push(createdVideo);
         }
-
-        set((state) => ({
-          videos: [...state.videos, ...newVideos],
-        }));
       });
+
+      const newVideos = await db.select().from(videos);
+
+      set(() => ({
+        videos: newVideos,
+      }));
 
       return { status: "success", message: "Videos successfully uploaded." };
     } catch (error) {

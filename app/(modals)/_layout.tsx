@@ -9,7 +9,7 @@ export default function ModalLayout() {
     <Stack
       screenOptions={{
         headerRight: () => (
-          <View className="flex-row items-center pr-2">
+          <View className="flex-row items-center gap-2 pr-2">
             <ThemeToggle />
             <OpenSettings />
           </View>

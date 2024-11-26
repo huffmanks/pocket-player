@@ -4,18 +4,22 @@ import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 
+import { getFormattedDateString } from "@/lib/utils";
+
 export const videos = sqliteTable("videos", {
   id: text("id")
     .$defaultFn(() => createId())
     .primaryKey()
     .notNull(),
   title: text("title").default("Untitled").notNull(),
-  description: text("description").default("").notNull(),
   videoUri: text("videoUri").notNull(),
   thumbUri: text("thumbUri").notNull(),
   isFavorite: integer({ mode: "boolean" }).default(false).notNull(),
-  createdAt: text("created_at").default(new Date().toISOString()).notNull(),
-  updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
+  duration: text("duration").notNull(),
+  fileSize: text("fileSize").notNull(),
+  orientation: text("orientation").notNull(),
+  createdAt: text("created_at").default(getFormattedDateString(new Date())).notNull(),
+  updatedAt: text("updated_at").default(getFormattedDateString(new Date())).notNull(),
 });
 
 export const playlists = sqliteTable("playlists", {
@@ -25,8 +29,8 @@ export const playlists = sqliteTable("playlists", {
     .notNull(),
   title: text("title").unique().notNull(),
   description: text("description").default("").notNull(),
-  createdAt: text("created_at").default(new Date().toISOString()).notNull(),
-  updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
+  createdAt: text("created_at").default(getFormattedDateString(new Date())).notNull(),
+  updatedAt: text("updated_at").default(getFormattedDateString(new Date())).notNull(),
 });
 
 export const playlistVideos = sqliteTable(

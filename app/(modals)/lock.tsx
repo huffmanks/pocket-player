@@ -1,8 +1,8 @@
 import * as Haptics from "expo-haptics";
 import * as LocalAuthentication from "expo-local-authentication";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { SafeAreaView, TouchableOpacity, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Pressable, SafeAreaView, View } from "react-native";
 
 import Animated, {
   useAnimatedStyle,
@@ -53,40 +53,36 @@ export default function LockModal() {
           withRepeat(withTiming(ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME }), 4, true),
           withTiming(0, { duration: ERROR_SHAKE_TIME / 2 })
         );
-
-        (async () => {
-          await handleErrorShake();
-        })();
+        handleErrorShake();
       }
     }
   }, [code]);
 
-  async function handleNumberPress(number: number) {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setCode([...code, number]);
-  }
+  const handleNumberPress = useCallback((number: number) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setCode((prevCode) => [...prevCode, number]);
+  }, []);
 
-  async function handleBackspacePress() {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setCode(code.slice(0, -1));
-  }
+  const handleBackspacePress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setCode((prevCode) => prevCode.slice(0, -1));
+  }, []);
 
-  async function handleBiometricPress() {
+  const handleBiometricPress = useCallback(async () => {
     const { success } = await LocalAuthentication.authenticateAsync();
-
     setCode([]);
 
     if (success) {
       setIsLocked(false);
       router.replace("/");
     } else {
-      await handleErrorShake();
+      handleErrorShake();
     }
-  }
+  }, [setIsLocked, router]);
 
-  async function handleErrorShake() {
+  const handleErrorShake = useCallback(async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-  }
+  }, []);
 
   return (
     <SafeAreaView>
@@ -115,25 +111,25 @@ export default function LockModal() {
         />
 
         <View className="flex-row justify-between">
-          <TouchableOpacity onPress={handleBiometricPress}>
+          <Pressable onPress={handleBiometricPress}>
             <ScanFaceIcon
               size={26}
               className="text-foreground"
             />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity onPress={() => handleNumberPress(0)}>
+          <Pressable onPress={() => handleNumberPress(0)}>
             <Text className="text-4xl">0</Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             disabled={code.length < 1}
             onPress={handleBackspacePress}>
             <DeleteIcon
               size={26}
               className={cn("text-foreground", code.length < 1 && "text-muted-foreground")}
             />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>

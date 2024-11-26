@@ -2,17 +2,22 @@
 
 ## Changes/Fixes
 
-1. Lock screen:
-   - Make passcode faster more responsive. Seems sluggish.
-   - Background time isnt triggering lock screen.
-2. AppState status background: dismiss all models, toasts and alert dialogs.
-3. Video player: Add loop and mute buttons to controls.
-4. Stale data:
+1. Video player custom controls:
+   - exit video, XIcon top left
+   - mute, loop, volume, chromecast
+   - play/pause
+   - skip/rewind 15s
+2. Stale data:
    - When playlist videos reorderd update database. Not working.
    - [handleReorder](/components/playlist-sortable.tsx#L86)
-5. Add cast [react-native-google-cast](https://react-native-google-cast.github.io/docs/components/CastButton)
+3. Generated video thumbnail should take into account if is portrait or landscape.
+4. Add auto full-screen to settings.
+5. Add keep awake to video player. import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
+6. If enabledPasscode should always lock when leaving the app.
+7. Add LockIcon to navbar to instantly lock the app.
 
-## Styles
+## Features
 
-1. Tabs bar: add padding top.
-2. Standardize safe area view and padding for all screens.
+1. Add video scrubber to replace thumbnail
+2. Calendar for edit video form [React Native Flash Calendar](https://github.com/MarceloPrado/flash-calendar)
+3. Add cast. Not currently working with new arch. [react-native-google-cast](https://react-native-google-cast.github.io/docs/components/CastButton)

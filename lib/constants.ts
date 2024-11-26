@@ -81,3 +81,11 @@ export const settingsSwitches: { id: SettingId; label: string }[] = [
     label: "Autoplay",
   },
 ];
+
+export const orientationOptions = [
+  { label: "Portrait", value: "Portrait" },
+  { label: "PortraitUpsideDown", value: "PortraitUpsideDown" },
+  { label: "Landscape", value: "Landscape" },
+  { label: "LandscapeRight", value: "LandscapeRight" },
+  { label: "LandscapeLeft", value: "LandscapeLeft" },
+];

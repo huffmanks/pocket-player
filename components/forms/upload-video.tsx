@@ -1,6 +1,7 @@
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { router } from "expo-router";
+import { getVideoInfoAsync } from "expo-video-metadata";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import { useRef } from "react";
 import { ScrollView, View } from "react-native";
@@ -15,6 +16,7 @@ import { VIDEOS_DIR } from "@/lib/constants";
 import { FileVideoIcon, SendIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
+import { formatDuration, formatFileSize } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
@@ -27,12 +29,27 @@ const formSchema = z.object({
         title: z.string().min(1),
         videoUri: z.string().min(1),
         thumbUri: z.string().min(1),
+        duration: z.string().min(1),
+        fileSize: z.string().min(1),
+        orientation: z.string().min(1),
       })
     )
     .nonempty({ message: "Must upload at least one video." })
-    .refine((videos) => videos.some((video) => video.title && video.videoUri && video.thumbUri), {
-      message: "Must upload at least one video.",
-    }),
+    .refine(
+      (videos) =>
+        videos.some(
+          (video) =>
+            video.title &&
+            video.videoUri &&
+            video.thumbUri &&
+            video.duration &&
+            video.fileSize &&
+            video.orientation
+        ),
+      {
+        message: "Must upload at least one video.",
+      }
+    ),
 });
 
 export type UploadVideosFormData = z.infer<typeof formSchema>;
@@ -51,13 +68,25 @@ export default function UploadForm() {
           title: "",
           videoUri: "",
           thumbUri: "",
+          duration: "",
+          fileSize: "",
+          orientation: "",
         },
       ],
     },
   });
 
   async function selectVideoFiles(
-    setVideoFields: (videos: { title: string; videoUri: string; thumbUri: string }[]) => void
+    setVideoFields: (
+      videos: {
+        title: string;
+        videoUri: string;
+        thumbUri: string;
+        duration: string;
+        fileSize: string;
+        orientation: string;
+      }[]
+    ) => void
   ) {
     await ensureDirectory(VIDEOS_DIR);
     if (!(await requestPermissions())) return;
@@ -82,7 +111,11 @@ export default function UploadForm() {
 
           const title = name.replace(/(\.[^/.]+)$/, "");
 
-          return { title, videoUri, thumbUri };
+          const result = await getVideoInfoAsync(videoUri);
+          const duration = formatDuration(result.duration);
+          const fileSize = formatFileSize(result.fileSize);
+
+          return { title, videoUri, thumbUri, duration, fileSize, orientation: result.orientation };
         })
       );
 
@@ -140,9 +173,12 @@ export default function UploadForm() {
                         onPress={async () =>
                           await selectVideoFiles((videos) => {
                             videos.forEach((video, index) => {
+                              form.setValue(`videos.${index}.title`, video.title);
                               form.setValue(`videos.${index}.videoUri`, video.videoUri);
                               form.setValue(`videos.${index}.thumbUri`, video.thumbUri);
-                              form.setValue(`videos.${index}.title`, video.title);
+                              form.setValue(`videos.${index}.duration`, video.duration);
+                              form.setValue(`videos.${index}.fileSize`, video.fileSize);
+                              form.setValue(`videos.${index}.orientation`, video.orientation);
                             });
                           })
                         }>

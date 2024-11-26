@@ -8,7 +8,7 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { EyeIcon, EyeOffIcon, SendIcon } from "@/lib/icons";
+import { EyeIcon, EyeOffIcon, KeyRoundIcon } from "@/lib/icons";
 import { useSecurityStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
@@ -166,7 +166,7 @@ export default function CreatePasscodeForm() {
                 size="lg"
                 onPress={form.handleSubmit(onSubmit, handleErrors)}>
                 <View className="flex-row items-center gap-4">
-                  <SendIcon
+                  <KeyRoundIcon
                     className="text-white"
                     size={28}
                     strokeWidth={1.25}

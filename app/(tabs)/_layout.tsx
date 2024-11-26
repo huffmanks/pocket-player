@@ -18,7 +18,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colorScheme === "light" ? "#09090b" : "#fff",
         headerShown: useClientOnlyValue(false, true),
         headerRight: () => (
-          <View className="flex-row items-center pr-2">
+          <View className="flex-row items-center gap-2 pr-2">
             <ThemeToggle />
             <OpenSettings />
           </View>

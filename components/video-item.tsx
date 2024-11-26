@@ -8,11 +8,15 @@ import { VideoMeta } from "@/db/schema";
 import { Text } from "@/components/ui/text";
 import VideoDropdown from "@/components/video-dropdown";
 
+import { Badge } from "./ui/badge";
+
 interface VideoItemProps {
   item: VideoMeta;
 }
 
 function VideoItem({ item }: VideoItemProps) {
+  const createdAt = item.createdAt.split("T")[0];
+
   return (
     <Animated.View
       className="mb-8 flex-row items-start gap-4"
@@ -33,12 +37,15 @@ function VideoItem({ item }: VideoItemProps) {
             numberOfLines={2}>
             {item.title}
           </Text>
-
-          <Text
-            className="text-sm text-muted-foreground"
-            numberOfLines={3}>
-            {item.description ? item.description : "No description"}
-          </Text>
+          <Text className="mb-4 text-sm text-muted-foreground">{createdAt}</Text>
+          <View className="flex-row items-center gap-4">
+            <Badge variant="secondary">
+              <Text>{item.duration}</Text>
+            </Badge>
+            <Badge variant="secondary">
+              <Text>{item.fileSize}</Text>
+            </Badge>
+          </View>
         </View>
         <VideoDropdown item={item} />
       </View>

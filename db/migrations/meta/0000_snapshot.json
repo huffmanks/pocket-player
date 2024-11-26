@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "413fa73e-9b38-49af-a4b6-b2c2cdbe2ec9",
+  "id": "b0b398b2-f930-45fa-aa3f-1019e9cca6ec",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "playlist_videos": {
@@ -103,7 +103,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-25T20:00:02.676Z'"
+          "default": "'2024-11-25T23-47-29'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -111,7 +111,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-25T20:00:02.676Z'"
+          "default": "'2024-11-25T23-47-29'"
         }
       },
       "indexes": {
@@ -146,14 +146,6 @@
           "autoincrement": false,
           "default": "'Untitled'"
         },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
         "videoUri": {
           "name": "videoUri",
           "type": "text",
@@ -176,13 +168,34 @@
           "autoincrement": false,
           "default": false
         },
+        "duration": {
+          "name": "duration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fileSize": {
+          "name": "fileSize",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "orientation": {
+          "name": "orientation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-25T20:00:02.675Z'"
+          "default": "'2024-11-25T23-47-29'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -190,7 +203,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-25T20:00:02.676Z'"
+          "default": "'2024-11-25T23-47-29'"
         }
       },
       "indexes": {},
