@@ -32,8 +32,12 @@ export default function RootLayout() {
   const { theme, setTheme } = useSettingsStore(
     useShallow((state) => ({ theme: state.theme, setTheme: state.setTheme }))
   );
-  const { isLockable, setIsLocked } = useSecurityStore(
-    useShallow((state) => ({ isLockable: state.isLockable, setIsLocked: state.setIsLocked }))
+  const { isLockable, setEnablePasscode, setIsLocked } = useSecurityStore(
+    useShallow((state) => ({
+      isLockable: state.isLockable,
+      setEnablePasscode: state.setEnablePasscode,
+      setIsLocked: state.setIsLocked,
+    }))
   );
 
   useEffect(() => {
@@ -52,6 +56,7 @@ export default function RootLayout() {
       if (isLockable) {
         setIsLocked(true);
       } else {
+        setEnablePasscode(false);
         setIsLocked(false);
       }
 

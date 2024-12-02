@@ -60,7 +60,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     }
 
     return () => {
-      setIsLocked(isLockable);
+      setBackgroundTime();
       subscription.remove();
     };
   }, [isLockDisabled]);
