@@ -69,23 +69,24 @@ export const ERROR_SHAKE_TIME = 80;
 
 export const settingsSwitches: { id: SettingId; label: string }[] = [
   {
-    id: "mute",
-    label: "Mute",
+    id: "autoplay",
+    label: "Autoplay",
+  },
+  {
+    id: "fullscreen",
+    label: "Fullscreen",
   },
   {
     id: "loop",
     label: "Loop",
   },
   {
-    id: "autoplay",
-    label: "Autoplay",
+    id: "mute",
+    label: "Mute",
   },
 ];
 
 export const orientationOptions = [
   { label: "Portrait", value: "Portrait" },
-  { label: "PortraitUpsideDown", value: "PortraitUpsideDown" },
   { label: "Landscape", value: "Landscape" },
-  { label: "LandscapeRight", value: "LandscapeRight" },
-  { label: "LandscapeLeft", value: "LandscapeLeft" },
 ];

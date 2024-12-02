@@ -24,10 +24,10 @@ function VideoItem({ item }: VideoItemProps) {
       exiting={FadeOut}>
       <Pressable onPress={() => router.push(`/(modals)/videos/watch/${item.id}`)}>
         <Image
-          className="rounded-sm"
+          className="rounded-md bg-muted"
           style={{ width: 225, height: 125 }}
           source={{ uri: item.thumbUri }}
-          resizeMode="cover"
+          resizeMode={item.orientation === "Portrait" ? "contain" : "cover"}
         />
       </Pressable>
       <View className="flex-1 flex-row justify-between gap-4">

@@ -10,8 +10,6 @@
 2. Stale data:
    - When playlist videos reorderd update database. Not working.
    - [handleReorder](/components/playlist-sortable.tsx#L86)
-3. Generated video thumbnail should take into account if is portrait or landscape.
-4. Add auto full-screen to settings.
 
 ## Features
 

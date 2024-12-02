@@ -380,10 +380,12 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 
 type SettingsStoreState = {
   autoPlay: boolean;
+  fullscreen: boolean;
   loop: boolean;
   mute: boolean;
   theme: "light" | "dark";
   setAutoPlay: (autoPlay: boolean) => void;
+  setFullscreen: (fullscreen: boolean) => void;
   setLoop: (loop: boolean) => void;
   setMute: (mute: boolean) => void;
   setTheme: (theme: "light" | "dark") => void;
@@ -393,10 +395,12 @@ export const useSettingsStore = create<SettingsStoreState>()(
   persist(
     (set) => ({
       autoPlay: false,
+      fullscreen: false,
       loop: false,
       mute: false,
       theme: "dark",
       setAutoPlay: (autoPlay) => set({ autoPlay }),
+      setFullscreen: (fullscreen) => set({ fullscreen }),
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
       setTheme: (theme) => set({ theme }),

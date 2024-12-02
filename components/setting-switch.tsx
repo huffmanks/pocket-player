@@ -8,7 +8,7 @@ import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-export type SettingId = "autoplay" | "mute" | "loop" | "enablePasscode";
+export type SettingId = "autoplay" | "enablePasscode" | "fullscreen" | "loop" | "mute";
 
 interface SettingSwitchProps {
   id: SettingId;
@@ -17,16 +17,19 @@ interface SettingSwitchProps {
 }
 
 export default function SettingSwitch({ id, defaultChecked = false, label }: SettingSwitchProps) {
-  const { autoPlay, mute, loop, setAutoPlay, setLoop, setMute } = useSettingsStore(
-    useShallow((state) => ({
-      autoPlay: state.autoPlay,
-      mute: state.mute,
-      loop: state.loop,
-      setAutoPlay: state.setAutoPlay,
-      setLoop: state.setLoop,
-      setMute: state.setMute,
-    }))
-  );
+  const { autoPlay, fullscreen, loop, mute, setAutoPlay, setFullscreen, setLoop, setMute } =
+    useSettingsStore(
+      useShallow((state) => ({
+        autoPlay: state.autoPlay,
+        fullscreen: state.fullscreen,
+        loop: state.loop,
+        mute: state.mute,
+        setAutoPlay: state.setAutoPlay,
+        setFullscreen: state.setFullscreen,
+        setLoop: state.setLoop,
+        setMute: state.setMute,
+      }))
+    );
 
   const { enablePasscode, setEnablePasscode } = useSecurityStore(
     useShallow((state) => ({
@@ -37,16 +40,18 @@ export default function SettingSwitch({ id, defaultChecked = false, label }: Set
 
   const settingsMap = {
     autoplay: autoPlay,
-    mute: mute,
-    loop: loop,
     enablePasscode: enablePasscode,
+    fullscreen: fullscreen,
+    loop: loop,
+    mute: mute,
   } as const;
 
   const settersMap = {
     autoplay: setAutoPlay,
-    mute: setMute,
-    loop: setLoop,
     enablePasscode: setEnablePasscode,
+    fullscreen: setFullscreen,
+    loop: setLoop,
+    mute: setMute,
   } as const;
 
   const [checked, setChecked] = useState(

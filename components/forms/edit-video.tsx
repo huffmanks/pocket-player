@@ -109,9 +109,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                 <Image
                   style={{ width: 375, height: 250 }}
                   source={{ uri: videoInfo.thumbUri }}
-                  resizeMode={
-                    form.watch("orientation.value")?.includes("Portrait") ? "contain" : "cover"
-                  }
+                  resizeMode={form.watch("orientation.value") === "Portrait" ? "contain" : "cover"}
                   className="overflow-hidden rounded-md bg-secondary"
                 />
                 <FormField

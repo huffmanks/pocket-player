@@ -17,7 +17,7 @@ import { VIDEOS_DIR } from "@/lib/constants";
 import { FileVideoIcon, SendIcon } from "@/lib/icons";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
-import { formatDuration, formatFileSize } from "@/lib/utils";
+import { formatDuration, formatFileSize, getOrientation } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
@@ -124,8 +124,10 @@ export default function UploadForm() {
             const title = name.replace(/(\.[^/.]+)$/, "");
 
             const result = await getVideoInfoAsync(videoUri);
+
             const duration = formatDuration(result.duration);
             const fileSize = formatFileSize(result.fileSize);
+            const orientation = getOrientation(result.width, result.height);
 
             return {
               title,
@@ -133,7 +135,7 @@ export default function UploadForm() {
               thumbUri,
               duration,
               fileSize,
-              orientation: result.orientation,
+              orientation,
             };
           })
         );

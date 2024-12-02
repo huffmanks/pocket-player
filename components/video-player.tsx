@@ -1,18 +1,26 @@
 import { useKeepAwake } from "expo-keep-awake";
+import * as ScreenOrientation from "expo-screen-orientation";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 
 import { useShallow } from "zustand/react/shallow";
 
-import { useSettingsStore } from "@/lib/store";
+import { useSecurityStore, useSettingsStore } from "@/lib/store";
 
 export default function VideoPlayer({ videoSources }: { videoSources: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const videoRef = useRef(null);
-  const { autoPlay, mute, loop } = useSettingsStore(
-    useShallow((state) => ({ autoPlay: state.autoPlay, mute: state.mute, loop: state.loop }))
+  const videoRef = useRef<VideoView | null>(null);
+  const { autoPlay, fullscreen, mute, loop } = useSettingsStore(
+    useShallow((state) => ({
+      autoPlay: state.autoPlay,
+      fullscreen: state.fullscreen,
+      mute: state.mute,
+      loop: state.loop,
+    }))
   );
+
+  const setIsLockDisabled = useSecurityStore((state) => state.setIsLockDisabled);
 
   useKeepAwake();
 
@@ -28,6 +36,20 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
   });
 
   useEffect(() => {
+    const enableOrientation = async () => {
+      await ScreenOrientation.unlockAsync();
+    };
+    const disableOrientation = async () => {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    };
+
+    enableOrientation();
+    setIsLockDisabled(true);
+
+    if (fullscreen && videoRef.current) {
+      videoRef.current.enterFullscreen();
+    }
+
     const subscription = player.addListener("playToEnd", () => {
       if (currentIndex < videoSources.length - 1) {
         setCurrentIndex((prevIndex) => {
@@ -39,6 +61,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
     });
 
     return () => {
+      disableOrientation();
+      setIsLockDisabled(false);
       subscription.remove();
     };
   }, [player, currentIndex, videoSources]);

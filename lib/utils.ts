@@ -55,3 +55,9 @@ export function formatFileSize(bytes: number): string {
 
   return `${formattedSize}${units[unitIndex]}`;
 }
+
+export function getOrientation(width: number, height: number): "Landscape" | "Portrait" {
+  const orientation = width / height;
+
+  return orientation <= 16 / 9 && width > height ? "Landscape" : "Portrait";
+}
