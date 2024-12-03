@@ -75,7 +75,7 @@ export default function PlaylistsScreen() {
       <View className="mb-4 h-full flex-row items-center justify-between gap-4 rounded-md bg-secondary pl-3 pr-2">
         <Link
           href={`/(modals)/playlists/view/${item.id}`}
-          className="flex flex-row items-center gap-4">
+          className="flex flex-1 flex-row items-center gap-4">
           <View className="flex-row items-center">
             {item.thumbUris.map((thumbUri, index) => (
               <Image
