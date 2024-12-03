@@ -17,10 +17,12 @@ import PlaylistItem from "@/components/playlist-item";
 export type VideoMetaForPlaylist = {
   id: string;
   title: string;
-  description: string;
   videoUri: string;
   thumbUri: string;
   isFavorite: boolean;
+  duration: string;
+  fileSize: string;
+  orientation: string;
   createdAt: string;
   updatedAt: string;
   key: string;
@@ -38,10 +40,12 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
       .select({
         id: videos.id,
         title: videos.title,
-        description: videos.description,
-        isFavorite: videos.isFavorite,
-        thumbUri: videos.thumbUri,
         videoUri: videos.videoUri,
+        thumbUri: videos.thumbUri,
+        isFavorite: videos.isFavorite,
+        duration: videos.duration,
+        fileSize: videos.fileSize,
+        orientation: videos.orientation,
         createdAt: videos.createdAt,
         updatedAt: videos.updatedAt,
         key: videos.id,

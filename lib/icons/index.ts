@@ -1,4 +1,5 @@
 import {
+  CalendarIcon,
   CheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
@@ -33,6 +34,9 @@ import {
 } from "lucide-react-native";
 
 import { iconWithClassName } from "./iconWithClassName";
+
+iconWithClassName(CalendarIcon);
+export { CalendarIcon };
 
 iconWithClassName(CheckIcon);
 export { CheckIcon };

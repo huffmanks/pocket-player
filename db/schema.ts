@@ -4,8 +4,6 @@ import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 
-import { getFormattedDateString } from "@/lib/utils";
-
 export const videos = sqliteTable("videos", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -18,8 +16,8 @@ export const videos = sqliteTable("videos", {
   duration: text("duration").notNull(),
   fileSize: text("fileSize").notNull(),
   orientation: text("orientation").notNull(),
-  createdAt: text("created_at").default(getFormattedDateString(new Date())).notNull(),
-  updatedAt: text("updated_at").default(getFormattedDateString(new Date())).notNull(),
+  createdAt: text("created_at").default(new Date().toISOString()).notNull(),
+  updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
 });
 
 export const playlists = sqliteTable("playlists", {
@@ -29,8 +27,8 @@ export const playlists = sqliteTable("playlists", {
     .notNull(),
   title: text("title").unique().notNull(),
   description: text("description").default("").notNull(),
-  createdAt: text("created_at").default(getFormattedDateString(new Date())).notNull(),
-  updatedAt: text("updated_at").default(getFormattedDateString(new Date())).notNull(),
+  createdAt: text("created_at").default(new Date().toISOString()).notNull(),
+  updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
 });
 
 export const playlistVideos = sqliteTable(

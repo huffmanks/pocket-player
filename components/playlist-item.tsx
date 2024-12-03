@@ -19,10 +19,9 @@ export default function PlaylistItem({ item, onRefresh }: PlaylistItemProps) {
         className="flex flex-1 flex-row items-center gap-4"
         onLongPress={drag}>
         <Image
-          className="rounded-l-md"
-          style={{ width: 120, height: 80 }}
+          className="my-2 ml-3 rounded-full"
+          style={{ width: 45, height: 45 }}
           source={{ uri: item.thumbUri }}
-          resizeMode="cover"
         />
         <Text
           className="text-lg font-medium text-foreground"

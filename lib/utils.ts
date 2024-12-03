@@ -10,15 +10,11 @@ export function getRandomTwoItems<T>(array: Array<T>): Array<T> {
   return shuffled.slice(0, 2);
 }
 
-export function getFormattedDateString(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
+export function formatDateString(date: string | Date) {
+  const localDate = new Date(date).toLocaleDateString();
+  const [month, day, year] = localDate.split("/");
 
-  return `${year}-${month}-${day}T${hours}-${minutes}-${seconds}`;
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 }
 
 export function formatDuration(seconds: number): string {

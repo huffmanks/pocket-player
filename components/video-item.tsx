@@ -4,6 +4,7 @@ import { Image, Pressable, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 import { VideoMeta } from "@/db/schema";
+import { formatDateString } from "@/lib/utils";
 
 import { Text } from "@/components/ui/text";
 import VideoDropdown from "@/components/video-dropdown";
@@ -15,7 +16,7 @@ interface VideoItemProps {
 }
 
 function VideoItem({ item }: VideoItemProps) {
-  const createdAt = item.createdAt.split("T")[0];
+  const createdAt = formatDateString(item.createdAt);
 
   return (
     <Animated.View

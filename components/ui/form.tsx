@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Pressable, View } from "react-native";
 
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import {
   Controller,
   ControllerProps,
@@ -12,8 +13,10 @@ import {
 } from "react-hook-form";
 import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
 
-import { cn } from "@/lib/utils";
+import { CalendarIcon } from "@/lib/icons";
+import { cn, formatDateString } from "@/lib/utils";
 
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -173,6 +176,69 @@ type FormItemProps<T extends React.ElementType<any>, U> = Override<
   label?: string;
   description?: string;
 };
+
+const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePicker, Date>>(
+  ({ label, description, value, onChange }, ref) => {
+    const [show, setShow] = React.useState(false);
+    const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } =
+      useFormField();
+
+    function handleChange(_e: DateTimePickerEvent, selectedDate?: Date) {
+      setShow(false);
+      if (selectedDate) {
+        onChange(selectedDate);
+      }
+    }
+
+    function showDatepicker() {
+      setShow(true);
+    }
+
+    return (
+      <FormItem>
+        {!!label && <FormLabel nativeID={formItemNativeID}>{label}</FormLabel>}
+
+        <View className="flex-row items-center gap-4">
+          <Input
+            ref={ref}
+            readOnly
+            value={formatDateString(value)}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            onPress={showDatepicker}>
+            <CalendarIcon
+              className="text-teal-500"
+              size={28}
+              strokeWidth={1.25}
+            />
+          </Button>
+        </View>
+
+        {show && (
+          <DateTimePicker
+            aria-labelledby={formItemNativeID}
+            aria-describedby={
+              !error
+                ? `${formDescriptionNativeID}`
+                : `${formDescriptionNativeID} ${formMessageNativeID}`
+            }
+            aria-invalid={!!error}
+            value={value}
+            mode="date"
+            onChange={handleChange}
+          />
+        )}
+
+        {!!description && <FormDescription>{description}</FormDescription>}
+        <FormMessage />
+      </FormItem>
+    );
+  }
+);
+
+FormDateTimePicker.displayName = "FormDateTimePicker";
 
 const FormInput = React.forwardRef<
   React.ElementRef<typeof Input>,
@@ -459,6 +525,7 @@ FormSwitch.displayName = "FormSwitch";
 export {
   Form,
   FormCheckbox,
+  FormDateTimePicker,
   FormDescription,
   FormField,
   FormInput,

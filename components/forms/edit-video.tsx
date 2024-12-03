@@ -16,7 +16,14 @@ import { useVideoStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormField, FormInput, FormSelect, FormSwitch } from "@/components/ui/form";
+import {
+  Form,
+  FormDateTimePicker,
+  FormField,
+  FormInput,
+  FormSelect,
+  FormSwitch,
+} from "@/components/ui/form";
 import {
   SelectContent,
   SelectGroup,
@@ -31,6 +38,7 @@ const formSchema = z.object({
     .string()
     .min(3, { message: "Title must be at least 3 characters." })
     .transform((val) => val.trim()),
+  createdAt: z.date(),
   orientation: z.object(
     { value: z.string(), label: z.string() },
     {
@@ -38,7 +46,6 @@ const formSchema = z.object({
     }
   ),
   isFavorite: z.boolean(),
-  createdAt: z.string().min(1),
 });
 
 interface EditFormProps {
@@ -64,12 +71,12 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: videoInfo.title ?? "",
+      createdAt: new Date(videoInfo.createdAt) ?? new Date(),
       orientation: {
         label: videoInfo.orientation ?? "",
         value: videoInfo.orientation ?? "",
       },
       isFavorite: videoInfo.isFavorite ?? false,
-      createdAt: videoInfo.createdAt ?? "",
     },
   });
 
@@ -79,7 +86,11 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
       await updateVideo({
         id: videoInfo.id,
-        values: { ...parsedValues, orientation: values.orientation.value },
+        values: {
+          ...parsedValues,
+          createdAt: values.createdAt.toISOString(),
+          orientation: values.orientation.value,
+        },
       });
 
       toast.success(`${values.title} updated successfully.`);
@@ -122,6 +133,17 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                       selectTextOnFocus={true}
                       placeholder="Add a video title..."
                       autoCapitalize="none"
+                      {...field}
+                    />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="createdAt"
+                  render={({ field }) => (
+                    <FormDateTimePicker
+                      label="Created at"
                       {...field}
                     />
                   )}
@@ -174,18 +196,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                     />
                   )}
                 />
-
-                {/* <FormField
-                  control={form.control}
-                  name="createdAt"
-                  render={({ field }) => (
-                    <FormDatePicker
-                      label="Created at"
-                      maxDate={new Date().toDateString()}
-                      {...field}
-                    />
-                  )}
-                /> */}
               </View>
             </View>
             <View>
