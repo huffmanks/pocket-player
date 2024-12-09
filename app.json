@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "scheme": "video-player-app",
     "orientation": "portrait",
-    "icon": "./assets/icons/ios_app-icon-marketing.png",
+    "icon": "./assets/icons/ios_app_logo_marketing.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
@@ -19,29 +19,29 @@
       "favicon": "./assets/icons/web_favicon.ico",
       "icons": [
         {
-          "src": "./assets/icons/web_icon-192.png",
+          "src": "./assets/icons/web_logo_192.png",
           "sizes": "192x192",
           "type": "image/png"
         },
         {
-          "src": "./assets/icons/web_icon-512.png",
+          "src": "./assets/icons/web_logo_512.png",
           "sizes": "512x512",
           "type": "image/png"
         },
         {
-          "src": "./assets/icons/web_icon-192-maskable.png",
+          "src": "./assets/icons/web_logo_192_maskable.png",
           "sizes": "192x192",
           "type": "image/png",
           "purpose": "maskable"
         },
         {
-          "src": "./assets/icons/web_icon-512-maskable.png",
+          "src": "./assets/icons/web_logo_512_maskable.png",
           "sizes": "512x512",
           "type": "image/png",
           "purpose": "maskable"
         },
         {
-          "src": "./assets/icons/web_apple-touch-icon.png",
+          "src": "./assets/icons/web_apple_touch_logo.png",
           "sizes": "180x180",
           "type": "image/png",
           "purpose": "apple-touch-icon"
@@ -49,14 +49,14 @@
       ]
     },
     "ios": {
-      "icon": "./assets/icons/ios_app-icon-marketing.png",
+      "icon": "./assets/icons/ios_app_logo_marketing.png",
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.videoplayerapp"
     },
     "android": {
-      "icon": "./assets/icons/android_adaptive-icon-foreground.png",
+      "icon": "./assets/icons/android_adaptive_logo_foreground.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/android_adaptive-icon-foreground.png",
+        "foregroundImage": "./assets/icons/android_adaptive_logo_foreground.png",
         "backgroundColor": "#09090b"
       },
       "permissions": [

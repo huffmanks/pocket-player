@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Image, Pressable, Text } from "react-native";
 
 import { ReorderableListItem, useReorderableDrag } from "react-native-reorderable-list";
@@ -10,7 +11,7 @@ interface PlaylistItemProps {
   onRefresh: () => void;
 }
 
-export default function PlaylistItem({ item, onRefresh }: PlaylistItemProps) {
+function PlaylistItem({ item, onRefresh }: PlaylistItemProps) {
   const drag = useReorderableDrag();
 
   return (
@@ -36,3 +37,5 @@ export default function PlaylistItem({ item, onRefresh }: PlaylistItemProps) {
     </ReorderableListItem>
   );
 }
+
+export default memo(PlaylistItem);

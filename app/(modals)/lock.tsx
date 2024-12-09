@@ -2,7 +2,7 @@ import * as Haptics from "expo-haptics";
 import * as LocalAuthentication from "expo-local-authentication";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, SafeAreaView, View } from "react-native";
+import { Image, Pressable, SafeAreaView, View } from "react-native";
 
 import Animated, {
   useAnimatedStyle,
@@ -11,6 +11,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
 import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
@@ -23,8 +24,10 @@ import { Text } from "@/components/ui/text";
 
 export default function LockModal() {
   const [code, setCode] = useState<number[]>([]);
+  const [isPressed, setIsPressed] = useState(false);
   const codeLength = Array(4).fill(0);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const { passcode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
@@ -85,18 +88,28 @@ export default function LockModal() {
   }, []);
 
   return (
-    <SafeAreaView>
-      <Text className="mb-24 mt-32 self-center text-3xl font-bold">Welcome back!</Text>
+    <SafeAreaView style={{ marginTop: insets.top + 40 }}>
+      <View className="mb-12 items-center justify-center">
+        <Image
+          style={{ width: 75, height: 75 }}
+          source={require("../../assets/icons/base_logo.png")}
+        />
+      </View>
+
+      <Text className="mb-16 self-center text-3xl font-bold">Welcome back!</Text>
       <Animated.View
-        className="mb-28 flex-row items-center justify-center gap-5"
+        className="mb-24 flex-row items-center justify-center gap-5"
         style={animatedStyle}>
         {codeLength.map((_, index) => (
           <View
             key={`code-dots_${index}`}
-            className={cn("size-5 rounded-xl", code[index] ? "bg-teal-500" : "bg-gray-500")}></View>
+            className={cn(
+              "size-5 rounded-xl",
+              code[index] !== undefined ? "bg-teal-500" : "bg-gray-500"
+            )}></View>
         ))}
       </Animated.View>
-      <View className="mx-20 gap-16">
+      <View className="mx-16 gap-10">
         <KeypadRow
           numbers={[1, 2, 3]}
           handleNumberPress={handleNumberPress}
@@ -111,20 +124,29 @@ export default function LockModal() {
         />
 
         <View className="flex-row justify-between">
-          <Pressable onPress={handleBiometricPress}>
+          <Pressable
+            className="flex items-center justify-center rounded-full px-5 py-4"
+            onPress={handleBiometricPress}>
             <ScanFaceIcon
               size={26}
               className="text-foreground"
             />
           </Pressable>
 
-          <Pressable onPress={() => handleNumberPress(0)}>
-            <Text className="text-4xl">0</Text>
-          </Pressable>
+          <KeypadRow
+            numbers={[0]}
+            handleNumberPress={handleNumberPress}
+          />
 
           <Pressable
+            className={cn(
+              "flex items-center justify-center rounded-full px-5 py-4",
+              isPressed && "bg-muted"
+            )}
             disabled={code.length < 1}
-            onPress={handleBackspacePress}>
+            onPress={handleBackspacePress}
+            onPressIn={() => setIsPressed(true)}
+            onPressOut={() => setIsPressed(false)}>
             <DeleteIcon
               size={26}
               className={cn("text-foreground", code.length < 1 && "text-muted-foreground")}

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ListRenderItemInfo, View } from "react-native";
 
 import { eq } from "drizzle-orm";
@@ -31,6 +31,7 @@ export type VideoMetaForPlaylist = {
 
 export default function PlaylistSortable({ playlistId }: { playlistId: string }) {
   const [keyIndex, setKeyIndex] = useState(0);
+  const [data, setData] = useState<VideoMetaForPlaylist[] | null>(null);
 
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
   const db = useDatabaseStore.getState().db;
@@ -72,15 +73,25 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
   }, []);
 
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
-    const newData = reorderItems(videoForPlaylistQuery.data, from, to);
+    if (!data) return;
+    const newData = reorderItems(data, from, to);
     await updatePlaylistOrder({ playlistId, videosOrder: newData });
+    setData(newData);
   };
+
+  useEffect(() => {
+    if (videoForPlaylistQuery.data) {
+      setData(videoForPlaylistQuery.data);
+    }
+  }, [videoForPlaylistQuery.data]);
+
+  if (!data) return;
 
   return (
     <ReorderableList
       key={`playlist-reorderable_${playlistId}`}
-      data={videoForPlaylistQuery.data}
-      keyExtractor={(item) => item.key}
+      data={data}
+      keyExtractor={(item) => item.id}
       renderItem={renderItem}
       onReorder={handleReorder}
       ListFooterComponent={<View style={{ paddingTop: ESTIMATED_PLAYLIST_ITEM_HEIGHT + 16 }} />}

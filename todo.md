@@ -2,7 +2,7 @@
 
 ## Changes/Fixes
 
-1. Reordering videos in playlist having issues. Once item is moved once it cant move again until app reloaded.
+1.
 
 ## Features
 
