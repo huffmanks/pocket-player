@@ -32,6 +32,13 @@ export function formatDuration(seconds: number): string {
     .trim();
 }
 
+export function secondsToMMSS(seconds: number): string {
+  const totalSeconds = Math.ceil(seconds);
+  const minutes = Math.floor(totalSeconds / 60);
+  const remainingSeconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+}
+
 export function formatFileSize(bytes: number): string {
   const units = ["KB", "MB", "GB"];
   let size = bytes / 1024;

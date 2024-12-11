@@ -50,6 +50,13 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
       videoRef.current.enterFullscreen();
     }
 
+    return () => {
+      disableOrientation();
+      setIsLockDisabled(false);
+    };
+  }, []);
+
+  useEffect(() => {
     const subscription = player.addListener("playToEnd", () => {
       if (currentIndex < videoSources.length - 1) {
         setCurrentIndex((prevIndex) => {
@@ -61,8 +68,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
     });
 
     return () => {
-      disableOrientation();
-      setIsLockDisabled(false);
       subscription.remove();
     };
   }, [player, currentIndex, videoSources]);

@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
@@ -13,11 +13,11 @@ import { useShallow } from "zustand/react/shallow";
 import migrations from "@/db/migrations/migrations";
 import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
-import { CloudUploadIcon, SearchIcon } from "@/lib/icons";
-import { useAppStore, useDatabaseStore } from "@/lib/store";
+import { CloudUploadIcon } from "@/lib/icons";
+import { useAppStore, useDatabaseStore, useSettingsStore } from "@/lib/store";
 
+import SearchBar from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
@@ -53,7 +53,6 @@ function ScreenContent() {
   const [refreshing, setRefreshing] = useState(false);
   const [keyIndex, setKeyIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredData, setFilteredData] = useState<VideoMeta[]>([]);
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
@@ -63,19 +62,14 @@ function ScreenContent() {
   const videoQuery = useLiveQuery(db.select().from(videos).orderBy(videos.updatedAt));
   const { data, error } = videoQuery;
 
-  useEffect(() => {
-    if (data) {
-      if (searchQuery) {
-        const fuse = new Fuse(data, {
-          keys: ["title"],
-          threshold: 0.5,
-        });
-        setFilteredData(fuse.search(searchQuery).map((result) => result.item));
-      } else {
-        setFilteredData(data);
-      }
-    }
-  }, [searchQuery, data]);
+  const {
+    sortKey,
+    sortDateOrder,
+    sortTitleOrder,
+    setSortKey,
+    toggleSortDateOrder,
+    toggleSortTitleOrder,
+  } = useSettingsStore();
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -92,6 +86,44 @@ function ScreenContent() {
 
     flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
   };
+
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+    if (!searchQuery) return data;
+
+    const fuse = new Fuse(data, { keys: ["title"], threshold: 0.5 });
+    return fuse.search(searchQuery).map((result) => result.item);
+  }, [data, searchQuery]);
+
+  const sortedData = useMemo(() => {
+    const sorted = [...filteredData];
+    if (sortKey === "date") {
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return sortDateOrder === "asc" ? dateA - dateB : dateB - dateA;
+      });
+    } else {
+      sorted.sort((a, b) => {
+        const titleA = a.title.toLowerCase();
+        const titleB = b.title.toLowerCase();
+        return sortTitleOrder === "asc"
+          ? titleA.localeCompare(titleB)
+          : titleB.localeCompare(titleA);
+      });
+    }
+    return sorted;
+  }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
+
+  function handleSortDate() {
+    setSortKey("date");
+    toggleSortDateOrder();
+  }
+
+  function handleSortTitle() {
+    setSortKey("title");
+    toggleSortTitleOrder();
+  }
 
   const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
     return (
@@ -112,22 +144,15 @@ function ScreenContent() {
         style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full">
         {!!data && data?.length > 0 && (
-          <View className="mx-2 mb-8 flex-row items-center gap-4 rounded-md border border-input px-3">
-            <SearchIcon
-              className="text-muted-foreground"
-              size={20}
-              strokeWidth={1.25}
-            />
-            <Input
-              className="border-0 px-0 placeholder:text-muted-foreground"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Search videos"
-            />
-          </View>
+          <SearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            handleSortDate={handleSortDate}
+            handleSortTitle={handleSortTitle}
+          />
         )}
         <FlashList
-          data={searchQuery ? filteredData : data}
+          data={sortedData}
           key={`videos_${keyIndex}`}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}

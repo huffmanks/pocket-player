@@ -1,4 +1,9 @@
 import {
+  ArrowDownAZIcon,
+  ArrowDownUpIcon,
+  ArrowUpZAIcon,
+  CalendarArrowDownIcon,
+  CalendarArrowUpIcon,
   CalendarIcon,
   CheckIcon,
   ChevronDownIcon,
@@ -11,29 +16,53 @@ import {
   EllipsisVerticalIcon,
   EyeIcon,
   EyeOffIcon,
+  FastForwardIcon,
   FileVideoIcon,
   KeyRoundIcon,
   ListMusicIcon,
   LockIcon,
+  MaximizeIcon,
+  MinimizeIcon,
   MoonStarIcon,
   PauseIcon,
   PencilIcon,
   PlayIcon,
   PlusIcon,
   RefreshCcwIcon,
+  RepeatIcon,
+  RewindIcon,
   ScanFaceIcon,
   SearchIcon,
   SendIcon,
   SettingsIcon,
+  SkipBackIcon,
+  SkipForwardIcon,
   StarIcon,
   SunIcon,
   TrashIcon,
   TvIcon,
   VideoIcon,
+  Volume2Icon,
+  VolumeXIcon,
   XIcon,
 } from "lucide-react-native";
 
 import { iconWithClassName } from "./iconWithClassName";
+
+iconWithClassName(ArrowDownAZIcon);
+export { ArrowDownAZIcon };
+
+iconWithClassName(ArrowDownUpIcon);
+export { ArrowDownUpIcon };
+
+iconWithClassName(ArrowUpZAIcon);
+export { ArrowUpZAIcon };
+
+iconWithClassName(CalendarArrowDownIcon);
+export { CalendarArrowDownIcon };
+
+iconWithClassName(CalendarArrowUpIcon);
+export { CalendarArrowUpIcon };
 
 iconWithClassName(CalendarIcon);
 export { CalendarIcon };
@@ -71,6 +100,9 @@ export { EyeIcon };
 iconWithClassName(EyeOffIcon);
 export { EyeOffIcon };
 
+iconWithClassName(FastForwardIcon);
+export { FastForwardIcon };
+
 iconWithClassName(FileVideoIcon);
 export { FileVideoIcon };
 
@@ -82,6 +114,12 @@ export { ListMusicIcon };
 
 iconWithClassName(LockIcon);
 export { LockIcon };
+
+iconWithClassName(MaximizeIcon);
+export { MaximizeIcon };
+
+iconWithClassName(MinimizeIcon);
+export { MinimizeIcon };
 
 iconWithClassName(MoonStarIcon);
 export { MoonStarIcon };
@@ -101,6 +139,12 @@ export { PlusIcon };
 iconWithClassName(RefreshCcwIcon);
 export { RefreshCcwIcon };
 
+iconWithClassName(RepeatIcon);
+export { RepeatIcon };
+
+iconWithClassName(RewindIcon);
+export { RewindIcon };
+
 iconWithClassName(ScanFaceIcon);
 export { ScanFaceIcon };
 
@@ -109,6 +153,12 @@ export { SearchIcon };
 
 iconWithClassName(SendIcon);
 export { SendIcon };
+
+iconWithClassName(SkipBackIcon);
+export { SkipBackIcon };
+
+iconWithClassName(SkipForwardIcon);
+export { SkipForwardIcon };
 
 iconWithClassName(StarIcon);
 export { StarIcon };
@@ -127,6 +177,12 @@ export { TvIcon };
 
 iconWithClassName(VideoIcon);
 export { VideoIcon };
+
+iconWithClassName(Volume2Icon);
+export { Volume2Icon };
+
+iconWithClassName(VolumeXIcon);
+export { VolumeXIcon };
 
 iconWithClassName(XIcon);
 export { XIcon };

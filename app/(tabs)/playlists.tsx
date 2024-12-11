@@ -72,7 +72,7 @@ export default function PlaylistsScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: PlaylistMetaWithThumbUris }) => (
-      <View className="mb-4 h-full flex-row items-center justify-between gap-4 rounded-md bg-secondary pl-3 pr-2">
+      <View className="mb-4 flex-row items-center justify-between gap-4 rounded-md bg-secondary py-2 pl-3 pr-2">
         <Link
           href={`/(modals)/playlists/view/${item.id}`}
           className="flex flex-1 flex-row items-center gap-4">

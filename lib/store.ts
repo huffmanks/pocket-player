@@ -384,11 +384,17 @@ type SettingsStoreState = {
   loop: boolean;
   mute: boolean;
   theme: "light" | "dark";
+  sortKey: "date" | "title";
+  sortDateOrder: "asc" | "desc";
+  sortTitleOrder: "asc" | "desc";
   setAutoPlay: (autoPlay: boolean) => void;
   setFullscreen: (fullscreen: boolean) => void;
   setLoop: (loop: boolean) => void;
   setMute: (mute: boolean) => void;
   setTheme: (theme: "light" | "dark") => void;
+  setSortKey: (key: "date" | "title") => void;
+  toggleSortDateOrder: () => void;
+  toggleSortTitleOrder: () => void;
 };
 
 export const useSettingsStore = create<SettingsStoreState>()(
@@ -399,11 +405,19 @@ export const useSettingsStore = create<SettingsStoreState>()(
       loop: false,
       mute: false,
       theme: "dark",
+      sortKey: "date",
+      sortDateOrder: "asc",
+      sortTitleOrder: "asc",
       setAutoPlay: (autoPlay) => set({ autoPlay }),
       setFullscreen: (fullscreen) => set({ fullscreen }),
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
       setTheme: (theme) => set({ theme }),
+      setSortKey: (key) => set({ sortKey: key }),
+      toggleSortDateOrder: () =>
+        set((state) => ({ sortDateOrder: state.sortDateOrder === "asc" ? "desc" : "asc" })),
+      toggleSortTitleOrder: () =>
+        set((state) => ({ sortTitleOrder: state.sortTitleOrder === "asc" ? "desc" : "asc" })),
     }),
     {
       name: "settings-store",

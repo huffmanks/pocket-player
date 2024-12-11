@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import Fuse from "fuse.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
-import { SearchIcon } from "@/lib/icons";
-import { useDatabaseStore } from "@/lib/store";
+import { useDatabaseStore, useSettingsStore } from "@/lib/store";
 
-import { Input } from "@/components/ui/input";
+import SearchBar from "@/components/search-bar";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
@@ -21,10 +21,10 @@ export default function FavoritesScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [keyIndex, setKeyIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredData, setFilteredData] = useState<VideoMeta[]>([]);
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
+
   const db = useDatabaseStore.getState().db;
 
   const videoQuery = useLiveQuery(
@@ -32,14 +32,14 @@ export default function FavoritesScreen() {
   );
   const { data, error } = videoQuery;
 
-  useEffect(() => {
-    if (data) {
-      const filtered = data.filter((item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredData(filtered);
-    }
-  }, [searchQuery, data]);
+  const {
+    sortKey,
+    sortDateOrder,
+    sortTitleOrder,
+    setSortKey,
+    toggleSortDateOrder,
+    toggleSortTitleOrder,
+  } = useSettingsStore();
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -56,6 +56,44 @@ export default function FavoritesScreen() {
 
     flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
   };
+
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+    if (!searchQuery) return data;
+
+    const fuse = new Fuse(data, { keys: ["title"], threshold: 0.5 });
+    return fuse.search(searchQuery).map((result) => result.item);
+  }, [data, searchQuery]);
+
+  const sortedData = useMemo(() => {
+    const sorted = [...filteredData];
+    if (sortKey === "date") {
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return sortDateOrder === "asc" ? dateA - dateB : dateB - dateA;
+      });
+    } else {
+      sorted.sort((a, b) => {
+        const titleA = a.title.toLowerCase();
+        const titleB = b.title.toLowerCase();
+        return sortTitleOrder === "asc"
+          ? titleA.localeCompare(titleB)
+          : titleB.localeCompare(titleA);
+      });
+    }
+    return sorted;
+  }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
+
+  function handleSortDate() {
+    setSortKey("date");
+    toggleSortDateOrder();
+  }
+
+  function handleSortTitle() {
+    setSortKey("title");
+    toggleSortTitleOrder();
+  }
 
   const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
     return (
@@ -76,22 +114,15 @@ export default function FavoritesScreen() {
         style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
         className="relative min-h-full">
         {!!data && data?.length > 0 && (
-          <View className="mx-2 mb-8 flex-row items-center gap-4 rounded-md border border-input px-3">
-            <SearchIcon
-              className="text-muted-foreground"
-              size={20}
-              strokeWidth={1.25}
-            />
-            <Input
-              className="border-0 px-0 placeholder:text-muted-foreground"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Search favorites"
-            />
-          </View>
+          <SearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            handleSortDate={handleSortDate}
+            handleSortTitle={handleSortTitle}
+          />
         )}
         <FlashList
-          data={searchQuery ? filteredData : data}
+          data={sortedData}
           key={`favorites_${keyIndex}`}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}

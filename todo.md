@@ -2,8 +2,6 @@
 
 ## Changes/Fixes
 
-1.
-
 ## Features
 
 1. Video player custom controls:
