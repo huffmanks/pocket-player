@@ -8,7 +8,7 @@ import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-export type SettingId = "autoplay" | "enablePasscode" | "fullscreen" | "loop" | "mute";
+export type SettingId = "autoplay" | "enablePasscode" | "loop" | "mute" | "isNativeControls";
 
 interface SettingSwitchProps {
   id: SettingId;
@@ -17,19 +17,27 @@ interface SettingSwitchProps {
 }
 
 export default function SettingSwitch({ id, defaultChecked = false, label }: SettingSwitchProps) {
-  const { autoPlay, fullscreen, loop, mute, setAutoPlay, setFullscreen, setLoop, setMute } =
-    useSettingsStore(
-      useShallow((state) => ({
-        autoPlay: state.autoPlay,
-        fullscreen: state.fullscreen,
-        loop: state.loop,
-        mute: state.mute,
-        setAutoPlay: state.setAutoPlay,
-        setFullscreen: state.setFullscreen,
-        setLoop: state.setLoop,
-        setMute: state.setMute,
-      }))
-    );
+  const {
+    autoPlay,
+    loop,
+    mute,
+    isNativeControls,
+    setAutoPlay,
+    setLoop,
+    setMute,
+    setIsNativeControls,
+  } = useSettingsStore(
+    useShallow((state) => ({
+      autoPlay: state.autoPlay,
+      loop: state.loop,
+      mute: state.mute,
+      isNativeControls: state.isNativeControls,
+      setAutoPlay: state.setAutoPlay,
+      setLoop: state.setLoop,
+      setMute: state.setMute,
+      setIsNativeControls: state.setIsNativeControls,
+    }))
+  );
 
   const { enablePasscode, setEnablePasscode } = useSecurityStore(
     useShallow((state) => ({
@@ -41,17 +49,17 @@ export default function SettingSwitch({ id, defaultChecked = false, label }: Set
   const settingsMap = {
     autoplay: autoPlay,
     enablePasscode: enablePasscode,
-    fullscreen: fullscreen,
     loop: loop,
     mute: mute,
+    isNativeControls: isNativeControls,
   } as const;
 
   const settersMap = {
     autoplay: setAutoPlay,
     enablePasscode: setEnablePasscode,
-    fullscreen: setFullscreen,
     loop: setLoop,
     mute: setMute,
+    isNativeControls: setIsNativeControls,
   } as const;
 
   const [checked, setChecked] = useState(

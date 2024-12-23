@@ -73,16 +73,16 @@ export const settingsSwitches: { id: SettingId; label: string }[] = [
     label: "Autoplay",
   },
   {
-    id: "fullscreen",
-    label: "Fullscreen",
-  },
-  {
     id: "loop",
     label: "Loop",
   },
   {
     id: "mute",
     label: "Mute",
+  },
+  {
+    id: "isNativeControls",
+    label: "Native video controls",
   },
 ];
 

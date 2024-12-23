@@ -380,17 +380,17 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 
 type SettingsStoreState = {
   autoPlay: boolean;
-  fullscreen: boolean;
   loop: boolean;
   mute: boolean;
+  isNativeControls: boolean;
   theme: "light" | "dark";
   sortKey: "date" | "title";
   sortDateOrder: "asc" | "desc";
   sortTitleOrder: "asc" | "desc";
   setAutoPlay: (autoPlay: boolean) => void;
-  setFullscreen: (fullscreen: boolean) => void;
   setLoop: (loop: boolean) => void;
   setMute: (mute: boolean) => void;
+  setIsNativeControls: (isNativeControls: boolean) => void;
   setTheme: (theme: "light" | "dark") => void;
   setSortKey: (key: "date" | "title") => void;
   toggleSortDateOrder: () => void;
@@ -401,17 +401,17 @@ export const useSettingsStore = create<SettingsStoreState>()(
   persist(
     (set) => ({
       autoPlay: false,
-      fullscreen: false,
       loop: false,
       mute: false,
+      isNativeControls: false,
       theme: "dark",
       sortKey: "date",
       sortDateOrder: "asc",
       sortTitleOrder: "asc",
       setAutoPlay: (autoPlay) => set({ autoPlay }),
-      setFullscreen: (fullscreen) => set({ fullscreen }),
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
+      setIsNativeControls: (isNativeControls) => set({ isNativeControls }),
       setTheme: (theme) => set({ theme }),
       setSortKey: (key) => set({ sortKey: key }),
       toggleSortDateOrder: () =>

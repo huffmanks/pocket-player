@@ -39,6 +39,17 @@ export function secondsToMMSS(seconds: number): string {
   return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
 }
 
+export const throttle = (func: (...args: any[]) => void, delay: number) => {
+  let lastCall = 0;
+  return (...args: any[]) => {
+    const now = Date.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func(...args);
+    }
+  };
+};
+
 export function formatFileSize(bytes: number): string {
   const units = ["KB", "MB", "GB"];
   let size = bytes / 1024;

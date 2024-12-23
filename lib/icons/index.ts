@@ -7,6 +7,7 @@ import {
   CalendarIcon,
   CheckIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
   ChevronRightIcon,
   ChevronUpIcon,
   ChevronsUpDownIcon,
@@ -31,6 +32,7 @@ import {
   RefreshCcwIcon,
   RepeatIcon,
   RewindIcon,
+  RotateCcwIcon,
   ScanFaceIcon,
   SearchIcon,
   SendIcon,
@@ -72,6 +74,9 @@ export { CheckIcon };
 
 iconWithClassName(ChevronDownIcon);
 export { ChevronDownIcon };
+
+iconWithClassName(ChevronLeftIcon);
+export { ChevronLeftIcon };
 
 iconWithClassName(ChevronRightIcon);
 export { ChevronRightIcon };
@@ -144,6 +149,9 @@ export { RepeatIcon };
 
 iconWithClassName(RewindIcon);
 export { RewindIcon };
+
+iconWithClassName(RotateCcwIcon);
+export { RotateCcwIcon };
 
 iconWithClassName(ScanFaceIcon);
 export { ScanFaceIcon };

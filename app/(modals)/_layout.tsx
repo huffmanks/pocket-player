@@ -10,7 +10,7 @@ export default function ModalLayout() {
       }}>
       <Stack.Screen
         name="playlists/watch/[id]"
-        options={{ animation: "slide_from_bottom", title: "Watch playlist" }}
+        options={{ headerShown: false, animation: "slide_from_bottom", title: "Watch playlist" }}
       />
       <Stack.Screen
         name="playlists/view/[id]"
@@ -26,7 +26,7 @@ export default function ModalLayout() {
       />
       <Stack.Screen
         name="videos/watch/[id]"
-        options={{ animation: "slide_from_bottom" }}
+        options={{ headerShown: false, animation: "slide_from_bottom" }}
       />
       <Stack.Screen
         name="videos/edit/[id]"
