@@ -13,6 +13,7 @@
 3. Status bar:
    - Add hidden={false}
    - Hide status bar when in view video screen.
+4. Navbar buttons don't work when in model.
 
 ## Features
 
