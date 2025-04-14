@@ -76,7 +76,10 @@ export default function RootLayout() {
       <SafeAreaProvider style={{ flex: 1 }}>
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
           <LockScreenProvider>
-            <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
+            <StatusBar
+              style={isDarkColorScheme ? "light" : "dark"}
+              hidden={false}
+            />
             <Stack>
               <Stack.Screen
                 name="(modals)"

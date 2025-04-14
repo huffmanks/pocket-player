@@ -2,18 +2,14 @@
 
 ## Changes/Fixes
 
-1. Light mode custom video controls
-   - Fix overlay color.
-   - Icon colors.
-2. Video player: fix scrubber
+1. Video player: fix scrubber
    - Update currentTime when scrubbing.
    - Refactor scrubbing pause/play.
    - Sometimes replay button is shown instead of play.
-   - Try adding default orientation to: ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT);
-3. Status bar:
-   - Add hidden={false}
-   - Hide status bar when in view video screen.
-4. Navbar buttons don't work when in model.
+   - When video on loop, the currentTime and scrubber does not reset.
+   - When video on loop, controls don't hide, they get shown again and dont go away.
+   - If fast forward button, 5s, is greater than time left it bugs out.
+2. Navbar buttons don't work when in modal. (have not been able to reproduce this in dev)
 
 ## Features
 
