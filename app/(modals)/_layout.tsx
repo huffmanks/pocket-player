@@ -10,31 +10,39 @@ export default function ModalLayout() {
       }}>
       <Stack.Screen
         name="playlists/watch/[id]"
-        options={{ headerShown: false, animation: "slide_from_bottom", title: "Watch playlist" }}
+        options={{ headerShown: false, animation: "slide_from_right", title: "Watch playlist" }}
       />
       <Stack.Screen
         name="playlists/view/[id]"
-        options={{ animation: "slide_from_bottom", title: "Playlist" }}
+        options={{ animation: "slide_from_right", title: "Playlist" }}
       />
       <Stack.Screen
         name="playlists/edit/[id]"
-        options={{ presentation: "modal", title: "Edit playlist" }}
+        options={{
+          animation: "slide_from_bottom",
+          headerBackVisible: true,
+          title: "Edit playlist",
+        }}
       />
       <Stack.Screen
         name="playlists/create"
-        options={{ presentation: "modal", title: "Create playlist" }}
+        options={{
+          animation: "slide_from_bottom",
+          headerBackVisible: true,
+          title: "Create playlist",
+        }}
       />
       <Stack.Screen
         name="videos/watch/[id]"
-        options={{ headerShown: false, animation: "slide_from_bottom" }}
+        options={{ headerShown: false, animation: "slide_from_right" }}
       />
       <Stack.Screen
         name="videos/edit/[id]"
-        options={{ presentation: "modal", title: "Edit video" }}
+        options={{ animation: "slide_from_bottom", headerBackVisible: true, title: "Edit video" }}
       />
       <Stack.Screen
         name="lock"
-        options={{ headerShown: false, animation: "fade" }}
+        options={{ headerShown: false, headerBackVisible: false, animation: "fade" }}
       />
       <Stack.Screen
         name="passcode"

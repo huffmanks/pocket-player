@@ -1,11 +1,10 @@
 import { useKeepAwake } from "expo-keep-awake";
-import * as NavigationBar from "expo-navigation-bar";
 import { router, useFocusEffect } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { StatusBar } from "expo-status-bar";
 import { VideoView } from "expo-video";
 import { useCallback } from "react";
-import { Platform, View } from "react-native";
+import { View } from "react-native";
 
 import Slider from "@react-native-community/slider";
 import { GestureDetector } from "react-native-gesture-handler";
@@ -48,10 +47,12 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
     isPlaylist,
     controlsVisible,
     hasEnded,
-    onSlidingComplete,
+    onSliderChange,
     onSlidingStart,
+    onSlidingComplete,
     toggleMute,
     togglePlay,
+    safeSeekBy,
     changeVideoSource,
     handleButtonPressIn,
     handleButtonPressOut,
@@ -61,10 +62,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
 
   useFocusEffect(
     useCallback(() => {
-      if (Platform.OS === "android") {
-        NavigationBar.setVisibilityAsync("hidden");
-      }
-
       const enableOrientation = async () => {
         await ScreenOrientation.unlockAsync();
       };
@@ -76,7 +73,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
       setIsLockDisabled(true);
 
       return () => {
-        NavigationBar.setVisibilityAsync("visible");
         disableOrientation();
         setIsLockDisabled(false);
       };
@@ -163,7 +159,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       size="unset"
                       onPressIn={handleButtonPressIn}
                       onPressOut={handleButtonPressOut}
-                      onPress={() => player.seekBy(-5)}>
+                      onPress={() => safeSeekBy(-5)}>
                       <RewindIcon
                         className="fill-white"
                         size={32}
@@ -204,7 +200,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       size="unset"
                       onPressIn={handleButtonPressIn}
                       onPressOut={handleButtonPressOut}
-                      onPress={() => player.seekBy(5)}>
+                      onPress={() => safeSeekBy(5)}>
                       <FastForwardIcon
                         className="fill-white"
                         size={32}
@@ -254,7 +250,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       </Button>
                     </View>
 
-                    <View className="pb-8">
+                    <View className="flex-1 pb-8">
                       <Slider
                         className="h-10 w-full bg-secondary"
                         value={progress}
@@ -264,8 +260,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                         minimumTrackTintColor="#f8fafc"
                         maximumTrackTintColor="#1f242b"
                         tapToSeek
-                        onTouchStart={handleButtonPressIn}
-                        onTouchEnd={handleButtonPressOut}
+                        onValueChange={onSliderChange}
                         onSlidingStart={onSlidingStart}
                         onSlidingComplete={onSlidingComplete}
                       />

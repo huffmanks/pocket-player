@@ -2,14 +2,8 @@
 
 ## Changes/Fixes
 
-1. Video player: fix scrubber
-   - Update currentTime when scrubbing.
-   - Refactor scrubbing pause/play.
-   - Sometimes replay button is shown instead of play.
-   - When video on loop, the currentTime and scrubber does not reset.
-   - When video on loop, controls don't hide, they get shown again and dont go away.
-   - If fast forward button, 5s, is greater than time left it bugs out.
-2. Navbar buttons don't work when in modal. (have not been able to reproduce this in dev)
+1. Video player: play/pause/replay toggle button
+   - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
 
 ## Features
 

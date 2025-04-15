@@ -1,3 +1,4 @@
+import { setVisibilityAsync } from "expo-navigation-bar";
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -12,7 +13,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { DARK_THEME, LIGHT_THEME } from "@/lib/constants";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
@@ -45,7 +45,6 @@ export default function RootLayout() {
 
     if (Platform.OS === "web") document.documentElement.classList.add("bg-background");
 
-    setAndroidNavigationBar(navColorScheme);
     setTheme(navColorScheme);
 
     if (theme !== colorScheme) setColorScheme(navColorScheme);
@@ -58,6 +57,10 @@ export default function RootLayout() {
       } else {
         setEnablePasscode(false);
         setIsLocked(false);
+      }
+
+      if (Platform.OS === "android") {
+        await setVisibilityAsync("hidden");
       }
 
       setIsAppReady(true);

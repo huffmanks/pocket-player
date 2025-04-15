@@ -4,7 +4,6 @@ import { View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { LockIcon, MoonStarIcon, SettingsIcon, SunIcon } from "@/lib/icons";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -28,7 +27,6 @@ function ThemeToggle() {
   function handlePress() {
     const newTheme = isDarkColorScheme ? "light" : "dark";
     setColorScheme(newTheme);
-    setAndroidNavigationBar(newTheme);
     setTheme(newTheme);
   }
 

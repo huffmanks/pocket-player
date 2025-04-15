@@ -3,12 +3,7 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 
 import { Gesture } from "react-native-gesture-handler";
-import {
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useShallow } from "zustand/react/shallow";
 
 import { useSettingsStore } from "@/lib/store";
@@ -18,13 +13,12 @@ export function useVideoPlayerControls(videoSources: string[]) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [time, setTime] = useState<string | null>("00:00");
   const [progress, setProgress] = useState(0);
-  const [oldIsPlaying, setOldIsPlaying] = useState(false);
   const [isButtonTouched, setIsButtonTouched] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
+  const [isOldPlaying, setIsOldPlaying] = useState(false);
 
   const videoRef = useRef<VideoView | null>(null);
   const controlsVisible = useSharedValue(1);
-  const controlsVisibleDerived = useDerivedValue(() => controlsVisible?.value ?? 1);
   const isPlaylist = videoSources.length > 1;
 
   const { autoPlay, mute, loop } = useSettingsStore(
@@ -48,6 +42,7 @@ export function useVideoPlayerControls(videoSources: string[]) {
   const { muted } = useEvent(player, "mutedChange", { muted: player.muted });
 
   useEffect(() => {
+    if (!player) return;
     const subscription = player.addListener("playToEnd", () => {
       if (currentIndex < videoSources.length - 1) {
         setCurrentIndex((prevIndex) => {
@@ -56,7 +51,12 @@ export function useVideoPlayerControls(videoSources: string[]) {
           return nextIndex;
         });
       } else {
-        setHasEnded(true);
+        if (loop) {
+          setHasEnded(false);
+          player.replay();
+        } else {
+          setHasEnded(true);
+        }
       }
     });
 
@@ -68,9 +68,9 @@ export function useVideoPlayerControls(videoSources: string[]) {
         setProgress(currentTime / duration);
         setTime(secondsToMMSS(currentTime));
       }
-    }, 250);
+    }, 150);
 
-    const interval = setInterval(updateProgress, 250);
+    const interval = setInterval(updateProgress, 150);
 
     return () => {
       subscription.remove();
@@ -79,22 +79,27 @@ export function useVideoPlayerControls(videoSources: string[]) {
   }, [player, currentIndex, videoSources]);
 
   useEffect(() => {
+    if (!isPlaying || isButtonTouched) return;
+
     const timeout = setTimeout(() => {
-      if (controlsVisibleDerived?.value === 1 && isPlaying) {
-        controlsVisible.value = 0;
-      }
+      controlsVisible.value = 0;
     }, 5000);
 
     return () => clearTimeout(timeout);
-  }, [controlsVisibleDerived]);
+  }, [isPlaying, isButtonTouched, controlsVisible]);
+
+  function onSliderChange(value: number) {
+    const duration = player.duration;
+    const currentTime = value * duration;
+
+    setTime(secondsToMMSS(currentTime));
+  }
 
   function onSlidingStart() {
     setIsButtonTouched(true);
 
-    if (isPlaying) {
-      player.pause();
-      setOldIsPlaying(true);
-    }
+    setIsOldPlaying(isPlaying);
+    player.pause();
   }
 
   function onSlidingComplete(value: number) {
@@ -102,12 +107,11 @@ export function useVideoPlayerControls(videoSources: string[]) {
 
     const duration = player.duration;
     const newTime = value * duration;
-    player.seekBy(newTime - player.currentTime);
-    setTime(secondsToMMSS(newTime));
 
-    if (oldIsPlaying) {
+    safeSeekBy(newTime - player.currentTime);
+
+    if (isOldPlaying) {
       player.play();
-      setOldIsPlaying(false);
     }
   }
 
@@ -121,6 +125,7 @@ export function useVideoPlayerControls(videoSources: string[]) {
 
       setCurrentIndex(0);
       player.replace(videoSources[0]);
+      player.play();
 
       controlsVisible.value = 0;
     } else if (isPlaying) {
@@ -132,6 +137,11 @@ export function useVideoPlayerControls(videoSources: string[]) {
 
       controlsVisible.value = 0;
     }
+  }
+
+  function safeSeekBy(offset: number) {
+    const target = Math.min(Math.max(player.currentTime + offset, 0), player.duration);
+    player.seekBy(target - player.currentTime);
   }
 
   function changeVideoSource(inverse: number) {
@@ -169,10 +179,12 @@ export function useVideoPlayerControls(videoSources: string[]) {
     isPlaylist,
     controlsVisible,
     hasEnded,
-    onSlidingComplete,
+    onSliderChange,
     onSlidingStart,
+    onSlidingComplete,
     toggleMute,
     togglePlay,
+    safeSeekBy,
     changeVideoSource,
     handleButtonPressIn,
     handleButtonPressOut,
