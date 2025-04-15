@@ -2,6 +2,7 @@ import {
   ArrowDownAZIcon,
   ArrowDownUpIcon,
   ArrowUpZAIcon,
+  BanIcon,
   CalendarArrowDownIcon,
   CalendarArrowUpIcon,
   CalendarIcon,
@@ -19,6 +20,7 @@ import {
   EyeOffIcon,
   FastForwardIcon,
   FileVideoIcon,
+  ImageIcon,
   KeyRoundIcon,
   ListMusicIcon,
   LockIcon,
@@ -33,6 +35,7 @@ import {
   RepeatIcon,
   RewindIcon,
   RotateCcwIcon,
+  SaveIcon,
   ScanFaceIcon,
   SearchIcon,
   SendIcon,
@@ -59,6 +62,9 @@ export { ArrowDownUpIcon };
 
 iconWithClassName(ArrowUpZAIcon);
 export { ArrowUpZAIcon };
+
+iconWithClassName(BanIcon);
+export { BanIcon };
 
 iconWithClassName(CalendarArrowDownIcon);
 export { CalendarArrowDownIcon };
@@ -111,6 +117,9 @@ export { FastForwardIcon };
 iconWithClassName(FileVideoIcon);
 export { FileVideoIcon };
 
+iconWithClassName(ImageIcon);
+export { ImageIcon };
+
 iconWithClassName(KeyRoundIcon);
 export { KeyRoundIcon };
 
@@ -152,6 +161,9 @@ export { RewindIcon };
 
 iconWithClassName(RotateCcwIcon);
 export { RotateCcwIcon };
+
+iconWithClassName(SaveIcon);
+export { SaveIcon };
 
 iconWithClassName(ScanFaceIcon);
 export { ScanFaceIcon };

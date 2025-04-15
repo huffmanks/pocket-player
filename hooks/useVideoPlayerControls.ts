@@ -9,7 +9,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useSettingsStore } from "@/lib/store";
 import { secondsToMMSS, throttle } from "@/lib/utils";
 
-export function useVideoPlayerControls(videoSources: string[]) {
+export function useVideoPlayerControls(videoSources: string[], isThumbView?: boolean) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [time, setTime] = useState<string | null>("00:00");
   const [progress, setProgress] = useState(0);
@@ -30,6 +30,13 @@ export function useVideoPlayerControls(videoSources: string[]) {
   );
 
   const player = useVideoPlayer(videoSources[currentIndex], (player) => {
+    if (isThumbView) {
+      player.loop = false;
+      player.muted = true;
+      player.pause();
+      return;
+    }
+
     player.loop = !isPlaylist && (loop ?? false);
     player.muted = mute || false;
 
@@ -43,22 +50,25 @@ export function useVideoPlayerControls(videoSources: string[]) {
 
   useEffect(() => {
     if (!player) return;
-    const subscription = player.addListener("playToEnd", () => {
-      if (currentIndex < videoSources.length - 1) {
-        setCurrentIndex((prevIndex) => {
-          const nextIndex = prevIndex + 1;
-          player.replace(videoSources[nextIndex]);
-          return nextIndex;
+
+    function handlePlayToEnd() {
+      const atLastVideo = currentIndex >= videoSources.length - 1;
+
+      if (!atLastVideo) {
+        setCurrentIndex((prev) => {
+          const next = prev + 1;
+          player.replace(videoSources[next]);
+          return next;
         });
-      } else {
-        if (loop) {
-          setHasEnded(false);
-          player.replay();
-        } else {
-          setHasEnded(true);
-        }
+        return;
       }
-    });
+
+      if (!isThumbView) {
+        loop ? (setHasEnded(false), player.replay()) : setHasEnded(true);
+      }
+    }
+
+    const subscription = player.addListener("playToEnd", handlePlayToEnd);
 
     const updateProgress = throttle(() => {
       const currentTime = player?.currentTime ?? 0;
@@ -175,6 +185,7 @@ export function useVideoPlayerControls(videoSources: string[]) {
     isPlaying,
     time,
     progress,
+    setProgress,
     muted,
     isPlaylist,
     controlsVisible,

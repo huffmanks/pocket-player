@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { Image, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
+import VideoThumbPicker from "@/components/video-thumb-picker";
 
 const formSchema = z.object({
   title: z
@@ -108,7 +109,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
   return (
     <View className="relative h-full">
       <ScrollView
-        contentContainerClassName="mx-auto w-full max-w-lg p-6"
+        contentContainerClassName="mx-auto w-full max-w-lg py-6"
         showsVerticalScrollIndicator={true}
         className="bg-background"
         automaticallyAdjustContentInsets={false}
@@ -116,13 +117,10 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         <View className="mx-auto mb-8 min-h-1 w-full max-w-md">
           <Form {...form}>
             <View className="mb-12">
-              <View className="flex-1 gap-7">
-                <Image
-                  style={{ width: 375, height: 250 }}
-                  source={{ uri: videoInfo.thumbUri }}
-                  resizeMode={form.watch("orientation.value") === "Portrait" ? "contain" : "cover"}
-                  className="overflow-hidden rounded-md bg-secondary"
-                />
+              <View className="mb-6">
+                <VideoThumbPicker videoInfo={videoInfo} />
+              </View>
+              <View className="flex-1 gap-7 px-4">
                 <FormField
                   control={form.control}
                   name="title"
@@ -137,7 +135,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                     />
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="createdAt"
@@ -148,7 +145,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                     />
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="orientation"
@@ -185,7 +181,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                     </FormSelect>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="isFavorite"
@@ -198,7 +193,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                 />
               </View>
             </View>
-            <View>
+            <View className="px-6">
               <Button
                 className="bg-teal-600"
                 size="lg"
