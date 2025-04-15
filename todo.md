@@ -4,6 +4,7 @@
 
 1. Video player: play/pause/replay toggle button
    - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
+2. Router tabs add padding top and bottom.
 
 ## Features
 
