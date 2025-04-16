@@ -25,3 +25,4 @@
 3. Files screen: display all app files and allow user to delete some or all. Include videoDir and cache files.
 4. Restore FlashList scroll position. Use mmkv.
 5. Save timestamp of last view of video. Use mmkv. const key = `lastViewed:${videoId}`;
+6. Edit video: replace video option.
