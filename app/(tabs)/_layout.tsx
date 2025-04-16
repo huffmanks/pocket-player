@@ -16,6 +16,11 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colorScheme === "light" ? "#09090b" : "#fff",
         headerShown: useClientOnlyValue(false, true),
         headerRight: () => <HeaderItems />,
+        tabBarStyle: {
+          paddingTop: 10,
+          paddingBottom: 5,
+          height: 65,
+        },
       }}>
       <Tabs.Screen
         name="index"

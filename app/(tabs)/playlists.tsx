@@ -80,7 +80,7 @@ export default function PlaylistsScreen() {
             {item.thumbUris.map((thumbUri, index) => (
               <Image
                 key={index}
-                className={cn("rounded-full border border-foreground", index === 0 ? "" : "-ml-6")}
+                className={cn("rounded-full", index === 0 ? "" : "-ml-6")}
                 style={{ width: 45, height: 45 }}
                 source={{ uri: thumbUri }}
               />

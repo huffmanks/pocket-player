@@ -4,17 +4,10 @@
 
 1. Video player: play/pause/replay toggle button
    - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
-2. Router tabs add padding top and bottom.
-3. Playlists screen: Remove border from circle images. [playlists](<app/(tabs)/playlists.tsx#L83>)
-4. Edit video screen: [VideoThumbPicker](components/video-thumb-picker.tsx)
-   - Refactor: Move state to form: tmpThumbUri, thumbTimestamp, etc.
-   - Allow form to update video.
-   - Refactor: generate, save and cancel.
-5. DB: Add thumbTimestamp field to video schema.
+2. DB: Add thumbTimestamp field to video schema.
    - Default to 1000 (ms)
    - Edit video screen: update thumbTimestamp when thumbnail changed.
-6. Video player: Make default orientation based of video.
-7. Slider (video player): Make bigger.
+3. Video player: Make default orientation based of video.
 
 ## Features
 
