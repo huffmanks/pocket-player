@@ -1,9 +1,10 @@
 import * as FileSystem from "expo-file-system";
 import { VideoView } from "expo-video";
 import * as VideoThumbnails from "expo-video-thumbnails";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 
+import { createId } from "@paralleldrive/cuid2";
 import Slider from "@react-native-community/slider";
 import { GestureDetector } from "react-native-gesture-handler";
 import { toast } from "sonner-native";
@@ -22,8 +23,8 @@ interface VideoThumbPickerProps {
 }
 
 export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
-  const [tmpNewThumbUri, setTmpNewThumbUri] = useState("");
-  const [newThumbUri, setNewThumbUri] = useState("");
+  const [tmpThumbUri, setTmpThumbUri] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const updateVideo = useVideoStore((state) => state.updateVideo);
 
@@ -40,17 +41,12 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
   } = useVideoPlayerControls([videoInfo.videoUri], true);
 
   async function handleGenerateThumb() {
-    if (!videoInfo) return;
-
     try {
-      const { uri: tmpUri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
         time: player.currentTime * 1000,
       });
 
-      const newUri = `${VIDEOS_DIR}${videoInfo.title + ".jpg"}`;
-
-      setTmpNewThumbUri(tmpUri);
-      setNewThumbUri(newUri);
+      setTmpThumbUri(uri);
     } catch (err) {
       console.error(err);
       toast.error("Failed to generate thumbnail.");
@@ -59,13 +55,11 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
 
   async function handleCancelThumb() {
     try {
-      if (tmpNewThumbUri) {
-        await FileSystem.deleteAsync(tmpNewThumbUri, { idempotent: true });
+      if (tmpThumbUri) {
+        await FileSystem.deleteAsync(tmpThumbUri, { idempotent: true });
       }
 
-      setTmpNewThumbUri("");
-      setNewThumbUri("");
-      setProgress(0);
+      setTmpThumbUri("");
     } catch (err) {
       console.error(err);
       toast.error("Failed to reset thumbnail.");
@@ -73,20 +67,34 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
   }
 
   async function handleSaveThumb() {
+    if (isSaving) return;
+    setIsSaving(true);
+
     try {
-      await FileSystem.moveAsync({ from: tmpNewThumbUri, to: newThumbUri });
+      const fileId = createId();
+      const newUri = `${VIDEOS_DIR}${videoInfo.title}-${fileId}.jpg`;
 
-      updateVideo({ id: videoInfo.id, values: { thumbUri: newThumbUri } });
-      toast.success("Thumbnail updated.");
+      await FileSystem.moveAsync({ from: tmpThumbUri, to: newUri });
+      await FileSystem.deleteAsync(videoInfo.thumbUri, { idempotent: true });
 
-      setTmpNewThumbUri("");
-      setNewThumbUri("");
-      setProgress(0);
+      await updateVideo({ id: videoInfo.id, values: { thumbUri: newUri } });
+
+      setTmpThumbUri("");
     } catch (err) {
       console.error(err);
       toast.error("Failed to update thumbnail.");
+    } finally {
+      setIsSaving(false);
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (tmpThumbUri) {
+        FileSystem.deleteAsync(tmpThumbUri, { idempotent: true }).catch(console.error);
+      }
+    };
+  }, [tmpThumbUri]);
 
   return (
     <GestureDetector gesture={tapGesture}>
@@ -124,7 +132,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
           </View>
 
           <View className="mb-1 px-4">
-            {newThumbUri ? (
+            {tmpThumbUri ? (
               <View className="flex-row items-center justify-center gap-4">
                 <Button
                   variant="secondary"
@@ -139,6 +147,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
                 </Button>
                 <Button
                   className="flex flex-1 flex-row items-center justify-center gap-4"
+                  disabled={isSaving}
                   onPress={handleSaveThumb}>
                   <SaveIcon
                     className="text-background"

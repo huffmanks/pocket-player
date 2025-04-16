@@ -118,10 +118,10 @@ export default function UploadForm() {
               time: 1000,
             });
 
-            const thumbUri = `${VIDEOS_DIR}${name.replace(/\.[^/.]+$/, ".jpg")}`;
-            await FileSystem.moveAsync({ from: thumbFileUri, to: thumbUri });
+            const title = name.replace(/\.[^/.]+$/, "");
 
-            const title = name.replace(/(\.[^/.]+)$/, "");
+            const thumbUri = `${VIDEOS_DIR}${title}.jpg`;
+            await FileSystem.moveAsync({ from: thumbFileUri, to: thumbUri });
 
             const result = await getVideoInfoAsync(videoUri);
 

@@ -90,6 +90,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         values: {
           ...parsedValues,
           createdAt: values.createdAt.toISOString(),
+          updatedAt: new Date().toISOString(),
           orientation: values.orientation.value,
         },
       });

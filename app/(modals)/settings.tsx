@@ -1,7 +1,6 @@
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { Platform, View } from "react-native";
+import { View } from "react-native";
 
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
@@ -145,7 +144,6 @@ export default function SettingsModal() {
           </AlertDialog>
         </View>
       </View>
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </>
   );
 }
