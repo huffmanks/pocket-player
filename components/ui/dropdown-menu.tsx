@@ -6,7 +6,7 @@ import {
   Text,
   type TextProps,
   View,
-  ViewStyle,
+  type ViewStyle,
 } from "react-native";
 
 import * as DropdownMenuPrimitive from "@rn-primitives/dropdown-menu";
@@ -97,10 +97,10 @@ const DropdownMenuContent = React.forwardRef<
       <DropdownMenuPrimitive.Overlay
         style={
           overlayStyle
-            ? (StyleSheet.flatten([
+            ? StyleSheet.flatten([
                 Platform.OS !== "web" ? StyleSheet.absoluteFill : undefined,
                 overlayStyle,
-              ]) as ViewStyle)
+              ])
             : Platform.OS !== "web"
               ? StyleSheet.absoluteFill
               : undefined

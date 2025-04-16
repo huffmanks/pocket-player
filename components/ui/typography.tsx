@@ -2,7 +2,7 @@ import * as React from "react";
 import { Platform, Text as RNText } from "react-native";
 
 import * as Slot from "@rn-primitives/slot";
-import { SlottableTextProps, TextRef } from "@rn-primitives/types";
+import type { SlottableTextProps, TextRef } from "@rn-primitives/types";
 
 import { cn } from "@/lib/utils";
 
@@ -98,6 +98,7 @@ const P = React.forwardRef<TextRef, SlottableTextProps>(
     );
   }
 );
+
 P.displayName = "P";
 
 const BlockQuote = React.forwardRef<TextRef, SlottableTextProps>(

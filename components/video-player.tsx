@@ -1,9 +1,7 @@
 import { useKeepAwake } from "expo-keep-awake";
-import { router, useFocusEffect } from "expo-router";
-import * as ScreenOrientation from "expo-screen-orientation";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { VideoView } from "expo-video";
-import { useCallback } from "react";
 import { View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
@@ -24,7 +22,7 @@ import {
   Volume2Icon,
   VolumeXIcon,
 } from "@/lib/icons";
-import { useSecurityStore, useSettingsStore } from "@/lib/store";
+import { useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -35,7 +33,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
 
   const { isDarkColorScheme } = useColorScheme();
   const isNativeControls = useSettingsStore((state) => state.isNativeControls);
-  const setIsLockDisabled = useSecurityStore((state) => state.setIsLockDisabled);
 
   const {
     videoRef,
@@ -59,25 +56,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
     animatedStyle,
     tapGesture,
   } = useVideoPlayerControls(videoSources);
-
-  useFocusEffect(
-    useCallback(() => {
-      const enableOrientation = async () => {
-        await ScreenOrientation.unlockAsync();
-      };
-      const disableOrientation = async () => {
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-      };
-
-      enableOrientation();
-      setIsLockDisabled(true);
-
-      return () => {
-        disableOrientation();
-        setIsLockDisabled(false);
-      };
-    }, [])
-  );
 
   function handleGoBack() {
     if (router.canGoBack()) {

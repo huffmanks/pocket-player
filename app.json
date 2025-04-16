@@ -2,7 +2,7 @@
   "expo": {
     "name": "Video Player",
     "slug": "video-player-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "scheme": "video-player-app",
     "orientation": "portrait",
     "icon": "./assets/icons/ios_app_logo_marketing.png",
@@ -79,7 +79,8 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true

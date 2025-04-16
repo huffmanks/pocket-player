@@ -1,7 +1,7 @@
 {
   "name": "expo-video-player",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "dev": "expo start --dev-client --clear",
     "android": "expo run:android",
@@ -25,7 +25,6 @@
     "@rn-primitives/checkbox": "^1.1.0",
     "@rn-primitives/dropdown-menu": "^1.1.0",
     "@rn-primitives/label": "^1.1.0",
-    "@rn-primitives/progress": "^1.1.0",
     "@rn-primitives/radio-group": "^1.1.0",
     "@rn-primitives/select": "^1.1.0",
     "@rn-primitives/separator": "^1.1.0",
