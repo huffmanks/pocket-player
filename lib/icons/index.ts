@@ -2,7 +2,6 @@ import {
   ArrowDownAZIcon,
   ArrowDownUpIcon,
   ArrowUpZAIcon,
-  BanIcon,
   CalendarArrowDownIcon,
   CalendarArrowUpIcon,
   CalendarIcon,
@@ -20,10 +19,12 @@ import {
   EyeOffIcon,
   FastForwardIcon,
   FileVideoIcon,
+  ImageDownIcon,
   ImageIcon,
   KeyRoundIcon,
   ListMusicIcon,
   LockIcon,
+  LockOpenIcon,
   MaximizeIcon,
   MinimizeIcon,
   MoonStarIcon,
@@ -31,7 +32,6 @@ import {
   PencilIcon,
   PlayIcon,
   PlusIcon,
-  RefreshCcwIcon,
   RepeatIcon,
   RewindIcon,
   RotateCcwIcon,
@@ -62,9 +62,6 @@ export { ArrowDownUpIcon };
 
 iconWithClassName(ArrowUpZAIcon);
 export { ArrowUpZAIcon };
-
-iconWithClassName(BanIcon);
-export { BanIcon };
 
 iconWithClassName(CalendarArrowDownIcon);
 export { CalendarArrowDownIcon };
@@ -120,6 +117,9 @@ export { FileVideoIcon };
 iconWithClassName(ImageIcon);
 export { ImageIcon };
 
+iconWithClassName(ImageDownIcon);
+export { ImageDownIcon };
+
 iconWithClassName(KeyRoundIcon);
 export { KeyRoundIcon };
 
@@ -128,6 +128,9 @@ export { ListMusicIcon };
 
 iconWithClassName(LockIcon);
 export { LockIcon };
+
+iconWithClassName(LockOpenIcon);
+export { LockOpenIcon };
 
 iconWithClassName(MaximizeIcon);
 export { MaximizeIcon };
@@ -149,9 +152,6 @@ export { PlayIcon };
 
 iconWithClassName(PlusIcon);
 export { PlusIcon };
-
-iconWithClassName(RefreshCcwIcon);
-export { RefreshCcwIcon };
 
 iconWithClassName(RepeatIcon);
 export { RepeatIcon };

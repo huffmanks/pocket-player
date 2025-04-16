@@ -11,7 +11,7 @@ import * as z from "zod";
 
 import { VideoMeta } from "@/db/schema";
 import { orientationOptions } from "@/lib/constants";
-import { RefreshCcwIcon } from "@/lib/icons";
+import { SaveIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,7 @@ import {
   FormSelect,
   FormSwitch,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import {
   SelectContent,
   SelectGroup,
@@ -119,6 +120,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
           <Form {...form}>
             <View className="mb-12">
               <View className="mb-6">
+                <Label className="mb-2 px-4">Thumbnail</Label>
                 <VideoThumbPicker videoInfo={videoInfo} />
               </View>
               <View className="flex-1 gap-7 px-4">
@@ -200,12 +202,12 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                 size="lg"
                 onPress={form.handleSubmit(onSubmit)}>
                 <View className="flex-row items-center gap-4">
-                  <RefreshCcwIcon
+                  <SaveIcon
                     className="text-white"
                     size={28}
                     strokeWidth={1.25}
                   />
-                  <Text className="native:text-base text-white">Update</Text>
+                  <Text className="native:text-base text-white">Save</Text>
                 </View>
               </Button>
             </View>

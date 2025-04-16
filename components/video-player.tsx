@@ -6,7 +6,7 @@ import { VideoView } from "expo-video";
 import { useCallback } from "react";
 import { View } from "react-native";
 
-import Slider from "@react-native-community/slider";
+import { Slider } from "@miblanchard/react-native-slider";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 
@@ -120,7 +120,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
               )}
               style={animatedStyle}>
               {controlsVisible && (
-                <View className="flex-1 justify-between gap-4">
+                <View className="flex-1 justify-between gap-2">
                   <View className="flex-row items-center justify-between gap-4 pt-4">
                     <Button
                       className="p-3"
@@ -224,7 +224,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       </Button>
                     )}
                   </View>
-                  <View className="gap-6">
+                  <View className="portrait:pb-8 landscape:pb-4">
                     <View className="flex-row items-center justify-between gap-4 pl-4 pr-2">
                       <Text className="text-sm text-white/70">{time}</Text>
                       <Button
@@ -250,19 +250,18 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       </Button>
                     </View>
 
-                    <View className="flex-1 pb-8">
+                    <View className="flex-1 px-2 portrait:mb-8 landscape:mb-4">
                       <Slider
-                        className="h-10 w-full bg-secondary"
                         value={progress}
                         minimumValue={0}
                         maximumValue={1}
                         step={0.01}
+                        thumbTintColor="#14b8a6"
                         minimumTrackTintColor="#f8fafc"
                         maximumTrackTintColor="#1f242b"
-                        tapToSeek
-                        onValueChange={onSliderChange}
+                        onValueChange={(val) => onSliderChange(Number(val))}
                         onSlidingStart={onSlidingStart}
-                        onSlidingComplete={onSlidingComplete}
+                        onSlidingComplete={(val) => onSlidingComplete(Number(val))}
                       />
                     </View>
                   </View>
