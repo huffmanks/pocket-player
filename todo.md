@@ -4,11 +4,13 @@
 
 1. [Video player](components/video-player.tsx): play/pause/replay toggle button
    - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
+   - Overlay not extending to bottom.
 2. [Playlists screen](<app/(tabs)/playlists.tsx>): Stale data. When video gets updated, thumbnail does not on playlists item.
 3. [Playlists view screen](<app/(modals)/playlists/view/[id].tsx>): Get the following warning (x2)
    - Reading from `value` during component render. Please ensure that you do not access the `value` property or use `get` method of a shared value while React is rendering a component.
    - Make this screen use accordions for quicker access to playing playlist, etc.
    - can still have [id] page for playlist
+4. [File dropzone design](https://dribbble.com/shots/18231693-Drag-n-drop-areas)
 
 ## Features
 
