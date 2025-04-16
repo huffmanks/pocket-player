@@ -9,7 +9,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 
 import { EditPlaylistInfo } from "@/app/(modals)/playlists/edit/[id]";
-import { SendIcon, XIcon } from "@/lib/icons";
+import { SaveIcon, XIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -182,12 +182,12 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
                 size="lg"
                 onPress={form.handleSubmit(onSubmit, handleErrors)}>
                 <View className="flex-row items-center gap-4">
-                  <SendIcon
+                  <SaveIcon
                     className="text-white"
                     size={28}
                     strokeWidth={1.25}
                   />
-                  <Text className="native:text-base text-white">Submit</Text>
+                  <Text className="native:text-base text-white">Save</Text>
                 </View>
               </Button>
             </View>

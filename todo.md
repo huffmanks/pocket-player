@@ -4,10 +4,7 @@
 
 1. Video player: play/pause/replay toggle button
    - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
-2. DB: Add thumbTimestamp field to video schema.
-   - Default to 1000 (ms)
-   - Edit video screen: update thumbTimestamp when thumbnail changed.
-3. Video player: Make default orientation based of video.
+2. Playlists screen: Stale data [playlists](<app/(tabs)/playlists.tsx>)
 
 ## Features
 
