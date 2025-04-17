@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
+import { View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -15,6 +15,7 @@ import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
 import { useAppStore, useDatabaseStore, useSettingsStore } from "@/lib/store";
+import { throttle } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
@@ -50,9 +51,8 @@ export default function HomeScreen() {
 }
 
 function ScreenContent() {
-  const [refreshing, setRefreshing] = useState(false);
-  const [keyIndex, setKeyIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [canScroll, setCanScroll] = useState(false);
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
@@ -66,26 +66,29 @@ function ScreenContent() {
     sortKey,
     sortDateOrder,
     sortTitleOrder,
+    scrollPosition,
     setSortKey,
     toggleSortDateOrder,
     toggleSortTitleOrder,
-  } = useSettingsStore();
+    setScrollPosition,
+  } = useSettingsStore(
+    useShallow((state) => ({
+      sortKey: state.sortKey,
+      sortDateOrder: state.sortDateOrder,
+      sortTitleOrder: state.sortTitleOrder,
+      scrollPosition: state.scrollPosition,
+      setSortKey: state.setSortKey,
+      toggleSortDateOrder: state.toggleSortDateOrder,
+      toggleSortTitleOrder: state.toggleSortTitleOrder,
+      setScrollPosition: state.setScrollPosition,
+    }))
+  );
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setKeyIndex((prev) => prev + 1);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 200);
-  }, []);
-
-  const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const contentOffsetY = event.nativeEvent.contentOffset.y;
-    const snapToIndex = Math.round(contentOffsetY / ESTIMATED_VIDEO_ITEM_HEIGHT);
-    const newY = snapToIndex * ESTIMATED_VIDEO_ITEM_HEIGHT;
-
-    flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
-  };
+  useEffect(() => {
+    if (canScroll && scrollPosition > 0 && flashListRef.current) {
+      flashListRef.current?.scrollToOffset({ offset: scrollPosition, animated: true });
+    }
+  }, [canScroll]);
 
   const filteredData = useMemo(() => {
     if (!data) return [];
@@ -125,6 +128,12 @@ function ScreenContent() {
     toggleSortTitleOrder();
   }
 
+  const saveScrollY = useRef(
+    throttle((y: number) => {
+      setScrollPosition(y);
+    }, 300)
+  ).current;
+
   const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
     return (
       <View className="px-2">
@@ -153,13 +162,15 @@ function ScreenContent() {
         )}
         <FlashList
           data={sortedData}
-          key={`videos_${keyIndex}`}
+          ref={flashListRef}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
-          onScrollEndDrag={handleScrollEndDrag}
+          onScroll={(e) => saveScrollY(e.nativeEvent.contentOffset.y)}
+          scrollEventThrottle={150}
+          onLayout={() => {
+            if (sortedData.length > 0) setCanScroll(true);
+          }}
           ListEmptyComponent={<ListEmptyComponent hasData={!!data && data?.length > 0} />}
         />
       </View>

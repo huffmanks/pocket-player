@@ -1,7 +1,7 @@
 import * as FileSystem from "expo-file-system";
 import { VideoView } from "expo-video";
 import * as VideoThumbnails from "expo-video-thumbnails";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
@@ -68,6 +68,11 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
       setIsSaving(false);
     }
   }
+
+  useEffect(() => {
+    setProgress(videoInfo.thumbTimestamp);
+    player.currentTime = videoInfo.thumbTimestamp / 1000;
+  }, []);
 
   return (
     <GestureDetector gesture={tapGesture}>

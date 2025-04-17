@@ -387,6 +387,8 @@ type SettingsStoreState = {
   sortKey: "date" | "title";
   sortDateOrder: "asc" | "desc";
   sortTitleOrder: "asc" | "desc";
+  scrollPosition: number;
+  videoProgress: Record<string, number>;
   setAutoPlay: (autoPlay: boolean) => void;
   setLoop: (loop: boolean) => void;
   setMute: (mute: boolean) => void;
@@ -395,6 +397,8 @@ type SettingsStoreState = {
   setSortKey: (key: "date" | "title") => void;
   toggleSortDateOrder: () => void;
   toggleSortTitleOrder: () => void;
+  setScrollPosition: (position: number) => void;
+  setVideoProgress: (videoId: string, time: number) => void;
 };
 
 export const useSettingsStore = create<SettingsStoreState>()(
@@ -408,6 +412,8 @@ export const useSettingsStore = create<SettingsStoreState>()(
       sortKey: "date",
       sortDateOrder: "asc",
       sortTitleOrder: "asc",
+      scrollPosition: 0,
+      videoProgress: {},
       setAutoPlay: (autoPlay) => set({ autoPlay }),
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
@@ -418,6 +424,11 @@ export const useSettingsStore = create<SettingsStoreState>()(
         set((state) => ({ sortDateOrder: state.sortDateOrder === "asc" ? "desc" : "asc" })),
       toggleSortTitleOrder: () =>
         set((state) => ({ sortTitleOrder: state.sortTitleOrder === "asc" ? "desc" : "asc" })),
+      setScrollPosition: (position) => set({ scrollPosition: position }),
+      setVideoProgress: (videoId, time) =>
+        set((state) => ({
+          videoProgress: { ...state.videoProgress, [videoId]: time },
+        })),
     }),
     {
       name: "settings-store",
