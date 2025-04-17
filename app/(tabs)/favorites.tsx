@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import { View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { eq } from "drizzle-orm";
@@ -7,6 +7,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Fuse from "fuse.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
@@ -18,11 +19,8 @@ import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
 export default function FavoritesScreen() {
-  const [refreshing, setRefreshing] = useState(false);
-  const [keyIndex, setKeyIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
 
   const db = useDatabaseStore.getState().db;
@@ -39,23 +37,16 @@ export default function FavoritesScreen() {
     setSortKey,
     toggleSortDateOrder,
     toggleSortTitleOrder,
-  } = useSettingsStore();
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setKeyIndex((prev) => prev + 1);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 200);
-  }, []);
-
-  const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const contentOffsetY = event.nativeEvent.contentOffset.y;
-    const snapToIndex = Math.round(contentOffsetY / ESTIMATED_VIDEO_ITEM_HEIGHT);
-    const newY = snapToIndex * ESTIMATED_VIDEO_ITEM_HEIGHT;
-
-    flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
-  };
+  } = useSettingsStore(
+    useShallow((state) => ({
+      sortKey: state.sortKey,
+      sortDateOrder: state.sortDateOrder,
+      sortTitleOrder: state.sortTitleOrder,
+      setSortKey: state.setSortKey,
+      toggleSortDateOrder: state.toggleSortDateOrder,
+      toggleSortTitleOrder: state.toggleSortTitleOrder,
+    }))
+  );
 
   const filteredData = useMemo(() => {
     if (!data) return [];
@@ -123,13 +114,9 @@ export default function FavoritesScreen() {
         )}
         <FlashList
           data={sortedData}
-          key={`favorites_${keyIndex}`}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
-          onScrollEndDrag={handleScrollEndDrag}
           ListEmptyComponent={<ListEmptyComponent hasData={!!data && data?.length > 0} />}
         />
       </View>

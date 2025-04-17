@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
-import { useCallback, useRef, useState } from "react";
-import { Image, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
+import { useCallback, useMemo } from "react";
+import { Image, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { eq } from "drizzle-orm";
@@ -24,51 +24,37 @@ interface PlaylistMetaWithThumbUris extends PlaylistMeta {
 }
 
 export default function PlaylistsScreen() {
-  const [refreshing, setRefreshing] = useState(false);
-  const [keyIndex, setKeyIndex] = useState(0);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setKeyIndex((prev) => prev + 1);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
-  }, []);
+  const insets = useSafeAreaInsets();
 
   const db = useDatabaseStore.getState().db;
 
-  const playlistQuery = useLiveQuery(db.select().from(playlists));
+  const playlistsQuery = useLiveQuery(db.select().from(playlists).orderBy(playlists.title));
+  const { data: playlistsData, error: playlistsError } = playlistsQuery;
 
-  const thumbUriQuery = useLiveQuery(
+  const thumbUrisQuery = useLiveQuery(
     db
       .select({ thumbUri: videos.thumbUri, playlistId: playlistVideos.playlistId })
-      .from(playlistVideos)
-      .innerJoin(videos, eq(videos.id, playlistVideos.videoId))
+      .from(videos)
+      .innerJoin(playlistVideos, eq(videos.id, playlistVideos.videoId))
   );
+  const { data: thumbUrisData, error: thumbUrisError } = thumbUrisQuery;
 
-  const playlistsWithThumbUris = playlistQuery?.data.map((playlist) => {
-    const thumbUris =
-      thumbUriQuery?.data
-        .filter((video) => video.playlistId === playlist.id)
-        .map((video) => video.thumbUri)
-        .slice(0, 3) || [];
+  const playlistsWithThumbUris = useMemo(() => {
+    if (!playlistsData || !thumbUrisData) return [];
 
-    return {
-      ...playlist,
-      thumbUris,
-    };
-  });
+    return playlistsData.map((playlist) => {
+      const thumbUris =
+        thumbUrisData
+          .filter((video) => video.playlistId === playlist.id)
+          .map((video) => video.thumbUri)
+          .slice(0, 3) || [];
 
-  const flashListRef = useRef<FlashList<PlaylistMetaWithThumbUris> | null>(null);
-  const insets = useSafeAreaInsets();
-
-  const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const contentOffsetY = event.nativeEvent.contentOffset.y;
-    const snapToIndex = Math.round(contentOffsetY / ESTIMATED_PLAYLIST_HEIGHT);
-    const newY = snapToIndex * ESTIMATED_PLAYLIST_HEIGHT;
-
-    flashListRef.current?.scrollToOffset({ offset: newY, animated: true });
-  };
+      return {
+        ...playlist,
+        thumbUris,
+      };
+    });
+  }, [playlistsData, thumbUrisData]);
 
   const renderItem = useCallback(
     ({ item }: { item: PlaylistMetaWithThumbUris }) => (
@@ -100,7 +86,7 @@ export default function PlaylistsScreen() {
     []
   );
 
-  if (playlistQuery.error) {
+  if (playlistsError || thumbUrisError) {
     console.error("Error loading data.");
     toast.error("Error loading data.");
   }
@@ -112,17 +98,13 @@ export default function PlaylistsScreen() {
         className="relative min-h-full px-5">
         <FlashList
           data={playlistsWithThumbUris}
-          key={`playlists_${keyIndex}`}
           keyExtractor={(item, index) => {
             return item.id + index;
           }}
           renderItem={renderItem}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
           estimatedItemSize={ESTIMATED_PLAYLIST_HEIGHT}
-          onScrollEndDrag={handleScrollEndDrag}
           ListHeaderComponent={
-            <ListHeaderComponent hasData={playlistQuery.data && playlistQuery.data.length > 0} />
+            <ListHeaderComponent hasData={playlistsData && playlistsData.length > 0} />
           }
           ListEmptyComponent={<ListEmptyComponent />}
         />

@@ -1,25 +1,31 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 
-export const videos = sqliteTable("videos", {
-  id: text("id")
-    .$defaultFn(() => createId())
-    .primaryKey()
-    .notNull(),
-  title: text("title").default("Untitled").notNull(),
-  videoUri: text("videoUri").notNull(),
-  thumbUri: text("thumbUri").notNull(),
-  thumbTimestamp: integer("thumbTimestamp", { mode: "number" }).default(1000).notNull(),
-  isFavorite: integer("isFavorite", { mode: "boolean" }).default(false).notNull(),
-  duration: text("duration").notNull(),
-  fileSize: text("fileSize").notNull(),
-  orientation: text("orientation").notNull(),
-  createdAt: text("created_at").default(new Date().toISOString()).notNull(),
-  updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
-});
+export const videos = sqliteTable(
+  "videos",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey()
+      .notNull(),
+    title: text("title").default("Untitled").notNull(),
+    videoUri: text("videoUri").notNull(),
+    thumbUri: text("thumbUri").notNull(),
+    thumbTimestamp: integer("thumbTimestamp", { mode: "number" }).default(1000).notNull(),
+    isFavorite: integer("isFavorite", { mode: "boolean" }).default(false).notNull(),
+    duration: text("duration").notNull(),
+    fileSize: text("fileSize").notNull(),
+    orientation: text("orientation").notNull(),
+    createdAt: text("created_at").default(new Date().toISOString()).notNull(),
+    updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
+  },
+  (t) => ({
+    thumbUriIdx: index("videos_thumb_uri_idx").on(t.thumbUri),
+  })
+);
 
 export const playlists = sqliteTable("playlists", {
   id: text("id")
@@ -45,6 +51,8 @@ export const playlistVideos = sqliteTable(
   },
   (t) => ({
     uniquePlaylistVideo: unique().on(t.playlistId, t.videoId),
+    playlistIdIdx: index("playlist_videos_playlist_id_idx").on(t.playlistId),
+    videoIdIdx: index("playlist_videos_video_id_idx").on(t.videoId),
   })
 );
 
