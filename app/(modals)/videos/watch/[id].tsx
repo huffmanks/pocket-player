@@ -1,5 +1,6 @@
-import { Stack, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
+import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 
 import { eq } from "drizzle-orm";
@@ -56,7 +57,7 @@ export default function WatchModal() {
 
   return (
     <>
-      <Stack.Screen options={{ title: screenTitle ?? "Watch video" }} />
+      <StatusBar hidden={true} />
       <VideoPlayer videoSources={videoSources} />
     </>
   );

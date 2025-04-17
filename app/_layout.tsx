@@ -1,3 +1,4 @@
+import { setVisibilityAsync } from "expo-navigation-bar";
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -57,6 +58,7 @@ export default function RootLayout() {
         setIsLocked(false);
       }
 
+      await setVisibilityAsync("hidden");
       setIsAppReady(true);
       await SplashScreen.hideAsync();
     }

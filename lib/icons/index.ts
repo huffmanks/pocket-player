@@ -11,14 +11,15 @@ import {
   ChevronRightIcon,
   ChevronUpIcon,
   ChevronsUpDownIcon,
+  CircleXIcon,
   CloudUploadIcon,
-  DatabaseIcon,
   DeleteIcon,
   EllipsisVerticalIcon,
   EyeIcon,
   EyeOffIcon,
   FastForwardIcon,
   FileVideoIcon,
+  GitMergeIcon,
   ImageDownIcon,
   ImageIcon,
   ImportIcon,
@@ -91,11 +92,11 @@ export { ChevronUpIcon };
 iconWithClassName(ChevronsUpDownIcon);
 export { ChevronsUpDownIcon };
 
+iconWithClassName(CircleXIcon);
+export { CircleXIcon };
+
 iconWithClassName(CloudUploadIcon);
 export { CloudUploadIcon };
-
-iconWithClassName(DatabaseIcon);
-export { DatabaseIcon };
 
 iconWithClassName(DeleteIcon);
 export { DeleteIcon };
@@ -114,6 +115,9 @@ export { FastForwardIcon };
 
 iconWithClassName(FileVideoIcon);
 export { FileVideoIcon };
+
+iconWithClassName(GitMergeIcon);
+export { GitMergeIcon };
 
 iconWithClassName(ImageIcon);
 export { ImageIcon };

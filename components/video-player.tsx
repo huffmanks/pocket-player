@@ -1,6 +1,5 @@
 import { useKeepAwake } from "expo-keep-awake";
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { VideoView } from "expo-video";
 import { View } from "react-native";
 
@@ -80,8 +79,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
       ) : (
         <GestureDetector gesture={tapGesture}>
           <View className="relative flex-1 bg-black">
-            <StatusBar hidden={true} />
-
             <VideoView
               ref={videoRef}
               style={{ flex: 1 }}

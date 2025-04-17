@@ -1,6 +1,7 @@
 import * as Haptics from "expo-haptics";
 import * as LocalAuthentication from "expo-local-authentication";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Image, Pressable, SafeAreaView, View } from "react-native";
 
@@ -89,6 +90,7 @@ export default function LockModal() {
 
   return (
     <SafeAreaView style={{ marginTop: insets.top + 40 }}>
+      <StatusBar hidden={true} />
       <View className="mb-12 items-center justify-center">
         <Image
           style={{ width: 75, height: 75 }}
