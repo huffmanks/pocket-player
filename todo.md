@@ -10,7 +10,6 @@
    - Reading from `value` during component render. Please ensure that you do not access the `value` property or use `get` method of a shared value while React is rendering a component.
    - Make this screen use accordions for quicker access to playing playlist, etc.
    - can still have [id] page for playlist
-4. [File dropzone design](https://dribbble.com/shots/18231693-Drag-n-drop-areas)
 
 ## Features
 

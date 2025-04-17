@@ -14,7 +14,7 @@ import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { VIDEOS_DIR } from "@/lib/constants";
-import { FileVideoIcon, SendIcon } from "@/lib/icons";
+import { CloudUploadIcon, ImportIcon } from "@/lib/icons";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
 import { formatDuration, formatFileSize, getOrientation } from "@/lib/utils";
@@ -194,32 +194,37 @@ export default function UploadForm() {
                   control={form.control}
                   name="videos"
                   render={({ field }) => (
-                    <View className="justify-center rounded-md bg-secondary">
-                      <Button
-                        className="p-8"
-                        variant="ghost"
-                        size="unset"
-                        onPress={async () =>
-                          await selectVideoFiles((videos) => {
-                            videos.forEach((video, index) => {
-                              form.setValue(`videos.${index}.title`, video.title);
-                              form.setValue(`videos.${index}.videoUri`, video.videoUri);
-                              form.setValue(`videos.${index}.thumbUri`, video.thumbUri);
-                              form.setValue(`videos.${index}.duration`, video.duration);
-                              form.setValue(`videos.${index}.fileSize`, video.fileSize);
-                              form.setValue(`videos.${index}.orientation`, video.orientation);
-                            });
-                          })
-                        }>
-                        <View className="items-center justify-center gap-4">
-                          <FileVideoIcon
-                            className="text-teal-500"
-                            size={40}
-                            strokeWidth={1.5}
-                          />
-                          <Text className="native:text-xl">Upload</Text>
-                        </View>
-                      </Button>
+                    <View className="justify-center rounded-lg border-[16px] border-primary-foreground bg-secondary">
+                      <View className="justify-center rounded-lg border border-dashed border-muted-foreground">
+                        <Button
+                          className="p-8"
+                          variant="ghost"
+                          size="unset"
+                          onPress={async () =>
+                            await selectVideoFiles((videos) => {
+                              videos.forEach((video, index) => {
+                                form.setValue(`videos.${index}.title`, video.title);
+                                form.setValue(`videos.${index}.videoUri`, video.videoUri);
+                                form.setValue(`videos.${index}.thumbUri`, video.thumbUri);
+                                form.setValue(`videos.${index}.duration`, video.duration);
+                                form.setValue(`videos.${index}.fileSize`, video.fileSize);
+                                form.setValue(`videos.${index}.orientation`, video.orientation);
+                              });
+                            })
+                          }>
+                          <View className="items-center justify-center gap-2">
+                            <CloudUploadIcon
+                              className="text-foreground"
+                              size={40}
+                              strokeWidth={1.5}
+                            />
+                            <Text className="native:text-lg">Add videos</Text>
+                            <Text className="native:text-sm text-muted-foreground">
+                              Browse your video files.
+                            </Text>
+                          </View>
+                        </Button>
+                      </View>
                       {uploadedVideos[0].videoUri && (
                         <View className="flex-1 gap-2 px-4 pb-8">
                           {uploadedVideos.map((item) => (
@@ -243,12 +248,12 @@ export default function UploadForm() {
                 size="lg"
                 onPress={form.handleSubmit(onSubmit, handleErrors)}>
                 <View className="flex-row items-center gap-4">
-                  <SendIcon
+                  <ImportIcon
                     className="text-white"
                     size={28}
                     strokeWidth={1.25}
                   />
-                  <Text className="native:text-base text-white">Submit</Text>
+                  <Text className="native:text-lg text-white">Import</Text>
                 </View>
               </Button>
             </View>

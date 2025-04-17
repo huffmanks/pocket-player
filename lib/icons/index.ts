@@ -21,6 +21,7 @@ import {
   FileVideoIcon,
   ImageDownIcon,
   ImageIcon,
+  ImportIcon,
   KeyRoundIcon,
   ListMusicIcon,
   LockIcon,
@@ -119,6 +120,9 @@ export { ImageIcon };
 
 iconWithClassName(ImageDownIcon);
 export { ImageDownIcon };
+
+iconWithClassName(ImportIcon);
+export { ImportIcon };
 
 iconWithClassName(KeyRoundIcon);
 export { KeyRoundIcon };
