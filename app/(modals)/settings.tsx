@@ -8,7 +8,9 @@ import { useShallow } from "zustand/react/shallow";
 import { clearDirectory, resetTables } from "@/db/drop";
 import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
 import { GitMergeIcon, KeyRoundIcon, TrashIcon } from "@/lib/icons";
-import { useAppStore, useSecurityStore } from "@/lib/store";
+import { migrateDatabase } from "@/lib/migrate-database";
+import { useSecurityStore } from "@/lib/store";
+import { withDelay } from "@/lib/utils";
 
 import SettingSwitch from "@/components/setting-switch";
 import {
@@ -27,7 +29,6 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
 export default function SettingsModal() {
-  const setAppLoadedOnce = useAppStore((state) => state.setAppLoadedOnce);
   const { passcode, enablePasscode, setEnablePasscode } = useSecurityStore(
     useShallow((state) => ({
       passcode: state.passcode,
@@ -41,8 +42,6 @@ export default function SettingsModal() {
       await clearDirectory(VIDEOS_DIR);
       await resetTables();
 
-      setAppLoadedOnce(false);
-
       toast.error("Data has been deleted.");
     } catch (err) {
       console.error("Database operation failed:", err);
@@ -50,16 +49,10 @@ export default function SettingsModal() {
     }
   }
 
-  function migrateDatabase() {
-    setAppLoadedOnce(false);
+  function handleMigrateDatabase() {
+    const promise = withDelay(migrateDatabase(), 2000);
 
-    const myPromise = new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ message: "Database migration complete." });
-      }, 3000);
-    });
-
-    toast.promise(myPromise, {
+    toast.promise(promise, {
       loading: "Database migrating...",
       success: ({ message }) => message,
       error: "Database migration failed.",
@@ -130,7 +123,7 @@ export default function SettingsModal() {
             variant="secondary"
             size="lg"
             className="flex flex-row items-center justify-center gap-4"
-            onPress={migrateDatabase}>
+            onPress={handleMigrateDatabase}>
             <GitMergeIcon
               className="text-foreground"
               size={24}

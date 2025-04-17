@@ -14,7 +14,8 @@ import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { DARK_THEME, LIGHT_THEME } from "@/lib/constants";
-import { useSecurityStore, useSettingsStore } from "@/lib/store";
+import { migrateDatabase } from "@/lib/migrate-database";
+import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
 
 export { ErrorBoundary } from "expo-router";
@@ -26,9 +27,15 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isAppReady, setIsAppReady] = useState(false);
+  const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
 
+  const { appLoadedOnce, setAppLoadedOnce } = useAppStore(
+    useShallow((state) => ({
+      appLoadedOnce: state.appLoadedOnce,
+      setAppLoadedOnce: state.setAppLoadedOnce,
+    }))
+  );
   const { theme, setTheme } = useSettingsStore(
     useShallow((state) => ({ theme: state.theme, setTheme: state.setTheme }))
   );
@@ -50,6 +57,11 @@ export default function RootLayout() {
   }, [colorScheme, theme]);
 
   useEffect(() => {
+    if (!appLoadedOnce) {
+      migrateDatabase();
+      setAppLoadedOnce(true);
+    }
+
     async function checkLockState() {
       if (isLockable) {
         setIsLocked(true);

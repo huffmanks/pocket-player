@@ -4,17 +4,15 @@ import { View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import Fuse from "fuse.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
-import migrations from "@/db/migrations/migrations";
 import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
-import { useAppStore, useDatabaseStore, useSettingsStore } from "@/lib/store";
+import { useDatabaseStore, useSettingsStore } from "@/lib/store";
 import { throttle } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
@@ -24,33 +22,6 @@ import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
 export default function HomeScreen() {
-  const { appLoadedOnce, setAppLoadedOnce } = useAppStore(
-    useShallow((state) => ({
-      appLoadedOnce: state.appLoadedOnce,
-      setAppLoadedOnce: state.setAppLoadedOnce,
-    }))
-  );
-  const db = useDatabaseStore.getState().db;
-
-  const { success, error } = useMigrations(db, migrations);
-
-  useEffect(() => {
-    if (!appLoadedOnce) setAppLoadedOnce(true);
-  }, [appLoadedOnce]);
-
-  if (!appLoadedOnce || !success) {
-    return <Text className="p-5">Migration is in progress...</Text>;
-  }
-
-  if (error) {
-    console.error("Migration error.");
-    return <Text className="p-5">Migration error.</Text>;
-  }
-
-  return <ScreenContent />;
-}
-
-function ScreenContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [canScroll, setCanScroll] = useState(false);
 

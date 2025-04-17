@@ -12,7 +12,6 @@ import { useDatabaseStore, useSecurityStore } from "@/lib/store";
 import VideoPlayer from "@/components/video-player";
 
 export default function WatchModal() {
-  const [screenTitle, setScreenTitle] = useState<string | null>(null);
   const [videoSources, setVideoSources] = useState<string[] | null>(null);
 
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,7 +23,6 @@ export default function WatchModal() {
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
       if (video && video?.videoUri) {
         setVideoSources([video.videoUri]);
-        setScreenTitle(video.title);
       }
     };
 
