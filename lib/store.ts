@@ -39,12 +39,16 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 
 type AppStoreState = {
   appLoadedOnce: boolean;
+  isAppReady: boolean;
   setAppLoadedOnce: (bool: boolean) => void;
+  setIsAppReady: (bool: boolean) => void;
 };
 
 export const useAppStore = create<AppStoreState>((set) => ({
   appLoadedOnce: false,
+  isAppReady: false,
   setAppLoadedOnce: (bool) => set({ appLoadedOnce: bool }),
+  setIsAppReady: (bool) => set({ isAppReady: bool }),
 }));
 
 type VideoStoreState = {
@@ -381,6 +385,7 @@ type SettingsStoreState = {
   sortDateOrder: "asc" | "desc";
   sortTitleOrder: "asc" | "desc";
   scrollPosition: number;
+  previousPath: string | null;
   videoProgress: Record<string, number>;
   setAutoPlay: (autoPlay: boolean) => void;
   setLoop: (loop: boolean) => void;
@@ -391,6 +396,7 @@ type SettingsStoreState = {
   toggleSortDateOrder: () => void;
   toggleSortTitleOrder: () => void;
   setScrollPosition: (position: number) => void;
+  setPreviousPath: (path: string) => void;
   setVideoProgress: (videoId: string, time: number) => void;
 };
 
@@ -406,6 +412,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
       sortDateOrder: "asc",
       sortTitleOrder: "asc",
       scrollPosition: 0,
+      previousPath: null,
       videoProgress: {},
       setAutoPlay: (autoPlay) => set({ autoPlay }),
       setLoop: (loop) => set({ loop }),
@@ -418,6 +425,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
       toggleSortTitleOrder: () =>
         set((state) => ({ sortTitleOrder: state.sortTitleOrder === "asc" ? "desc" : "asc" })),
       setScrollPosition: (position) => set({ scrollPosition: position }),
+      setPreviousPath: (path) => set({ previousPath: path }),
       setVideoProgress: (videoId, time) =>
         set((state) => ({
           videoProgress: { ...state.videoProgress, [videoId]: time },

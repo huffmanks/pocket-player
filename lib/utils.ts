@@ -58,6 +58,10 @@ export const throttle = (func: (...args: any[]) => void, delay: number) => {
   };
 };
 
+export const debouncedSet = throttle((path: string, fn: (val: string) => void) => {
+  fn(path);
+}, 300);
+
 export function formatFileSize(bytes: number): string {
   const units = ["KB", "MB", "GB"];
   let size = bytes / 1024;

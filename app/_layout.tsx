@@ -1,7 +1,8 @@
-import { setVisibilityAsync } from "expo-navigation-bar";
-import { SplashScreen, Stack } from "expo-router";
+import { setBehaviorAsync, setVisibilityAsync } from "expo-navigation-bar";
+import { SplashScreen, Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { Platform } from "react-native";
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { ThemeProvider } from "@react-navigation/native";
@@ -19,6 +20,8 @@ import { migrateDatabase } from "@/lib/migrate-database";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
 
+import { RouteTracker } from "@/components/route-tracker";
+
 export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
@@ -28,17 +31,23 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [isAppReady, setIsAppReady] = useState(false);
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
+  const router = useRouter();
 
-  const { appLoadedOnce, setAppLoadedOnce } = useAppStore(
+  const { appLoadedOnce, isAppReady, setAppLoadedOnce, setIsAppReady } = useAppStore(
     useShallow((state) => ({
       appLoadedOnce: state.appLoadedOnce,
+      isAppReady: state.isAppReady,
       setAppLoadedOnce: state.setAppLoadedOnce,
+      setIsAppReady: state.setIsAppReady,
     }))
   );
-  const { theme, setTheme } = useSettingsStore(
-    useShallow((state) => ({ theme: state.theme, setTheme: state.setTheme }))
+  const { previousPath, theme, setTheme } = useSettingsStore(
+    useShallow((state) => ({
+      previousPath: state.previousPath,
+      theme: state.theme,
+      setTheme: state.setTheme,
+    }))
   );
   const { isLockable, setEnablePasscode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
@@ -47,6 +56,36 @@ export default function RootLayout() {
       setIsLocked: state.setIsLocked,
     }))
   );
+
+  useEffect(() => {
+    async function initializeApp() {
+      try {
+        if (!appLoadedOnce) {
+          await migrateDatabase();
+          setAppLoadedOnce(true);
+        }
+
+        if (!isAppReady) {
+          if (isLockable) {
+            setIsLocked(true);
+          } else {
+            setEnablePasscode(false);
+            setIsLocked(false);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (Platform.OS === "android") {
+          await setBehaviorAsync("overlay-swipe");
+          await setVisibilityAsync("hidden");
+        }
+
+        setIsAppReady(true);
+      }
+    }
+    initializeApp();
+  }, []);
 
   useEffect(() => {
     const navColorScheme = theme || colorScheme;
@@ -58,41 +97,42 @@ export default function RootLayout() {
   }, [colorScheme, theme]);
 
   useEffect(() => {
-    if (!appLoadedOnce) {
-      migrateDatabase();
-      setAppLoadedOnce(true);
-    }
+    if (!isAppReady) return;
 
-    async function checkLockState() {
-      if (isLockable) {
-        setIsLocked(true);
-      } else {
-        setEnablePasscode(false);
-        setIsLocked(false);
+    async function restorePreviousRoute() {
+      try {
+        if (!previousPath) return;
+
+        const excludedRoutes = ["(tabs)", "/(modals)/lock", "/lock"];
+
+        if (!excludedRoutes.includes(previousPath)) {
+          router.push(previousPath as any);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        await SplashScreen.hideAsync();
       }
-
-      await setVisibilityAsync("hidden");
-      setIsAppReady(true);
-      await SplashScreen.hideAsync();
     }
 
-    checkLockState();
-  }, []);
+    restorePreviousRoute();
+  }, [isAppReady]);
 
   if (!isAppReady) {
     return null;
   }
 
   return (
-    <GestureHandlerRootView>
-      <SafeAreaProvider style={{ flex: 1 }}>
-        <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <RouteTracker />
+      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+        <StatusBar
+          style={isDarkColorScheme ? "light" : "dark"}
+          hidden={false}
+        />
+        <SafeAreaProvider style={{ flex: 1 }}>
           <BottomSheetModalProvider>
             <LockScreenProvider>
-              <StatusBar
-                style={isDarkColorScheme ? "light" : "dark"}
-                hidden={false}
-              />
               <Stack>
                 <Stack.Screen
                   name="(modals)"
@@ -103,17 +143,17 @@ export default function RootLayout() {
                   options={{ headerShown: false }}
                 />
               </Stack>
-              <Toaster
-                theme={colorScheme === "light" ? "light" : "dark"}
-                richColors
-                position="bottom-center"
-                offset={70}
-              />
             </LockScreenProvider>
           </BottomSheetModalProvider>
-        </ThemeProvider>
-        <PortalHost />
-      </SafeAreaProvider>
+          <Toaster
+            theme={colorScheme === "light" ? "light" : "dark"}
+            richColors
+            position="bottom-center"
+            offset={70}
+          />
+          <PortalHost />
+        </SafeAreaProvider>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }

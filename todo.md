@@ -17,10 +17,10 @@
 4. upload form: verify file and thumbnail get destroyed if not imported.
 5. playlists screen:
    - Make this screen use accordions with list view. Add action buttons to:
-      - watch
-      - view
-      - edit
-      - delete
+     - watch
+     - view
+     - edit
+     - delete
    - stale data when videos are removed from playlist.
 6. edit video screen:
    - add padding at bottom.
@@ -29,10 +29,7 @@
 7. combobox/playlist forms:
    - remove some padding bottom on flashlist.
    - make selected have active bg color.
-8. lock screen:
-   - dismiss bottom sheet on lock screen. maybe move bottom sheet provider inside lock provider.
-   - when app is in background go back to previous screen.
-9. Settings screen:
+8. Settings screen:
    - make settings a tab and remove from header items.
    - add icons with each section.
    - make switch and lables larger.

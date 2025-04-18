@@ -1,5 +1,4 @@
 import { useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -24,9 +23,6 @@ export default function WatchPlaylistScreen() {
   );
 
   return (
-    <>
-      <StatusBar hidden={true} />
-      <VideoPlayer videoSources={playlistVideosQuery.data.map((item) => item.videos.videoUri)} />
-    </>
+    <VideoPlayer videoSources={playlistVideosQuery.data.map((item) => item.videos.videoUri)} />
   );
 }

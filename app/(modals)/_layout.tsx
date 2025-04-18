@@ -12,7 +12,12 @@ export default function ModalLayout() {
       }}>
       <Stack.Screen
         name="playlists/watch/[id]"
-        options={{ headerShown: false, animation: "slide_from_right" }}
+        options={{
+          headerShown: false,
+          statusBarHidden: true,
+          statusBarAnimation: "fade",
+          animation: "slide_from_right",
+        }}
       />
       <Stack.Screen
         name="playlists/view/[id]"
@@ -46,7 +51,12 @@ export default function ModalLayout() {
       />
       <Stack.Screen
         name="videos/watch/[id]"
-        options={{ headerShown: false, animation: "slide_from_right" }}
+        options={{
+          headerShown: false,
+          statusBarHidden: true,
+          statusBarAnimation: "fade",
+          animation: "slide_from_right",
+        }}
       />
       <Stack.Screen
         name="videos/edit/[id]"
@@ -60,15 +70,28 @@ export default function ModalLayout() {
       />
       <Stack.Screen
         name="lock"
-        options={{ headerShown: false, animation: "fade" }}
+        options={{
+          headerShown: false,
+          statusBarHidden: true,
+          statusBarAnimation: "fade",
+          animation: "fade",
+        }}
       />
       <Stack.Screen
         name="passcode"
-        options={{ title: "Passcode", presentation: "modal", animation: "slide_from_right" }}
+        options={{
+          title: "Passcode",
+          presentation: "modal",
+          animation: "slide_from_right",
+        }}
       />
       <Stack.Screen
         name="settings"
-        options={{ title: "Settings", presentation: "modal", animation: "slide_from_right" }}
+        options={{
+          title: "Settings",
+          presentation: "modal",
+          animation: "slide_from_right",
+        }}
       />
     </Stack>
   );

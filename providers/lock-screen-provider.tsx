@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { ReactNode, useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
 
+import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useShallow } from "zustand/react/shallow";
 
 import { useSecurityStore } from "@/lib/store";
@@ -9,6 +10,7 @@ import { useSecurityStore } from "@/lib/store";
 export function LockScreenProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const appState = useRef(AppState.currentState);
+  const { dismissAll } = useBottomSheetModal();
 
   const {
     backgroundTime,
@@ -49,6 +51,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
       } else if (nextAppState === "active") {
         const newTime = backgroundTime || 0;
         const elapsedTime = Date.now() - newTime;
+        dismissAll();
 
         if (elapsedTime > lockInterval) {
           setIsLocked(true);
