@@ -18,6 +18,7 @@
 3. Video screen:
    - scrollPosition is not saving.
    - remove from playlist is always showing even if not in playlist.
+   - Adding padding at bottom of list.
 4. upload form: verify file and thumbnail get destroyed if not imported.
 
 ## Features
