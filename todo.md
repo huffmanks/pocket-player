@@ -21,6 +21,16 @@
       - edit
       - delete
    - stale data when videos are removed from playlist.
+6. edit video screen:
+   - add padding at bottom.
+   - remove some px from save video button.
+   - add/remove playlist option.
+7. combobox/playlist forms:
+   - remove some padding bottom on flashlist.
+   - make selected have active bg color.
+8. lock screen:
+   - dismiss bottom sheet on lock screen. maybe move bottom sheet provider inside lock provider.
+   - when app is in background go back to previous screen.
 
 ## Features
 
