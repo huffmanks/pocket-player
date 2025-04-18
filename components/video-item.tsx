@@ -6,10 +6,9 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { VideoMeta } from "@/db/schema";
 import { formatDateString } from "@/lib/utils";
 
+import { Badge } from "@/components/ui/badge";
 import { Text } from "@/components/ui/text";
 import VideoDropdown from "@/components/video-dropdown";
-
-import { Badge } from "./ui/badge";
 
 interface VideoItemProps {
   item: VideoMeta;

@@ -53,7 +53,7 @@ import {
   XIcon,
 } from "lucide-react-native";
 
-import { iconWithClassName } from "./iconWithClassName";
+import { iconWithClassName } from "@/lib/icons/iconWithClassName";
 
 iconWithClassName(ArrowDownAZIcon);
 export { ArrowDownAZIcon };

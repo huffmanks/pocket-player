@@ -1,21 +1,15 @@
 import { Stack } from "expo-router";
 
-import { useClientOnlyValue } from "@/hooks/useClientOnlyValue";
-
 import HeaderItems from "@/components/header-items";
 
 export default function ModalLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerShown: useClientOnlyValue(false, true),
-      }}>
+    <Stack>
       <Stack.Screen
         name="playlists/watch/[id]"
         options={{
           headerShown: false,
           statusBarHidden: true,
-          statusBarAnimation: "fade",
           animation: "slide_from_right",
         }}
       />
@@ -54,7 +48,6 @@ export default function ModalLayout() {
         options={{
           headerShown: false,
           statusBarHidden: true,
-          statusBarAnimation: "fade",
           animation: "slide_from_right",
         }}
       />
@@ -73,7 +66,6 @@ export default function ModalLayout() {
         options={{
           headerShown: false,
           statusBarHidden: true,
-          statusBarAnimation: "fade",
           animation: "fade",
         }}
       />
@@ -81,14 +73,6 @@ export default function ModalLayout() {
         name="passcode"
         options={{
           title: "Passcode",
-          presentation: "modal",
-          animation: "slide_from_right",
-        }}
-      />
-      <Stack.Screen
-        name="settings"
-        options={{
-          title: "Settings",
           presentation: "modal",
           animation: "slide_from_right",
         }}

@@ -118,42 +118,41 @@ export default function HomeScreen() {
     toast.error("Error loading data.");
   }
 
+  const videosExist = Array.isArray(data) && data.length > 0;
+
   return (
-    <>
-      <View
-        style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
-        className="relative min-h-full">
-        {!!data && data?.length > 0 && (
-          <SearchBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            handleSortDate={handleSortDate}
-            handleSortTitle={handleSortTitle}
-          />
-        )}
-        <FlashList
-          data={sortedData}
-          ref={flashListRef}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
-          onScroll={(e) => saveScrollY(e.nativeEvent.contentOffset.y)}
-          scrollEventThrottle={150}
-          onLayout={() => {
-            if (sortedData.length > 0) setCanScroll(true);
-          }}
-          ListEmptyComponent={<ListEmptyComponent hasData={!!data && data?.length > 0} />}
+    <View className="relative min-h-full pt-4">
+      {videosExist && (
+        <SearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSortDate={handleSortDate}
+          handleSortTitle={handleSortTitle}
         />
-      </View>
-    </>
+      )}
+      <FlashList
+        data={sortedData}
+        ref={flashListRef}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+        estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
+        scrollEventThrottle={150}
+        onScroll={(e) => saveScrollY(e.nativeEvent.contentOffset.y)}
+        onLayout={() => {
+          if (sortedData.length > 0) setCanScroll(true);
+        }}
+        ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
+      />
+    </View>
   );
 }
 
-function ListEmptyComponent({ hasData }: { hasData: boolean }) {
+function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
   return (
     <View className="p-5">
-      <H2 className="mb-4 text-teal-500">{hasData ? "No results" : "No videos yet!"}</H2>
-      {!hasData && (
+      <H2 className="mb-4 text-teal-500">{videosExist ? "No results" : "No videos yet!"}</H2>
+      {!videosExist && (
         <>
           <Text className="mb-12">Your videos will be displayed here.</Text>
           <Link

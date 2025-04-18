@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import { eq } from "drizzle-orm";
+import { ScrollView } from "react-native-gesture-handler";
 import { toast } from "sonner-native";
 
 import { VideoMeta, videos } from "@/db/schema";
@@ -32,8 +33,13 @@ export default function EditModal() {
   if (!videoInfo) return null;
 
   return (
-    <View>
-      <EditVideoForm videoInfo={videoInfo} />
-    </View>
+    <ScrollView
+      contentContainerClassName="pb-20"
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}>
+      <View className="mx-auto mb-8 w-full max-w-md flex-1 px-4 py-8">
+        <EditVideoForm videoInfo={videoInfo} />
+      </View>
+    </ScrollView>
   );
 }

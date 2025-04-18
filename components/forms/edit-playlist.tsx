@@ -1,10 +1,10 @@
 import { router } from "expo-router";
 import { useRef } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
-import { FieldErrors, useFieldArray, useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
@@ -83,88 +83,74 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
     }
   }
 
-  const { fields, remove } = useFieldArray({ name: "videos", control: form.control });
-
   return (
-    <View className="relative h-full">
-      <ScrollView
-        contentContainerClassName="mx-auto w-full max-w-lg pt-2 px-1 pb-5"
-        showsVerticalScrollIndicator={true}
-        className="bg-background"
-        automaticallyAdjustContentInsets={false}
-        contentInset={{ top: 12 }}>
-        <View className="mx-auto mb-8 min-h-1 w-full max-w-md">
-          <Form {...form}>
-            <View className="mb-12">
-              <View className="flex-1 gap-7">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormInput
-                      label="Playlist title"
-                      autoFocus={false}
-                      selectTextOnFocus={true}
-                      placeholder="Add a playlist title..."
-                      autoCapitalize="none"
-                      {...field}
-                    />
-                  )}
-                />
+    <Form {...form}>
+      <View className="flex-1 gap-7">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormInput
+              label="Playlist title"
+              autoFocus={false}
+              selectTextOnFocus={true}
+              placeholder="Add a playlist title..."
+              autoCapitalize="none"
+              {...field}
+            />
+          )}
+        />
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormTextarea
-                      label="Description"
-                      autoFocus={false}
-                      selectTextOnFocus={true}
-                      placeholder="Add a video description..."
-                      autoCapitalize="none"
-                      {...field}
-                    />
-                  )}
-                />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormTextarea
+              label="Description"
+              autoFocus={false}
+              selectTextOnFocus={true}
+              placeholder="Add a video description..."
+              autoCapitalize="none"
+              {...field}
+            />
+          )}
+        />
 
-                <View>
-                  <FormField
-                    control={form.control}
-                    name="videos"
-                    render={({ field }) => (
-                      <FormCombobox
-                        label="Videos"
-                        description="Select videos to be included in the playlist."
-                        placeholder="Select videos"
-                        emptyText="No videos found."
-                        items={editPlaylistInfo.allVideos}
-                        {...field}
-                      />
-                    )}
-                  />
-                </View>
-              </View>
-            </View>
-            <View>
-              <Button
-                className="bg-teal-600"
-                size="lg"
-                onPress={form.handleSubmit(onSubmit, handleErrors)}>
-                <View className="flex-row items-center gap-4">
-                  <SaveIcon
-                    className="text-white"
-                    size={24}
-                    strokeWidth={1.5}
-                  />
-                  <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
-                    Save playlist
-                  </Text>
-                </View>
-              </Button>
-            </View>
-          </Form>
+        <View>
+          <FormField
+            control={form.control}
+            name="videos"
+            render={({ field }) => (
+              <FormCombobox
+                label="Videos"
+                description="Select videos to be included in the playlist."
+                placeholder="Select videos"
+                emptyText="No videos found."
+                items={editPlaylistInfo.allVideos}
+                {...field}
+              />
+            )}
+          />
         </View>
-      </ScrollView>
-    </View>
+      </View>
+
+      <View className="flex-1">
+        <Button
+          className="bg-teal-600"
+          size="lg"
+          onPress={form.handleSubmit(onSubmit, handleErrors)}>
+          <View className="flex-row items-center gap-4">
+            <SaveIcon
+              className="text-white"
+              size={24}
+              strokeWidth={1.5}
+            />
+            <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+              Save playlist
+            </Text>
+          </View>
+        </Button>
+      </View>
+    </Form>
   );
 }

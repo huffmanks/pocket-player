@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useRef } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
@@ -79,107 +79,95 @@ export default function CreatePasscodeForm() {
   }
 
   return (
-    <View className="relative h-full">
-      <ScrollView
-        contentContainerClassName="mx-auto w-full max-w-lg pt-2 px-1 pb-5"
-        showsVerticalScrollIndicator={true}
-        className="bg-background"
-        automaticallyAdjustContentInsets={false}
-        contentInset={{ top: 12 }}>
-        <View className="mx-auto mb-8 min-h-1 w-full max-w-md">
-          <Form {...form}>
-            <View className="mb-12">
-              <View className="flex-1 gap-7">
-                <FormField
-                  control={form.control}
-                  name="passcode"
-                  render={({ field }) => (
-                    <View className="relative">
-                      <FormInput
-                        label="Passcode"
-                        secureTextEntry={hidePasscode}
-                        autoFocus={false}
-                        selectTextOnFocus={true}
-                        keyboardType="numeric"
-                        autoCapitalize="none"
-                        {...field}
-                      />
-                      <Pressable
-                        onPress={() => togglePasscodeVisibility("hidePasscode")}
-                        className="absolute right-3 top-11">
-                        {hidePasscode ? (
-                          <EyeOffIcon
-                            className="text-muted-foreground"
-                            size={24}
-                            strokeWidth={1.5}
-                          />
-                        ) : (
-                          <EyeIcon
-                            className="text-muted-foreground"
-                            size={24}
-                            strokeWidth={1.5}
-                          />
-                        )}
-                      </Pressable>
-                    </View>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="confirmPasscode"
-                  render={({ field }) => (
-                    <View className="relative">
-                      <FormInput
-                        label="Confirm passcode"
-                        secureTextEntry={hideConfirmPasscode}
-                        autoFocus={false}
-                        selectTextOnFocus={true}
-                        keyboardType="numeric"
-                        autoCapitalize="none"
-                        {...field}
-                      />
-                      <Pressable
-                        onPress={() => togglePasscodeVisibility("hideConfirmPasscode")}
-                        className="absolute right-3 top-11">
-                        {hideConfirmPasscode ? (
-                          <EyeOffIcon
-                            className="text-muted-foreground"
-                            size={24}
-                            strokeWidth={1.5}
-                          />
-                        ) : (
-                          <EyeIcon
-                            className="text-muted-foreground"
-                            size={24}
-                            strokeWidth={1.5}
-                          />
-                        )}
-                      </Pressable>
-                    </View>
-                  )}
-                />
-              </View>
-            </View>
-            <View>
-              <Button
-                className="bg-teal-600"
-                size="lg"
-                onPress={form.handleSubmit(onSubmit, handleErrors)}>
-                <View className="flex-row items-center gap-4">
-                  <KeyRoundIcon
-                    className="text-white"
+    <Form {...form}>
+      <View className="mb-12 gap-7">
+        <FormField
+          control={form.control}
+          name="passcode"
+          render={({ field }) => (
+            <View className="relative">
+              <FormInput
+                label="Passcode"
+                secureTextEntry={hidePasscode}
+                autoFocus={false}
+                selectTextOnFocus={true}
+                keyboardType="numeric"
+                autoCapitalize="none"
+                {...field}
+              />
+              <Pressable
+                onPress={() => togglePasscodeVisibility("hidePasscode")}
+                className="absolute right-3 top-11">
+                {hidePasscode ? (
+                  <EyeOffIcon
+                    className="text-muted-foreground"
                     size={24}
                     strokeWidth={1.5}
                   />
-                  <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
-                    Set passcode
-                  </Text>
-                </View>
-              </Button>
+                ) : (
+                  <EyeIcon
+                    className="text-muted-foreground"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </Pressable>
             </View>
-          </Form>
-        </View>
-      </ScrollView>
-    </View>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="confirmPasscode"
+          render={({ field }) => (
+            <View className="relative">
+              <FormInput
+                label="Confirm passcode"
+                secureTextEntry={hideConfirmPasscode}
+                autoFocus={false}
+                selectTextOnFocus={true}
+                keyboardType="numeric"
+                autoCapitalize="none"
+                {...field}
+              />
+              <Pressable
+                onPress={() => togglePasscodeVisibility("hideConfirmPasscode")}
+                className="absolute right-3 top-11">
+                {hideConfirmPasscode ? (
+                  <EyeOffIcon
+                    className="text-muted-foreground"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                ) : (
+                  <EyeIcon
+                    className="text-muted-foreground"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </Pressable>
+            </View>
+          )}
+        />
+      </View>
+
+      <View className="flex-1">
+        <Button
+          className="bg-teal-600"
+          size="lg"
+          onPress={form.handleSubmit(onSubmit, handleErrors)}>
+          <View className="flex-row items-center gap-4">
+            <KeyRoundIcon
+              className="text-white"
+              size={24}
+              strokeWidth={1.5}
+            />
+            <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+              Set passcode
+            </Text>
+          </View>
+        </Button>
+      </View>
+    </Form>
   );
 }

@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
 
+import { ScrollView } from "react-native-gesture-handler";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
@@ -72,7 +73,10 @@ export default function SettingsModal() {
   }, []);
 
   return (
-    <>
+    <ScrollView
+      contentContainerClassName="pb-20"
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}>
       <View className="mx-auto w-full max-w-lg p-6">
         <View className="mb-6 gap-6">
           <View>
@@ -176,6 +180,6 @@ export default function SettingsModal() {
           </View>
         </View>
       </View>
-    </>
+    </ScrollView>
   );
 }

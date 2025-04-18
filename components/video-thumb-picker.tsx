@@ -76,78 +76,72 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
 
   return (
     <GestureDetector gesture={tapGesture}>
-      <View className="flex-1">
-        <View className="mb-2 w-full px-3">
-          <View className="h-[215px] overflow-hidden rounded-2xl">
-            <VideoView
-              ref={videoRef}
-              style={{ width: "100%", height: 215 }}
-              player={player}
-              contentFit="contain"
-              nativeControls={false}
+      <View>
+        <View className="mb-3 h-[215px] w-full overflow-hidden rounded-md bg-muted">
+          <VideoView
+            ref={videoRef}
+            style={{ width: "100%", height: 215 }}
+            player={player}
+            contentFit="contain"
+            nativeControls={false}
+          />
+        </View>
+
+        <View className="mb-5 gap-2">
+          <View>
+            <Text className="text-sm text-foreground">{time}</Text>
+          </View>
+
+          <View>
+            <Slider
+              disabled={isLocked}
+              value={progress}
+              minimumValue={0}
+              maximumValue={1}
+              step={0.01}
+              thumbStyle={{ backgroundColor: isLocked ? "#343434" : "#14b8a6" }}
+              minimumTrackTintColor="#f8fafc"
+              maximumTrackTintColor="#1f242b"
+              onValueChange={(val) => onSliderChange(Number(val))}
+              onSlidingStart={onSlidingStart}
+              onSlidingComplete={(val) => onSlidingComplete(Number(val))}
             />
           </View>
         </View>
 
-        <View className="flex-1 justify-between">
-          <View className="gap-2">
-            <View className="px-4">
-              <Text className="text-sm text-white/70">{time}</Text>
-            </View>
-            <View className="flex-1 px-4 pb-5">
-              <Slider
-                disabled={isLocked}
-                value={progress}
-                minimumValue={0}
-                maximumValue={1}
-                step={0.01}
-                thumbStyle={{ backgroundColor: isLocked ? "#343434" : "#14b8a6" }}
-                minimumTrackTintColor="#f8fafc"
-                maximumTrackTintColor="#1f242b"
-                onValueChange={(val) => onSliderChange(Number(val))}
-                onSlidingStart={onSlidingStart}
-                onSlidingComplete={(val) => onSlidingComplete(Number(val))}
+        <View className="flex-row items-center justify-center gap-4">
+          <Button
+            variant="secondary"
+            className="flex flex-1 flex-row items-center justify-center gap-4"
+            onPress={() => setIsLocked((prev) => !prev)}>
+            {isLocked ? (
+              <LockIcon
+                className="text-foreground"
+                size={20}
+                strokeWidth={1.5}
               />
-            </View>
-          </View>
-          <View className="mb-1 px-4">
-            <View className="flex-row items-center justify-center gap-4">
-              <Button
-                variant="secondary"
-                className="flex flex-1 flex-row items-center justify-center gap-4"
-                onPress={() => setIsLocked((prev) => !prev)}>
-                {isLocked ? (
-                  <LockIcon
-                    className="text-foreground"
-                    size={20}
-                    strokeWidth={1.5}
-                  />
-                ) : (
-                  <LockOpenIcon
-                    className="text-foreground"
-                    size={20}
-                    strokeWidth={1.5}
-                  />
-                )}
-                <Text className="native:text-base font-semibold uppercase tracking-wider">
-                  {isLocked ? "Unlock" : "Lock"}
-                </Text>
-              </Button>
-              <Button
-                className="flex flex-1 flex-row items-center justify-center gap-4"
-                disabled={isSaving || isLocked}
-                onPress={handleSaveThumb}>
-                <ImageDownIcon
-                  className="text-background"
-                  size={20}
-                  strokeWidth={1.5}
-                />
-                <Text className="native:text-base font-semibold uppercase tracking-wider">
-                  Update
-                </Text>
-              </Button>
-            </View>
-          </View>
+            ) : (
+              <LockOpenIcon
+                className="text-foreground"
+                size={20}
+                strokeWidth={1.5}
+              />
+            )}
+            <Text className="native:text-base font-semibold uppercase tracking-wider">
+              {isLocked ? "Unlock" : "Lock"}
+            </Text>
+          </Button>
+          <Button
+            className="flex flex-1 flex-row items-center justify-center gap-4"
+            disabled={isSaving || isLocked}
+            onPress={handleSaveThumb}>
+            <ImageDownIcon
+              className="text-background"
+              size={20}
+              strokeWidth={1.5}
+            />
+            <Text className="native:text-base font-semibold uppercase tracking-wider">Update</Text>
+          </Button>
         </View>
       </View>
     </GestureDetector>

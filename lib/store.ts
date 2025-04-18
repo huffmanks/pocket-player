@@ -6,13 +6,12 @@ import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 import { EditPlaylistInfo } from "@/app/(modals)/playlists/edit/[id]";
 import { db as drizzleDb } from "@/db/drizzle";
 import { VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
+import { LOCK_INTERVAL_DEFAULT } from "@/lib/constants";
 
 import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
 import { EditPlaylistFormData } from "@/components/forms/edit-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
 import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
-
-import { LOCK_INTERVAL_DEFAULT } from "./constants";
 
 const settingsStorage = new MMKV({ id: "settings" });
 const securityStorage = new MMKV({ id: "security", encryptionKey: "your-encryption-key" });

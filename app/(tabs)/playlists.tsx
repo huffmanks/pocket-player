@@ -90,31 +90,25 @@ export default function PlaylistsScreen() {
     console.error("Error loading data.");
     toast.error("Error loading data.");
   }
+  const playlistsExist = Array.isArray(playlistsData) && playlistsData.length > 0;
 
   return (
-    <>
-      <View
-        style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
-        className="relative min-h-full px-5">
-        <FlashList
-          data={playlistsWithThumbUris}
-          keyExtractor={(item, index) => {
-            return item.id + index;
-          }}
-          renderItem={renderItem}
-          estimatedItemSize={ESTIMATED_PLAYLIST_HEIGHT}
-          ListHeaderComponent={
-            <ListHeaderComponent hasData={playlistsData && playlistsData.length > 0} />
-          }
-          ListEmptyComponent={<ListEmptyComponent />}
-        />
-      </View>
-    </>
+    <View className="relative min-h-full px-5 pt-4">
+      <FlashList
+        data={playlistsWithThumbUris}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+        renderItem={renderItem}
+        estimatedItemSize={ESTIMATED_PLAYLIST_HEIGHT}
+        ListHeaderComponent={<ListHeaderComponent playlistsExist={playlistsExist} />}
+        ListEmptyComponent={<ListEmptyComponent />}
+      />
+    </View>
   );
 }
 
-function ListHeaderComponent({ hasData }: { hasData: boolean }) {
-  if (!hasData) return null;
+function ListHeaderComponent({ playlistsExist }: { playlistsExist: boolean }) {
+  if (!playlistsExist) return null;
 
   return (
     <View className="mb-10">
@@ -140,12 +134,25 @@ function ListHeaderComponent({ hasData }: { hasData: boolean }) {
 
 function ListEmptyComponent() {
   return (
-    <>
-      <View className="pt-5">
-        <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
-        <Text className="mb-12">Your playlists will be displayed here.</Text>
-      </View>
-      <ListHeaderComponent hasData />
-    </>
+    <View className="pt-5">
+      <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
+      <Text className="mb-12">Your playlists will be displayed here.</Text>
+      <Link
+        href="/(modals)/playlists/create"
+        asChild>
+        <Button
+          size="lg"
+          className="flex flex-row items-center justify-center gap-4">
+          <ListMusicIcon
+            className="text-background"
+            size={24}
+            strokeWidth={1.5}
+          />
+          <Text className="native:text-base font-semibold uppercase tracking-wider">
+            Create playlist
+          </Text>
+        </Button>
+      </Link>
+    </View>
   );
 }

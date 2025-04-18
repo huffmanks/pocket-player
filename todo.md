@@ -13,7 +13,6 @@
 3. Video screen:
    - scrollPosition is not saving.
    - remove from playlist is always showing even if not in playlist.
-   - Adding padding at bottom of list.
 4. upload form: verify file and thumbnail get destroyed if not imported.
 5. playlists screen:
    - Make this screen use accordions with list view. Add action buttons to:
@@ -23,14 +22,11 @@
      - delete
    - stale data when videos are removed from playlist.
 6. edit video screen:
-   - add padding at bottom.
-   - remove some px from save video button.
    - add/remove playlist option.
 7. combobox/playlist forms:
    - remove some padding bottom on flashlist.
    - make selected have active bg color.
 8. Settings screen:
-   - make settings a tab and remove from header items.
    - add icons with each section.
    - make switch and lables larger.
    - add theme section. light, dark, system.

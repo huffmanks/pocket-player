@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { type Option, Select } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { Switch, SwitchProps } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -196,7 +196,13 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
 
     return (
       <FormItem>
-        {!!label && <FormLabel nativeID={formItemNativeID}>{label}</FormLabel>}
+        {!!label && (
+          <FormLabel
+            nativeID={formItemNativeID}
+            className="native:text-lg">
+            {label}
+          </FormLabel>
+        )}
 
         <Pressable
           className="native:h-12 h-10 flex-row items-center justify-between gap-4 rounded-md border border-input px-3 web:py-2 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2"
@@ -269,6 +275,7 @@ const FormInput = React.forwardRef<
     <FormItem>
       {!!label && (
         <FormLabel
+          className="native:text-lg"
           nativeID={formItemNativeID}
           onPress={handleOnLabelPress}>
           {label}
@@ -325,6 +332,7 @@ const FormTextarea = React.forwardRef<
       {!!label && (
         <FormLabel
           nativeID={formItemNativeID}
+          className="native:text-lg"
           onPress={handleOnLabelPress}>
           {label}
         </FormLabel>
@@ -438,7 +446,13 @@ const FormCombobox = React.forwardRef<
 
   return (
     <FormItem>
-      {!!label && <FormLabel nativeID={formItemNativeID}>{label}</FormLabel>}
+      {!!label && (
+        <FormLabel
+          nativeID={formItemNativeID}
+          className="native:text-lg">
+          {label}
+        </FormLabel>
+      )}
       <Combobox
         ref={ref}
         placeholder={placeholder || `Select ${label}`}
@@ -479,7 +493,13 @@ const FormSelect = React.forwardRef<React.ElementRef<typeof Select>, FormSelectP
 
     return (
       <FormItem>
-        {!!label && <FormLabel nativeID={formItemNativeID}>{label}</FormLabel>}
+        {!!label && (
+          <FormLabel
+            nativeID={formItemNativeID}
+            className="native:text-lg">
+            {label}
+          </FormLabel>
+        )}
         <Select
           ref={ref}
           aria-labelledby={formItemNativeID}
@@ -502,54 +522,59 @@ const FormSelect = React.forwardRef<React.ElementRef<typeof Select>, FormSelectP
 
 FormSelect.displayName = "FormSelect";
 
-const FormSwitch = React.forwardRef<
-  React.ElementRef<typeof Switch>,
-  Omit<FormItemProps<typeof Switch, boolean>, "checked" | "onCheckedChange">
->(({ label, description, value, onChange, ...props }, ref) => {
-  const switchRef = React.useRef<React.ComponentRef<typeof Switch>>(null);
-  const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } = useFormField();
+type FormSwitchProps = Omit<FormItemProps<typeof Switch, boolean>, "checked" | "onCheckedChange"> &
+  Pick<SwitchProps, "size">;
 
-  React.useImperativeHandle(ref, () => {
-    if (!switchRef.current) {
-      return {} as React.ComponentRef<typeof Switch>;
+const FormSwitch = React.forwardRef<React.ElementRef<typeof Switch>, FormSwitchProps>(
+  ({ label, description, value, size = "lg", onChange, ...props }, ref) => {
+    const switchRef = React.useRef<React.ComponentRef<typeof Switch>>(null);
+    const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } =
+      useFormField();
+
+    React.useImperativeHandle(ref, () => {
+      if (!switchRef.current) {
+        return {} as React.ComponentRef<typeof Switch>;
+      }
+      return switchRef.current;
+    }, [switchRef.current]);
+
+    function handleOnLabelPress() {
+      onChange?.(!value);
     }
-    return switchRef.current;
-  }, [switchRef.current]);
 
-  function handleOnLabelPress() {
-    onChange?.(!value);
+    return (
+      <FormItem className="px-1">
+        <View className="flex-row items-center gap-4">
+          <Switch
+            ref={switchRef}
+            aria-labelledby={formItemNativeID}
+            aria-describedby={
+              !error
+                ? `${formDescriptionNativeID}`
+                : `${formDescriptionNativeID} ${formMessageNativeID}`
+            }
+            aria-invalid={!!error}
+            size={size}
+            onCheckedChange={onChange}
+            checked={value}
+            {...props}
+          />
+          {!!label && (
+            <FormLabel
+              className="native:text-lg"
+              style={{ paddingBottom: 0 }}
+              nativeID={formItemNativeID}
+              onPress={handleOnLabelPress}>
+              {label}
+            </FormLabel>
+          )}
+        </View>
+        {!!description && <FormDescription>{description}</FormDescription>}
+        <FormMessage />
+      </FormItem>
+    );
   }
-
-  return (
-    <FormItem className="px-1">
-      <View className="flex-row items-center gap-3">
-        <Switch
-          ref={switchRef}
-          aria-labelledby={formItemNativeID}
-          aria-describedby={
-            !error
-              ? `${formDescriptionNativeID}`
-              : `${formDescriptionNativeID} ${formMessageNativeID}`
-          }
-          aria-invalid={!!error}
-          onCheckedChange={onChange}
-          checked={value}
-          {...props}
-        />
-        {!!label && (
-          <FormLabel
-            className="pb-0"
-            nativeID={formItemNativeID}
-            onPress={handleOnLabelPress}>
-            {label}
-          </FormLabel>
-        )}
-      </View>
-      {!!description && <FormDescription>{description}</FormDescription>}
-      <FormMessage />
-    </FormItem>
-  );
-});
+);
 
 FormSwitch.displayName = "FormSwitch";
 

@@ -1,21 +1,20 @@
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { View } from "react-native";
 
 import { useShallow } from "zustand/react/shallow";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { LockIcon, MoonStarIcon, SettingsIcon, SunIcon } from "@/lib/icons";
+import { LockIcon, MoonStarIcon, SunIcon } from "@/lib/icons";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function HeaderItems() {
   return (
     <View className="flex-row items-center gap-2 pr-2">
       <LockScreen />
       <ThemeToggle />
-      <OpenSettings />
     </View>
   );
 }
@@ -51,24 +50,6 @@ function ThemeToggle() {
         )}
       </>
     </Button>
-  );
-}
-
-function OpenSettings() {
-  return (
-    <Link
-      href="/(modals)/settings"
-      asChild>
-      <Button
-        variant="ghost"
-        size="icon">
-        <SettingsIcon
-          className="text-teal-500"
-          size={28}
-          strokeWidth={1.25}
-        />
-      </Button>
-    </Link>
   );
 }
 

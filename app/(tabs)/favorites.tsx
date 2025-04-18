@@ -99,36 +99,39 @@ export default function FavoritesScreen() {
     toast.error("Error loading data.");
   }
 
+  const favoritesExist = Array.isArray(data) && data.length > 0;
+
   return (
-    <>
-      <View
-        style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
-        className="relative min-h-full">
-        {!!data && data?.length > 0 && (
-          <SearchBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            handleSortDate={handleSortDate}
-            handleSortTitle={handleSortTitle}
-          />
-        )}
-        <FlashList
-          data={sortedData}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
-          ListEmptyComponent={<ListEmptyComponent hasData={!!data && data?.length > 0} />}
+    <View className="relative min-h-full pt-4">
+      {favoritesExist && (
+        <SearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSortDate={handleSortDate}
+          handleSortTitle={handleSortTitle}
         />
-      </View>
-    </>
+      )}
+      <FlashList
+        data={sortedData}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+        estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
+        ListEmptyComponent={<ListEmptyComponent favoritesExist={favoritesExist} />}
+      />
+    </View>
   );
 }
 
-function ListEmptyComponent({ hasData }: { hasData: boolean }) {
+function ListEmptyComponent({ favoritesExist }: { favoritesExist: boolean }) {
   return (
     <View className="p-5">
-      <H2 className="mb-4 text-teal-500">{hasData ? "No results" : "No favorite videos yet!"}</H2>
-      {!hasData && <Text className="mb-12">Your favorite videos will be displayed here.</Text>}
+      <H2 className="mb-4 text-teal-500">
+        {favoritesExist ? "No results" : "No favorite videos yet!"}
+      </H2>
+      {!favoritesExist && (
+        <Text className="mb-12">Your favorite videos will be displayed here.</Text>
+      )}
     </View>
   );
 }

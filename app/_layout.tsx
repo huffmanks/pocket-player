@@ -1,6 +1,5 @@
 import { setBehaviorAsync, setVisibilityAsync } from "expo-navigation-bar";
 import { SplashScreen, Stack, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 
@@ -15,7 +14,7 @@ import { useShallow } from "zustand/react/shallow";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
-import { DARK_THEME, LIGHT_THEME } from "@/lib/constants";
+import { DARK_THEME, LIGHT_THEME, NAV_THEME } from "@/lib/constants";
 import { migrateDatabase } from "@/lib/migrate-database";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
@@ -125,15 +124,17 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <RouteTracker />
-      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-        <StatusBar
-          style={isDarkColorScheme ? "light" : "dark"}
-          hidden={false}
-        />
+      <ThemeProvider value={!isDarkColorScheme ? LIGHT_THEME : DARK_THEME}>
         <SafeAreaProvider style={{ flex: 1 }}>
           <BottomSheetModalProvider>
             <LockScreenProvider>
-              <Stack>
+              <Stack
+                screenOptions={{
+                  statusBarStyle: isDarkColorScheme ? "light" : "dark",
+                  statusBarAnimation: "fade",
+                  statusBarBackgroundColor: NAV_THEME[colorScheme].background,
+                  statusBarHidden: false,
+                }}>
                 <Stack.Screen
                   name="(modals)"
                   options={{ headerShown: false }}
@@ -146,7 +147,7 @@ export default function RootLayout() {
             </LockScreenProvider>
           </BottomSheetModalProvider>
           <Toaster
-            theme={colorScheme === "light" ? "light" : "dark"}
+            theme={colorScheme}
             richColors
             position="bottom-center"
             offset={70}

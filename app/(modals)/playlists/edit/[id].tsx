@@ -43,7 +43,7 @@ export default function EditPlaylistScreen() {
   if (!editPlaylistInfo) return null;
 
   return (
-    <View>
+    <View className="mx-auto mb-8 w-full max-w-md flex-1 px-4 py-8">
       <EditPlaylistForm editPlaylistInfo={editPlaylistInfo} />
     </View>
   );

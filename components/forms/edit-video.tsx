@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
@@ -109,113 +109,103 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
   }
 
   return (
-    <View className="relative h-full">
-      <ScrollView
-        contentContainerClassName="mx-auto w-full max-w-lg py-6"
-        showsVerticalScrollIndicator={true}
-        className="bg-background"
-        automaticallyAdjustContentInsets={false}
-        contentInset={{ top: 12 }}>
-        <View className="mx-auto mb-8 min-h-1 w-full max-w-md">
-          <Form {...form}>
-            <View className="mb-12">
-              <View className="mb-6">
-                <Label className="mb-2 px-4">Thumbnail</Label>
-                <VideoThumbPicker videoInfo={videoInfo} />
-              </View>
-              <View className="flex-1 gap-7 px-4">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormInput
-                      label="Title"
-                      autoFocus={false}
-                      selectTextOnFocus={true}
-                      placeholder="Add a video title..."
-                      autoCapitalize="none"
-                      {...field}
-                    />
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="createdAt"
-                  render={({ field }) => (
-                    <FormDateTimePicker
-                      label="Created at"
-                      {...field}
-                    />
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="orientation"
-                  render={({ field }) => (
-                    <FormSelect
-                      label="Orientation"
-                      {...field}>
-                      <SelectTrigger
-                        onLayout={(ev) => {
-                          setSelectTriggerWidth(ev.nativeEvent.layout.width);
-                        }}>
-                        <SelectValue
-                          className={cn(
-                            "native:text-lg text-sm",
-                            field.value ? "text-foreground" : "text-muted-foreground"
-                          )}
-                          placeholder="Select an orientation"
-                        />
-                      </SelectTrigger>
-                      <SelectContent
-                        insets={contentInsets}
-                        style={{ width: selectTriggerWidth }}>
-                        <SelectGroup>
-                          {orientationOptions.map((orientation) => (
-                            <SelectItem
-                              key={orientation.value}
-                              label={orientation.label}
-                              value={orientation.value}>
-                              <Text>{orientation.label}</Text>
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </FormSelect>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="isFavorite"
-                  render={({ field }) => (
-                    <FormSwitch
-                      label="Add to favorites?"
-                      {...field}
-                    />
-                  )}
-                />
-              </View>
-            </View>
-            <View className="px-6">
-              <Button
-                className="bg-teal-600"
-                size="lg"
-                onPress={form.handleSubmit(onSubmit)}>
-                <View className="flex-row items-center gap-4">
-                  <SaveIcon
-                    className="text-white"
-                    size={24}
-                    strokeWidth={1.5}
+    <Form {...form}>
+      <View className="mb-7">
+        <Label className="native:text-lg mb-2">Thumbnail</Label>
+        <VideoThumbPicker videoInfo={videoInfo} />
+      </View>
+      <View className="flex-1 gap-7">
+        <View className="flex-1 gap-7">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormInput
+                label="Title"
+                autoFocus={false}
+                selectTextOnFocus={true}
+                placeholder="Add a video title..."
+                autoCapitalize="none"
+                {...field}
+              />
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="createdAt"
+            render={({ field }) => (
+              <FormDateTimePicker
+                label="Created at"
+                {...field}
+              />
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="orientation"
+            render={({ field }) => (
+              <FormSelect
+                label="Orientation"
+                {...field}>
+                <SelectTrigger
+                  onLayout={(ev) => {
+                    setSelectTriggerWidth(ev.nativeEvent.layout.width);
+                  }}>
+                  <SelectValue
+                    className={cn(
+                      "native:text-lg text-sm",
+                      field.value ? "text-foreground" : "text-muted-foreground"
+                    )}
+                    placeholder="Select an orientation"
                   />
-                  <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
-                    Save video
-                  </Text>
-                </View>
-              </Button>
-            </View>
-          </Form>
+                </SelectTrigger>
+                <SelectContent
+                  insets={contentInsets}
+                  style={{ width: selectTriggerWidth }}>
+                  <SelectGroup>
+                    {orientationOptions.map((orientation) => (
+                      <SelectItem
+                        key={orientation.value}
+                        label={orientation.label}
+                        value={orientation.value}>
+                        <Text>{orientation.label}</Text>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </FormSelect>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="isFavorite"
+            render={({ field }) => (
+              <FormSwitch
+                label="Add to favorites?"
+                {...field}
+              />
+            )}
+          />
         </View>
-      </ScrollView>
-    </View>
+
+        <View className="flex-1">
+          <Button
+            className="bg-teal-600"
+            size="lg"
+            onPress={form.handleSubmit(onSubmit)}>
+            <View className="flex-1 flex-row items-center gap-4">
+              <SaveIcon
+                className="text-white"
+                size={24}
+                strokeWidth={1.5}
+              />
+              <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+                Save video
+              </Text>
+            </View>
+          </Button>
+        </View>
+      </View>
+    </Form>
   );
 }
