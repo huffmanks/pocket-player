@@ -9,7 +9,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 
 import { VideoData } from "@/app/(modals)/playlists/create";
-import { SendIcon, XIcon } from "@/lib/icons";
+import { ListMusicIcon, XIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -183,12 +183,14 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
                 size="lg"
                 onPress={form.handleSubmit(onSubmit, handleErrors)}>
                 <View className="flex-row items-center gap-4">
-                  <SendIcon
+                  <ListMusicIcon
                     className="text-white"
-                    size={28}
-                    strokeWidth={1.25}
+                    size={24}
+                    strokeWidth={1.5}
                   />
-                  <Text className="native:text-base text-white">Submit</Text>
+                  <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+                    Create playlist
+                  </Text>
                 </View>
               </Button>
             </View>

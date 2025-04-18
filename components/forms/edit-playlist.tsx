@@ -184,10 +184,12 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
                 <View className="flex-row items-center gap-4">
                   <SaveIcon
                     className="text-white"
-                    size={28}
-                    strokeWidth={1.25}
+                    size={24}
+                    strokeWidth={1.5}
                   />
-                  <Text className="native:text-base text-white">Save</Text>
+                  <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+                    Save playlist
+                  </Text>
                 </View>
               </Button>
             </View>

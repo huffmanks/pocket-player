@@ -188,7 +188,7 @@ export default function UploadForm() {
   return (
     <View className="relative h-full">
       <ScrollView
-        contentContainerClassName="mx-auto w-full max-w-lg p-6"
+        contentContainerClassName="mx-auto w-full max-w-lg px-3 py-4"
         showsVerticalScrollIndicator={true}
         className="bg-background"
         automaticallyAdjustContentInsets={false}
@@ -204,7 +204,7 @@ export default function UploadForm() {
                     <View className="justify-center rounded-lg border-[16px] border-primary-foreground bg-secondary">
                       <View className="justify-center rounded-lg border border-dashed border-muted-foreground">
                         <Button
-                          className="p-8"
+                          className="p-12"
                           variant="ghost"
                           size="unset"
                           onPress={async () =>
@@ -216,11 +216,11 @@ export default function UploadForm() {
                           <View className="items-center justify-center gap-2">
                             <CloudUploadIcon
                               className="text-foreground"
-                              size={40}
+                              size={48}
                               strokeWidth={1.5}
                             />
-                            <Text className="native:text-lg">Add videos</Text>
-                            <Text className="native:text-sm text-muted-foreground">
+                            <Text className="native:text-xl">Add videos</Text>
+                            <Text className="native:text-base text-muted-foreground">
                               {uploadedVideos[0].thumbUri
                                 ? `${uploadedVideos.length} video${uploadedVideos.length > 1 ? "s" : ""} imported`
                                 : "Browse your video files"}

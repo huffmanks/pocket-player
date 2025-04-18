@@ -9,7 +9,7 @@ export default function UploadScreen() {
 
   return (
     <View
-      style={{ paddingTop: 28, paddingBottom: insets.bottom + 84 }}
+      style={{ paddingTop: 0, paddingBottom: insets.bottom + 84 }}
       className="relative min-h-full">
       <UploadForm />
     </View>

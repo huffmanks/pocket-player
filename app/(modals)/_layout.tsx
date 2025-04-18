@@ -9,7 +9,6 @@ export default function ModalLayout() {
     <Stack
       screenOptions={{
         headerShown: useClientOnlyValue(false, true),
-        headerRight: () => <HeaderItems />,
       }}>
       <Stack.Screen
         name="playlists/watch/[id]"
@@ -21,6 +20,7 @@ export default function ModalLayout() {
           title: "Playlist",
           headerShown: true,
           headerBackVisible: true,
+          headerRight: () => <HeaderItems />,
           animation: "slide_from_right",
         }}
       />
@@ -30,6 +30,7 @@ export default function ModalLayout() {
           title: "Edit playlist",
           headerShown: true,
           headerBackVisible: true,
+          headerRight: () => <HeaderItems />,
           animation: "slide_from_bottom",
         }}
       />
@@ -39,6 +40,7 @@ export default function ModalLayout() {
           title: "Create playlist",
           headerShown: true,
           headerBackVisible: true,
+          headerRight: () => <HeaderItems />,
           animation: "slide_from_bottom",
         }}
       />
@@ -52,6 +54,7 @@ export default function ModalLayout() {
           title: "Edit video",
           headerShown: true,
           headerBackVisible: true,
+          headerRight: () => <HeaderItems />,
           animation: "slide_from_bottom",
         }}
       />

@@ -108,9 +108,11 @@ export default function SettingsModal() {
             <KeyRoundIcon
               className="text-foreground"
               size={24}
-              strokeWidth={1.25}
+              strokeWidth={1.5}
             />
-            <Text className="native:text-lg">{passcode !== null ? "Change" : "Create"}</Text>
+            <Text className="native:text-base font-semibold uppercase tracking-wider">
+              {passcode !== null ? "Change" : "Create"} passcode
+            </Text>
           </Button>
         </View>
 
@@ -127,9 +129,11 @@ export default function SettingsModal() {
             <GitMergeIcon
               className="text-foreground"
               size={24}
-              strokeWidth={1.25}
+              strokeWidth={1.5}
             />
-            <Text className="native:text-lg">Migrate</Text>
+            <Text className="native:text-base font-semibold uppercase tracking-wider">
+              Migrate database
+            </Text>
           </Button>
 
           <View className="mt-3 gap-6">
@@ -142,9 +146,11 @@ export default function SettingsModal() {
                   <TrashIcon
                     className="text-white"
                     size={24}
-                    strokeWidth={1.25}
+                    strokeWidth={1.5}
                   />
-                  <Text className="native:text-lg">Delete</Text>
+                  <Text className="native:text-base font-semibold uppercase tracking-wider">
+                    Delete all data
+                  </Text>
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>

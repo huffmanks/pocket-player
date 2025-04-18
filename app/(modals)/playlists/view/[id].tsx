@@ -26,10 +26,12 @@ export default function ViewPlaylistScreen() {
             className="flex flex-row items-center justify-center gap-4">
             <TvIcon
               className="text-background"
-              size={20}
-              strokeWidth={1.25}
+              size={24}
+              strokeWidth={1.5}
             />
-            <Text>Watch playlist</Text>
+            <Text className="native:text-base font-semibold uppercase tracking-wider">
+              Watch playlist
+            </Text>
           </Button>
         </Link>
       </View>

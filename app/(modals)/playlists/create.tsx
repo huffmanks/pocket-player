@@ -56,10 +56,12 @@ export default function CreatePlaylistScreen() {
             className="flex flex-row items-center justify-center gap-4">
             <CloudUploadIcon
               className="text-background"
-              size={20}
-              strokeWidth={1.25}
+              size={24}
+              strokeWidth={1.5}
             />
-            <Text>Upload</Text>
+            <Text className="native:text-base font-semibold uppercase tracking-wider">
+              Upload videos
+            </Text>
           </Button>
         </Link>
       </View>

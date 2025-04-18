@@ -16,8 +16,8 @@ import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
 import { CalendarIcon } from "@/lib/icons";
 import { cn, formatDateString } from "@/lib/utils";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Combobox, ComboboxOption } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup } from "@/components/ui/radio-group";
@@ -198,23 +198,23 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
       <FormItem>
         {!!label && <FormLabel nativeID={formItemNativeID}>{label}</FormLabel>}
 
-        <View className="flex-row items-center gap-4">
+        <Pressable
+          className="native:h-12 h-10 flex-row items-center justify-between gap-4 rounded-md border border-input px-3 web:py-2 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2"
+          onPress={showDatepicker}>
           <Input
             ref={ref}
             readOnly
+            className="border-0 p-0"
+            style={{ height: "auto" }}
             value={formatDateString(value)}
           />
-          <Button
-            variant="ghost"
-            size="icon"
-            onPress={showDatepicker}>
-            <CalendarIcon
-              className="text-teal-500"
-              size={28}
-              strokeWidth={1.25}
-            />
-          </Button>
-        </View>
+
+          <CalendarIcon
+            className="text-teal-500"
+            size={24}
+            strokeWidth={1.5}
+          />
+        </Pressable>
 
         {show && (
           <DateTimePicker
@@ -430,6 +430,37 @@ const FormRadioGroup = React.forwardRef<
 
 FormRadioGroup.displayName = "FormRadioGroup";
 
+const FormCombobox = React.forwardRef<
+  React.ElementRef<typeof Combobox>,
+  FormItemProps<typeof Combobox, ComboboxOption | null>
+>(({ label, description, value, onChange, ...props }, ref) => {
+  const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } = useFormField();
+
+  return (
+    <FormItem>
+      {!!label && <FormLabel nativeID={formItemNativeID}>{label}</FormLabel>}
+      <Combobox
+        ref={ref}
+        placeholder="Select framework"
+        aria-labelledby={formItemNativeID}
+        aria-describedby={
+          !error
+            ? `${formDescriptionNativeID}`
+            : `${formDescriptionNativeID} ${formMessageNativeID}`
+        }
+        aria-invalid={!!error}
+        selectedItem={value}
+        onSelectedItemChange={onChange}
+        {...props}
+      />
+      {!!description && <FormDescription>{description}</FormDescription>}
+      <FormMessage />
+    </FormItem>
+  );
+});
+
+FormCombobox.displayName = "FormCombobox";
+
 type FormSelectProps = {
   label?: string;
   description?: string;
@@ -525,6 +556,7 @@ FormSwitch.displayName = "FormSwitch";
 export {
   Form,
   FormCheckbox,
+  FormCombobox,
   FormDateTimePicker,
   FormDescription,
   FormField,

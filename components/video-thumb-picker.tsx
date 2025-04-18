@@ -77,14 +77,16 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
   return (
     <GestureDetector gesture={tapGesture}>
       <View className="flex-1">
-        <View className="mb-1 w-full overflow-hidden rounded-lg px-4">
-          <VideoView
-            ref={videoRef}
-            style={{ width: "100%", height: 200, borderRadius: "0.5rem", overflow: "hidden" }}
-            player={player}
-            contentFit="contain"
-            nativeControls={false}
-          />
+        <View className="mb-2 w-full px-3">
+          <View className="h-[215px] overflow-hidden rounded-2xl">
+            <VideoView
+              ref={videoRef}
+              style={{ width: "100%", height: 215 }}
+              player={player}
+              contentFit="contain"
+              nativeControls={false}
+            />
+          </View>
         </View>
 
         <View className="flex-1 justify-between">
@@ -108,7 +110,6 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
               />
             </View>
           </View>
-
           <View className="mb-1 px-4">
             <View className="flex-row items-center justify-center gap-4">
               <Button
@@ -128,7 +129,9 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
                     strokeWidth={1.5}
                   />
                 )}
-                <Text>{isLocked ? "Unlock" : "Lock"}</Text>
+                <Text className="native:text-base font-semibold uppercase tracking-wider">
+                  {isLocked ? "Unlock" : "Lock"}
+                </Text>
               </Button>
               <Button
                 className="flex flex-1 flex-row items-center justify-center gap-4"
@@ -137,9 +140,11 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
                 <ImageDownIcon
                   className="text-background"
                   size={20}
-                  strokeWidth={1.25}
+                  strokeWidth={1.5}
                 />
-                <Text>Update</Text>
+                <Text className="native:text-base font-semibold uppercase tracking-wider">
+                  Update
+                </Text>
               </Button>
             </View>
           </View>

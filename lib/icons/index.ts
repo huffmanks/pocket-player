@@ -40,7 +40,6 @@ import {
   SaveIcon,
   ScanFaceIcon,
   SearchIcon,
-  SendIcon,
   SettingsIcon,
   SkipBackIcon,
   SkipForwardIcon,
@@ -178,9 +177,6 @@ export { ScanFaceIcon };
 
 iconWithClassName(SearchIcon);
 export { SearchIcon };
-
-iconWithClassName(SendIcon);
-export { SendIcon };
 
 iconWithClassName(SkipBackIcon);
 export { SkipBackIcon };

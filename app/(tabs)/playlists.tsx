@@ -126,10 +126,12 @@ function ListHeaderComponent({ hasData }: { hasData: boolean }) {
           className="flex flex-row items-center justify-center gap-4">
           <ListMusicIcon
             className="text-background"
-            size={20}
-            strokeWidth={1.25}
+            size={24}
+            strokeWidth={1.5}
           />
-          <Text>Create playlist</Text>
+          <Text className="native:text-base font-semibold uppercase tracking-wider">
+            Create playlist
+          </Text>
         </Button>
       </Link>
     </View>

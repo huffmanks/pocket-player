@@ -168,10 +168,12 @@ export default function CreatePasscodeForm() {
                 <View className="flex-row items-center gap-4">
                   <KeyRoundIcon
                     className="text-white"
-                    size={28}
-                    strokeWidth={1.25}
+                    size={24}
+                    strokeWidth={1.5}
                   />
-                  <Text className="native:text-base text-white">Set passcode</Text>
+                  <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+                    Set passcode
+                  </Text>
                 </View>
               </Button>
             </View>
