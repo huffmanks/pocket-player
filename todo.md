@@ -7,8 +7,18 @@
    - Overlay not extending to bottom.
 2. [Playlists view screen](<app/(modals)/playlists/view/[id].tsx>): Get the following warning (x2)
    - Reading from `value` during component render. Please ensure that you do not access the `value` property or use `get` method of a shared value while React is rendering a component.
-   - Make this screen use accordions for quicker access to playing playlist, etc.
+   - Make this screen use accordions with list view. Add action buttons to:
+      - watch
+      - view
+      - edit
+      - delete
    - can still have [id] page for playlist
+   - show playlist title and description on screen.
+   - make videos grid 2x2 on view page.
+3. Video screen:
+   - scrollPosition is not saving.
+   - remove from playlist is always showing even if not in playlist.
+4. upload form: verify file and thumbnail get destroyed if not imported.
 
 ## Features
 
