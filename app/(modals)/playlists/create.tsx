@@ -14,9 +14,8 @@ import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 
 export interface VideoData {
-  videoId: string;
-  title: string;
-  isSelected?: boolean;
+  value: string;
+  label: string;
 }
 
 export default function CreatePlaylistScreen() {
@@ -26,15 +25,9 @@ export default function CreatePlaylistScreen() {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const data = await db.select({ id: videos.id, title: videos.title }).from(videos);
+      const data = await db.select({ value: videos.id, label: videos.title }).from(videos);
 
-      const updatedData = data.map((video) => ({
-        videoId: video.id,
-        title: video.title,
-        isSelected: false,
-      }));
-
-      setVideoData(updatedData);
+      setVideoData(data);
     };
 
     fetchVideos().catch((error) => {

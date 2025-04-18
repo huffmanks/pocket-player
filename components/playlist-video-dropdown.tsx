@@ -8,7 +8,7 @@ import { EllipsisVerticalIcon, ListMusicIcon, PencilIcon, StarIcon } from "@/lib
 import { usePlaylistStore, useVideoStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
+import type { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

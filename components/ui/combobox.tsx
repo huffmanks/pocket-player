@@ -32,9 +32,8 @@ const Combobox = React.forwardRef<
     inputProps?: React.ComponentPropsWithoutRef<typeof BottomSheetTextInput>;
     emptyText?: string;
     textClass?: string;
-    defaultSelectedItem?: ComboboxOption | null;
-    selectedItem?: ComboboxOption | null;
-    onSelectedItemChange?: (option: ComboboxOption | null) => void;
+    selectedItems?: ComboboxOption[];
+    onSelectedItemsChange?: (options: ComboboxOption[]) => void;
   }
 >(
   (
@@ -47,18 +46,15 @@ const Combobox = React.forwardRef<
       placeholder,
       items,
       emptyText = "Nothing found...",
-      defaultSelectedItem = null,
-      selectedItem: selectedItemProp,
-      onSelectedItemChange,
+      selectedItems: selectedItemsProp,
+      onSelectedItemsChange,
       ...props
     },
     ref
   ) => {
     const insets = useSafeAreaInsets();
     const [search, setSearch] = React.useState("");
-    const [selectedItem, setSelectedItem] = React.useState<ComboboxOption | null>(
-      defaultSelectedItem
-    );
+    const [selectedItems, setSelectedItems] = React.useState<ComboboxOption[]>([]);
     const bottomSheet = useBottomSheet();
     const inputRef = React.useRef<React.ComponentRef<typeof BottomSheetTextInput>>(null);
 
@@ -70,55 +66,56 @@ const Combobox = React.forwardRef<
         : items;
     }, [items, search]);
 
-    function onItemChange(listItem: ComboboxOption) {
-      if (selectedItemProp?.value === listItem.value) {
-        return null;
+    function onItemToggle(listItem: ComboboxOption) {
+      const current = selectedItemsProp ?? selectedItems;
+      const isSelected = current.some((i) => i.value === listItem.value);
+      const updated = isSelected
+        ? current.filter((i) => i.value !== listItem.value)
+        : [...current, listItem];
+
+      if (onSelectedItemsChange) {
+        onSelectedItemsChange(updated);
+      } else {
+        setSelectedItems(updated);
       }
+
       setSearch("");
-      bottomSheet.close();
-      return listItem;
     }
 
     const renderItem = React.useCallback(
       ({ item }: ListRenderItemInfo<unknown>) => {
         const listItem = item as ComboboxOption;
-        const isSelected = onSelectedItemChange
-          ? selectedItemProp?.value === listItem.value
-          : selectedItem?.value === listItem.value;
+        const isSelected = (selectedItemsProp ?? selectedItems).some(
+          (i) => i.value === listItem.value
+        );
         return (
           <Button
             variant="ghost"
-            className="android:flex-1 flex-row items-center justify-between px-3 py-4"
-            style={{ minHeight: 70 }}
-            onPress={() => {
-              if (onSelectedItemChange) {
-                onSelectedItemChange(onItemChange(listItem));
-                return;
-              }
-              setSelectedItem(onItemChange(listItem));
-            }}>
+            size="unset"
+            className="android:flex-1 flex-row items-center justify-between gap-2 p-2"
+            onPress={() => onItemToggle(listItem)}>
             <View className="flex-1 flex-row">
-              <Text className={"text-xl text-foreground"}>{listItem.label}</Text>
+              <Text className={"text-lg text-foreground"}>{listItem.label}</Text>
             </View>
             {isSelected && (
               <CheckIcon
                 size={24}
-                className={"mt-1.5 px-6 text-foreground"}
+                className={"px-4 text-foreground"}
               />
             )}
           </Button>
         );
       },
-      [selectedItem, selectedItemProp]
+      [selectedItems, selectedItemsProp]
     );
 
     function onSubmitEditing() {
       const firstItem = listItems[0];
       if (!firstItem) return;
-      if (onSelectedItemChange) {
-        onSelectedItemChange(firstItem);
+      if (onSelectedItemsChange) {
+        onSelectedItemsChange([firstItem]);
       } else {
-        setSelectedItem(firstItem);
+        setSelectedItems([firstItem]);
       }
       bottomSheet.close();
     }
@@ -131,7 +128,9 @@ const Combobox = React.forwardRef<
       }
     }
 
-    const itemSelected = onSelectedItemChange ? selectedItemProp : selectedItem;
+    const selected = selectedItemsProp ?? selectedItems;
+    const displayText =
+      selected.length > 0 ? selected.map((i) => i.label).join(", ") : (placeholder ?? "");
 
     return (
       <BottomSheet>
@@ -140,21 +139,21 @@ const Combobox = React.forwardRef<
           className={buttonVariants({
             variant,
             size,
-            className: cn("w-full flex-row", className),
+            className: cn("native:h-14 h-12 w-full flex-row web:py-2", className),
           })}
           role="combobox"
           {...props}>
-          <View className="flex-1 flex-row justify-between">
+          <View className="flex-1 flex-row items-center justify-between">
             <Text
               className={buttonTextVariants({
                 variant,
                 size,
-                className: cn(!itemSelected && "opacity-50", textClass),
+                className: cn("-mr-3", textClass),
               })}
               numberOfLines={1}>
-              {itemSelected ? itemSelected.label : (placeholder ?? "")}
+              {displayText}
             </Text>
-            <ChevronsUpDownIcon className="ml-2 text-foreground opacity-50" />
+            <ChevronsUpDownIcon className="ml-3 text-foreground opacity-50" />
           </View>
         </BottomSheetOpenTrigger>
         <BottomSheetContent
@@ -162,12 +161,12 @@ const Combobox = React.forwardRef<
           onDismiss={() => {
             setSearch("");
           }}>
-          <BottomSheetHeader className="border-b-0">
+          <BottomSheetHeader className="mb-2 border-b-0">
             <Text className="px-0.5 text-center text-xl font-bold text-foreground">
               {placeholder}
             </Text>
           </BottomSheetHeader>
-          <View className="relative border-b border-border px-4 pb-4">
+          <View className="relative mb-4 border-b border-border px-4 pb-6">
             <BottomSheetTextInput
               role="searchbox"
               ref={inputRef}
@@ -195,21 +194,19 @@ const Combobox = React.forwardRef<
             data={listItems}
             contentContainerStyle={{
               paddingBottom: insets.bottom + HEADER_HEIGHT,
+              gap: 6,
             }}
             renderItem={renderItem}
             keyExtractor={(item, index) => (item as ComboboxOption)?.value ?? index.toString()}
             className={"px-4"}
             keyboardShouldPersistTaps="handled"
-            // ListEmptyComponent={() => {
-            //   return (
-            //     <View
-            //       className='items-center flex-row justify-center flex-1  px-3 py-5'
-            //       style={{ minHeight: 70 }}
-            //     >
-            //       <Text className={'text-muted-foreground text-xl text-center'}>{emptyText}</Text>
-            //     </View>
-            //   );
-            // }}
+            ListEmptyComponent={() => {
+              return (
+                <View className="flex-1 flex-row items-center justify-center px-4 py-6">
+                  <Text className={"text-center text-xl text-muted-foreground"}>{emptyText}</Text>
+                </View>
+              );
+            }}
           />
         </BottomSheetContent>
       </BottomSheet>

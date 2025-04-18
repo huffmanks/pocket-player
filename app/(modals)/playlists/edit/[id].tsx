@@ -12,10 +12,13 @@ export interface EditPlaylistInfo {
   id: string;
   title: string;
   description: string;
-  videos: {
-    videoId: string;
-    title: string;
-    isSelected: boolean;
+  allVideos: {
+    value: string;
+    label: string;
+  }[];
+  selectedVideos: {
+    value: string;
+    label: string;
   }[];
 }
 

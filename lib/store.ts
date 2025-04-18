@@ -8,6 +8,7 @@ import { db as drizzleDb } from "@/db/drizzle";
 import { VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
 
 import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
+import { EditPlaylistFormData } from "@/components/forms/edit-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
 import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 
@@ -149,7 +150,7 @@ type PlaylistStoreState = {
     values,
   }: {
     id: string;
-    values: EditPlaylistInfo;
+    values: EditPlaylistFormData;
   }) => Promise<{ status: "success" | "error"; message: string }>;
   deletePlaylist: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
   getPlaylistWithAllVideos: (id: string) => Promise<EditPlaylistInfo>;
@@ -193,15 +194,13 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
           })
           .returning();
 
-        const videoInserts = values.videos
-          .filter((video) => video.isSelected)
-          .map((video, index) =>
-            tx.insert(playlistVideos).values({
-              playlistId: created.id,
-              videoId: video.videoId,
-              order: index,
-            })
-          );
+        const videoInserts = values.videos.map((video, index) =>
+          tx.insert(playlistVideos).values({
+            playlistId: created.id,
+            videoId: video.value,
+            order: index,
+          })
+        );
 
         await Promise.all(videoInserts);
 
@@ -231,9 +230,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
           .where(eq(playlists.id, id))
           .returning();
 
-        const selectedVideoIds = values.videos
-          .filter((video) => video.isSelected)
-          .map((video) => video.videoId);
+        const selectedVideoIds = values.videos.map((video) => video.value);
 
         await tx
           .delete(playlistVideos)
@@ -244,18 +241,16 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
             )
           );
 
-        const videoInserts = values.videos
-          .filter((video) => video.isSelected)
-          .map((video, index) =>
-            tx
-              .insert(playlistVideos)
-              .values({
-                playlistId: updated.id,
-                videoId: video.videoId,
-                order: index,
-              })
-              .onConflictDoNothing()
-          );
+        const videoInserts = values.videos.map((video, index) =>
+          tx
+            .insert(playlistVideos)
+            .values({
+              playlistId: updated.id,
+              videoId: video.value,
+              order: index,
+            })
+            .onConflictDoNothing()
+        );
 
         await Promise.all(videoInserts);
 
@@ -291,7 +286,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 
       const [playlist] = await db.select().from(playlists).where(eq(playlists.id, id));
 
-      const allVideos = await db.select().from(videos);
+      const allVideos = await db.select({ value: videos.id, label: videos.title }).from(videos);
 
       const matchingPlaylistVideos = await db
         .select({
@@ -302,17 +297,14 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 
       const selectedVideoIds = new Set(matchingPlaylistVideos.map((pv) => pv.videoId));
 
-      const transformedVideos = allVideos.map((video) => ({
-        videoId: video.id,
-        title: video.title,
-        isSelected: selectedVideoIds.has(video.id),
-      }));
+      const selectedVideos = allVideos.filter((video) => selectedVideoIds.has(video.value));
 
       return {
         id: playlist.id,
         title: playlist.title,
         description: playlist.description,
-        videos: transformedVideos,
+        allVideos,
+        selectedVideos,
       };
     } catch (error) {
       console.error("Error getting playlist and videos: ", error);
@@ -322,7 +314,8 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         id: "",
         title: "",
         description: "",
-        videos: [],
+        allVideos: [],
+        selectedVideos: [],
       };
     }
   },

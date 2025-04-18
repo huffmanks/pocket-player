@@ -3,6 +3,7 @@ import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -86,28 +87,30 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <SafeAreaProvider style={{ flex: 1 }}>
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-          <LockScreenProvider>
-            <StatusBar
-              style={isDarkColorScheme ? "light" : "dark"}
-              hidden={false}
-            />
-            <Stack>
-              <Stack.Screen
-                name="(modals)"
-                options={{ headerShown: false }}
+          <BottomSheetModalProvider>
+            <LockScreenProvider>
+              <StatusBar
+                style={isDarkColorScheme ? "light" : "dark"}
+                hidden={false}
               />
-              <Stack.Screen
-                name="(tabs)"
-                options={{ headerShown: false }}
+              <Stack>
+                <Stack.Screen
+                  name="(modals)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+              <Toaster
+                theme={colorScheme === "light" ? "light" : "dark"}
+                richColors
+                position="bottom-center"
+                offset={70}
               />
-            </Stack>
-            <Toaster
-              theme={colorScheme === "light" ? "light" : "dark"}
-              richColors
-              position="bottom-center"
-              offset={70}
-            />
-          </LockScreenProvider>
+            </LockScreenProvider>
+          </BottomSheetModalProvider>
         </ThemeProvider>
         <PortalHost />
       </SafeAreaProvider>

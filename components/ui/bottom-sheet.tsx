@@ -15,11 +15,11 @@ import {
   useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
 import type { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { useTheme } from "@react-navigation/native";
 import * as Slot from "@rn-primitives/slot";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { NAV_THEME } from "@/lib/constants";
 import { XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
@@ -72,7 +72,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
   (
     {
       enablePanDownToClose = true,
-      enableDynamicSizing = true,
+      enableDynamicSizing = false,
       index = 0,
       backdropProps,
       backgroundStyle,
@@ -82,8 +82,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
     ref
   ) => {
     const insets = useSafeAreaInsets();
-    const { isDarkColorScheme } = useColorScheme();
-    const { colors } = useTheme();
+    const { isDarkColorScheme, colorScheme } = useColorScheme();
     const { sheetRef } = useBottomSheetContext();
 
     React.useImperativeHandle(ref, () => {
@@ -122,19 +121,20 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
           />
         );
       },
-      [backdropProps, colors]
+      [backdropProps, NAV_THEME[colorScheme]]
     );
 
     return (
       <BottomSheetModal
         ref={sheetRef}
         index={0}
+        snapPoints={["60%", "80%"]}
         enablePanDownToClose={enablePanDownToClose}
         backdropComponent={renderBackdrop}
         enableDynamicSizing={enableDynamicSizing}
-        backgroundStyle={[{ backgroundColor: colors.card }, backgroundStyle]}
+        backgroundStyle={[{ backgroundColor: NAV_THEME[colorScheme].card }, backgroundStyle]}
         handleIndicatorStyle={{
-          backgroundColor: colors.text,
+          backgroundColor: NAV_THEME[colorScheme].text,
         }}
         topInset={insets.top}
         android_keyboardInputMode={android_keyboardInputMode}
@@ -189,7 +189,7 @@ const BottomSheetCloseTrigger = React.forwardRef<
   );
 });
 
-const BOTTOM_SHEET_HEADER_HEIGHT = 60; // BottomSheetHeader height
+const BOTTOM_SHEET_HEADER_HEIGHT = 60;
 
 type BottomSheetViewProps = Omit<
   React.ComponentPropsWithoutRef<typeof GBottomSheetView>,
@@ -248,8 +248,11 @@ const BottomSheetFlatList = React.forwardRef<BottomSheetFlatListRef, BottomSheet
     return (
       <GBottomSheetFlatList
         ref={ref}
-        contentContainerStyle={[{ paddingBottom: insets.bottom }]}
-        className={cn("py-4", className)}
+        contentContainerStyle={{
+          paddingBottom: insets.bottom + 16,
+          paddingTop: 0,
+        }}
+        className={cn("pb-2 pt-0", className)}
         keyboardShouldPersistTaps="handled"
         {...props}
       />
@@ -298,9 +301,6 @@ type BottomSheetFooterProps = Omit<React.ComponentPropsWithoutRef<typeof View>, 
   style?: ViewStyle;
 };
 
-/**
- * To be used in a useCallback function as a props to BottomSheetContent
- */
 const BottomSheetFooter = React.forwardRef<BottomSheetFooterRef, BottomSheetFooterProps>(
   ({ bottomSheetFooterProps, children, className, style, ...props }, ref) => {
     const insets = useSafeAreaInsets();

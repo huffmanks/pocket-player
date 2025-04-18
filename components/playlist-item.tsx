@@ -3,7 +3,7 @@ import { Image, Pressable, Text } from "react-native";
 
 import { ReorderableListItem, useReorderableDrag } from "react-native-reorderable-list";
 
-import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
+import type { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 import PlaylistVideoDropdown from "@/components/playlist-video-dropdown";
 
 interface PlaylistItemProps {

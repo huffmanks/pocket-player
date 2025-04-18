@@ -243,9 +243,11 @@ export default function UploadForm() {
                   <CircleXIcon
                     className="text-foreground"
                     size={24}
-                    strokeWidth={1.25}
+                    strokeWidth={1.5}
                   />
-                  <Text className="native:text-lg text-foreground">Clear</Text>
+                  <Text className="native:text-base font-semibold uppercase tracking-wider text-foreground">
+                    Clear
+                  </Text>
                 </View>
               </Button>
               <Button
@@ -256,9 +258,12 @@ export default function UploadForm() {
                   <ImportIcon
                     className="text-white"
                     size={24}
-                    strokeWidth={1.25}
+                    strokeWidth={1.5}
                   />
-                  <Text className="native:text-lg text-white">Import</Text>
+
+                  <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+                    Import
+                  </Text>
                 </View>
               </Button>
             </View>

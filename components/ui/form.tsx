@@ -432,8 +432,8 @@ FormRadioGroup.displayName = "FormRadioGroup";
 
 const FormCombobox = React.forwardRef<
   React.ElementRef<typeof Combobox>,
-  FormItemProps<typeof Combobox, ComboboxOption | null>
->(({ label, description, value, onChange, ...props }, ref) => {
+  FormItemProps<typeof Combobox, ComboboxOption[]>
+>(({ label, description, placeholder, value, onChange, ...props }, ref) => {
   const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } = useFormField();
 
   return (
@@ -441,7 +441,7 @@ const FormCombobox = React.forwardRef<
       {!!label && <FormLabel nativeID={formItemNativeID}>{label}</FormLabel>}
       <Combobox
         ref={ref}
-        placeholder="Select framework"
+        placeholder={placeholder || `Select ${label}`}
         aria-labelledby={formItemNativeID}
         aria-describedby={
           !error
@@ -449,11 +449,11 @@ const FormCombobox = React.forwardRef<
             : `${formDescriptionNativeID} ${formMessageNativeID}`
         }
         aria-invalid={!!error}
-        selectedItem={value}
-        onSelectedItemChange={onChange}
+        selectedItems={value}
+        onSelectedItemsChange={onChange}
         {...props}
       />
-      {!!description && <FormDescription>{description}</FormDescription>}
+      {!!description && <FormDescription className="ml-0.5 mt-1">{description}</FormDescription>}
       <FormMessage />
     </FormItem>
   );
