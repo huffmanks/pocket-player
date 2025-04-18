@@ -5,6 +5,7 @@
 1. [Video player](components/video-player.tsx): play/pause/replay toggle button
    - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
    - Overlay not extending to bottom.
+   - toggling mute doesn't work if mute is true in global settings.
 2. [Playlists view screen](<app/(modals)/playlists/view/[id].tsx>): Get the following warning (x2)
    - Reading from `value` during component render. Please ensure that you do not access the `value` property or use `get` method of a shared value while React is rendering a component.
    - show playlist title and description on screen.
