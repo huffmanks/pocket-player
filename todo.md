@@ -31,6 +31,12 @@
 8. lock screen:
    - dismiss bottom sheet on lock screen. maybe move bottom sheet provider inside lock provider.
    - when app is in background go back to previous screen.
+9. Settings screen:
+   - make settings a tab and remove from header items.
+   - add icons with each section.
+   - make switch and lables larger.
+   - add theme section. light, dark, system.
+   - video player settings: add override orientation and default to that on player component if true.
 
 ## Features
 
