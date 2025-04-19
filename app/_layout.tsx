@@ -48,9 +48,10 @@ export default function RootLayout() {
       setTheme: state.setTheme,
     }))
   );
-  const { isLockable, setEnablePasscode, setIsLocked } = useSecurityStore(
+  const { isLockable, isLocked, setEnablePasscode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       isLockable: state.isLockable,
+      isLocked: state.isLocked,
       setEnablePasscode: state.setEnablePasscode,
       setIsLocked: state.setIsLocked,
     }))
