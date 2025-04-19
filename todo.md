@@ -28,9 +28,11 @@
    - make selected have active bg color.
 8. Settings screen:
    - add icons with each section.
-   - make switch and lables larger.
    - add theme section. light, dark, system.
    - video player settings: add override orientation and default to that on player component if true.
+9. Router tracker:
+   - don't push route if it needs to go to lock screen.
+   - on sign in route to previousPath.
 
 ## Features
 
