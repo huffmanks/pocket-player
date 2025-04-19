@@ -33,6 +33,12 @@
 9. Router tracker:
    - don't push route if it needs to go to lock screen.
    - on sign in route to previousPath.
+10. Passcode form](components/forms/create-passcode.tsx)
+   - on submit success push to settings.
+   - update old links to settings.
+11. expo-navigation-bar
+   - dont hide
+   - add theme dark or light.
 
 ## Features
 
