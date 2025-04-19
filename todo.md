@@ -39,6 +39,8 @@
 11. expo-navigation-bar
    - dont hide
    - add theme dark or light.
+12. Database and file creation:
+   - use toast.promise to verify success or error
 
 ## Features
 
