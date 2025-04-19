@@ -6,20 +6,20 @@ import { SettingId } from "@/components/setting-switch";
 
 export const NAV_THEME = {
   light: {
-    background: "hsl(0 0% 100%)",
-    border: "hsl(240 5.9% 90%)",
-    card: "hsl(0 0% 100%)",
-    notification: "hsl(0 84.2% 60.2%)",
-    primary: "hsl(240 5.9% 10%)",
-    text: "hsl(240 10% 3.9%)",
+    background: "rgb(255, 255, 255)",
+    border: "rgb(227, 227, 235)",
+    card: "rgb(255, 255, 255)",
+    notification: "rgb(255, 86, 86)",
+    primary: "rgb(26, 26, 36)",
+    text: "rgb(9, 9, 12)",
   },
   dark: {
-    background: "hsl(240 10% 3.9%)",
-    border: "hsl(240 3.7% 15.9%)",
-    card: "hsl(240 6.85% 6.9%)",
-    notification: "hsl(0 72% 51%)",
-    primary: "hsl(0 0% 98%)",
-    text: "hsl(0 0% 98%)",
+    background: "rgb(9, 9, 12)",
+    border: "rgb(35, 35, 41)",
+    card: "rgb(16, 16, 21)",
+    notification: "rgb(217, 58, 58)",
+    primary: "rgb(250, 250, 250)",
+    text: "rgb(250, 250, 250)",
   },
 };
 
