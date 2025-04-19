@@ -155,10 +155,7 @@ export default function UploadForm() {
       toast.success(message);
 
       form.reset();
-      if (router.canDismiss()) {
-        router.dismissAll();
-      }
-      router.push("/");
+
     } catch (error) {
       console.error(error);
       toast.error("Error submitting form.");
