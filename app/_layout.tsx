@@ -96,16 +96,14 @@ export default function RootLayout() {
   }, [colorScheme, theme]);
 
   useEffect(() => {
-    if (!isAppReady) return;
+    if (!isAppReady || isLocked) return;
 
     async function restorePreviousRoute() {
       try {
         if (!previousPath) return;
 
-        const excludedRoutes = ["(tabs)", "/(modals)/lock", "/lock"];
-
-        if (!excludedRoutes.includes(previousPath)) {
-          router.push(previousPath as any);
+        if (previousPath !== "(tabs)") {
+          router.push(previousPath);
         }
       } catch (error) {
         console.error(error);
