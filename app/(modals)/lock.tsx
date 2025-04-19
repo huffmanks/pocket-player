@@ -16,7 +16,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
 import { DeleteIcon, ScanFaceIcon } from "@/lib/icons";
-import { useSecurityStore } from "@/lib/store";
+import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import KeypadRow from "@/components/keypad-row";
@@ -29,6 +29,7 @@ export default function LockModal() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
+  const previousPath = useSettingsStore((state) => state.previousPath);
   const { passcode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       passcode: state.passcode,
@@ -49,7 +50,7 @@ export default function LockModal() {
 
       if (code.join("") === passcode) {
         setIsLocked(false);
-        router.replace("/");
+        router.replace(previousPath);
       } else {
         offset.value = withSequence(
           withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
