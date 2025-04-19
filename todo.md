@@ -28,6 +28,7 @@
    - make selected have active bg color.
 8. Settings screen:
    - add icons with each section.
+   - delete all data should destroy mmkv store too.
    - add theme section. light, dark, system.
    - video player settings: add override orientation and default to that on player component if true.
 9. Router tracker:
