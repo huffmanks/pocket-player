@@ -103,7 +103,9 @@ export default function RootLayout() {
       try {
         if (!previousPath) return;
 
-        if (previousPath !== "(tabs)") {
+        const excludedPaths = ["(tabs)", "(modals)/passcode"]
+
+        if (!excludedPaths.includes(previousPath)) {
           router.push(previousPath);
         }
       } catch (error) {
