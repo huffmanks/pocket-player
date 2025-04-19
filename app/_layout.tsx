@@ -1,7 +1,5 @@
-import { setBehaviorAsync, setVisibilityAsync } from "expo-navigation-bar";
 import { SplashScreen, Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Platform } from "react-native";
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { ThemeProvider } from "@react-navigation/native";
@@ -76,11 +74,6 @@ export default function RootLayout() {
       } catch (error) {
         console.error(error);
       } finally {
-        if (Platform.OS === "android") {
-          await setBehaviorAsync("overlay-swipe");
-          await setVisibilityAsync("hidden");
-        }
-
         setIsAppReady(true);
       }
     }
