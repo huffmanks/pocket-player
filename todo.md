@@ -9,7 +9,8 @@
 2. [Playlists view screen](<app/(modals)/playlists/view/[id].tsx>):
    - Warning: Reading from `value` during component render. Please ensure that you do not access the `value` property or use `get` method of a shared value while React is rendering a component.
      - This is coming from this component.
-     - import ReorderableList from "react-native-reorderable-list";
+     - import ReorderableList from "react-native-reorderable-list"
+     - [upgrade issue fix here](https://github.com/omahili/react-native-reorderable-list/issues/20)
    - Show playlist title and description on screen.
    - Make videos grid 2x2 on screen.
 3. [Video screen](<app/(tabs)/index.tsx>):
