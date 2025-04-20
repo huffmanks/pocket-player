@@ -15,6 +15,7 @@
 3. [Video screen](<app/(tabs)/index.tsx>):
    - Remove from playlist is always showing even if not in playlist.
    - If video item is towards the bottom the dropdown may be cutoff some.
+   - screenPosition doesnt appear to be working.
 4. [Playlists screen](<app/(tabs)/playlists.tsx>):
    - Stale data when videos are removed from playlist.
    - When playlist is first created thumbs do not show up.
