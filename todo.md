@@ -33,6 +33,8 @@
      - [list-all-files.ts](lib/list-all-files.ts)
 6. Database and file creation:
    - Use toast.promise to verify success or error.
+7. Upgrade packages
+   - [update this](https://github.com/roninoss/rn-primitives/issues/46#issuecomment-2495382868)
 
 ## Features
 
