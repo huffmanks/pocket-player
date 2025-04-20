@@ -22,10 +22,9 @@ import {
 
 interface VideoDropdownProps {
   item: VideoMetaForPlaylist;
-  onRefresh: () => void;
 }
 
-export default function PlaylistVideoDropdown({ item, onRefresh }: VideoDropdownProps) {
+export default function PlaylistVideoDropdown({ item }: VideoDropdownProps) {
   const insets = useSafeAreaInsets();
   const toggleFavorite = useVideoStore((state) => state.toggleFavorite);
   const removeVideoFromPlaylist = usePlaylistStore((state) => state.removeVideoFromPlaylist);
@@ -53,12 +52,7 @@ export default function PlaylistVideoDropdown({ item, onRefresh }: VideoDropdown
       videoId: item.id,
     });
 
-    if (status === "success") {
-      onRefresh();
-      toast.error(message);
-    } else {
-      toast.error(message);
-    }
+    toast.error(message);
   }
 
   return (
