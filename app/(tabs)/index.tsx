@@ -23,7 +23,6 @@ import VideoItem from "@/components/video-item";
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [canScroll, setCanScroll] = useState(false);
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
   const insets = useSafeAreaInsets();
@@ -56,10 +55,13 @@ export default function HomeScreen() {
   );
 
   useEffect(() => {
-    if (canScroll && scrollPosition > 0 && flashListRef.current) {
-      flashListRef.current?.scrollToOffset({ offset: scrollPosition, animated: true });
-    }
-  }, [canScroll]);
+  if (flashListRef.current && scrollPosition > 0) {
+    const timeout = setTimeout(() => {
+      flashListRef.current?.scrollToOffset({ offset: scrollPosition, animated: false });
+    }, 100); // slight delay gives FlashList time to mount
+    return () => clearTimeout(timeout);
+  }
+}, [sortedData.length]);
 
   const filteredData = useMemo(() => {
     if (!data) return [];
@@ -139,9 +141,6 @@ export default function HomeScreen() {
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
         scrollEventThrottle={250}
         onScroll={(e) => saveScrollY(e.nativeEvent.contentOffset.y)}
-        onLayout={() => {
-          if (sortedData.length > 0) setCanScroll(true);
-        }}
         ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
       />
     </View>
