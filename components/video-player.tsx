@@ -90,7 +90,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
 
             <Animated.View
               className={cn(
-                "absolute inset-0 mb-4 flex-1",
+                "absolute top-0 bottom-0 left-0 right-0",
                 isDarkColorScheme ? "bg-black/70" : "bg-black/50"
               )}
               style={animatedStyle}>
