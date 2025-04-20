@@ -78,9 +78,9 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
         setProgress(currentTime / duration);
         setTime(secondsToMMSS(currentTime));
       }
-    }, 150);
+    }, 100);
 
-    const interval = setInterval(updateProgress, 150);
+    const interval = setInterval(updateProgress, 100);
 
     return () => {
       subscription.remove();

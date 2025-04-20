@@ -50,7 +50,8 @@ export default function LockModal() {
 
       if (code.join("") === passcode) {
         setIsLocked(false);
-        router.replace(previousPath);
+
+        router.replace(previousPath as any);
       } else {
         offset.value = withSequence(
           withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
@@ -78,7 +79,7 @@ export default function LockModal() {
 
     if (success) {
       setIsLocked(false);
-      router.replace("/");
+      router.replace(previousPath as any);
     } else {
       handleErrorShake();
     }

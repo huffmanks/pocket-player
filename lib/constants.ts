@@ -14,7 +14,7 @@ export const NAV_THEME = {
     text: "rgb(9, 9, 12)",
   },
   dark: {
-    background: "rgb(9, 9, 12)",
+    background: "rgb(9, 9, 11)",
     border: "rgb(35, 35, 41)",
     card: "rgb(16, 16, 21)",
     notification: "rgb(217, 58, 58)",
@@ -66,6 +66,8 @@ export const ESTIMATED_PLAYLIST_ITEM_HEIGHT = 80;
 export const LOCK_INTERVAL_DEFAULT = 15000;
 export const ERROR_SHAKE_OFFSET = 20;
 export const ERROR_SHAKE_TIME = 80;
+
+export const EXCLUDED_PATHS = ["/passcode", "/lock"];
 
 export const settingsSwitches: { id: SettingId; label: string }[] = [
   {

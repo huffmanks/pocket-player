@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
 
-import { useClientOnlyValue } from "@/hooks/useClientOnlyValue";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { NAV_THEME } from "@/lib/constants";
 import { CloudUploadIcon, ListMusicIcon, SettingsIcon, StarIcon, VideoIcon } from "@/lib/icons";
 
 import HeaderItems from "@/components/header-items";
@@ -14,12 +14,15 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: "#14b8a6",
         tabBarInactiveTintColor: colorScheme === "light" ? "#09090b" : "#fff",
-        headerShown: useClientOnlyValue(false, true),
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: NAV_THEME[colorScheme].background,
+        },
         headerRight: () => <HeaderItems />,
         tabBarStyle: {
+          backgroundColor: NAV_THEME[colorScheme].background,
           paddingTop: 10,
-          paddingBottom: 5,
-          height: 65,
+          height: 75,
         },
       }}>
       <Tabs.Screen

@@ -1,6 +1,6 @@
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import { router, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { getVideoInfoAsync } from "expo-video-metadata";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import { useCallback } from "react";
@@ -16,7 +16,7 @@ import { VIDEOS_DIR } from "@/lib/constants";
 import { CircleXIcon, CloudUploadIcon, ImportIcon } from "@/lib/icons";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
-import { formatDuration, formatFileSize, getOrientation } from "@/lib/utils";
+import { formatDuration, formatFileSize, getOrientation, splitFilename } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
@@ -29,27 +29,20 @@ const formSchema = z.object({
         title: z.string().min(1),
         videoUri: z.string().min(1),
         thumbUri: z.string().min(1),
+        fileExtension: z.string().min(1),
         duration: z.string().min(1),
         fileSize: z.string().min(1),
         orientation: z.string().min(1),
+        orientationFull: z.string().min(1),
+        width: z.number().min(1),
+        height: z.number().min(1),
+        fps: z.number().min(1),
+        hasAudio: z.boolean(),
+        videoCodec: z.string().min(1),
+        audioCodec: z.string().min(1),
       })
     )
-    .nonempty({ message: "Must upload at least one video." })
-    .refine(
-      (videos) =>
-        videos.some(
-          (video) =>
-            video.title &&
-            video.videoUri &&
-            video.thumbUri &&
-            video.duration &&
-            video.fileSize &&
-            video.orientation
-        ),
-      {
-        message: "Must upload at least one video.",
-      }
-    ),
+    .min(1),
 });
 
 export type UploadVideosFormData = z.infer<typeof formSchema>;
@@ -72,9 +65,17 @@ export default function UploadForm() {
           title: "",
           videoUri: "",
           thumbUri: "",
+          fileExtension: "",
           duration: "",
           fileSize: "",
           orientation: "",
+          orientationFull: "",
+          width: undefined,
+          height: undefined,
+          fps: undefined,
+          hasAudio: undefined,
+          videoCodec: "",
+          audioCodec: "",
         },
       ],
     },
@@ -86,9 +87,17 @@ export default function UploadForm() {
         title: string;
         videoUri: string;
         thumbUri: string;
+        fileExtension: string;
         duration: string;
         fileSize: string;
         orientation: string;
+        orientationFull: string;
+        width: number;
+        height: number;
+        fps: number;
+        hasAudio: boolean;
+        videoCodec: string;
+        audioCodec: string;
       }[]
     ) => void
   ) {
@@ -107,31 +116,31 @@ export default function UploadForm() {
       if (result.assets && result.assets.length) {
         const videos = await Promise.all(
           result.assets.map(async ({ uri, name }) => {
-            const videoUri = `${VIDEOS_DIR}${name}`;
-            await FileSystem.copyAsync({ from: uri, to: videoUri });
-
-            const { uri: thumbFileUri } = await VideoThumbnails.getThumbnailAsync(videoUri, {
-              time: 1000,
-            });
-
-            const title = name.replace(/\.[^/.]+$/, "");
-
+            const filename = splitFilename(name);
+            const title = filename[0];
+            const fileExtension = filename[1];
             const thumbUri = `${VIDEOS_DIR}${title}.jpg`;
-            await FileSystem.moveAsync({ from: thumbFileUri, to: thumbUri });
 
-            const result = await getVideoInfoAsync(videoUri);
-
-            const duration = formatDuration(result.duration);
-            const fileSize = formatFileSize(result.fileSize);
-            const orientation = getOrientation(result.width, result.height);
+            const videoMeta = await getVideoInfoAsync(uri);
+            const duration = formatDuration(videoMeta.duration);
+            const fileSize = formatFileSize(videoMeta.fileSize);
+            const orientation = getOrientation(videoMeta.orientation);
 
             return {
               title,
-              videoUri,
+              videoUri: uri,
               thumbUri,
+              fileExtension,
               duration,
               fileSize,
               orientation,
+              orientationFull: videoMeta.orientation ?? "unknown",
+              width: videoMeta.width,
+              height: videoMeta.height,
+              fps: videoMeta.fps,
+              hasAudio: !!videoMeta.hasAudio,
+              videoCodec: videoMeta.codec ?? "unknown",
+              audioCodec: videoMeta.audioCodec ?? "unknown",
             };
           })
         );
@@ -150,16 +159,56 @@ export default function UploadForm() {
 
   async function onSubmit(values: UploadVideosFormData) {
     try {
-      await uploadVideos(values);
+      const processedVideos = await Promise.all(
+        values.videos.map(async (video) => {
+          const newVideoUri = `${VIDEOS_DIR}${video.title}.${video.fileExtension}`;
+          await FileSystem.copyAsync({ from: video.videoUri, to: newVideoUri });
+
+          const { uri: tempThumbUri } = await VideoThumbnails.getThumbnailAsync(newVideoUri, {
+            time: 3000,
+          });
+          await FileSystem.moveAsync({ from: tempThumbUri, to: video.thumbUri });
+
+          return {
+            ...video,
+            videoUri: newVideoUri,
+          };
+        })
+      );
+
+      await uploadVideos(processedVideos);
+
       const message = `Video${values.videos.length > 1 ? "s" : ""} added successfully.`;
       toast.success(message);
 
       form.reset();
-
     } catch (error) {
       console.error(error);
       toast.error("Error submitting form.");
+
+      handleReset();
     }
+  }
+
+  async function handleReset() {
+    const prevVideos = form.getValues("videos");
+
+    await Promise.all(
+      prevVideos.map(async ({ videoUri, thumbUri }) => {
+        try {
+          if (videoUri && (await FileSystem.getInfoAsync(videoUri)).exists) {
+            await FileSystem.deleteAsync(videoUri, { idempotent: true });
+          }
+          if (thumbUri && (await FileSystem.getInfoAsync(thumbUri)).exists) {
+            await FileSystem.deleteAsync(thumbUri, { idempotent: true });
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          form.reset();
+        }
+      })
+    );
   }
 
   function handleErrors(errors: FieldErrors<UploadVideosFormData>) {
@@ -172,7 +221,7 @@ export default function UploadForm() {
 
   useFocusEffect(
     useCallback(() => {
-      form.reset();
+      return () => handleReset();
     }, [])
   );
 
@@ -221,7 +270,7 @@ export default function UploadForm() {
             className="flex flex-1 flex-row items-center justify-center gap-4"
             variant="outline"
             size="lg"
-            onPress={() => form.reset()}>
+            onPress={handleReset}>
             <View className="flex-row items-center gap-4">
               <CircleXIcon
                 className="text-foreground"

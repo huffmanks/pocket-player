@@ -1,10 +1,20 @@
 import { Stack } from "expo-router";
 
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { NAV_THEME } from "@/lib/constants";
+
 import HeaderItems from "@/components/header-items";
 
 export default function ModalLayout() {
+  const { colorScheme } = useColorScheme();
+
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: NAV_THEME[colorScheme].background,
+        },
+      }}>
       <Stack.Screen
         name="playlists/watch/[id]"
         options={{

@@ -98,10 +98,11 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
       toast.success(`${values.title} updated successfully.`);
 
-      if (router.canDismiss()) {
-        router.dismissAll();
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.push("/");
       }
-      router.push("/");
     } catch (error) {
       console.error(error);
       toast.error(`Error updating ${values.title}!`);

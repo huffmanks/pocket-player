@@ -40,14 +40,11 @@ export default function PlaylistsScreen() {
   const { data: thumbUrisData, error: thumbUrisError } = thumbUrisQuery;
 
   const playlistsWithThumbUris = useMemo(() => {
-    if (!playlistsData || !thumbUrisData) return [];
-
     return playlistsData.map((playlist) => {
-      const thumbUris =
-        thumbUrisData
-          .filter((video) => video.playlistId === playlist.id)
-          .map((video) => video.thumbUri)
-          .slice(0, 3) || [];
+      const thumbUris = thumbUrisData
+        .filter((video) => video.playlistId === playlist.id)
+        .map((video) => video.thumbUri)
+        .slice(0, 3);
 
       return {
         ...playlist,

@@ -12,7 +12,7 @@ import { useShallow } from "zustand/react/shallow";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
-import { DARK_THEME, LIGHT_THEME, NAV_THEME } from "@/lib/constants";
+import { DARK_THEME, EXCLUDED_PATHS, LIGHT_THEME, NAV_THEME } from "@/lib/constants";
 import { migrateDatabase } from "@/lib/migrate-database";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
@@ -90,16 +90,14 @@ export default function RootLayout() {
   }, [colorScheme, theme]);
 
   useEffect(() => {
-    if (!isAppReady || isLocked) return;
+    if (!isAppReady) return;
 
     async function restorePreviousRoute() {
       try {
-        if (!previousPath) return;
+        if (isLocked) return;
 
-        const excludedPaths = ["/", "/(tabs)", "(tabs)", "/(modals)/passcode", "(modals)/passcode", "/passcode"];
-
-        if (!excludedPaths.includes(previousPath)) {
-          router.push(previousPath);
+        if (previousPath && !EXCLUDED_PATHS.includes(previousPath)) {
+          router.push(previousPath as any);
         }
       } catch (error) {
         console.error(error);

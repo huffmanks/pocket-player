@@ -65,10 +65,11 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
       toast.success(`${values.title} playlist created successfully.`);
 
-      if (router.canDismiss()) {
-        router.dismissAll();
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.push("/(tabs)/playlists");
       }
-      router.push("/(tabs)/playlists");
     } catch (error) {
       console.error(error);
       toast.error("Error creating playlist!");

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/bottom-sheet";
 import { Button, buttonTextVariants, buttonVariants } from "@/components/ui/button";
 
-const HEADER_HEIGHT = 130;
+const HEADER_HEIGHT = 100;
 
 interface ComboboxOption {
   label?: string;
@@ -92,7 +92,10 @@ const Combobox = React.forwardRef<
           <Button
             variant="ghost"
             size="unset"
-            className="android:flex-1 flex-row items-center justify-between gap-2 p-2"
+            className={cn(
+              "android:flex-1 flex-row items-center justify-between gap-2 p-2",
+              isSelected && "bg-accent"
+            )}
             onPress={() => onItemToggle(listItem)}>
             <View className="flex-1 flex-row">
               <Text className={"text-lg text-foreground"}>{listItem.label}</Text>
@@ -193,7 +196,8 @@ const Combobox = React.forwardRef<
           <BottomSheetFlatList
             data={listItems}
             contentContainerStyle={{
-              paddingBottom: insets.bottom + HEADER_HEIGHT,
+              paddingTop: HEADER_HEIGHT / 4 + insets.top,
+              paddingBottom: HEADER_HEIGHT / 2 + insets.bottom,
               gap: 6,
             }}
             renderItem={renderItem}

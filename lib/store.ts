@@ -53,7 +53,7 @@ export const useAppStore = create<AppStoreState>((set) => ({
 type VideoStoreState = {
   videos: VideoMeta[];
   uploadVideos: (
-    values: UploadVideosFormData
+    uploadedVideos: UploadVideosFormData["videos"]
   ) => Promise<{ status: "success" | "error"; message: string }>;
   updateVideo: ({
     id,
@@ -68,20 +68,13 @@ type VideoStoreState = {
 
 export const useVideoStore = create<VideoStoreState>((set) => ({
   videos: [],
-  uploadVideos: async (values) => {
+  uploadVideos: async (uploadedVideos) => {
     try {
       const db = useDatabaseStore.getState().db;
 
       await db.transaction(async (tx) => {
-        for (const video of values.videos) {
-          await tx.insert(videos).values({
-            title: video.title,
-            videoUri: video.videoUri,
-            thumbUri: video.thumbUri,
-            duration: video.duration,
-            fileSize: video.fileSize,
-            orientation: video.orientation,
-          });
+        for (const video of uploadedVideos) {
+          await tx.insert(videos).values(video);
         }
       });
 
@@ -487,3 +480,11 @@ export const useSecurityStore = create<SecurityStoreState>()(
     }
   )
 );
+
+export function resetPersistedStorage() {
+  settingsStorage.clearAll();
+  useSettingsStore.persist.clearStorage();
+
+  securityStorage.clearAll();
+  useSecurityStore.persist.clearStorage();
+}

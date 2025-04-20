@@ -102,7 +102,7 @@ export default function HomeScreen() {
   const saveScrollY = useRef(
     throttle((y: number) => {
       setScrollPosition(y);
-    }, 300)
+    }, 250)
   ).current;
 
   const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
@@ -137,7 +137,7 @@ export default function HomeScreen() {
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
-        scrollEventThrottle={150}
+        scrollEventThrottle={250}
         onScroll={(e) => saveScrollY(e.nativeEvent.contentOffset.y)}
         onLayout={() => {
           if (sortedData.length > 0) setCanScroll(true);

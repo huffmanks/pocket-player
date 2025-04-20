@@ -7,7 +7,5 @@ export async function setAndroidNavigationBar(theme: "light" | "dark") {
   if (Platform.OS !== "android") return;
 
   await setButtonStyleAsync(theme === "light" ? "dark" : "light");
-  await setBackgroundColorAsync(
-    theme === "light" ? NAV_THEME.light.background : NAV_THEME.dark.background
-  );
+  await setBackgroundColorAsync(NAV_THEME[theme].background);
 }

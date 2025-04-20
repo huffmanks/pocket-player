@@ -1,3 +1,4 @@
+import { cacheDirectory } from "expo-file-system";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -10,7 +11,7 @@ import { clearDirectory, resetTables } from "@/db/drop";
 import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
 import { GitMergeIcon, KeyRoundIcon, TrashIcon } from "@/lib/icons";
 import { migrateDatabase } from "@/lib/migrate-database";
-import { useSecurityStore } from "@/lib/store";
+import { resetPersistedStorage, useSecurityStore } from "@/lib/store";
 import { withDelay } from "@/lib/utils";
 
 import SettingSwitch from "@/components/setting-switch";
@@ -38,15 +39,17 @@ export default function SettingsModal() {
     }))
   );
 
-  async function dropDatabase() {
+  async function handleClearData() {
     try {
       await clearDirectory(VIDEOS_DIR);
+      await clearDirectory(cacheDirectory || "");
       await resetTables();
+      resetPersistedStorage();
 
       toast.error("Data has been deleted.");
     } catch (err) {
-      console.error("Database operation failed:", err);
-      toast.error("Database operation failed.");
+      console.error("Data deletion has failed:", err);
+      toast.error("Data deletion has failed.");
     }
   }
 
@@ -171,7 +174,7 @@ export default function SettingsModal() {
                   </AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-destructive"
-                    onPress={dropDatabase}>
+                    onPress={handleClearData}>
                     <Text className="text-white">Delete</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>

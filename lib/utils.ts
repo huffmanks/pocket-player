@@ -58,10 +58,6 @@ export const throttle = (func: (...args: any[]) => void, delay: number) => {
   };
 };
 
-export const debouncedSet = throttle((path: string, fn: (val: string) => void) => {
-  fn(path);
-}, 300);
-
 export function formatFileSize(bytes: number): string {
   const units = ["KB", "MB", "GB"];
   let size = bytes / 1024;
@@ -82,8 +78,23 @@ export function formatFileSize(bytes: number): string {
   return `${formattedSize}${units[unitIndex]}`;
 }
 
-export function getOrientation(width: number, height: number): "Landscape" | "Portrait" {
-  const orientation = width / height;
+export function getOrientation(orientation: string): "Landscape" | "Portrait" {
+  if (orientation.toLowerCase().includes("landscape")) {
+    return "Landscape";
+  } else {
+    return "Portrait";
+  }
+}
 
-  return orientation <= 16 / 9 && width > height ? "Landscape" : "Portrait";
+export function splitFilename(filename: string): [string, string] {
+  const lastDotIndex = filename.lastIndexOf(".");
+
+  if (lastDotIndex === -1) {
+    return [filename, "unknown"];
+  }
+
+  const name = filename.slice(0, lastDotIndex);
+  const extension = filename.slice(lastDotIndex + 1);
+
+  return [name, extension];
 }
