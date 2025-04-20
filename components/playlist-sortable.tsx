@@ -30,7 +30,6 @@ export type VideoMetaForPlaylist = {
 };
 
 export default function PlaylistSortable({ playlistId }: { playlistId: string }) {
-  const [keyIndex, setKeyIndex] = useState(0);
   const [data, setData] = useState<VideoMetaForPlaylist[] | null>(null);
 
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
@@ -59,15 +58,10 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
     [keyIndex]
   );
 
-  const onRefresh = useCallback(() => {
-    setKeyIndex((prev) => prev + 1);
-  }, []);
-
   const renderItem = useCallback(({ item }: ListRenderItemInfo<VideoMetaForPlaylist>) => {
     return (
       <PlaylistItem
         item={item}
-        onRefresh={onRefresh}
       />
     );
   }, []);
@@ -89,7 +83,6 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
 
   return (
     <ReorderableList
-      key={`playlist-reorderable_${playlistId}`}
       data={data}
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
