@@ -62,7 +62,6 @@ export default function PlaylistsScreen() {
           <View className="flex-row items-center">
             {item.thumbUris.map((thumbUri, index) => (
               <Image
-                key={index}
                 className={cn("rounded-full", index === 0 ? "" : "-ml-6")}
                 style={{ width: 45, height: 45 }}
                 source={{ uri: thumbUri }}
