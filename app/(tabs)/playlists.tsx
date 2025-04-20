@@ -1,14 +1,13 @@
 import { Link } from "expo-router";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { Image, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
-import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { PlaylistMeta, playlistVideos, playlists, videos } from "@/db/schema";
+import { PlaylistMeta, playlists } from "@/db/schema";
 import { ESTIMATED_PLAYLIST_HEIGHT } from "@/lib/constants";
 import { ListMusicIcon } from "@/lib/icons";
 import { useDatabaseStore } from "@/lib/store";
@@ -32,26 +31,29 @@ export default function PlaylistsScreen() {
   const { data: playlistsData, error: playlistsError } = playlistsQuery;
 
   const thumbUrisQuery = useLiveQuery(
-    db
-      .select({ thumbUri: videos.thumbUri, playlistId: playlistVideos.playlistId })
-      .from(videos)
-      .innerJoin(playlistVideos, eq(videos.id, playlistVideos.videoId))
+    db.query.playlistVideos.findMany({
+      columns: { playlistId: true },
+      with: {
+        video: {
+          columns: { thumbUri: true },
+        },
+      },
+    })
   );
+
   const { data: thumbUrisData, error: thumbUrisError } = thumbUrisQuery;
 
-  const playlistsWithThumbUris = useMemo(() => {
-    return playlistsData.map((playlist) => {
-      const thumbUris = thumbUrisData
-        .filter((video) => video.playlistId === playlist.id)
-        .map((video) => video.thumbUri)
-        .slice(0, 3);
+  const playlistsWithThumbUris = playlistsData.map((playlist) => {
+    const thumbUris = thumbUrisData
+      .filter((video) => video.playlistId === playlist.id)
+      .map((video) => video.video.thumbUri)
+      .slice(0, 3);
 
-      return {
-        ...playlist,
-        thumbUris,
-      };
-    });
-  }, [playlistsData, thumbUrisData]);
+    return {
+      ...playlist,
+      thumbUris,
+    };
+  });
 
   const renderItem = useCallback(
     ({ item }: { item: PlaylistMetaWithThumbUris }) => (
@@ -62,6 +64,7 @@ export default function PlaylistsScreen() {
           <View className="flex-row items-center">
             {item.thumbUris.map((thumbUri, index) => (
               <Image
+                key={thumbUri}
                 className={cn("rounded-full", index === 0 ? "" : "-ml-6")}
                 style={{ width: 45, height: 45 }}
                 source={{ uri: thumbUri }}

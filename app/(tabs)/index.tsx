@@ -54,15 +54,6 @@ export default function HomeScreen() {
     }))
   );
 
-  useEffect(() => {
-  if (flashListRef.current && scrollPosition > 0) {
-    const timeout = setTimeout(() => {
-      flashListRef.current?.scrollToOffset({ offset: scrollPosition, animated: false });
-    }, 100); // slight delay gives FlashList time to mount
-    return () => clearTimeout(timeout);
-  }
-}, [sortedData.length]);
-
   const filteredData = useMemo(() => {
     if (!data) return [];
     if (!searchQuery) return data;
@@ -90,6 +81,15 @@ export default function HomeScreen() {
     }
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
+
+  useEffect(() => {
+    if (flashListRef.current && scrollPosition > 0) {
+      const timeout = setTimeout(() => {
+        flashListRef.current?.scrollToOffset({ offset: scrollPosition, animated: false });
+      }, 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [sortedData.length]);
 
   function handleSortDate() {
     setSortKey("date");

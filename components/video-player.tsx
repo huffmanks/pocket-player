@@ -78,7 +78,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
         </View>
       ) : (
         <GestureDetector gesture={tapGesture}>
-          <View className="relative flex-1 bg-black">
+          <View className="flex-1 bg-black">
             <VideoView
               ref={videoRef}
               style={{ flex: 1 }}
@@ -90,7 +90,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
 
             <Animated.View
               className={cn(
-                "absolute top-0 bottom-0 left-0 right-0",
+                "absolute bottom-0 left-0 right-0 top-0",
                 isDarkColorScheme ? "bg-black/70" : "bg-black/50"
               )}
               style={animatedStyle}>

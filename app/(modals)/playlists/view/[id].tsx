@@ -35,6 +35,7 @@ export default function ViewPlaylistScreen() {
           </Button>
         </Link>
       </View>
+
       <PlaylistSortable playlistId={id} />
     </View>
   );

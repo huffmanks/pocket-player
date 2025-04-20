@@ -1,6 +1,6 @@
 import { documentDirectory } from "expo-file-system";
 
-import { type Theme } from "@react-navigation/native";
+import { DefaultTheme, type Theme } from "@react-navigation/native";
 
 import { SettingId } from "@/components/setting-switch";
 
@@ -47,12 +47,14 @@ const fonts = {
 };
 
 export const LIGHT_THEME: Theme = {
+  ...DefaultTheme,
   dark: false,
   colors: NAV_THEME.light,
   fonts,
 };
 
 export const DARK_THEME: Theme = {
+  ...DefaultTheme,
   dark: true,
   colors: NAV_THEME.dark,
   fonts,

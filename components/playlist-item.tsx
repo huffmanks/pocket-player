@@ -1,7 +1,7 @@
 import { memo } from "react";
-import { Image, Pressable, Text } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
-import { ReorderableListItem, useReorderableDrag } from "react-native-reorderable-list";
+import { useReorderableDrag } from "react-native-reorderable-list";
 
 import type { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 import PlaylistVideoDropdown from "@/components/playlist-video-dropdown";
@@ -14,7 +14,7 @@ function PlaylistItem({ item }: PlaylistItemProps) {
   const drag = useReorderableDrag();
 
   return (
-    <ReorderableListItem className="mb-4 flex-row items-center justify-between gap-4 rounded-md bg-secondary pr-2">
+    <View className="mb-4 flex-row items-center justify-between gap-4 rounded-md bg-secondary pr-2">
       <Pressable
         className="flex flex-1 flex-row items-center gap-4"
         onLongPress={drag}>
@@ -29,10 +29,8 @@ function PlaylistItem({ item }: PlaylistItemProps) {
           {item.title}
         </Text>
       </Pressable>
-      <PlaylistVideoDropdown
-        item={item}
-      />
-    </ReorderableListItem>
+      <PlaylistVideoDropdown item={item} />
+    </View>
   );
 }
 

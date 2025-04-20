@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ListRenderItemInfo, View } from "react-native";
 
 import { eq } from "drizzle-orm";
@@ -54,17 +54,12 @@ export default function PlaylistSortable({ playlistId }: { playlistId: string })
       .from(videos)
       .innerJoin(playlistVideos, eq(playlistVideos.videoId, videos.id))
       .where(eq(playlistVideos.playlistId, playlistId))
-      .orderBy(playlistVideos.order),
-    [keyIndex]
+      .orderBy(playlistVideos.order)
   );
 
-  const renderItem = useCallback(({ item }: ListRenderItemInfo<VideoMetaForPlaylist>) => {
-    return (
-      <PlaylistItem
-        item={item}
-      />
-    );
-  }, []);
+  const renderItem = ({ item }: ListRenderItemInfo<VideoMetaForPlaylist>) => (
+    <PlaylistItem item={item} />
+  );
 
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
     if (!data) return;
