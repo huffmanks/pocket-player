@@ -11,7 +11,6 @@ import { LOCK_INTERVAL_DEFAULT } from "@/lib/constants";
 import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
 import { EditPlaylistFormData } from "@/components/forms/edit-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
-import { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 
 const settingsStorage = new MMKV({ id: "settings" });
 const securityStorage = new MMKV({ id: "security", encryptionKey: "your-encryption-key" });
@@ -171,7 +170,7 @@ type PlaylistStoreState = {
     videosOrder,
   }: {
     playlistId: string;
-    videosOrder: VideoMetaForPlaylist[];
+    videosOrder: VideoMeta[];
   }) => Promise<{ status: "success" | "error"; message: string }>;
 };
 

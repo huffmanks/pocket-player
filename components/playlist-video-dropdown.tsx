@@ -4,11 +4,11 @@ import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
+import { VideoMeta } from "@/db/schema";
 import { EllipsisVerticalIcon, ListMusicIcon, PencilIcon, StarIcon } from "@/lib/icons";
 import { usePlaylistStore, useVideoStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-import type { VideoMetaForPlaylist } from "@/components/playlist-sortable";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,10 +21,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface VideoDropdownProps {
-  item: VideoMetaForPlaylist;
+  item: VideoMeta;
+  playlistId: string;
 }
 
-export default function PlaylistVideoDropdown({ item }: VideoDropdownProps) {
+export default function PlaylistVideoDropdown({ item, playlistId }: VideoDropdownProps) {
   const insets = useSafeAreaInsets();
   const toggleFavorite = useVideoStore((state) => state.toggleFavorite);
   const removeVideoFromPlaylist = usePlaylistStore((state) => state.removeVideoFromPlaylist);
@@ -47,8 +48,8 @@ export default function PlaylistVideoDropdown({ item }: VideoDropdownProps) {
   }
 
   async function handleRemoveFromPlaylist() {
-    const { message, status } = await removeVideoFromPlaylist({
-      playlistId: item.playlistId,
+    const { message } = await removeVideoFromPlaylist({
+      playlistId,
       videoId: item.id,
     });
 

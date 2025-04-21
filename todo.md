@@ -6,14 +6,12 @@
    - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
    - Toggling mute doesn't work if mute is true in global settings.
 2. [Playlists view screen](<app/(modals)/playlists/view/[id].tsx>):
-   - Show playlist title and description on screen.
+   - Add delete playlist button.
    - Make videos grid 2x2 on screen.
 3. [Video screen](<app/(tabs)/index.tsx>):
    - Remove from playlist is always showing even if not in playlist.
    - If video item is towards the bottom the dropdown may be cutoff some.
-   - screenPosition doesnt appear to be working.
 4. [Playlists screen](<app/(tabs)/playlists.tsx>):
-   - When playlist is first created thumbs do not show up.
    - Make this screen use accordions with list view. Add action buttons to:
      - watch
      - view

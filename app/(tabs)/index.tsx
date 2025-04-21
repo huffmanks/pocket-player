@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { View } from "react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { InteractionManager, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -25,6 +25,7 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
+  const hasRestoredScroll = useRef(false);
   const insets = useSafeAreaInsets();
 
   const db = useDatabaseStore.getState().db;
@@ -82,14 +83,17 @@ export default function HomeScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
-  useEffect(() => {
-    if (flashListRef.current && scrollPosition > 0) {
-      const timeout = setTimeout(() => {
-        flashListRef.current?.scrollToOffset({ offset: scrollPosition, animated: false });
-      }, 100);
-      return () => clearTimeout(timeout);
-    }
-  }, [sortedData.length]);
+  function handleContentSizeChange() {
+    if (!flashListRef.current || scrollPosition <= 0 || hasRestoredScroll.current) return;
+
+    InteractionManager.runAfterInteractions(() => {
+      flashListRef.current?.scrollToOffset({
+        offset: scrollPosition,
+        animated: false,
+      });
+      hasRestoredScroll.current = true;
+    });
+  }
 
   function handleSortDate() {
     setSortKey("date");
@@ -141,6 +145,7 @@ export default function HomeScreen() {
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
         scrollEventThrottle={250}
         onScroll={(e) => saveScrollY(e.nativeEvent.contentOffset.y)}
+        onContentSizeChange={handleContentSizeChange}
         ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
       />
     </View>
