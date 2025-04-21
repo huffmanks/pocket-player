@@ -4,6 +4,7 @@ import { View } from "react-native";
 
 import { eq } from "drizzle-orm";
 import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { VideoMeta, videos } from "@/db/schema";
@@ -14,6 +15,7 @@ import EditVideoForm from "@/components/forms/edit-video";
 export default function EditModal() {
   const [videoInfo, setVideoInfo] = useState<VideoMeta | null>(null);
 
+  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
   const db = useDatabaseStore.getState().db;
 
@@ -34,6 +36,7 @@ export default function EditModal() {
 
   return (
     <ScrollView
+      contentInset={insets}
       contentContainerClassName="pb-20"
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>

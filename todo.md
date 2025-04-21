@@ -6,8 +6,12 @@
    - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
    - Toggling mute doesn't work if mute is true in global settings.
 2. [Playlists view screen](<app/(modals)/playlists/view/[id].tsx>):
-   - Add delete playlist button.
-   - Make videos grid 2x2 on screen.
+   - Add edit and delete playlist button.
+   - Redesign
+     - Add order number
+     - Add video duration to end.
+     - Alternate backgroundColor.
+     - No dropdown just a XIcon to remove.
 3. [Video screen](<app/(tabs)/index.tsx>):
    - Remove from playlist is always showing even if not in playlist.
    - If video item is towards the bottom the dropdown may be cutoff some.
@@ -15,7 +19,6 @@
    - Make this screen use accordions with list view. Add action buttons to:
      - watch
      - view
-     - edit
      - delete
 5. [Settings screen](<app/(tabs)/settings.tsx>):
    - Add icons with each section.

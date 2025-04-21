@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { InteractionManager, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { InteractionManager, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -12,7 +12,7 @@ import { useShallow } from "zustand/react/shallow";
 import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
-import { useDatabaseStore, useSettingsStore } from "@/lib/store";
+import { useAppStore, useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { throttle } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
@@ -25,9 +25,12 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
+  const canSaveScroll = useRef(false);
   const hasRestoredScroll = useRef(false);
   const insets = useSafeAreaInsets();
 
+  const isAppReady = useAppStore((state) => state.isAppReady);
+  const isLocked = useSecurityStore((state) => state.isLocked);
   const db = useDatabaseStore.getState().db;
 
   const videoQuery = useLiveQuery(db.select().from(videos).orderBy(videos.updatedAt));
@@ -83,6 +86,11 @@ export default function HomeScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
+  function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
+    if (!canSaveScroll.current) return;
+    saveScrollY(e.nativeEvent.contentOffset.y);
+  }
+
   function handleContentSizeChange() {
     if (!flashListRef.current || scrollPosition <= 0 || hasRestoredScroll.current) return;
 
@@ -119,6 +127,14 @@ export default function HomeScreen() {
     );
   }, []);
 
+  useEffect(() => {
+    if (isAppReady && !isLocked) {
+      canSaveScroll.current = true;
+    } else {
+      canSaveScroll.current = false;
+    }
+  }, [isAppReady, isLocked]);
+
   if (error) {
     console.error("Error loading data.");
     toast.error("Error loading data.");
@@ -144,7 +160,7 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
         scrollEventThrottle={250}
-        onScroll={(e) => saveScrollY(e.nativeEvent.contentOffset.y)}
+        onScroll={handleScroll}
         onContentSizeChange={handleContentSizeChange}
         ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
       />

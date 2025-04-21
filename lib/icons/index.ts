@@ -48,6 +48,7 @@ import {
   TrashIcon,
   TvIcon,
   VideoIcon,
+  ViewIcon,
   Volume2Icon,
   VolumeXIcon,
   XIcon,
@@ -201,6 +202,9 @@ export { TvIcon };
 
 iconWithClassName(VideoIcon);
 export { VideoIcon };
+
+iconWithClassName(ViewIcon);
+export { ViewIcon };
 
 iconWithClassName(Volume2Icon);
 export { Volume2Icon };

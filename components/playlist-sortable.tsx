@@ -12,10 +12,10 @@ import { usePlaylistStore } from "@/lib/store";
 
 import PlaylistItem from "@/components/playlist-item";
 
-type PlaylistSortableProps = {
+interface PlaylistSortableProps {
   playlistId: string;
   videosData: VideoMeta[];
-};
+}
 
 export default function PlaylistSortable({ playlistId, videosData }: PlaylistSortableProps) {
   const [data, setData] = useState(videosData);

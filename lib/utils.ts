@@ -39,10 +39,10 @@ export function secondsToMMSS(seconds: number): string {
   return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
 }
 
-export function withDelay<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return new Promise((resolve) => {
+export function withDelay<T>(fn: () => Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      promise.then(resolve);
+      fn().then(resolve).catch(reject);
     }, ms);
   });
 }

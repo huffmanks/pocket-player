@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { View } from "react-native";
 
 import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
@@ -31,6 +32,8 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
 export default function SettingsModal() {
+  const insets = useSafeAreaInsets();
+
   const { passcode, enablePasscode, setEnablePasscode } = useSecurityStore(
     useShallow((state) => ({
       passcode: state.passcode,
@@ -54,7 +57,7 @@ export default function SettingsModal() {
   }
 
   function handleMigrateDatabase() {
-    const promise = withDelay(migrateDatabase(), 2000);
+    const promise = withDelay(() => migrateDatabase(), 2000);
 
     toast.promise(promise, {
       loading: "Database migrating...",
@@ -77,6 +80,7 @@ export default function SettingsModal() {
 
   return (
     <ScrollView
+      contentInset={insets}
       contentContainerClassName="pb-20"
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>

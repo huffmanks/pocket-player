@@ -50,7 +50,6 @@ export const useAppStore = create<AppStoreState>((set) => ({
 }));
 
 type VideoStoreState = {
-  videos: VideoMeta[];
   uploadVideos: (
     uploadedVideos: UploadVideosFormData["videos"]
   ) => Promise<{ status: "success" | "error"; message: string }>;
@@ -66,7 +65,6 @@ type VideoStoreState = {
 };
 
 export const useVideoStore = create<VideoStoreState>((set) => ({
-  videos: [],
   uploadVideos: async (uploadedVideos) => {
     try {
       const db = useDatabaseStore.getState().db;
@@ -77,11 +75,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
         }
       });
 
-      const newVideos = await db.select().from(videos);
-
-      set(() => ({
-        videos: newVideos,
-      }));
+      await db.select().from(videos);
 
       return { status: "success", message: "Videos successfully uploaded." };
     } catch (error) {
@@ -97,9 +91,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
         .set(values)
         .where(eq(videos.id, id))
         .returning();
-      set((state) => ({
-        videos: state.videos.map((v) => (updatedVideo.id === id ? { ...v, ...updatedVideo } : v)),
-      }));
+
       return { status: "success", message: `Video ${updatedVideo.title} successfully updated.` };
     } catch (error) {
       console.error("Error updating video: ", error);
@@ -110,7 +102,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
     try {
       const db = useDatabaseStore.getState().db;
       const [deletedVideo] = await db.delete(videos).where(eq(videos.id, id)).returning();
-      set((state) => ({ videos: state.videos.filter((v) => deletedVideo.id !== id) }));
+
       return { status: "success", message: `Video ${deletedVideo.title} successfully deleted.` };
     } catch (error) {
       console.error("Error deleting video: ", error);
@@ -123,11 +115,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
       const updatedFavoriteStatus = !video.isFavorite;
       await db.update(videos).set({ isFavorite: updatedFavoriteStatus }).where(eq(videos.id, id));
-      set((state) => ({
-        videos: state.videos.map((v) =>
-          video.id === id ? { ...v, isFavorite: updatedFavoriteStatus } : v
-        ),
-      }));
+
       return { status: "success", message: `Video ${video.title}'s favorite status toggled.` };
     } catch (error) {
       console.error("Error toggling favorite: ", error);
