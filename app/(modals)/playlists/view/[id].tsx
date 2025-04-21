@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { View } from "react-native";
 
 import { eq } from "drizzle-orm";
@@ -7,10 +7,21 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { playlistVideos, playlists } from "@/db/schema";
-import { TvIcon } from "@/lib/icons";
-import { useDatabaseStore } from "@/lib/store";
+import { PencilIcon, TrashIcon, TvIcon } from "@/lib/icons";
+import { useDatabaseStore, usePlaylistStore } from "@/lib/store";
 
 import PlaylistSortable from "@/components/playlist-sortable";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
@@ -18,7 +29,10 @@ import { H2 } from "@/components/ui/typography";
 export default function ViewPlaylistScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+
   const db = useDatabaseStore.getState().db;
+  const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
 
   const playlistQuery = useLiveQuery(
     db.select().from(playlists).where(eq(playlists.id, id)).orderBy(playlists.title)
@@ -36,6 +50,17 @@ export default function ViewPlaylistScreen() {
 
   const videosData = videosQuery.data.sort((a, b) => a.order - b.order).map(({ video }) => video);
 
+  async function handleDelete() {
+    const { message, status } = await deletePlaylist(id);
+
+    if (status === "success") {
+      toast.error(message);
+      router.push("/playlists");
+    } else {
+      toast.error(message);
+    }
+  }
+
   if (playlistQuery.error || videosQuery.error) {
     console.error("Error loading data.");
     toast.error("Error loading data.");
@@ -45,7 +70,7 @@ export default function ViewPlaylistScreen() {
 
   return (
     <View
-      style={{ paddingTop: 16, paddingBottom: insets.bottom + 84 }}
+      style={{ paddingTop: 16, paddingBottom: insets.bottom + 40 }}
       className="relative min-h-full px-5">
       <View className="mb-10">
         <Link
@@ -77,6 +102,61 @@ export default function ViewPlaylistScreen() {
         playlistId={id}
         videosData={videosData}
       />
+
+      <View className="flex-row items-center justify-center gap-4">
+        <View className="flex-1">
+          <Button
+            variant="secondary"
+            size="lg"
+            className="flex w-full flex-row items-center justify-center gap-4"
+            onPress={() => router.push(`/(modals)/playlists/edit/${id}`)}>
+            <PencilIcon
+              className="text-foreground"
+              size={24}
+              strokeWidth={1.5}
+            />
+            <Text className="native:text-base font-semibold uppercase tracking-wider">Edit</Text>
+          </Button>
+        </View>
+        <View className="flex-1">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex w-full flex-row items-center justify-center gap-4 bg-destructive/70">
+                <TrashIcon
+                  className="text-destructive-foreground"
+                  size={24}
+                  strokeWidth={1.5}
+                />
+                <Text className="native:text-base font-semibold uppercase tracking-wider text-destructive-foreground">
+                  Delete
+                </Text>
+              </Button>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the playlist.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>
+                  <Text className="text-foreground">Cancel</Text>
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive"
+                  onPress={handleDelete}>
+                  <Text className="text-white">Delete</Text>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </View>
+      </View>
     </View>
   );
 }

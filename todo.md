@@ -5,29 +5,28 @@
 1. [Video player](components/video-player.tsx): play/pause/replay toggle button
    - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
    - Toggling mute doesn't work if mute is true in global settings.
-2. [Playlists view screen](<app/(modals)/playlists/view/[id].tsx>):
-   - Add edit and delete playlist button.
-   - Redesign
-     - Add order number
-     - Add video duration to end.
-     - Alternate backgroundColor.
-     - No dropdown just a XIcon to remove.
-3. [Video screen](<app/(tabs)/index.tsx>):
+2. [Video screen](<app/(tabs)/index.tsx>):
    - Remove from playlist is always showing even if not in playlist.
    - If video item is towards the bottom the dropdown may be cutoff some.
-4. [Playlists screen](<app/(tabs)/playlists.tsx>):
-   - Make this screen use accordions with list view. Add action buttons to:
-     - watch
-     - view
-     - delete
-5. [Settings screen](<app/(tabs)/settings.tsx>):
+3. [Settings screen](<app/(tabs)/settings.tsx>):
    - Add icons with each section.
    - Add theme section. light, dark, system.
    - Video player settings: add override orientation and default to that on player component if true.
    - Delete all videos and images that are not associated with a row in the database. Or find a way to do this on app start.
      - [list-all-files.ts](lib/list-all-files.ts)
+4. [Edit playlist form](components/forms/edit-playlist.tsx):
+   - Add delete playlist option.
+   - Combobox if titles are too long the chevronsupdownicon is pushed out. maybe make the input resize/grow.
+   - If keyboard and bottommodal are open the save playlist button gets shifted up.
+5. [playlist-sortable](components/playlist-sortable.tsx):
+   - Verify there are no scroll or overflow issues when playlist is long.
 6. Database and file creation:
    - Use toast.promise to verify success or error.
+7. Cleanup:
+   - Remove console logs and errors
+   - Update version
+   - Update readme.md
+   - Add app screenshots to repo
 
 ## Features
 
@@ -42,6 +41,4 @@
    - [key = `videoProgress:${videoId}`](lib/store.ts#L381)
    - value = `10` (player.currentTime | number | seconds)
 4. [Edit video form](components/forms/edit-video.tsx):
-   - Add/remove playlist option.
    - Delete video option with alert dialog to confirm.
-   - Replace video option.

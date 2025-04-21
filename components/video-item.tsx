@@ -24,7 +24,7 @@ function VideoItem({ item }: VideoItemProps) {
       exiting={FadeOut}>
       <Pressable onPress={() => router.push(`/(modals)/videos/watch/${item.id}`)}>
         <Image
-          className="rounded-md bg-muted"
+          className="rounded-md bg-card"
           style={{ width: 225, height: 125 }}
           source={{ uri: item.thumbUri }}
           resizeMode={item.orientation === "Portrait" ? "contain" : "cover"}
@@ -40,7 +40,7 @@ function VideoItem({ item }: VideoItemProps) {
           <Text className="mb-4 text-sm text-muted-foreground">{createdAt}</Text>
           <View className="flex-row items-center gap-4">
             <Badge variant="secondary">
-              <Text>{item.duration}</Text>
+              <Text>{item.durationFormatted}</Text>
             </Badge>
             <Badge variant="secondary">
               <Text>{item.fileSize}</Text>

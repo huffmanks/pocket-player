@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { ScrollView } from "react-native-gesture-handler";
@@ -7,23 +7,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { playlists } from "@/db/schema";
-import { ListMusicIcon, TrashIcon, TvIcon, ViewIcon } from "@/lib/icons";
-import { useDatabaseStore, usePlaylistStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { ListMusicIcon } from "@/lib/icons";
+import { useDatabaseStore } from "@/lib/store";
+import { formatDuration } from "@/lib/utils";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import PlaylistCollage from "@/components/playlist-collage";
+import PlaylistDropdown from "@/components/playlist-dropdown";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 
 export default function PlaylistsScreen() {
   const insets = useSafeAreaInsets();
-  const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
   const db = useDatabaseStore.getState().db;
 
   const playlistsQuery = useLiveQuery(db.select().from(playlists).orderBy(playlists.title));
@@ -34,7 +29,7 @@ export default function PlaylistsScreen() {
       columns: { playlistId: true },
       with: {
         video: {
-          columns: { thumbUri: true },
+          columns: { thumbUri: true, duration: true },
         },
       },
     })
@@ -42,33 +37,33 @@ export default function PlaylistsScreen() {
 
   const { data: thumbUrisData, error: thumbUrisError } = thumbUrisQuery;
 
-  const playlistsWithThumbUris = playlistsData.map((playlist) => {
-    const thumbUris = thumbUrisData
-      .filter((video) => video.playlistId === playlist.id)
-      .map((video) => video.video.thumbUri)
-      .slice(0, 5);
+  const playlistsWithThumbUris = (playlistsData ?? []).map((playlist) => {
+    if (!thumbUrisData.length) {
+      return {
+        ...playlist,
+        playlistCount: null,
+        playlistDuration: null,
+        thumbUris: null,
+      };
+    }
+
+    const relatedThumbs = thumbUrisData.filter((item) => item.playlistId === playlist.id);
+
+    const playlistDuration = relatedThumbs?.reduce((total, item) => total + item.video.duration, 0);
 
     return {
       ...playlist,
-      thumbUris,
+      playlistCount: relatedThumbs.length,
+      playlistDuration: formatDuration(playlistDuration),
+      thumbUris: relatedThumbs.map((item) => item.video.thumbUri).slice(0, 6),
     };
   });
-
-  async function handleDelete(id: string) {
-    try {
-      const { message } = await deletePlaylist(id);
-      toast.error(message);
-    } catch (error) {
-      console.error("Deleting playlist failed: ", error);
-      toast.error("Deleting playlist failed.");
-    }
-  }
 
   if (playlistsError || thumbUrisError) {
     console.error("Error loading data.");
     toast.error("Error loading data.");
   }
-  const playlistsExist = Array.isArray(playlistsData) && playlistsData.length > 0;
+  const playlistsExist = playlistsData?.length > 0;
 
   return (
     <ScrollView
@@ -80,74 +75,43 @@ export default function PlaylistsScreen() {
         {playlistsExist ? (
           <>
             <ListHeaderComponent />
-            {playlistsWithThumbUris.map((playlist) => (
-              <Accordion
-                key={playlist.id}
-                type="single"
-                collapsible
-                className="native:max-w-md w-full max-w-sm">
-                <AccordionItem value="item-1">
-                  <AccordionTrigger>
-                    <Text>{playlist.title}</Text>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <Text className="mb-8 text-muted-foreground">
-                      {playlist?.description ? playlist.description : "No description."}
-                    </Text>
+            <View className="flex-row flex-wrap items-center justify-between gap-8">
+              {playlistsWithThumbUris.map((playlist) => (
+                <View
+                  key={playlist.id}
+                  className="gap-2">
+                  <Link href={`/(modals)/playlists/view/${playlist.id}`}>
+                    <PlaylistCollage images={playlist.thumbUris} />
+                  </Link>
 
-                    <View className="mb-10 flex-row items-center">
-                      {playlist.thumbUris.map((thumbUri, index) => (
-                        <Image
-                          key={thumbUri + index}
-                          className={cn("rounded-full", index === 0 ? "" : "-ml-9")}
-                          style={{ width: 100, height: 100 }}
-                          source={{ uri: thumbUri }}
-                        />
-                      ))}
+                  <View className="flex-row items-center justify-between gap-2">
+                    <View className="flex-1 pl-2">
+                      <Text
+                        numberOfLines={1}
+                        className="text-lg font-semibold">
+                        {playlist.title}
+                      </Text>
+
+                      {!!playlist?.playlistCount && !!playlist?.playlistDuration && (
+                        <View className="flex-row items-center gap-2">
+                          <Text className="text-sm text-muted-foreground">
+                            {`${playlist.playlistCount} video${playlist.playlistCount > 1 ? "s" : ""}`}
+                          </Text>
+                          <Text className="text-sm text-muted-foreground">·</Text>
+                          <Text className="text-sm text-muted-foreground">
+                            {playlist.playlistDuration}
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                    <View className="mb-4 flex-row items-center justify-between gap-2">
-                      <Link
-                        href={`/(modals)/playlists/watch/${playlist.id}`}
-                        asChild>
-                        <Button className="flex flex-1 flex-row items-center justify-center gap-2">
-                          <TvIcon
-                            className="text-background"
-                            size={20}
-                            strokeWidth={1.25}
-                          />
-                          <Text>Watch</Text>
-                        </Button>
-                      </Link>
-                      <Link
-                        href={`/(modals)/playlists/view/${playlist.id}`}
-                        asChild>
-                        <Button
-                          variant="secondary"
-                          className="flex flex-1 flex-row items-center justify-center gap-2">
-                          <ViewIcon
-                            className="text-foreground"
-                            size={20}
-                            strokeWidth={1.25}
-                          />
-                          <Text>View</Text>
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="destructive"
-                        className="flex flex-1 flex-row items-center justify-center gap-2"
-                        onPress={() => handleDelete(playlist.id)}>
-                        <TrashIcon
-                          className="text-white"
-                          size={20}
-                          strokeWidth={1.25}
-                        />
-                        <Text className="text-white">Delete</Text>
-                      </Button>
+
+                    <View>
+                      <PlaylistDropdown item={playlist} />
                     </View>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            ))}
+                  </View>
+                </View>
+              ))}
+            </View>
           </>
         ) : (
           <ListEmptyComponent />

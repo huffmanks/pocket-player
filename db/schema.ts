@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import { index, integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 
@@ -17,8 +17,9 @@ export const videos = sqliteTable(
     thumbTimestamp: integer("thumbTimestamp", { mode: "number" }).default(3000).notNull(),
     isFavorite: integer("isFavorite", { mode: "boolean" }).default(false).notNull(),
     fileExtension: text("fileExtension").notNull(),
-    duration: text("duration").notNull(),
     fileSize: text("fileSize").notNull(),
+    duration: real("duration").notNull(),
+    durationFormatted: text("duration_formatted").notNull(),
     orientation: text("orientation").notNull(),
     orientationFull: text("orientation_full").notNull(),
     width: integer("width", { mode: "number" }).notNull(),

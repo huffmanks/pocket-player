@@ -98,3 +98,28 @@ export function splitFilename(filename: string): [string, string] {
 
   return [name, extension];
 }
+
+export function imagesToRows(images: string[]): string[][] {
+  const layoutMap: Record<number, number[]> = {
+    1: [1],
+    2: [1, 1],
+    3: [1, 2],
+    4: [2, 2],
+    5: [3, 2],
+    6: [3, 3],
+  };
+
+  const layout = layoutMap[images.length];
+  const rows: string[][] = [];
+
+  let index = 0;
+  for (const count of layout) {
+    const row: string[] = [];
+    for (let i = 0; i < count; i++) {
+      row.push(images[index++]);
+    }
+    rows.push(row);
+  }
+
+  return rows;
+}

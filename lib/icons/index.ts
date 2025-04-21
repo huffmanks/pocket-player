@@ -18,13 +18,14 @@ import {
   EyeIcon,
   EyeOffIcon,
   FastForwardIcon,
-  FileVideoIcon,
   GitMergeIcon,
+  GripVerticalIcon,
   ImageDownIcon,
   ImageIcon,
   ImportIcon,
   KeyRoundIcon,
   ListMusicIcon,
+  ListVideoIcon,
   LockIcon,
   LockOpenIcon,
   MaximizeIcon,
@@ -113,11 +114,11 @@ export { EyeOffIcon };
 iconWithClassName(FastForwardIcon);
 export { FastForwardIcon };
 
-iconWithClassName(FileVideoIcon);
-export { FileVideoIcon };
-
 iconWithClassName(GitMergeIcon);
 export { GitMergeIcon };
+
+iconWithClassName(GripVerticalIcon);
+export { GripVerticalIcon };
 
 iconWithClassName(ImageIcon);
 export { ImageIcon };
@@ -133,6 +134,9 @@ export { KeyRoundIcon };
 
 iconWithClassName(ListMusicIcon);
 export { ListMusicIcon };
+
+iconWithClassName(ListVideoIcon);
+export { ListVideoIcon };
 
 iconWithClassName(LockIcon);
 export { LockIcon };

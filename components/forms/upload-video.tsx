@@ -30,8 +30,9 @@ const formSchema = z.object({
         videoUri: z.string().min(1),
         thumbUri: z.string().min(1),
         fileExtension: z.string().min(1),
-        duration: z.string().min(1),
         fileSize: z.string().min(1),
+        duration: z.number().min(1),
+        durationFormatted: z.string().min(1),
         orientation: z.string().min(1),
         orientationFull: z.string().min(1),
         width: z.number().min(1),
@@ -66,8 +67,9 @@ export default function UploadForm() {
           videoUri: "",
           thumbUri: "",
           fileExtension: "",
-          duration: "",
           fileSize: "",
+          duration: undefined,
+          durationFormatted: "",
           orientation: "",
           orientationFull: "",
           width: undefined,
@@ -88,7 +90,8 @@ export default function UploadForm() {
         videoUri: string;
         thumbUri: string;
         fileExtension: string;
-        duration: string;
+        duration: number;
+        durationFormatted: string;
         fileSize: string;
         orientation: string;
         orientationFull: string;
@@ -122,7 +125,7 @@ export default function UploadForm() {
             const thumbUri = `${VIDEOS_DIR}${title}.jpg`;
 
             const videoMeta = await getVideoInfoAsync(uri);
-            const duration = formatDuration(videoMeta.duration);
+            const durationFormatted = formatDuration(videoMeta.duration);
             const fileSize = formatFileSize(videoMeta.fileSize);
             const orientation = getOrientation(videoMeta.orientation);
 
@@ -131,7 +134,8 @@ export default function UploadForm() {
               videoUri: uri,
               thumbUri,
               fileExtension,
-              duration,
+              duration: videoMeta.duration,
+              durationFormatted,
               fileSize,
               orientation,
               orientationFull: videoMeta.orientation ?? "unknown",

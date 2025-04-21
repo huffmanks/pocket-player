@@ -77,7 +77,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
   return (
     <GestureDetector gesture={tapGesture}>
       <View>
-        <View className="mb-3 h-[215px] w-full overflow-hidden rounded-md bg-muted">
+        <View className="mb-3 h-[215px] w-full overflow-hidden rounded-md bg-card">
           <VideoView
             ref={videoRef}
             style={{ width: "100%", height: 215 }}

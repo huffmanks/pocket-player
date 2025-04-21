@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { Text } from "react-native";
 
 import { count, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -45,6 +44,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Text } from "@/components/ui/text";
 
 interface VideoDropdownProps {
   item: VideoMeta;

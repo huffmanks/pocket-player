@@ -66,11 +66,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
       await updatePlaylist({ id: editPlaylistInfo.id, values: parsedValues });
       toast.success(`${values.title} playlist updated successfully.`);
 
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.push("/(tabs)/playlists");
-      }
+      router.push("/(tabs)/playlists");
     } catch (error) {
       console.error(error);
       toast.error("Error updating playlist!");
