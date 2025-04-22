@@ -12,18 +12,14 @@
    - Add icons with each section.
    - Add theme section. light, dark, system.
    - Video player settings: add override orientation and default to that on player component if true.
-   - Delete all videos and images that are not associated with a row in the database. Or find a way to do this on app start.
-     - [list-all-files.ts](lib/list-all-files.ts)
+   - Delete all videos and images that are not associated with a row in the database. Or find a way to do this on app start. - [list-all-files.ts](lib/list-all-files.ts)
 4. [Edit playlist form](components/forms/edit-playlist.tsx):
-   - Add delete playlist option.
    - Combobox if titles are too long the chevronsupdownicon is pushed out. maybe make the input resize/grow.
-   - If keyboard and bottommodal are open the save playlist button gets shifted up.
 5. [playlist-sortable](components/playlist-sortable.tsx):
    - Verify there are no scroll or overflow issues when playlist is long.
 6. Database and file creation:
    - Use toast.promise to verify success or error.
 7. Cleanup:
-   - Remove console logs and errors
    - Update version
    - Update readme.md
    - Add app screenshots to repo
@@ -40,5 +36,3 @@
    - Use zustand and mmkv.
    - [key = `videoProgress:${videoId}`](lib/store.ts#L381)
    - value = `10` (player.currentTime | number | seconds)
-4. [Edit video form](components/forms/edit-video.tsx):
-   - Delete video option with alert dialog to confirm.

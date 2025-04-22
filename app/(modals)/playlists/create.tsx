@@ -30,8 +30,7 @@ export default function CreatePlaylistScreen() {
       setVideoData(data);
     };
 
-    fetchVideos().catch((error) => {
-      console.error("Failed to find videos: ", error);
+    fetchVideos().catch((_err) => {
       toast.error("Failed to find videos.");
     });
   }, []);
@@ -61,7 +60,7 @@ export default function CreatePlaylistScreen() {
     );
 
   return (
-    <View className="mx-auto mb-8 w-full max-w-md flex-1 px-4 py-8">
+    <View className="mx-auto mb-8 w-full max-w-md px-4 py-8">
       <CreatePlaylistForm videoData={videoData} />
     </View>
   );

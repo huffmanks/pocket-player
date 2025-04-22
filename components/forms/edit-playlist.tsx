@@ -7,11 +7,23 @@ import { useScrollToTop } from "@react-navigation/native";
 import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { EditPlaylistInfo } from "@/app/(modals)/playlists/edit/[id]";
-import { SaveIcon } from "@/lib/icons";
+import { SaveIcon, TrashIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Form, FormCombobox, FormField, FormInput, FormTextarea } from "@/components/ui/form";
 import { Text } from "@/components/ui/text";
@@ -46,7 +58,13 @@ interface EditPlaylistFormProps {
 }
 
 export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormProps) {
-  const updatePlaylist = usePlaylistStore((state) => state.updatePlaylist);
+  const { updatePlaylist, deletePlaylist } = usePlaylistStore(
+    useShallow((state) => ({
+      updatePlaylist: state.updatePlaylist,
+      deletePlaylist: state.deletePlaylist,
+    }))
+  );
+
   const ref = useRef(null);
   useScrollToTop(ref);
 
@@ -60,6 +78,19 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
     },
   });
 
+  async function handleDelete() {
+    try {
+      const { message, status } = await deletePlaylist(editPlaylistInfo.id);
+
+      if (status === "success") {
+        toast.error(message);
+        router.push("/playlists");
+      }
+    } catch (error) {
+      toast.error("Failed to delete playlist.");
+    }
+  }
+
   async function onSubmit(values: EditPlaylistFormData) {
     try {
       const parsedValues = formSchema.parse(values);
@@ -68,7 +99,6 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
 
       router.push("/(tabs)/playlists");
     } catch (error) {
-      console.error(error);
       toast.error("Error updating playlist!");
     }
   }
@@ -83,7 +113,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
 
   return (
     <Form {...form}>
-      <View className="flex-1 gap-7">
+      <View className="mb-12 gap-7">
         <FormField
           control={form.control}
           name="title"
@@ -132,22 +162,61 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
         </View>
       </View>
 
-      <View className="flex-1">
-        <Button
-          className="bg-teal-600"
-          size="lg"
-          onPress={form.handleSubmit(onSubmit, handleErrors)}>
-          <View className="flex-row items-center gap-4">
+      <View className="flex-row items-center gap-4">
+        <View className="flex-1">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex w-full flex-row items-center justify-center gap-4 border-destructive">
+                <TrashIcon
+                  className="text-destructive"
+                  size={24}
+                  strokeWidth={1.5}
+                />
+                <Text className="native:text-base font-semibold uppercase tracking-wider text-destructive">
+                  Delete
+                </Text>
+              </Button>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the playlist.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>
+                  <Text className="text-foreground">Cancel</Text>
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive"
+                  onPress={handleDelete}>
+                  <Text className="text-white">Delete</Text>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </View>
+
+        <View className="flex-1">
+          <Button
+            size="lg"
+            className="flex w-full flex-row items-center justify-center gap-4 bg-teal-600"
+            onPress={form.handleSubmit(onSubmit, handleErrors)}>
             <SaveIcon
               className="text-white"
               size={24}
               strokeWidth={1.5}
             />
             <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
-              Save playlist
+              Save
             </Text>
-          </View>
-        </Button>
+          </Button>
+        </View>
       </View>
     </Form>
   );

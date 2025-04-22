@@ -51,7 +51,6 @@ export default function SettingsModal() {
 
       toast.error("Data has been deleted.");
     } catch (err) {
-      console.error("Data deletion has failed:", err);
       toast.error("Data deletion has failed.");
     }
   }

@@ -136,7 +136,6 @@ export default function HomeScreen() {
   }, [isAppReady, isLocked]);
 
   if (error) {
-    console.error("Error loading data.");
     toast.error("Error loading data.");
   }
 

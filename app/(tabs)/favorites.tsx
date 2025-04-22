@@ -95,7 +95,6 @@ export default function FavoritesScreen() {
   }, []);
 
   if (error) {
-    console.error("Error loading data.");
     toast.error("Error loading data.");
   }
 

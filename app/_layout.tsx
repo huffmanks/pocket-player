@@ -6,7 +6,7 @@ import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Toaster } from "sonner-native";
+import { Toaster, toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import "@/global.css";
@@ -72,7 +72,7 @@ export default function RootLayout() {
           }
         }
       } catch (error) {
-        console.error(error);
+        toast.error("Initializing app failed.");
       } finally {
         setIsAppReady(true);
       }
@@ -100,7 +100,7 @@ export default function RootLayout() {
           router.push(previousPath as any);
         }
       } catch (error) {
-        console.error(error);
+        toast.error("Restoring previous route failed.");
       } finally {
         await SplashScreen.hideAsync();
       }

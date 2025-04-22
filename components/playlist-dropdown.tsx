@@ -45,12 +45,15 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
   };
 
   async function handleDelete() {
-    const { message, status } = await deletePlaylist(item.id);
+    try {
+      const { message, status } = await deletePlaylist(item.id);
 
-    if (status === "success") {
-      toast.error(message);
-    } else {
-      toast.error(message);
+      if (status === "success") {
+        toast.error(message);
+        router.push("/playlists");
+      }
+    } catch (error) {
+      toast.error("Failed to delete playlist.");
     }
   }
 

@@ -33,12 +33,18 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
   const removeVideoFromPlaylist = usePlaylistStore((state) => state.removeVideoFromPlaylist);
 
   async function handleRemoveFromPlaylist() {
-    const { message } = await removeVideoFromPlaylist({
-      playlistId,
-      videoId: item.id,
-    });
+    try {
+      const { message, status } = await removeVideoFromPlaylist({
+        playlistId,
+        videoId: item.id,
+      });
 
-    toast.error(message);
+      if (status === "success") {
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error("Failed to remove from playlist.");
+    }
   }
 
   return (

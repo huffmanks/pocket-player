@@ -34,8 +34,7 @@ export default function EditPlaylistScreen() {
       setEditPlaylistInfo(data);
     };
 
-    fetchPlaylist().catch((error) => {
-      console.error("Failed to find playlist: ", error);
+    fetchPlaylist().catch((_err) => {
       toast.error("Failed to find playlist.");
     });
   }, []);
@@ -43,7 +42,7 @@ export default function EditPlaylistScreen() {
   if (!editPlaylistInfo) return null;
 
   return (
-    <View className="mx-auto mb-8 w-full max-w-md flex-1 px-4 py-8">
+    <View className="mx-auto mb-8 w-full max-w-md px-4 py-8">
       <EditPlaylistForm editPlaylistInfo={editPlaylistInfo} />
     </View>
   );

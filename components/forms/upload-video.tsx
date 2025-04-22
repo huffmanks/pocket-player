@@ -108,7 +108,10 @@ export default function UploadForm() {
       setIsLocked(false);
       setIsLockDisabled(true);
 
-      await ensureDirectory(VIDEOS_DIR);
+      const { isError } = await ensureDirectory(VIDEOS_DIR, true);
+
+      if (isError) return;
+
       if (!(await requestPermissions())) return;
 
       const result = await DocumentPicker.getDocumentAsync({
@@ -187,7 +190,6 @@ export default function UploadForm() {
 
       form.reset();
     } catch (error) {
-      console.error(error);
       toast.error("Error submitting form.");
 
       handleReset();
@@ -207,7 +209,6 @@ export default function UploadForm() {
             await FileSystem.deleteAsync(thumbUri, { idempotent: true });
           }
         } catch (error) {
-          console.error(error);
         } finally {
           form.reset();
         }

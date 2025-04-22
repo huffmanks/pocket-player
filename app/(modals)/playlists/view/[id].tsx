@@ -51,18 +51,19 @@ export default function ViewPlaylistScreen() {
   const videosData = videosQuery.data.sort((a, b) => a.order - b.order).map(({ video }) => video);
 
   async function handleDelete() {
-    const { message, status } = await deletePlaylist(id);
+    try {
+      const { message, status } = await deletePlaylist(id);
 
-    if (status === "success") {
-      toast.error(message);
-      router.push("/playlists");
-    } else {
-      toast.error(message);
+      if (status === "success") {
+        toast.error(message);
+        router.push("/playlists");
+      }
+    } catch (error) {
+      toast.error("Failed to delete playlist.");
     }
   }
 
   if (playlistQuery.error || videosQuery.error) {
-    console.error("Error loading data.");
     toast.error("Error loading data.");
   }
 

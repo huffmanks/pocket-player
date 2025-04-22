@@ -79,7 +79,6 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
 
       return { status: "success", message: "Videos successfully uploaded." };
     } catch (error) {
-      console.error("Error creating video: ", error);
       return { status: "error", message: "Failed to create video." };
     }
   },
@@ -94,7 +93,6 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
 
       return { status: "success", message: `Video ${updatedVideo.title} successfully updated.` };
     } catch (error) {
-      console.error("Error updating video: ", error);
       return { status: "error", message: "Failed to update video." };
     }
   },
@@ -105,7 +103,6 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
 
       return { status: "success", message: `Video ${deletedVideo.title} successfully deleted.` };
     } catch (error) {
-      console.error("Error deleting video: ", error);
       return { status: "error", message: "Failed to delete video." };
     }
   },
@@ -118,7 +115,6 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
 
       return { status: "success", message: `Video ${video.title}'s favorite status toggled.` };
     } catch (error) {
-      console.error("Error toggling favorite: ", error);
       return { status: "error", message: "Failed to toggle favorite video." };
     }
   },
@@ -195,7 +191,6 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         message: `Playlist ${createdPlaylist.title} created successfully.`,
       };
     } catch (error) {
-      console.error("Error creating playlist: ", error);
       return { status: "error", message: "Failed to create playlist." };
     }
   },
@@ -245,7 +240,6 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         message: `Playlist ${updatedPlaylist.title} updated successfully.`,
       };
     } catch (error) {
-      console.error("Error updating playlist: ", error);
       return { status: "error", message: "Failed to update playlist." };
     }
   },
@@ -259,7 +253,6 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         message: `Playlist ${deletedPlaylist.title} deleted successfully.`,
       };
     } catch (error) {
-      console.error("Error deleting playlist: ", error);
       return { status: "error", message: "Failed to delete playlist." };
     }
   },
@@ -290,7 +283,6 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         selectedVideos,
       };
     } catch (error) {
-      console.error("Error getting playlist and videos: ", error);
       return {
         status: "error",
         message: "Playlist not found",
@@ -309,7 +301,6 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 
       return { status: "success", message: "Video added to playlist successfully." };
     } catch (error) {
-      console.error("Error adding video to playlist: ", error);
       return { status: "error", message: "Failed to add video to playlist." };
     }
   },
@@ -327,7 +318,6 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 
       return { status: "success", message: "Video removed from playlist successfully." };
     } catch (error) {
-      console.error("Error removing video from playlist: ", error);
       return { status: "error", message: "Failed to remove video from playlist." };
     }
   },
@@ -348,7 +338,6 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
       });
       return { status: "success", message: "Playlist order updated successfully." };
     } catch (error) {
-      console.error("Error updating playlist order: ", error);
       return { status: "error", message: "Failed to update playlist order." };
     }
   },

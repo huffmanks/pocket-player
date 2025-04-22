@@ -26,8 +26,7 @@ export default function EditModal() {
       setVideoInfo(video);
     };
 
-    fetchVideo().catch((error) => {
-      console.error("Failed to find video: ", error);
+    fetchVideo().catch((_err) => {
       toast.error("Failed to find video.");
     });
   }, []);

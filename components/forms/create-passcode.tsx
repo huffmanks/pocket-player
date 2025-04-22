@@ -63,7 +63,6 @@ export default function CreatePasscodeForm() {
 
       router.push("/(tabs)/settings");
     } catch (error) {
-      console.error(error);
       toast.error("Error setting passcode");
     }
   }

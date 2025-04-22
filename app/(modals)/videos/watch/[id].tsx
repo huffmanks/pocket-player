@@ -25,8 +25,7 @@ export default function WatchModal() {
       }
     };
 
-    fetchVideo().catch((error) => {
-      console.error("Failed to find video source: ", error);
+    fetchVideo().catch((_err) => {
       toast.error("Failed to find video source.");
     });
   }, []);

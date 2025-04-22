@@ -14,7 +14,6 @@ export async function migrateDatabase() {
       isError: false,
     };
   } catch (error) {
-    console.error("Database migration failed", error);
     return {
       message: "Database migration failed.",
       isError: true,

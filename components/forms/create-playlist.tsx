@@ -71,7 +71,6 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
         router.push("/(tabs)/playlists");
       }
     } catch (error) {
-      console.error(error);
       toast.error("Error creating playlist!");
     }
   }
@@ -86,7 +85,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
   return (
     <Form {...form}>
-      <View className="flex-1 gap-7">
+      <View className="mb-12 gap-7">
         <FormField
           control={form.control}
           name="title"
@@ -135,7 +134,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
         </View>
       </View>
 
-      <View className="flex-1">
+      <View>
         <Button
           className="bg-teal-600"
           size="lg"

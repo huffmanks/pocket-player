@@ -62,7 +62,6 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
       });
       toast.success("Thumbnail updated.");
     } catch (err) {
-      console.error(err);
       toast.error("Failed to update thumbnail.");
     } finally {
       setIsSaving(false);

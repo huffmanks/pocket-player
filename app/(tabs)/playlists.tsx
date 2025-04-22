@@ -60,7 +60,6 @@ export default function PlaylistsScreen() {
   });
 
   if (playlistsError || thumbUrisError) {
-    console.error("Error loading data.");
     toast.error("Error loading data.");
   }
   const playlistsExist = playlistsData?.length > 0;

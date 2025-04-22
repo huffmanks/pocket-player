@@ -82,41 +82,50 @@ export default function VideoDropdown({ item }: VideoDropdownProps) {
   );
 
   async function handleFavorite() {
-    const { message, status } = await toggleFavorite(item.id);
-    if (status === "success") {
-      toast.success(message);
-    } else {
-      toast.error(message);
+    try {
+      const { message, status } = await toggleFavorite(item.id);
+
+      if (status === "success") {
+        toast.success(message);
+      }
+    } catch (error) {
+      toast.error("Failed to add to favorites.");
     }
   }
 
   async function handleAddToPlaylist(playlistId: string) {
-    const { message, status } = await addVideoToPlaylist({ playlistId, videoId: item.id });
+    try {
+      const { message, status } = await addVideoToPlaylist({ playlistId, videoId: item.id });
 
-    if (status === "success") {
-      toast.success(message);
-    } else {
-      toast.error(message);
+      if (status === "success") {
+        toast.success(message);
+      }
+    } catch (error) {
+      toast.error("Failed to add to playlist.");
     }
   }
 
   async function handleRemoveFromPlaylist() {
-    const { message, status } = await removeVideoFromPlaylist({ videoId: item.id });
+    try {
+      const { message, status } = await removeVideoFromPlaylist({ videoId: item.id });
 
-    if (status === "success") {
-      toast.error(message);
-    } else {
-      toast.error(message);
+      if (status === "success") {
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error("Failed to remove from playlist.");
     }
   }
 
   async function handleDelete() {
-    const { message, status } = await deleteVideo(item.id);
+    try {
+      const { message, status } = await deleteVideo(item.id);
 
-    if (status === "success") {
-      toast.error(message);
-    } else {
-      toast.error(message);
+      if (status === "success") {
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error("Failed to delete video.");
     }
   }
 
