@@ -75,7 +75,6 @@ export default function SettingSwitch({ id, defaultChecked = false, label }: Set
     <View className="flex-row items-center gap-6">
       <Switch
         nativeID={id}
-        size="lg"
         checked={checked}
         onCheckedChange={setChecked}
       />

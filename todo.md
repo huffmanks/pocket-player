@@ -12,7 +12,8 @@
    - Add icons with each section.
    - Add theme section. light, dark, system.
    - Video player settings: add override orientation and default to that on player component if true.
-   - Delete all videos and images that are not associated with a row in the database. Or find a way to do this on app start. - [list-all-files.ts](lib/list-all-files.ts)
+   - Delete all videos and images that are not associated with a row in the database. Or find a way to do this on app start.
+     - [list-all-files.ts](lib/list-all-files.ts)
 4. [Edit playlist form](components/forms/edit-playlist.tsx):
    - Combobox if titles are too long the chevronsupdownicon is pushed out. maybe make the input resize/grow.
 5. [playlist-sortable](components/playlist-sortable.tsx):

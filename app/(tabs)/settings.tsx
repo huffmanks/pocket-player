@@ -112,7 +112,6 @@ export default function SettingsModal() {
           <Button
             disabled={!enablePasscode}
             variant="secondary"
-            size="lg"
             className="flex flex-row items-center justify-center gap-4"
             onPress={() => router.push("/(modals)/passcode")}>
             <KeyRoundIcon
@@ -133,7 +132,6 @@ export default function SettingsModal() {
 
           <Button
             variant="secondary"
-            size="lg"
             className="flex flex-row items-center justify-center gap-4"
             onPress={handleMigrateDatabase}>
             <GitMergeIcon
@@ -151,7 +149,6 @@ export default function SettingsModal() {
               <AlertDialogTrigger asChild>
                 <Button
                   variant="destructive"
-                  size="lg"
                   className="flex flex-row items-center justify-center gap-4">
                   <TrashIcon
                     className="text-white"

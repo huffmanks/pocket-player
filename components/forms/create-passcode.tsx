@@ -8,7 +8,7 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { EyeIcon, EyeOffIcon, KeyRoundIcon } from "@/lib/icons";
+import { EyeIcon, EyeOffIcon, KeyRoundIcon, LockIcon } from "@/lib/icons";
 import { useSecurityStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
@@ -83,7 +83,15 @@ export default function CreatePasscodeForm() {
           name="passcode"
           render={({ field }) => (
             <View className="relative">
+              <View className="absolute left-3 top-[34px] z-10 py-2">
+                <LockIcon
+                  className="text-muted-foreground"
+                  size={20}
+                  strokeWidth={1.25}
+                />
+              </View>
               <FormInput
+                className="pl-12 pr-16"
                 label="Passcode"
                 secureTextEntry={hidePasscode}
                 autoFocus={false}
@@ -94,18 +102,18 @@ export default function CreatePasscodeForm() {
               />
               <Pressable
                 onPress={() => togglePasscodeVisibility("hidePasscode")}
-                className="absolute right-3 top-11">
+                className="absolute right-4 top-[34px] py-2">
                 {hidePasscode ? (
                   <EyeOffIcon
                     className="text-muted-foreground"
-                    size={24}
-                    strokeWidth={1.5}
+                    size={20}
+                    strokeWidth={1.25}
                   />
                 ) : (
                   <EyeIcon
-                    className="text-muted-foreground"
-                    size={24}
-                    strokeWidth={1.5}
+                    className="text-foreground"
+                    size={20}
+                    strokeWidth={1.25}
                   />
                 )}
               </Pressable>
@@ -117,7 +125,15 @@ export default function CreatePasscodeForm() {
           name="confirmPasscode"
           render={({ field }) => (
             <View className="relative">
+              <View className="absolute left-3 top-[34px] z-10 py-2">
+                <LockIcon
+                  className="text-muted-foreground"
+                  size={20}
+                  strokeWidth={1.25}
+                />
+              </View>
               <FormInput
+                className="pl-12 pr-16"
                 label="Confirm passcode"
                 secureTextEntry={hideConfirmPasscode}
                 autoFocus={false}
@@ -128,18 +144,18 @@ export default function CreatePasscodeForm() {
               />
               <Pressable
                 onPress={() => togglePasscodeVisibility("hideConfirmPasscode")}
-                className="absolute right-3 top-11">
+                className="absolute right-4 top-[34px] py-2">
                 {hideConfirmPasscode ? (
                   <EyeOffIcon
                     className="text-muted-foreground"
-                    size={24}
-                    strokeWidth={1.5}
+                    size={20}
+                    strokeWidth={1.25}
                   />
                 ) : (
                   <EyeIcon
-                    className="text-muted-foreground"
-                    size={24}
-                    strokeWidth={1.5}
+                    className="text-foreground"
+                    size={20}
+                    strokeWidth={1.25}
                   />
                 )}
               </Pressable>
@@ -148,7 +164,7 @@ export default function CreatePasscodeForm() {
         />
       </View>
 
-      <View className="flex-1">
+      <View>
         <Button
           className="bg-teal-600"
           size="lg"
