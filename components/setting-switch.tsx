@@ -7,35 +7,52 @@ import { useSecurityStore, useSettingsStore } from "@/lib/store";
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Text } from "@/components/ui/text";
 
-export type SettingId = "autoplay" | "enablePasscode" | "loop" | "mute" | "isNativeControls";
+export type SettingId =
+  | "autoplay"
+  | "enablePasscode"
+  | "loop"
+  | "mute"
+  | "isNativeControls"
+  | "overrideOrientation";
 
 interface SettingSwitchProps {
   id: SettingId;
   defaultChecked?: boolean;
   label: string;
+  description?: string;
 }
 
-export default function SettingSwitch({ id, defaultChecked = false, label }: SettingSwitchProps) {
+export default function SettingSwitch({
+  id,
+  defaultChecked = false,
+  label,
+  description,
+}: SettingSwitchProps) {
   const {
     autoPlay,
     loop,
     mute,
     isNativeControls,
+    overrideOrientation,
     setAutoPlay,
     setLoop,
     setMute,
     setIsNativeControls,
+    setOverrideOrientation,
   } = useSettingsStore(
     useShallow((state) => ({
       autoPlay: state.autoPlay,
       loop: state.loop,
       mute: state.mute,
       isNativeControls: state.isNativeControls,
+      overrideOrientation: state.overrideOrientation,
       setAutoPlay: state.setAutoPlay,
       setLoop: state.setLoop,
       setMute: state.setMute,
       setIsNativeControls: state.setIsNativeControls,
+      setOverrideOrientation: state.setOverrideOrientation,
     }))
   );
 
@@ -52,6 +69,7 @@ export default function SettingSwitch({ id, defaultChecked = false, label }: Set
     loop: loop,
     mute: mute,
     isNativeControls: isNativeControls,
+    overrideOrientation: overrideOrientation,
   } as const;
 
   const settersMap = {
@@ -60,6 +78,7 @@ export default function SettingSwitch({ id, defaultChecked = false, label }: Set
     loop: setLoop,
     mute: setMute,
     isNativeControls: setIsNativeControls,
+    overrideOrientation: setOverrideOrientation,
   } as const;
 
   const [checked, setChecked] = useState(
@@ -78,13 +97,16 @@ export default function SettingSwitch({ id, defaultChecked = false, label }: Set
         checked={checked}
         onCheckedChange={setChecked}
       />
-      <Label
-        nativeID={id}
-        className="native:text-lg"
-        style={{ paddingBottom: 0 }}
-        onPress={() => setChecked((prev) => !prev)}>
-        {label}
-      </Label>
+      <View>
+        <Label
+          nativeID={id}
+          className="native:text-lg"
+          style={{ paddingBottom: 0 }}
+          onPress={() => setChecked((prev) => !prev)}>
+          {label}
+        </Label>
+        {!!description && <Text className="pt-1 text-sm text-muted-foreground">{description}</Text>}
+      </View>
     </View>
   );
 }

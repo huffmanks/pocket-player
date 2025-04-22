@@ -15,8 +15,7 @@ import { usePlaylistStore } from "@/lib/store";
 import PlaylistItem from "@/components/playlist-item";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-
-import { H3 } from "./ui/typography";
+import { H3 } from "@/components/ui/typography";
 
 interface PlaylistSortableProps {
   playlistId: string;

@@ -348,6 +348,7 @@ type SettingsStoreState = {
   loop: boolean;
   mute: boolean;
   isNativeControls: boolean;
+  overrideOrientation: boolean;
   theme: "light" | "dark";
   sortKey: "date" | "title";
   sortDateOrder: "asc" | "desc";
@@ -359,6 +360,7 @@ type SettingsStoreState = {
   setLoop: (loop: boolean) => void;
   setMute: (mute: boolean) => void;
   setIsNativeControls: (isNativeControls: boolean) => void;
+  setOverrideOrientation: (overrideOrientation: boolean) => void;
   setTheme: (theme: "light" | "dark") => void;
   setSortKey: (key: "date" | "title") => void;
   toggleSortDateOrder: () => void;
@@ -375,6 +377,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
       loop: false,
       mute: false,
       isNativeControls: false,
+      overrideOrientation: false,
       theme: "dark",
       sortKey: "date",
       sortDateOrder: "asc",
@@ -386,6 +389,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
       setIsNativeControls: (isNativeControls) => set({ isNativeControls }),
+      setOverrideOrientation: (overrideOrientation) => set({ overrideOrientation }),
       setTheme: (theme) => set({ theme }),
       setSortKey: (key) => set({ sortKey: key }),
       toggleSortDateOrder: () =>

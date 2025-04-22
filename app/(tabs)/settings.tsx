@@ -1,6 +1,6 @@
 import { cacheDirectory } from "expo-file-system";
 import { router } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import { ScrollView } from "react-native-gesture-handler";
@@ -32,6 +32,7 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
 export default function SettingsModal() {
+  const [isMigrationDisabled, setIsMigrationDisabled] = useState(false);
   const insets = useSafeAreaInsets();
 
   const { passcode, enablePasscode, setEnablePasscode } = useSecurityStore(
@@ -43,25 +44,33 @@ export default function SettingsModal() {
   );
 
   async function handleClearData() {
-    try {
+    const promise = withDelay(async () => {
       await clearDirectory(VIDEOS_DIR);
       await clearDirectory(cacheDirectory || "");
       await resetTables();
       resetPersistedStorage();
+      return { message: "Data has been deleted." };
+    }, 2000);
 
-      toast.error("Data has been deleted.");
-    } catch (err) {
-      toast.error("Data deletion has failed.");
-    }
+    toast.promise(promise, {
+      loading: "Data being deleted...",
+      success: ({ message }) => message,
+      error: "Data deletion has failed.",
+    });
   }
 
   function handleMigrateDatabase() {
+    setIsMigrationDisabled(true);
     const promise = withDelay(() => migrateDatabase(), 2000);
 
     toast.promise(promise, {
       loading: "Database migrating...",
       success: ({ message }) => message,
       error: "Database migration failed.",
+    });
+
+    promise.finally(() => {
+      setIsMigrationDisabled(false);
     });
   }
 
@@ -94,6 +103,7 @@ export default function SettingsModal() {
               key={"settings-screen_" + item.id}
               id={item.id}
               label={item.label}
+              description={item.description}
             />
           ))}
         </View>
@@ -112,7 +122,7 @@ export default function SettingsModal() {
           <Button
             disabled={!enablePasscode}
             variant="secondary"
-            className="flex flex-row items-center justify-center gap-4"
+            className="mt-2 flex flex-row items-center justify-center gap-4"
             onPress={() => router.push("/(modals)/passcode")}>
             <KeyRoundIcon
               className="text-foreground"
@@ -132,6 +142,7 @@ export default function SettingsModal() {
 
           <Button
             variant="secondary"
+            disabled={isMigrationDisabled}
             className="flex flex-row items-center justify-center gap-4"
             onPress={handleMigrateDatabase}>
             <GitMergeIcon

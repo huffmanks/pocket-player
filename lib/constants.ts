@@ -71,7 +71,7 @@ export const ERROR_SHAKE_TIME = 80;
 
 export const EXCLUDED_PATHS = ["/passcode", "/lock"];
 
-export const settingsSwitches: { id: SettingId; label: string }[] = [
+export const settingsSwitches: { id: SettingId; label: string; description?: string }[] = [
   {
     id: "autoplay",
     label: "Autoplay",
@@ -87,6 +87,12 @@ export const settingsSwitches: { id: SettingId; label: string }[] = [
   {
     id: "isNativeControls",
     label: "Native video controls",
+    description: "Use the native video player.",
+  },
+  {
+    id: "overrideOrientation",
+    label: "Override orientation",
+    description: "Auto-switch to match video orientation.",
   },
 ];
 
