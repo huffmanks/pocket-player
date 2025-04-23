@@ -13,7 +13,7 @@ import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
 import { useAppStore, useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
-import { throttle } from "@/lib/utils";
+import { formatDuration, throttle } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
@@ -161,6 +161,12 @@ export default function HomeScreen() {
         scrollEventThrottle={250}
         onScroll={handleScroll}
         onContentSizeChange={handleContentSizeChange}
+        ListHeaderComponent={
+          <ListHeaderComponent
+            videosExist={videosExist}
+            sortedData={sortedData}
+          />
+        }
         ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
       />
     </View>
@@ -192,6 +198,29 @@ function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
           </Link>
         </>
       )}
+    </View>
+  );
+}
+
+function ListHeaderComponent({
+  videosExist,
+  sortedData,
+}: {
+  videosExist: boolean;
+  sortedData: VideoMeta[];
+}) {
+  if (!videosExist) return null;
+
+  const videosDuration = formatDuration(
+    sortedData?.reduce((total, item) => total + item.duration, 0)
+  );
+  const videosCount = sortedData.length;
+
+  return (
+    <View className="mb-6 flex-row items-center justify-end gap-2 px-3">
+      <Text className="text-sm text-muted-foreground">{`${videosCount} video${videosCount > 1 ? "s" : ""}`}</Text>
+      <Text className="text-sm text-muted-foreground">·</Text>
+      <Text className="text-sm text-muted-foreground">{videosDuration}</Text>
     </View>
   );
 }

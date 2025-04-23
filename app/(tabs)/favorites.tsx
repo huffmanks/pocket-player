@@ -12,6 +12,7 @@ import { useShallow } from "zustand/react/shallow";
 import { VideoMeta, videos } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { useDatabaseStore, useSettingsStore } from "@/lib/store";
+import { formatDuration } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
 import { Text } from "@/components/ui/text";
@@ -116,6 +117,12 @@ export default function FavoritesScreen() {
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
+        ListHeaderComponent={
+          <ListHeaderComponent
+            favoritesExist={favoritesExist}
+            sortedData={sortedData}
+          />
+        }
         ListEmptyComponent={<ListEmptyComponent favoritesExist={favoritesExist} />}
       />
     </View>
@@ -131,6 +138,29 @@ function ListEmptyComponent({ favoritesExist }: { favoritesExist: boolean }) {
       {!favoritesExist && (
         <Text className="mb-12">Your favorite videos will be displayed here.</Text>
       )}
+    </View>
+  );
+}
+
+function ListHeaderComponent({
+  favoritesExist,
+  sortedData,
+}: {
+  favoritesExist: boolean;
+  sortedData: VideoMeta[];
+}) {
+  if (!favoritesExist) return null;
+
+  const videosDuration = formatDuration(
+    sortedData?.reduce((total, item) => total + item.duration, 0)
+  );
+  const videosCount = sortedData.length;
+
+  return (
+    <View className="mb-6 flex-row items-center justify-end gap-2 px-3">
+      <Text className="text-sm text-muted-foreground">{`${videosCount} video${videosCount > 1 ? "s" : ""}`}</Text>
+      <Text className="text-sm text-muted-foreground">·</Text>
+      <Text className="text-sm text-muted-foreground">{videosDuration}</Text>
     </View>
   );
 }

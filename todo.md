@@ -12,14 +12,9 @@
    - Go back button has a hover/focus color. Remove styles or use pressable.
    - Default to overrideOrientation if true in global settings.
 2. [Home screen](<app/(tabs)/index.tsx>):
-   - Add total video count.
-   - Add total video duration.
-   - Sort buttons don't have margin right.
    - If app is manually locked, scrollPosition is not set.
-3. [Favorites screen](<app/(tabs)/favorites.tsx>):
-   - Add total video count.
-   - Add total video duration.
-   - Sort buttons don't have margin right.
+3. [Search bar](components/search-bar.tsx):
+   - Make glass effect when scrolling.
 4. [Settings screen](<app/(tabs)/settings.tsx>):
    - Add icons with each section.
    - Add theme section. light, dark, system.

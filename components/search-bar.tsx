@@ -35,8 +35,8 @@ export default function SearchBar({
   );
 
   return (
-    <View className="flex-row gap-2">
-      <View className="mx-2 mb-8 flex-1 flex-row items-center gap-4 rounded-md border border-input px-3">
+    <View className="mb-4 flex-row gap-2">
+      <View className="ml-2 flex-1 flex-row items-center gap-4 rounded-md border border-input px-3">
         <SearchIcon
           className="text-muted-foreground"
           size={20}
@@ -49,7 +49,7 @@ export default function SearchBar({
           placeholder="Search videos"
         />
       </View>
-      <View className="flex-row gap-2">
+      <View className="mr-2 flex-row gap-2">
         <Button
           className="px-3"
           style={{ height: 44 }}
