@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b0b398b2-f930-45fa-aa3f-1019e9cca6ec",
+  "id": "752e7b2c-56c6-410b-a1f3-67adb3f9448d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "playlist_videos": {
@@ -31,6 +31,20 @@
         }
       },
       "indexes": {
+        "playlist_videos_playlist_id_idx": {
+          "name": "playlist_videos_playlist_id_idx",
+          "columns": [
+            "playlist_id"
+          ],
+          "isUnique": false
+        },
+        "playlist_videos_video_id_idx": {
+          "name": "playlist_videos_video_id_idx",
+          "columns": [
+            "video_id"
+          ],
+          "isUnique": false
+        },
         "playlist_videos_playlist_id_video_id_unique": {
           "name": "playlist_videos_playlist_id_video_id_unique",
           "columns": [
@@ -103,7 +117,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-25T23-47-29'"
+          "default": "'2025-04-23T17:16:13.777Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -111,7 +125,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-25T23-47-29'"
+          "default": "'2025-04-23T17:16:13.777Z'"
         }
       },
       "indexes": {
@@ -146,37 +160,66 @@
           "autoincrement": false,
           "default": "'Untitled'"
         },
-        "videoUri": {
-          "name": "videoUri",
+        "video_uri": {
+          "name": "video_uri",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "thumbUri": {
-          "name": "thumbUri",
+        "thumb_uri": {
+          "name": "thumb_uri",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "isFavorite": {
-          "name": "isFavorite",
+        "thumb_timestamp": {
+          "name": "thumb_timestamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 3000
+        },
+        "is_favorite": {
+          "name": "is_favorite",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": false
         },
-        "duration": {
-          "name": "duration",
+        "file_extension": {
+          "name": "file_extension",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "fileSize": {
-          "name": "fileSize",
+        "file_size": {
+          "name": "file_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "file_size_label": {
+          "name": "file_size_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "duration": {
+          "name": "duration",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "duration_label": {
+          "name": "duration_label",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -189,13 +232,62 @@
           "notNull": true,
           "autoincrement": false
         },
+        "width": {
+          "name": "width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "height": {
+          "name": "height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "resolution": {
+          "name": "resolution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fps": {
+          "name": "fps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "has_audio": {
+          "name": "has_audio",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "video_codec": {
+          "name": "video_codec",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "audio_codec": {
+          "name": "audio_codec",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-25T23-47-29'"
+          "default": "'2025-04-23T17:16:13.775Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -203,10 +295,18 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2024-11-25T23-47-29'"
+          "default": "'2025-04-23T17:16:13.777Z'"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "videos_thumb_uri_idx": {
+          "name": "videos_thumb_uri_idx",
+          "columns": [
+            "thumb_uri"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},

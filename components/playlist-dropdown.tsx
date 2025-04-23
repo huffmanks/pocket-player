@@ -128,9 +128,11 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
 
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the playlist.
+                <Text>This will delete the </Text>
+                <Text className="font-semibold">“{item.title}”</Text>
+                <Text> playlist permanently.</Text>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

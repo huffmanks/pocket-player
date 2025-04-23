@@ -38,7 +38,7 @@ export default function CreatePlaylistScreen() {
   if (!videoData || !videoData.length)
     return (
       <View className="px-5 pt-4">
-        <H2 className="mb-4 text-teal-500">No videos yet!</H2>
+        <H2 className="text-brand-foreground mb-4">No videos yet!</H2>
         <Text className="mb-12">Upload some videos to create a playlist.</Text>
         <Link
           href="/(tabs)/upload"

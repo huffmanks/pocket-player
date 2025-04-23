@@ -20,8 +20,8 @@ function VideoItem({ item }: VideoItemProps) {
   return (
     <Animated.View
       className="mb-8 flex-row items-start gap-4"
-      entering={FadeIn}
-      exiting={FadeOut}>
+      entering={FadeIn.duration(250)}
+      exiting={FadeOut.duration(250)}>
       <Pressable onPress={() => router.push(`/(modals)/videos/watch/${item.id}`)}>
         <Image
           className="rounded-md bg-card"
@@ -37,14 +37,35 @@ function VideoItem({ item }: VideoItemProps) {
             numberOfLines={2}>
             {item.title}
           </Text>
-          <Text className="mb-4 text-sm text-muted-foreground">{createdAt}</Text>
-          <View className="flex-row items-center gap-4">
-            <Badge variant="secondary">
-              <Text>{item.durationFormatted}</Text>
+          <Text className="mb-1 text-sm text-muted-foreground">{createdAt}</Text>
+
+          <View className="mb-4 flex-row items-center gap-2">
+            <Text className="text-xs">{item.durationLabel}</Text>
+            <Text className="text-xs">·</Text>
+            <Text className="text-xs">{item.fileSizeLabel}</Text>
+          </View>
+          <View className="flex-row items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="bg-brand">
+              <Text className="text-xs font-extrabold uppercase tracking-wider">
+                {item.resolution}
+              </Text>
             </Badge>
-            <Badge variant="secondary">
-              <Text>{item.fileSize}</Text>
-            </Badge>
+            {item?.videoCodec && (
+              <Badge>
+                <Text className="text-xs font-extrabold uppercase tracking-wider">
+                  {item.videoCodec}
+                </Text>
+              </Badge>
+            )}
+            {item?.audioCodec && (
+              <Badge variant="secondary">
+                <Text className="text-xs font-extrabold uppercase tracking-wider">
+                  {item.audioCodec}
+                </Text>
+              </Badge>
+            )}
           </View>
         </View>
         <VideoDropdown item={item} />

@@ -73,7 +73,7 @@ function LockScreen() {
       size="icon"
       onPress={handlePress}>
       <LockIcon
-        className={cn(isLockable ? "text-teal-500" : "text-muted-foreground")}
+        className={cn(isLockable ? "text-brand-foreground" : "text-muted-foreground")}
         size={26}
         strokeWidth={1.25}
       />

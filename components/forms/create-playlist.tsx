@@ -4,7 +4,7 @@ import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
-import { FieldErrors, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
@@ -28,14 +28,11 @@ const formSchema = z.object({
   videos: z
     .array(
       z.object({
-        value: z.string().min(1),
-        label: z.string().min(1),
+        value: z.string(),
+        label: z.string(),
       })
     )
-    .nonempty({ message: "Must select at least one video." })
-    .refine((videos) => videos.some((video) => video.value && video.label), {
-      message: "Must select at least one video.",
-    }),
+    .nonempty({ message: "Must select at least one video." }),
 });
 
 export type CreatePlaylistFormData = z.infer<typeof formSchema>;
@@ -54,6 +51,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
     defaultValues: {
       title: "",
       description: "",
+      videos: [],
     },
   });
 
@@ -65,21 +63,9 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
       toast.success(`${values.title} playlist created successfully.`);
 
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.push("/(tabs)/playlists");
-      }
+      router.push("/(tabs)/playlists");
     } catch (error) {
       toast.error("Error creating playlist!");
-    }
-  }
-
-  function handleErrors(errors: FieldErrors<CreatePlaylistFormData>) {
-    const errorMessage = errors?.videos?.root?.message ? errors.videos.root.message : undefined;
-
-    if (errorMessage) {
-      toast.error(errorMessage);
     }
   }
 
@@ -136,9 +122,9 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
       <View>
         <Button
-          className="bg-teal-600"
+          className="bg-brand"
           size="lg"
-          onPress={form.handleSubmit(onSubmit, handleErrors)}>
+          onPress={form.handleSubmit(onSubmit)}>
           <View className="flex-row items-center gap-4">
             <ListMusicIcon
               className="text-white"

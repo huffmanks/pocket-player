@@ -11,7 +11,7 @@ import { toast } from "sonner-native";
 
 import { VideoMeta } from "@/db/schema";
 import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
-import { VIDEOS_DIR } from "@/lib/constants";
+import { SLIDER_THEME, VIDEOS_DIR } from "@/lib/constants";
 import { ImageDownIcon, LockIcon, LockOpenIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
 
@@ -98,9 +98,11 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
               minimumValue={0}
               maximumValue={1}
               step={0.01}
-              thumbStyle={{ backgroundColor: isLocked ? "#343434" : "#14b8a6" }}
-              minimumTrackTintColor="#f8fafc"
-              maximumTrackTintColor="#1f242b"
+              thumbTintColor={
+                isLocked ? SLIDER_THEME.thumbDisabledTintColor : SLIDER_THEME.thumbTintColor
+              }
+              minimumTrackTintColor={SLIDER_THEME.minimumTrackTintColor}
+              maximumTrackTintColor={SLIDER_THEME.maximumTrackTintColor}
               onValueChange={(val) => onSliderChange(Number(val))}
               onSlidingStart={onSlidingStart}
               onSlidingComplete={(val) => onSlidingComplete(Number(val))}

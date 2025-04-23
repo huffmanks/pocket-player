@@ -127,7 +127,7 @@ const FormDescription = React.forwardRef<
     <Text
       ref={ref}
       nativeID={formDescriptionNativeID}
-      className={cn("pt-1 text-sm text-muted-foreground", className)}
+      className={cn("ml-0.5 pt-3 text-sm text-muted-foreground", className)}
       {...props}
     />
   );
@@ -151,7 +151,7 @@ const FormMessage = React.forwardRef<
       exiting={FadeOut.duration(275)}
       ref={ref}
       nativeID={formMessageNativeID}
-      className={cn("pt-3 text-sm font-medium text-destructive", className)}
+      className={cn("ml-0.5 pt-3 text-sm font-medium text-destructive", className)}
       {...props}>
       {body}
     </Animated.Text>
@@ -216,7 +216,7 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
           />
 
           <CalendarIcon
-            className="text-teal-500"
+            className="text-brand-foreground"
             size={24}
             strokeWidth={1.5}
           />
@@ -467,7 +467,7 @@ const FormCombobox = React.forwardRef<
         onSelectedItemsChange={onChange}
         {...props}
       />
-      {!!description && <FormDescription className="ml-0.5 mt-1">{description}</FormDescription>}
+      {!!description && !error && <FormDescription>{description}</FormDescription>}
       <FormMessage />
     </FormItem>
   );

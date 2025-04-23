@@ -141,7 +141,9 @@ export default function ViewPlaylistScreen() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the playlist.
+                  <Text>This will delete the </Text>
+                  <Text className="font-semibold">“{playlistQuery.data[0].title}”</Text>
+                  <Text> playlist permanently.</Text>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

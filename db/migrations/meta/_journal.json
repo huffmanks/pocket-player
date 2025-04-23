@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1732596449392,
-      "tag": "0000_fine_wolfpack",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1744813961141,
-      "tag": "0001_awesome_captain_stacy",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1745109718245,
-      "tag": "0002_colossal_gunslinger",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1745113825109,
-      "tag": "0003_warm_kid_colt",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1745267496169,
-      "tag": "0004_fixed_catseye",
+      "when": 1745428573783,
+      "tag": "0000_wise_zarda",
       "breakpoints": true
     }
   ]

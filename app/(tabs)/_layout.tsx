@@ -17,8 +17,8 @@ export default function TabLayout() {
           backgroundColor: NAV_THEME[colorScheme].background,
         },
         tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: "#14b8a6",
-        tabBarInactiveTintColor: colorScheme === "light" ? "#09090b" : "#fff",
+        tabBarActiveTintColor: NAV_THEME[colorScheme].brandForeground,
+        tabBarInactiveTintColor: NAV_THEME[colorScheme].text,
         headerRight: () => <HeaderItems />,
         tabBarStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,

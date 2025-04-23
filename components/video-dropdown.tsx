@@ -258,9 +258,11 @@ export default function VideoDropdown({ item }: VideoDropdownProps) {
 
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the video.
+                <Text>This will delete the </Text>
+                <Text className="font-semibold">“{item.title}”</Text>
+                <Text> video permanently.</Text>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

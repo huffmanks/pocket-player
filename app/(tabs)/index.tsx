@@ -176,7 +176,9 @@ export default function HomeScreen() {
 function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
   return (
     <View className="p-5">
-      <H2 className="mb-4 text-teal-500">{videosExist ? "No results" : "No videos yet!"}</H2>
+      <H2 className="text-brand-foreground mb-4">
+        {videosExist ? "No results" : "No videos yet!"}
+      </H2>
       {!videosExist && (
         <>
           <Text className="mb-12">Your videos will be displayed here.</Text>

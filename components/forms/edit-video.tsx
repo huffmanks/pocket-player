@@ -240,9 +240,11 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the playlist.
+                    <Text>This will delete the </Text>
+                    <Text className="font-semibold">“{videoInfo.title}”</Text>
+                    <Text> playlist permanently.</Text>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -262,7 +264,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
           <View className="flex-1">
             <Button
               size="lg"
-              className="flex w-full flex-row items-center justify-center gap-4 bg-teal-600"
+              className="bg-brand flex w-full flex-row items-center justify-center gap-4"
               onPress={form.handleSubmit(onSubmit)}>
               <SaveIcon
                 className="text-white"

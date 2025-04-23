@@ -4,7 +4,7 @@ import { Pressable, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
-import { FieldErrors, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
@@ -64,14 +64,6 @@ export default function CreatePasscodeForm() {
       router.push("/(tabs)/settings");
     } catch (error) {
       toast.error("Error setting passcode");
-    }
-  }
-
-  function handleErrors(errors: FieldErrors<CreatePasscodeFormData>) {
-    const errorMessage = errors?.passcode?.root?.message ? errors.passcode.root.message : undefined;
-
-    if (errorMessage) {
-      toast.error(errorMessage);
     }
   }
 
@@ -179,9 +171,9 @@ export default function CreatePasscodeForm() {
 
       <View>
         <Button
-          className="bg-teal-600"
+          className="bg-brand"
           size="lg"
-          onPress={form.handleSubmit(onSubmit, handleErrors)}>
+          onPress={form.handleSubmit(onSubmit)}>
           <View className="flex-row items-center gap-4">
             <KeyRoundIcon
               className="text-white"

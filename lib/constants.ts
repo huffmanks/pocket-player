@@ -12,6 +12,8 @@ export const NAV_THEME = {
     notification: "rgb(255, 86, 86)",
     primary: "rgb(26, 26, 36)",
     text: "rgb(9, 9, 12)",
+    brand: "rgb(13, 150, 139)",
+    brandForeground: "rgb(20, 184, 165)",
   },
   dark: {
     background: "rgb(9, 9, 11)",
@@ -20,7 +22,16 @@ export const NAV_THEME = {
     notification: "rgb(217, 58, 58)",
     primary: "rgb(250, 250, 250)",
     text: "rgb(250, 250, 250)",
+    brand: "rgb(13, 150, 139)",
+    brandForeground: "rgb(20, 184, 165)",
   },
+};
+
+export const SLIDER_THEME = {
+  thumbTintColor: NAV_THEME.dark.brandForeground,
+  thumbDisabledTintColor: "rgb(52, 52, 52)",
+  minimumTrackTintColor: "rgb(248, 250, 252)",
+  maximumTrackTintColor: "rgb(31, 36, 43)",
 };
 
 const fontStyle = {

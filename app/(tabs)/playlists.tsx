@@ -146,7 +146,7 @@ function ListHeaderComponent() {
 function ListEmptyComponent() {
   return (
     <View className="pt-5">
-      <H2 className="mb-4 text-teal-500">No playlists yet!</H2>
+      <H2 className="text-brand-foreground mb-4">No playlists yet!</H2>
       <Text className="mb-12">Your playlists will be displayed here.</Text>
       <Link
         href="/(modals)/playlists/create"

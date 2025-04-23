@@ -9,6 +9,7 @@ import Animated from "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
+import { SLIDER_THEME } from "@/lib/constants";
 import {
   ChevronLeftIcon,
   FastForwardIcon,
@@ -231,9 +232,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                         minimumValue={0}
                         maximumValue={1}
                         step={0.01}
-                        thumbTintColor="#14b8a6"
-                        minimumTrackTintColor="#f8fafc"
-                        maximumTrackTintColor="#1f242b"
+                        thumbTintColor={SLIDER_THEME.thumbTintColor}
+                        minimumTrackTintColor={SLIDER_THEME.minimumTrackTintColor}
+                        maximumTrackTintColor={SLIDER_THEME.maximumTrackTintColor}
                         onValueChange={(val) => onSliderChange(Number(val))}
                         onSlidingStart={onSlidingStart}
                         onSlidingComplete={(val) => onSlidingComplete(Number(val))}

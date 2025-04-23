@@ -69,7 +69,7 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
               numberOfLines={1}>
               {item.title}
             </Text>
-            <Text className="text-sm text-muted-foreground">{item.durationFormatted}</Text>
+            <Text className="text-sm text-muted-foreground">{item.durationLabel}</Text>
           </View>
         </View>
       </Pressable>

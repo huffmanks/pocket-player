@@ -78,12 +78,14 @@ export function formatFileSize(bytes: number): string {
   return `${formattedSize}${units[unitIndex]}`;
 }
 
-export function getOrientation(orientation: string): "Landscape" | "Portrait" {
-  if (orientation.toLowerCase().includes("landscape")) {
-    return "Landscape";
-  } else {
-    return "Portrait";
-  }
+export function getOrientation({
+  width,
+  height,
+}: {
+  width: number;
+  height: number;
+}): "Landscape" | "Portrait" {
+  return height > width ? "Portrait" : "Landscape";
 }
 
 export function splitFilename(filename: string): [string, string] {
@@ -122,4 +124,14 @@ export function imagesToRows(images: string[]): string[][] {
   }
 
   return rows;
+}
+
+export function getResolutionLabel({ width, height }: { width: number; height: number }): string {
+  const res = Math.max(width, height);
+
+  if (res >= 3840) return "2160p";
+  if (res >= 1920) return "1080p";
+  if (res >= 1280) return "720p";
+  if (res >= 854) return "480p";
+  return "360p";
 }

@@ -4,7 +4,7 @@ import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useScrollToTop } from "@react-navigation/native";
-import { FieldErrors, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -41,14 +41,11 @@ const formSchema = z.object({
   videos: z
     .array(
       z.object({
-        value: z.string().min(1),
-        label: z.string().min(1),
+        value: z.string(),
+        label: z.string(),
       })
     )
-    .nonempty({ message: "Must select at least one video." })
-    .refine((videos) => videos.some((video) => video.value && video.label), {
-      message: "Must select at least one video.",
-    }),
+    .nonempty({ message: "Must select at least one video." }),
 });
 
 export type EditPlaylistFormData = z.infer<typeof formSchema>;
@@ -100,14 +97,6 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
       router.push("/(tabs)/playlists");
     } catch (error) {
       toast.error("Error updating playlist!");
-    }
-  }
-
-  function handleErrors(errors: FieldErrors<EditPlaylistFormData>) {
-    const errorMessage = errors?.videos?.root?.message ? errors.videos.root.message : undefined;
-
-    if (errorMessage) {
-      toast.error(errorMessage);
     }
   }
 
@@ -183,9 +172,11 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
 
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the playlist.
+                  <Text>This will delete the </Text>
+                  <Text className="font-semibold">“{editPlaylistInfo.title}”</Text>
+                  <Text> playlist permanently.</Text>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -205,8 +196,8 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
         <View className="flex-1">
           <Button
             size="lg"
-            className="flex w-full flex-row items-center justify-center gap-4 bg-teal-600"
-            onPress={form.handleSubmit(onSubmit, handleErrors)}>
+            className="bg-brand flex w-full flex-row items-center justify-center gap-4"
+            onPress={form.handleSubmit(onSubmit)}>
             <SaveIcon
               className="text-white"
               size={24}

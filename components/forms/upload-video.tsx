@@ -16,7 +16,13 @@ import { VIDEOS_DIR } from "@/lib/constants";
 import { CircleXIcon, CloudUploadIcon, ImportIcon } from "@/lib/icons";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
-import { formatDuration, formatFileSize, getOrientation, splitFilename } from "@/lib/utils";
+import {
+  formatDuration,
+  formatFileSize,
+  getOrientation,
+  getResolutionLabel,
+  splitFilename,
+} from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
@@ -30,20 +36,21 @@ const formSchema = z.object({
         videoUri: z.string().min(1),
         thumbUri: z.string().min(1),
         fileExtension: z.string().min(1),
-        fileSize: z.string().min(1),
-        duration: z.number().min(1),
-        durationFormatted: z.string().min(1),
+        fileSize: z.number().positive(),
+        fileSizeLabel: z.string().min(1),
+        duration: z.number().positive(),
+        durationLabel: z.string().min(1),
         orientation: z.string().min(1),
-        orientationFull: z.string().min(1),
-        width: z.number().min(1),
-        height: z.number().min(1),
-        fps: z.number().min(1),
+        width: z.number().positive(),
+        height: z.number().positive(),
+        resolution: z.string().min(1),
+        fps: z.number().positive(),
         hasAudio: z.boolean(),
-        videoCodec: z.string().min(1),
-        audioCodec: z.string().min(1),
+        videoCodec: z.string().nullable(),
+        audioCodec: z.string().nullable(),
       })
     )
-    .min(1),
+    .min(1, { message: "Must select at least one video." }),
 });
 
 export type UploadVideosFormData = z.infer<typeof formSchema>;
@@ -61,25 +68,7 @@ export default function UploadForm() {
   const form = useForm<UploadVideosFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      videos: [
-        {
-          title: "",
-          videoUri: "",
-          thumbUri: "",
-          fileExtension: "",
-          fileSize: "",
-          duration: undefined,
-          durationFormatted: "",
-          orientation: "",
-          orientationFull: "",
-          width: undefined,
-          height: undefined,
-          fps: undefined,
-          hasAudio: undefined,
-          videoCodec: "",
-          audioCodec: "",
-        },
-      ],
+      videos: [],
     },
   });
 
@@ -90,13 +79,14 @@ export default function UploadForm() {
         videoUri: string;
         thumbUri: string;
         fileExtension: string;
+        fileSize: number;
+        fileSizeLabel: string;
         duration: number;
-        durationFormatted: string;
-        fileSize: string;
+        durationLabel: string;
         orientation: string;
-        orientationFull: string;
         width: number;
         height: number;
+        resolution: string;
         fps: number;
         hasAudio: boolean;
         videoCodec: string;
@@ -128,26 +118,31 @@ export default function UploadForm() {
             const thumbUri = `${VIDEOS_DIR}${title}.jpg`;
 
             const videoMeta = await getVideoInfoAsync(uri);
-            const durationFormatted = formatDuration(videoMeta.duration);
-            const fileSize = formatFileSize(videoMeta.fileSize);
-            const orientation = getOrientation(videoMeta.orientation);
+            const durationLabel = formatDuration(videoMeta.duration);
+            const fileSize = videoMeta.fileSize;
+            const fileSizeLabel = formatFileSize(fileSize);
+            const width = videoMeta.width;
+            const height = videoMeta.height;
+            const orientation = getOrientation({ width, height });
+            const resolution = getResolutionLabel({ width, height });
 
             return {
               title,
               videoUri: uri,
               thumbUri,
               fileExtension,
-              duration: videoMeta.duration,
-              durationFormatted,
               fileSize,
+              fileSizeLabel,
+              duration: videoMeta.duration,
+              durationLabel,
               orientation,
-              orientationFull: videoMeta.orientation ?? "unknown",
-              width: videoMeta.width,
-              height: videoMeta.height,
+              width,
+              height,
+              resolution,
               fps: videoMeta.fps,
               hasAudio: !!videoMeta.hasAudio,
-              videoCodec: videoMeta.codec ?? "unknown",
-              audioCodec: videoMeta.audioCodec ?? "unknown",
+              videoCodec: videoMeta.codec ?? null,
+              audioCodec: videoMeta.audioCodec ?? null,
             };
           })
         );
@@ -165,7 +160,7 @@ export default function UploadForm() {
   }
 
   async function onSubmit(values: UploadVideosFormData) {
-    try {
+    const promise = (async () => {
       const processedVideos = await Promise.all(
         values.videos.map(async (video) => {
           const newVideoUri = `${VIDEOS_DIR}${video.title}.${video.fileExtension}`;
@@ -185,28 +180,29 @@ export default function UploadForm() {
 
       await uploadVideos(processedVideos);
 
-      const message = `Video${values.videos.length > 1 ? "s" : ""} added successfully.`;
-      toast.success(message);
+      return {
+        message: `Video${values.videos.length > 1 ? "s" : ""} added successfully.`,
+      };
+    })();
 
-      form.reset();
-    } catch (error) {
-      toast.error("Error submitting form.");
+    toast.promise(promise, {
+      loading: "Uploading videos...",
+      success: ({ message }) => message,
+      error: "Failed to upload videos.",
+    });
 
-      handleReset();
-    }
+    promise.finally(handleReset);
   }
 
   async function handleReset() {
     const prevVideos = form.getValues("videos");
 
     await Promise.all(
-      prevVideos.map(async ({ videoUri, thumbUri }) => {
+      prevVideos.map(async ({ title, fileExtension }) => {
         try {
-          if (videoUri && (await FileSystem.getInfoAsync(videoUri)).exists) {
-            await FileSystem.deleteAsync(videoUri, { idempotent: true });
-          }
-          if (thumbUri && (await FileSystem.getInfoAsync(thumbUri)).exists) {
-            await FileSystem.deleteAsync(thumbUri, { idempotent: true });
+          const cacheVideoUri = `${FileSystem.cacheDirectory}${title}.${fileExtension}`;
+          if (cacheVideoUri && (await FileSystem.getInfoAsync(cacheVideoUri)).exists) {
+            await FileSystem.deleteAsync(cacheVideoUri, { idempotent: true });
           }
         } catch (error) {
         } finally {
@@ -216,12 +212,8 @@ export default function UploadForm() {
     );
   }
 
-  function handleErrors(errors: FieldErrors<UploadVideosFormData>) {
-    const errorMessage = errors.videos?.message;
-
-    if (errorMessage) {
-      toast.error(errorMessage);
-    }
+  function handleErrors(_errors: FieldErrors<UploadVideosFormData>) {
+    toast.error("Something went wrong!");
   }
 
   useFocusEffect(
@@ -231,6 +223,7 @@ export default function UploadForm() {
   );
 
   const uploadedVideos = form.watch("videos");
+  const isValid = uploadedVideos.length > 0;
 
   return (
     <Form {...form}>
@@ -248,7 +241,10 @@ export default function UploadForm() {
                   onPress={async () =>
                     await selectVideoFiles((videos) => {
                       // @ts-ignore
-                      form.setValue("videos", videos);
+                      form.setValue("videos", videos, {
+                        shouldDirty: true,
+                        shouldTouch: true,
+                      });
                     })
                   }>
                   <View className="items-center justify-center gap-2">
@@ -259,7 +255,7 @@ export default function UploadForm() {
                     />
                     <Text className="native:text-xl">Add videos</Text>
                     <Text className="native:text-base text-muted-foreground">
-                      {uploadedVideos[0].thumbUri
+                      {uploadedVideos?.[0]?.thumbUri
                         ? `${uploadedVideos.length} video${uploadedVideos.length > 1 ? "s" : ""} imported`
                         : "Browse your video files"}
                     </Text>
@@ -272,6 +268,7 @@ export default function UploadForm() {
 
         <View className="flex-row items-center justify-center gap-4">
           <Button
+            disabled={!isValid}
             className="flex flex-1 flex-row items-center justify-center gap-4"
             variant="outline"
             size="lg"
@@ -288,7 +285,8 @@ export default function UploadForm() {
             </View>
           </Button>
           <Button
-            className="flex flex-1 flex-row items-center justify-center gap-4 bg-teal-600"
+            disabled={!isValid}
+            className="flex flex-1 flex-row items-center justify-center gap-4 bg-brand"
             size="lg"
             onPress={form.handleSubmit(onSubmit, handleErrors)}>
             <View className="flex-row items-center gap-4">

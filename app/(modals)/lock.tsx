@@ -107,7 +107,7 @@ export default function LockModal() {
             key={`code-dots_${index}`}
             className={cn(
               "size-5 rounded-xl",
-              code[index] !== undefined ? "bg-teal-500" : "bg-gray-500"
+              code[index] !== undefined ? "bg-brand-foreground" : "bg-gray-500"
             )}></View>
         ))}
       </Animated.View>

@@ -132,7 +132,7 @@ export default function FavoritesScreen() {
 function ListEmptyComponent({ favoritesExist }: { favoritesExist: boolean }) {
   return (
     <View className="p-5">
-      <H2 className="mb-4 text-teal-500">
+      <H2 className="text-brand-foreground mb-4">
         {favoritesExist ? "No results" : "No favorite videos yet!"}
       </H2>
       {!favoritesExist && (

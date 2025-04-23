@@ -1,6 +1,6 @@
 import * as FileSystem from "expo-file-system";
 
-import { VIDEOS_DIR } from "@/lib//constants";
+import { VIDEOS_DIR } from "@/lib/constants";
 
 export async function listAllFiles() {
   const videoFiles = await listFilesRecursive(VIDEOS_DIR);

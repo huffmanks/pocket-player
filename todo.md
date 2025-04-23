@@ -18,27 +18,18 @@
 4. [Settings screen](<app/(tabs)/settings.tsx>):
    - Add icons with each section.
    - Add theme section. light, dark, system.
-5. [Upload video form](components/forms/upload-video.tsx):
-   - Clear cache on successful upload complete.
-   - New videos are all being set to landscape.
-   - Try and get original file created date.
-   - Disable clear and import button if no files have been selected.
+5. [Edit video form](components/forms/edit-video.tsx):
    - Use toast.promise to verify success or error.
-6. [Edit video form](components/forms/edit-video.tsx):
-   - Add video title to AlertDialog.
-   - On light mode, swap track colors.
-7. [Video item](components/video-item.tsx):
-   - Add video and audio codec icons.
+6. [Video item](components/video-item.tsx):
    - Dropdown when selecting favorite change toast message.
-   - Add video title to AlertDialog.
    - Sometimes remove from playlist is shown even if not in playlist. Need to refactor if video is in multiple playlists.
    - Dropdown is not responsive and can fall out of safe area.
-8. [Playlists screen](<app/(tabs)/playlists.tsx>):
-   - Add playlist title to AlertDialog.
+7. [Playlist dropdown](components/playlist-dropdown.tsx), [Video dropdown](components/video-dropdown.tsx):
    - Dropdown is not responsive and can fall out of safe area.
-9. [Create playlist form](components/forms/create-playlist.tsx):
-   - When submitting if combobox is empty change error message.
-   - Ensure router.push("/playlists") on successful submit.
+8. [Create playlist form](components/forms/create-playlist.tsx):
+   - Use toast.promise to verify success or error.
+9. [Edit playlist form](components/forms/edit-playlist.tsx):
+   - Use toast.promise to verify success or error.
 10. [playlist-sortable](components/playlist-sortable.tsx):
     - Scroll view issues if playlist is long. Not all items appear.
     - Sometimes on reorder images flash.

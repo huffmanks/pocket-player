@@ -71,7 +71,7 @@ function ListEmptyComponent({ playlistId }: { playlistId: string }) {
         asChild>
         <Button
           size="lg"
-          className="flex flex-row items-center justify-center gap-4 bg-teal-500">
+          className="bg-brand flex flex-row items-center justify-center gap-4">
           <ListVideoIcon
             className="text-white"
             size={24}
