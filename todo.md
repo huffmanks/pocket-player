@@ -18,25 +18,19 @@
 4. [Settings screen](<app/(tabs)/settings.tsx>):
    - Add icons with each section.
    - Add theme section. light, dark, system.
-5. [Edit video form](components/forms/edit-video.tsx):
-   - Use toast.promise to verify success or error.
-6. [Video item](components/video-item.tsx):
-   - Dropdown when selecting favorite change toast message.
+5. [Video item](components/video-item.tsx):
    - Sometimes remove from playlist is shown even if not in playlist. Need to refactor if video is in multiple playlists.
+6. [Playlist dropdown](components/playlist-dropdown.tsx), [Video dropdown](components/video-dropdown.tsx):
    - Dropdown is not responsive and can fall out of safe area.
-7. [Playlist dropdown](components/playlist-dropdown.tsx), [Video dropdown](components/video-dropdown.tsx):
-   - Dropdown is not responsive and can fall out of safe area.
-8. [Create playlist form](components/forms/create-playlist.tsx):
+7. [Edit video form](components/forms/edit-video.tsx), [Create playlist form](components/forms/create-playlist.tsx), [Edit playlist form](components/forms/edit-playlist.tsx):
    - Use toast.promise to verify success or error.
-9. [Edit playlist form](components/forms/edit-playlist.tsx):
-   - Use toast.promise to verify success or error.
-10. [playlist-sortable](components/playlist-sortable.tsx):
-    - Scroll view issues if playlist is long. Not all items appear.
-    - Sometimes on reorder images flash.
-11. Cleanup:
-    - Update version
-    - Update readme.md
-    - Add app screenshots to repo
+8. [playlist-sortable](components/playlist-sortable.tsx):
+   - Scroll view issues if playlist is long. Not all items appear.
+   - Sometimes on reorder images flash.
+9. Cleanup:
+   - Update version
+   - Update readme.md
+   - Add app screenshots to repo
 
 ## Features
 

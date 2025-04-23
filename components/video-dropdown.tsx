@@ -83,10 +83,12 @@ export default function VideoDropdown({ item }: VideoDropdownProps) {
 
   async function handleFavorite() {
     try {
-      const { message, status } = await toggleFavorite(item.id);
+      const { message, isFavorite, status } = await toggleFavorite(item.id);
 
-      if (status === "success") {
+      if (status === "success" && isFavorite) {
         toast.success(message);
+      } else {
+        toast.error(message);
       }
     } catch (error) {
       toast.error("Failed to add to favorites.");

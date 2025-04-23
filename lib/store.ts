@@ -61,7 +61,9 @@ type VideoStoreState = {
     values: Partial<VideoMeta>;
   }) => Promise<{ status: "success" | "error"; message: string }>;
   deleteVideo: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
-  toggleFavorite: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
+  toggleFavorite: (
+    id: string
+  ) => Promise<{ status: "success" | "error"; isFavorite?: boolean; message: string }>;
 };
 
 export const useVideoStore = create<VideoStoreState>((set) => ({
@@ -113,7 +115,11 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
       const updatedFavoriteStatus = !video.isFavorite;
       await db.update(videos).set({ isFavorite: updatedFavoriteStatus }).where(eq(videos.id, id));
 
-      return { status: "success", message: `Video ${video.title}'s favorite status toggled.` };
+      return {
+        status: "success",
+        isFavorite: updatedFavoriteStatus,
+        message: `Video ${video.title} has been ${updatedFavoriteStatus === true ? "favorited" : "unfavorited"}.`,
+      };
     } catch (error) {
       return { status: "error", message: "Failed to toggle favorite video." };
     }
