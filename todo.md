@@ -3,14 +3,16 @@
 ## Issues/Modifications
 
 1. [Video player](components/video-player.tsx):
-   - play/pause/replay toggle button: sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
+   - play/pause/replay toggle button:
+      - !ifPlaying play button else if hasEnded or !hasNext replay button else pause button.
    - Toggling mute doesn't work if mute is true in global settings.
    - Sometimes video orientation loads incorrectly.
    - Add title to top.
    - Add toggle loop button next to sound.
    - Light mode make bottom navigation bar dark.
-   - Go back button has a hover/focus color. Remove styles or use pressable.
+   - Go back button and all video controls buttons replace has a Pressable with no styles.
    - Default to overrideOrientation if true in global settings.
+   - Add useFocusEffect to cleanup previous player video.
 2. [Home screen](<app/(tabs)/index.tsx>):
    - If app is manually locked, scrollPosition is not set.
 3. [Search bar](components/search-bar.tsx):
