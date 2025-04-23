@@ -2,8 +2,8 @@
 
 ## Issues/Modifications
 
-1. [Video player](components/video-player.tsx): play/pause/replay toggle button
-   - Sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
+1. [Video player](components/video-player.tsx):
+   - play/pause/replay toggle button: sometimes replay button is shown instead of play. (have not been able to reproduce this in dev)
    - Toggling mute doesn't work if mute is true in global settings.
    - Sometimes video orientation loads incorrectly.
    - Add title to top.
@@ -47,33 +47,22 @@
    - Combobox: if titles are too long the ChevronsUpDownIcon is pushed out. Add left spacing.
    - Dismiss keyboard on combobox open.
 10. [Edit playlist form](components/forms/edit-playlist.tsx):
-
-- Combobox: if titles are too long the ChevronsUpDownIcon is pushed out. Add left spacing.
-- Dismiss keyboard on combobox open.
-
+    - Combobox: if titles are too long the ChevronsUpDownIcon is pushed out. Add left spacing.
+    - Dismiss keyboard on combobox open.
 11. [playlist-sortable](components/playlist-sortable.tsx):
-
-- Scroll view issues if playlist is long. Not all items appear.
-- Sometimes on reorder images flash.
-
+    - Scroll view issues if playlist is long. Not all items appear.
+    - Sometimes on reorder images flash.
 12. [Create passcode form](components/forms/create-passcode.tsx):
-
-- Auto focus next input on complete (4 characters).
-
+    - Auto focus next input on complete (4 characters).
 13. [Lock screen](<app/(modals)/lock.tsx>):
-
-- Verify status bar is hidden.
-- Light mode make status bar dark.
-
+    - Verify status bar is hidden.
+    - Light mode make status bar dark.
 14. [global.css](global.css), [NAV_THEME](lib/constants.ts):
-
-- Change light mode card color. (currently is white)
-
+    - Change light mode card color. (currently is white)
 15. Cleanup:
-
-- Update version
-- Update readme.md
-- Add app screenshots to repo
+    - Update version
+    - Update readme.md
+    - Add app screenshots to repo
 
 ## Features
 
