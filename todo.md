@@ -39,22 +39,10 @@
 9. [Create playlist form](components/forms/create-playlist.tsx):
    - When submitting if combobox is empty change error message.
    - Ensure router.push("/playlists") on successful submit.
-   - Combobox: if titles are too long the ChevronsUpDownIcon is pushed out. Add left spacing.
-   - Dismiss keyboard on combobox open.
-10. [Edit playlist form](components/forms/edit-playlist.tsx):
-    - Combobox: if titles are too long the ChevronsUpDownIcon is pushed out. Add left spacing.
-    - Dismiss keyboard on combobox open.
-11. [playlist-sortable](components/playlist-sortable.tsx):
+10. [playlist-sortable](components/playlist-sortable.tsx):
     - Scroll view issues if playlist is long. Not all items appear.
     - Sometimes on reorder images flash.
-12. [Create passcode form](components/forms/create-passcode.tsx):
-    - Auto focus next input on complete (4 characters).
-13. [Lock screen](<app/(modals)/lock.tsx>):
-    - Verify status bar is hidden.
-    - Light mode make status bar dark.
-14. [global.css](global.css), [NAV_THEME](lib/constants.ts):
-    - Change light mode card color. (currently is white)
-15. Cleanup:
+11. Cleanup:
     - Update version
     - Update readme.md
     - Add app screenshots to repo

@@ -12,12 +12,13 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#14b8a6",
-        tabBarInactiveTintColor: colorScheme === "light" ? "#09090b" : "#fff",
         headerShown: true,
         headerStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,
         },
+        tabBarHideOnKeyboard: true,
+        tabBarActiveTintColor: "#14b8a6",
+        tabBarInactiveTintColor: colorScheme === "light" ? "#09090b" : "#fff",
         headerRight: () => <HeaderItems />,
         tabBarStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,

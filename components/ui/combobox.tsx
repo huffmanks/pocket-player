@@ -151,12 +151,12 @@ const Combobox = React.forwardRef<
               className={buttonTextVariants({
                 variant,
                 size,
-                className: cn("-mr-3", textClass),
+                className: cn("flex-1", textClass),
               })}
               numberOfLines={1}>
               {displayText}
             </Text>
-            <ChevronsUpDownIcon className="ml-3 text-foreground opacity-50" />
+            <ChevronsUpDownIcon className="ml-2 text-foreground opacity-50" />
           </View>
         </BottomSheetOpenTrigger>
         <BottomSheetContent

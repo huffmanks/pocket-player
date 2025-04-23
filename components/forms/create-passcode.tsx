@@ -98,6 +98,13 @@ export default function CreatePasscodeForm() {
                 selectTextOnFocus={true}
                 keyboardType="numeric"
                 autoCapitalize="none"
+                maxLength={4}
+                onChangeText={(value) => {
+                  field.onChange(value);
+                  if (value.length === 4) {
+                    form.setFocus("confirmPasscode");
+                  }
+                }}
                 {...field}
               />
               <Pressable
@@ -140,6 +147,12 @@ export default function CreatePasscodeForm() {
                 selectTextOnFocus={true}
                 keyboardType="numeric"
                 autoCapitalize="none"
+                maxLength={4}
+                onKeyPress={({ nativeEvent }) => {
+                  if (nativeEvent.key === "Backspace" && field.value === "") {
+                    form.setFocus("passcode");
+                  }
+                }}
                 {...field}
               />
               <Pressable

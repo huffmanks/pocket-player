@@ -153,6 +153,9 @@ const BottomSheetOpenTrigger = React.forwardRef<
   const { sheetRef } = useBottomSheetContext();
   function handleOnPress(ev: GestureResponderEvent) {
     sheetRef.current?.present();
+    if (Keyboard.isVisible()) {
+      Keyboard.dismiss();
+    }
     onPress?.(ev);
   }
   const Trigger = asChild ? Slot.Pressable : Pressable;

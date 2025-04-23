@@ -68,7 +68,8 @@
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT"
       ],
-      "package": "com.anonymous.videoplayerapp"
+      "package": "com.anonymous.videoplayerapp",
+      "softwareKeyboardLayoutMode": "pan"
     },
     "plugins": [
       "expo-router",

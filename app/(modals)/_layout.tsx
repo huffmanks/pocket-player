@@ -6,7 +6,7 @@ import { NAV_THEME } from "@/lib/constants";
 import HeaderItems from "@/components/header-items";
 
 export default function ModalLayout() {
-  const { colorScheme } = useColorScheme();
+  const { colorScheme, isDarkColorScheme } = useColorScheme();
 
   return (
     <Stack
@@ -75,7 +75,7 @@ export default function ModalLayout() {
         name="lock"
         options={{
           headerShown: false,
-          statusBarHidden: true,
+          statusBarStyle: isDarkColorScheme ? "dark" : "light",
           animation: "fade",
         }}
       />
