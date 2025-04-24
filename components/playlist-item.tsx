@@ -63,9 +63,9 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
             style={{ width: 45, height: 45 }}
             source={{ uri: item.thumbUri }}
           />
-          <View>
+          <View className="mr-2 flex-1">
             <Text
-              className="flex-1 text-foreground"
+              className="text-foreground"
               numberOfLines={1}>
               {item.title}
             </Text>

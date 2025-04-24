@@ -71,27 +71,9 @@ export default function ViewPlaylistScreen() {
 
   return (
     <View
-      style={{ paddingTop: 16, paddingBottom: insets.bottom + 40 }}
-      className="relative min-h-full px-5">
-      <View className="mb-10">
-        <Link
-          href={`/(modals)/playlists/watch/${id}`}
-          asChild>
-          <Button
-            size="lg"
-            className="flex flex-row items-center justify-center gap-4">
-            <TvIcon
-              className="text-background"
-              size={24}
-              strokeWidth={1.5}
-            />
-            <Text className="native:text-base font-semibold uppercase tracking-wider">
-              Watch playlist
-            </Text>
-          </Button>
-        </Link>
-      </View>
-      <View className="mb-10">
+      style={{ paddingTop: 16, paddingBottom: insets.bottom }}
+      className="flex-1 px-5">
+      <View className="mb-8">
         <H2 className="mb-4">{playlistQuery.data[0].title}</H2>
         <Text className="text-muted-foreground">
           {playlistQuery.data[0]?.description
@@ -99,41 +81,45 @@ export default function ViewPlaylistScreen() {
             : "No description."}
         </Text>
       </View>
-      <PlaylistSortable
-        playlistId={id}
-        videosData={videosData}
-      />
-
-      <View className="flex-row items-center justify-center gap-4">
+      <View className="mb-12 flex-row items-center justify-center gap-2">
         <View className="flex-1">
-          <Button
-            variant="secondary"
-            size="lg"
-            className="flex w-full flex-row items-center justify-center gap-4"
-            onPress={() => router.push(`/(modals)/playlists/edit/${id}`)}>
-            <PencilIcon
-              className="text-foreground"
-              size={24}
-              strokeWidth={1.5}
-            />
-            <Text className="native:text-base font-semibold uppercase tracking-wider">Edit</Text>
-          </Button>
+          <Link
+            href={`/(modals)/playlists/watch/${id}`}
+            asChild>
+            <Button className="flex flex-row items-center justify-center gap-4">
+              <TvIcon
+                className="text-background"
+                size={24}
+                strokeWidth={1.5}
+              />
+              <Text className="native:text-base font-semibold uppercase tracking-wider">Watch</Text>
+            </Button>
+          </Link>
         </View>
-        <View className="flex-1">
+        <View>
+          <Link
+            href={`/(modals)/playlists/edit/${id}`}
+            asChild>
+            <Button
+              variant="secondary"
+              className="flex flex-row items-center justify-center gap-4">
+              <PencilIcon
+                className="text-foreground"
+                size={24}
+                strokeWidth={1.5}
+              />
+            </Button>
+          </Link>
+        </View>
+        <View>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="lg"
-                className="flex w-full flex-row items-center justify-center gap-4 bg-destructive/70">
+              <Button className="flex flex-row items-center justify-center gap-4 bg-destructive">
                 <TrashIcon
                   className="text-destructive-foreground"
                   size={24}
                   strokeWidth={1.5}
                 />
-                <Text className="native:text-base font-semibold uppercase tracking-wider text-destructive-foreground">
-                  Delete
-                </Text>
               </Button>
             </AlertDialogTrigger>
 
@@ -160,6 +146,11 @@ export default function ViewPlaylistScreen() {
           </AlertDialog>
         </View>
       </View>
+
+      <PlaylistSortable
+        playlistId={id}
+        videosData={videosData}
+      />
     </View>
   );
 }

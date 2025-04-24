@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ListRenderItemInfo, View } from "react-native";
 
 import ReorderableList, {
@@ -32,11 +32,14 @@ export default function PlaylistSortable({ playlistId, videosData }: PlaylistSor
     }
   }, [videosData]);
 
-  const renderItem = ({ item }: ListRenderItemInfo<VideoMeta>) => (
-    <PlaylistItem
-      item={item}
-      playlistId={playlistId}
-    />
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<VideoMeta>) => (
+      <PlaylistItem
+        item={item}
+        playlistId={playlistId}
+      />
+    ),
+    [playlistId]
   );
 
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
@@ -71,7 +74,7 @@ function ListEmptyComponent({ playlistId }: { playlistId: string }) {
         asChild>
         <Button
           size="lg"
-          className="bg-brand flex flex-row items-center justify-center gap-4">
+          className="flex flex-row items-center justify-center gap-4 bg-brand">
           <ListVideoIcon
             className="text-white"
             size={24}

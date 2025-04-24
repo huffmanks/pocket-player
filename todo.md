@@ -27,10 +27,7 @@
    - [useRelativePosition.tsx](https://github.com/roninoss/rn-primitives/blob/main/packages%2Fhooks%2Fsrc%2FuseRelativePosition.tsx)
 6. [Edit video form](components/forms/edit-video.tsx), [Create playlist form](components/forms/create-playlist.tsx), [Edit playlist form](components/forms/edit-playlist.tsx):
    - Use toast.promise to verify success or error.
-7. [playlist-sortable](components/playlist-sortable.tsx):
-   - Scroll view issues if playlist is long. Not all items appear.
-   - Sometimes on reorder images flash.
-8. Cleanup:
+7. Cleanup:
    - Update version
    - Update readme.md
    - Add app screenshots to repo
