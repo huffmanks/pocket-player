@@ -308,7 +308,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         .where(and(eq(playlistVideos.videoId, videoId), eq(playlistVideos.playlistId, playlistId)))
         .returning();
 
-      if (relatedPlaylistVideo) {
+      if (!relatedPlaylistVideo) {
         await db.insert(playlistVideos).values({ playlistId, videoId });
         return { status: "success", isAdded: true, message: "Video added to playlist." };
       }

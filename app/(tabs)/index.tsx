@@ -37,16 +37,29 @@ export default function HomeScreen() {
 
   const videosQuery = useLiveQuery(
     db.query.videos.findMany({
-      with: {
-        playlists: true,
-      },
+      orderBy: (videos, { asc }) => [asc(videos.createdAt)],
     })
   );
 
-  const videosWithPlaylists = videosQuery?.data?.map((video) => ({
-    ...video,
-    playlists: video.playlists.map((playlist) => playlist.playlistId),
-  }));
+  const playlistVideosQuery = useLiveQuery(db.query.playlistVideos.findMany());
+
+  const videosWithPlaylists = useMemo(() => {
+    if (!videosQuery || !playlistVideosQuery) return [];
+
+    const videoToPlaylistsMap: Record<string, string[]> = {};
+
+    for (const { videoId, playlistId } of playlistVideosQuery.data) {
+      if (!videoToPlaylistsMap[videoId]) {
+        videoToPlaylistsMap[videoId] = [];
+      }
+      videoToPlaylistsMap[videoId].push(playlistId);
+    }
+
+    return videosQuery.data.map((video) => ({
+      ...video,
+      playlists: videoToPlaylistsMap[video.id] || [],
+    }));
+  }, [videosQuery.data, playlistVideosQuery.data]);
 
   const playlistsQuery = useLiveQuery(
     db.select({ value: playlists.id, label: playlists.title }).from(playlists)
@@ -80,7 +93,7 @@ export default function HomeScreen() {
 
     const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
     return fuse.search(searchQuery).map((result) => result.item);
-  }, [videosWithPlaylists, searchQuery]);
+  }, [videosQuery, searchQuery]);
 
   const sortedData = useMemo(() => {
     const sorted = [...filteredData];
@@ -146,7 +159,7 @@ export default function HomeScreen() {
         </View>
       );
     },
-    [playlistsQuery.data]
+    [videosQuery, playlistsQuery]
   );
 
   useEffect(() => {

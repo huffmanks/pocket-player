@@ -1,4 +1,5 @@
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
+import { View } from "react-native";
 
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,6 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { VideoMetaWithPlaylists } from "@/app/(tabs)";
 import {
+  CheckIcon,
   EllipsisVerticalIcon,
   ListMusicIcon,
   PencilIcon,
@@ -53,6 +55,7 @@ interface VideoDropdownProps {
 
 export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps) {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const contentInsets = {
     top: insets.top,
@@ -181,20 +184,30 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
                     <DropdownMenuItem
                       key={`add-to-playlist_${playlist.value}`}
                       className={cn(
-                        "gap-4",
+                        "flex-row items-center justify-between gap-4",
                         item?.playlists?.includes(playlist.value) && "bg-secondary"
                       )}
                       onPress={() => handleVideoPlaylist(playlist.value)}>
-                      <ListMusicIcon
-                        className="text-foreground"
-                        size={20}
-                        strokeWidth={1.25}
-                      />
-                      <Text
-                        className="text-foreground"
-                        numberOfLines={1}>
-                        {playlist.label}
-                      </Text>
+                      <View className="flex-row items-center gap-4">
+                        <ListMusicIcon
+                          className="text-foreground"
+                          size={20}
+                          strokeWidth={1.25}
+                        />
+                        <Text
+                          className="text-foreground"
+                          numberOfLines={1}>
+                          {playlist.label}
+                        </Text>
+                      </View>
+                      {item?.playlists?.includes(playlist.value) && (
+                        <View>
+                          <CheckIcon
+                            size={24}
+                            className={"px-4 text-foreground"}
+                          />
+                        </View>
+                      )}
                     </DropdownMenuItem>
                   ))}
                 </Animated.View>
