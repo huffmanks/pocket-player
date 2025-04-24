@@ -1,4 +1,4 @@
-import { and, eq, notInArray } from "drizzle-orm";
+import { and, eq, inArray, notInArray } from "drizzle-orm";
 import { MMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
@@ -138,16 +138,14 @@ type PlaylistStoreState = {
     values: EditPlaylistFormData;
   }) => Promise<{ status: "success" | "error"; message: string }>;
   deletePlaylist: (id: string) => Promise<{ status: "success" | "error"; message: string }>;
-  getPlaylistWithAllVideos: (id: string) => Promise<EditPlaylistInfo>;
-  addVideoToPlaylist: ({
+  getPlaylistWithAllVideos: (playlistId: string) => Promise<EditPlaylistInfo>;
+  toggleVideoInPlaylist: ({
     playlistId,
     videoId,
-    order,
   }: {
     playlistId: string;
     videoId: string;
-    order?: number;
-  }) => Promise<{ status: "success" | "error"; message: string }>;
+  }) => Promise<{ status: "success" | "error"; isAdded?: boolean; message: string }>;
   removeVideoFromPlaylist: ({
     playlistId,
     videoId,
@@ -162,6 +160,7 @@ type PlaylistStoreState = {
     playlistId: string;
     videosOrder: VideoMeta[];
   }) => Promise<{ status: "success" | "error"; message: string }>;
+  syncVideoPlaylists: (videoId: string, playlists: { id: string }[]) => void;
 };
 
 export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
@@ -262,11 +261,11 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
       return { status: "error", message: "Failed to delete playlist." };
     }
   },
-  getPlaylistWithAllVideos: async (id) => {
+  getPlaylistWithAllVideos: async (playlistId) => {
     try {
       const db = useDatabaseStore.getState().db;
 
-      const [playlist] = await db.select().from(playlists).where(eq(playlists.id, id));
+      const [playlist] = await db.select().from(playlists).where(eq(playlists.id, playlistId));
 
       const allVideos = await db.select({ value: videos.id, label: videos.title }).from(videos);
 
@@ -275,7 +274,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
           videoId: playlistVideos.videoId,
         })
         .from(playlistVideos)
-        .where(eq(playlistVideos.playlistId, id));
+        .where(eq(playlistVideos.playlistId, playlistId));
 
       const selectedVideoIds = new Set(matchingPlaylistVideos.map((pv) => pv.videoId));
 
@@ -300,14 +299,23 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
       };
     }
   },
-  addVideoToPlaylist: async ({ playlistId, videoId, order = 1 }) => {
+  toggleVideoInPlaylist: async ({ playlistId, videoId }) => {
     try {
       const db = useDatabaseStore.getState().db;
-      await db.insert(playlistVideos).values({ playlistId, videoId, order });
 
-      return { status: "success", message: "Video added to playlist successfully." };
+      const [relatedPlaylistVideo] = await db
+        .delete(playlistVideos)
+        .where(and(eq(playlistVideos.videoId, videoId), eq(playlistVideos.playlistId, playlistId)))
+        .returning();
+
+      if (relatedPlaylistVideo) {
+        await db.insert(playlistVideos).values({ playlistId, videoId });
+        return { status: "success", isAdded: true, message: "Video added to playlist." };
+      }
+
+      return { status: "success", isAdded: false, message: "Video removed from playlist." };
     } catch (error) {
-      return { status: "error", message: "Failed to add video to playlist." };
+      return { status: "error", message: "Failed to update playlist." };
     }
   },
   removeVideoFromPlaylist: async ({ playlistId, videoId }) => {
@@ -345,6 +353,40 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
       return { status: "success", message: "Playlist order updated successfully." };
     } catch (error) {
       return { status: "error", message: "Failed to update playlist order." };
+    }
+  },
+  syncVideoPlaylists: async (videoId: string, playlists: { id: string }[]) => {
+    const db = useDatabaseStore.getState().db;
+
+    const current = await db.query.playlistVideos.findMany({
+      where: eq(playlistVideos.videoId, videoId),
+      columns: { playlistId: true },
+    });
+
+    const currentIds = new Set(current.map((pv) => pv.playlistId));
+    const targetIds = new Set(playlists.map((p) => p.id));
+
+    const toAdd = [...targetIds].filter((id) => !currentIds.has(id));
+    const toRemove = [...currentIds].filter((id) => !targetIds.has(id));
+
+    if (toAdd.length > 0) {
+      await db
+        .insert(playlistVideos)
+        .values(
+          toAdd.map((id) => ({
+            playlistId: id,
+            videoId,
+          }))
+        )
+        .onConflictDoNothing();
+    }
+
+    if (toRemove.length > 0) {
+      await db
+        .delete(playlistVideos)
+        .where(
+          and(eq(playlistVideos.videoId, videoId), inArray(playlistVideos.playlistId, toRemove))
+        );
     }
   },
 }));

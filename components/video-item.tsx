@@ -3,7 +3,7 @@ import { Image, Pressable, View } from "react-native";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
-import { VideoMeta } from "@/db/schema";
+import { VideoMetaWithPlaylists } from "@/app/(tabs)";
 import { formatDateString } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +11,14 @@ import { Text } from "@/components/ui/text";
 import VideoDropdown from "@/components/video-dropdown";
 
 interface VideoItemProps {
-  item: VideoMeta;
+  item: VideoMetaWithPlaylists;
+  allPlaylists?: {
+    value: string;
+    label: string;
+  }[];
 }
 
-function VideoItem({ item }: VideoItemProps) {
+function VideoItem({ item, allPlaylists }: VideoItemProps) {
   const createdAt = formatDateString(item.createdAt);
 
   return (
@@ -68,7 +72,10 @@ function VideoItem({ item }: VideoItemProps) {
             )}
           </View>
         </View>
-        <VideoDropdown item={item} />
+        <VideoDropdown
+          item={item}
+          allPlaylists={allPlaylists}
+        />
       </View>
     </Animated.View>
   );

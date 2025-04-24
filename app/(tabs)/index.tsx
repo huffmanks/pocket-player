@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
-import { VideoMeta, videos } from "@/db/schema";
+import { VideoMeta, playlists } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
 import { useAppStore, useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
@@ -20,6 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
+
+export type VideoMetaWithPlaylists = VideoMeta & { playlists?: string[] };
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,8 +35,22 @@ export default function HomeScreen() {
   const isLocked = useSecurityStore((state) => state.isLocked);
   const db = useDatabaseStore.getState().db;
 
-  const videoQuery = useLiveQuery(db.select().from(videos).orderBy(videos.updatedAt));
-  const { data, error } = videoQuery;
+  const videosQuery = useLiveQuery(
+    db.query.videos.findMany({
+      with: {
+        playlists: true,
+      },
+    })
+  );
+
+  const videosWithPlaylists = videosQuery?.data?.map((video) => ({
+    ...video,
+    playlists: video.playlists.map((playlist) => playlist.playlistId),
+  }));
+
+  const playlistsQuery = useLiveQuery(
+    db.select({ value: playlists.id, label: playlists.title }).from(playlists)
+  );
 
   const {
     sortKey,
@@ -59,12 +75,12 @@ export default function HomeScreen() {
   );
 
   const filteredData = useMemo(() => {
-    if (!data) return [];
-    if (!searchQuery) return data;
+    if (!videosWithPlaylists) return [];
+    if (!searchQuery) return videosWithPlaylists;
 
-    const fuse = new Fuse(data, { keys: ["title"], threshold: 0.5 });
+    const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
     return fuse.search(searchQuery).map((result) => result.item);
-  }, [data, searchQuery]);
+  }, [videosWithPlaylists, searchQuery]);
 
   const sortedData = useMemo(() => {
     const sorted = [...filteredData];
@@ -119,13 +135,19 @@ export default function HomeScreen() {
     }, 250)
   ).current;
 
-  const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
-    return (
-      <View className="px-2">
-        <VideoItem item={item} />
-      </View>
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: VideoMetaWithPlaylists }) => {
+      return (
+        <View className="px-2">
+          <VideoItem
+            item={item}
+            allPlaylists={playlistsQuery?.data}
+          />
+        </View>
+      );
+    },
+    [playlistsQuery.data]
+  );
 
   useEffect(() => {
     if (isAppReady && !isLocked) {
@@ -135,11 +157,11 @@ export default function HomeScreen() {
     }
   }, [isAppReady, isLocked]);
 
-  if (error) {
+  if (videosQuery.error) {
     toast.error("Error loading data.");
   }
 
-  const videosExist = Array.isArray(data) && data.length > 0;
+  const videosExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
 
   return (
     <View className="relative min-h-full pt-4">
@@ -176,7 +198,7 @@ export default function HomeScreen() {
 function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
   return (
     <View className="p-5">
-      <H2 className="text-brand-foreground mb-4">
+      <H2 className="mb-4 text-brand-foreground">
         {videosExist ? "No results" : "No videos yet!"}
       </H2>
       {!videosExist && (

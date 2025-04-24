@@ -4,7 +4,7 @@
 
 1. [Video player](components/video-player.tsx):
    - play/pause/replay toggle button:
-      - !ifPlaying play button else if hasEnded or !hasNext replay button else pause button.
+     - !ifPlaying play button else if hasEnded or !hasNext replay button else pause button.
    - Toggling mute doesn't work if mute is true in global settings.
    - Sometimes video orientation loads incorrectly.
    - Add title to top.
@@ -13,8 +13,10 @@
    - Go back button and all video controls buttons replace has a Pressable with no styles.
    - Default to overrideOrientation if true in global settings.
    - Add useFocusEffect to cleanup previous player video.
-2. [Home screen](<app/(tabs)/index.tsx>):
-   - If app is manually locked, scrollPosition is not set.
+2. [Lock screen](<app/(modals)/lock.tsx>):
+   - scrollPosition is not set if:
+     - app is manually locked
+     - sometimes when coming from locked screen
 3. [Search bar](components/search-bar.tsx):
    - Make glass effect when scrolling.
 4. [Settings screen](<app/(tabs)/settings.tsx>):
