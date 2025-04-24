@@ -20,6 +20,7 @@ export default function ModalLayout() {
         options={{
           headerShown: false,
           statusBarHidden: true,
+          navigationBarHidden: true,
           animation: "slide_from_right",
         }}
       />
@@ -58,6 +59,7 @@ export default function ModalLayout() {
         options={{
           headerShown: false,
           statusBarHidden: true,
+          navigationBarHidden: true,
           animation: "slide_from_right",
         }}
       />

@@ -2,14 +2,13 @@ import { useCallback, useMemo, useState } from "react";
 import { View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
-import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Fuse from "fuse.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
-import { VideoMeta, videos } from "@/db/schema";
+import { VideoMeta, playlists } from "@/db/schema";
 import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { useDatabaseStore, useSettingsStore } from "@/lib/store";
 import { formatDuration } from "@/lib/utils";
@@ -26,10 +25,36 @@ export default function FavoritesScreen() {
 
   const db = useDatabaseStore.getState().db;
 
-  const videoQuery = useLiveQuery(
-    db.select().from(videos).where(eq(videos.isFavorite, true)).orderBy(videos.updatedAt)
+  const videosQuery = useLiveQuery(
+    db.query.videos.findMany({
+      where: (videos, { eq }) => eq(videos.isFavorite, true),
+      orderBy: (videos, { asc }) => [asc(videos.createdAt)],
+    })
   );
-  const { data, error } = videoQuery;
+
+  const playlistVideosQuery = useLiveQuery(db.query.playlistVideos.findMany());
+
+  const videosWithPlaylists = useMemo(() => {
+    if (!videosQuery || !playlistVideosQuery) return [];
+
+    const videoToPlaylistsMap: Record<string, string[]> = {};
+
+    for (const { videoId, playlistId } of playlistVideosQuery.data) {
+      if (!videoToPlaylistsMap[videoId]) {
+        videoToPlaylistsMap[videoId] = [];
+      }
+      videoToPlaylistsMap[videoId].push(playlistId);
+    }
+
+    return videosQuery.data.map((video) => ({
+      ...video,
+      playlists: videoToPlaylistsMap[video.id] || [],
+    }));
+  }, [videosQuery.data, playlistVideosQuery.data]);
+
+  const playlistsQuery = useLiveQuery(
+    db.select({ value: playlists.id, label: playlists.title }).from(playlists)
+  );
 
   const {
     sortKey,
@@ -50,12 +75,12 @@ export default function FavoritesScreen() {
   );
 
   const filteredData = useMemo(() => {
-    if (!data) return [];
-    if (!searchQuery) return data;
+    if (!videosWithPlaylists) return [];
+    if (!searchQuery) return videosWithPlaylists;
 
-    const fuse = new Fuse(data, { keys: ["title"], threshold: 0.5 });
+    const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
     return fuse.search(searchQuery).map((result) => result.item);
-  }, [data, searchQuery]);
+  }, [videosQuery, searchQuery]);
 
   const sortedData = useMemo(() => {
     const sorted = [...filteredData];
@@ -87,19 +112,25 @@ export default function FavoritesScreen() {
     toggleSortTitleOrder();
   }
 
-  const renderItem = useCallback(({ item }: { item: VideoMeta }) => {
-    return (
-      <View className="px-2">
-        <VideoItem item={item} />
-      </View>
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: VideoMeta }) => {
+      return (
+        <View className="px-2">
+          <VideoItem
+            item={item}
+            allPlaylists={playlistsQuery?.data}
+          />
+        </View>
+      );
+    },
+    [videosQuery, playlistsQuery]
+  );
 
-  if (error) {
+  if (videosQuery.error) {
     toast.error("Error loading data.");
   }
 
-  const favoritesExist = Array.isArray(data) && data.length > 0;
+  const favoritesExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
 
   return (
     <View className="relative min-h-full pt-4">
@@ -132,7 +163,7 @@ export default function FavoritesScreen() {
 function ListEmptyComponent({ favoritesExist }: { favoritesExist: boolean }) {
   return (
     <View className="p-5">
-      <H2 className="text-brand-foreground mb-4">
+      <H2 className="mb-4 text-brand-foreground">
         {favoritesExist ? "No results" : "No favorite videos yet!"}
       </H2>
       {!favoritesExist && (
