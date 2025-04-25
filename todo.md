@@ -24,7 +24,7 @@
    - [useRelativePosition.tsx](https://github.com/roninoss/rn-primitives/blob/main/packages%2Fhooks%2Fsrc%2FuseRelativePosition.tsx)
 5. [Edit video form](components/forms/edit-video.tsx), [Create playlist form](components/forms/create-playlist.tsx), [Edit playlist form](components/forms/edit-playlist.tsx):
    - Use toast.promise to verify success or error.
-   - HeaderItems lock and toggle theme doesn't work.
+   - HeaderItems lock and toggle theme doesn't work. try adding presentation: "card"
    - Edit video only: light mode change track colors.
 6. Cleanup:
    - Update version
