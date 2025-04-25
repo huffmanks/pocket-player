@@ -16,10 +16,10 @@ export default function TabLayout() {
         headerStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,
         },
+        headerRight: () => <HeaderItems />,
         tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: NAV_THEME[colorScheme].brandForeground,
         tabBarInactiveTintColor: NAV_THEME[colorScheme].text,
-        headerRight: () => <HeaderItems />,
         tabBarStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,
           paddingTop: 10,

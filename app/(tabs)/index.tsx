@@ -1,5 +1,5 @@
-import { Link } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link, useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { InteractionManager, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
@@ -115,13 +115,30 @@ export default function HomeScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
+  const videosExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
+
   function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
     if (!canSaveScroll.current) return;
     saveScrollY(e.nativeEvent.contentOffset.y);
   }
 
-  function handleContentSizeChange() {
-    if (!flashListRef.current || scrollPosition <= 0 || hasRestoredScroll.current) return;
+  const saveScrollY = useRef(
+    throttle((y: number) => {
+      setScrollPosition(y);
+    }, 250)
+  ).current;
+
+  const handleContentSizeChange = useCallback(() => {
+    if (
+      !flashListRef.current ||
+      scrollPosition <= 0 ||
+      hasRestoredScroll.current ||
+      !isAppReady ||
+      isLocked ||
+      !videosExist
+    ) {
+      return;
+    }
 
     InteractionManager.runAfterInteractions(() => {
       flashListRef.current?.scrollToOffset({
@@ -130,7 +147,7 @@ export default function HomeScreen() {
       });
       hasRestoredScroll.current = true;
     });
-  }
+  }, [isAppReady, isLocked, videosExist]);
 
   function handleSortDate() {
     setSortKey("date");
@@ -141,12 +158,6 @@ export default function HomeScreen() {
     setSortKey("title");
     toggleSortTitleOrder();
   }
-
-  const saveScrollY = useRef(
-    throttle((y: number) => {
-      setScrollPosition(y);
-    }, 250)
-  ).current;
 
   const renderItem = useCallback(
     ({ item }: { item: VideoMetaWithPlaylists }) => {
@@ -162,19 +173,18 @@ export default function HomeScreen() {
     [videosQuery, playlistsQuery]
   );
 
-  useEffect(() => {
-    if (isAppReady && !isLocked) {
+  useFocusEffect(
+    useCallback(() => {
       canSaveScroll.current = true;
-    } else {
-      canSaveScroll.current = false;
-    }
-  }, [isAppReady, isLocked]);
+      hasRestoredScroll.current = false;
+
+      return () => (canSaveScroll.current = false);
+    }, [])
+  );
 
   if (videosQuery.error) {
     toast.error("Error loading data.");
   }
-
-  const videosExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
 
   return (
     <View className="relative min-h-full pt-4">

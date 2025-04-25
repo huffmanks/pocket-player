@@ -10,8 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { clearDirectory, resetTables } from "@/db/drop";
 import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
-import { GitMergeIcon, KeyRoundIcon, TrashIcon } from "@/lib/icons";
-import { migrateDatabase } from "@/lib/migrate-database";
+import { KeyRoundIcon, TrashIcon } from "@/lib/icons";
 import { resetPersistedStorage, useSecurityStore } from "@/lib/store";
 import { withDelay } from "@/lib/utils";
 
@@ -56,21 +55,6 @@ export default function SettingsModal() {
       loading: "Data being deleted...",
       success: ({ message }) => message,
       error: "Data deletion has failed.",
-    });
-  }
-
-  function handleMigrateDatabase() {
-    setIsMigrationDisabled(true);
-    const promise = withDelay(() => migrateDatabase(), 2000);
-
-    toast.promise(promise, {
-      loading: "Database migrating...",
-      success: ({ message }) => message,
-      error: "Database migration failed.",
-    });
-
-    promise.finally(() => {
-      setIsMigrationDisabled(false);
     });
   }
 
@@ -139,21 +123,6 @@ export default function SettingsModal() {
 
         <View className="mb-6 gap-6">
           <Text className="text-xl font-semibold">Database</Text>
-
-          <Button
-            variant="secondary"
-            disabled={isMigrationDisabled}
-            className="flex flex-row items-center justify-center gap-4"
-            onPress={handleMigrateDatabase}>
-            <GitMergeIcon
-              className="text-foreground"
-              size={24}
-              strokeWidth={1.5}
-            />
-            <Text className="native:text-base font-semibold uppercase tracking-wider">
-              Migrate database
-            </Text>
-          </Button>
 
           <View className="mt-3 gap-6">
             <AlertDialog>

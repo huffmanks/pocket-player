@@ -10,6 +10,7 @@ import { GestureDetector } from "react-native-gesture-handler";
 import { toast } from "sonner-native";
 
 import { VideoMeta } from "@/db/schema";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
 import { SLIDER_THEME, VIDEOS_DIR } from "@/lib/constants";
 import { ImageDownIcon, LockIcon, LockOpenIcon } from "@/lib/icons";
@@ -26,6 +27,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
   const [isLocked, setIsLocked] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
+  const { isDarkColorScheme } = useColorScheme();
   const updateVideo = useVideoStore((state) => state.updateVideo);
 
   const {
@@ -101,8 +103,16 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
               thumbTintColor={
                 isLocked ? SLIDER_THEME.thumbDisabledTintColor : SLIDER_THEME.thumbTintColor
               }
-              minimumTrackTintColor={SLIDER_THEME.minimumTrackTintColor}
-              maximumTrackTintColor={SLIDER_THEME.maximumTrackTintColor}
+              minimumTrackTintColor={
+                !isDarkColorScheme
+                  ? SLIDER_THEME.maximumTrackTintColor
+                  : SLIDER_THEME.minimumTrackTintColor
+              }
+              maximumTrackTintColor={
+                !isDarkColorScheme
+                  ? SLIDER_THEME.minimumTrackTintColor
+                  : SLIDER_THEME.maximumTrackTintColor
+              }
               onValueChange={(val) => onSliderChange(Number(val))}
               onSlidingStart={onSlidingStart}
               onSlidingComplete={(val) => onSlidingComplete(Number(val))}
