@@ -2,7 +2,7 @@
   "expo": {
     "name": "Video Player",
     "slug": "video-player-app",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "scheme": "video-player-app",
     "orientation": "portrait",
     "icon": "./assets/icons/ios_app_logo_marketing.png",
