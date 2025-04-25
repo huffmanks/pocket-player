@@ -26,7 +26,10 @@
    - Use toast.promise to verify success or error.
    - HeaderItems lock and toggle theme doesn't work. try adding presentation: "card"
    - Edit video only: light mode change track colors.
-6. Cleanup:
+6. [Search bar](components/search-bar.tsx):
+   - move to header.
+   - use `headerTransparent: true` and `headerBlurEffect: regular`.
+7. Cleanup:
    - Update version
    - Update readme.md
    - Add app screenshots to repo
