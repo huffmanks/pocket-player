@@ -42,9 +42,7 @@ export default function WatchModal() {
     toast.error("Failed to get playlist videos.");
   }
 
-  if (!videoQuery?.data) return;
+  if (!videoQuery?.data?.length) return null;
 
-  const videoSources = videoQuery.data.map((item) => item.videoUri);
-
-  return <VideoPlayer videoSources={videoSources} />;
+  return <VideoPlayer videoSources={videoQuery.data} />;
 }

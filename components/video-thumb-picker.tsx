@@ -40,7 +40,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
     onSlidingStart,
     onSlidingComplete,
     tapGesture,
-  } = useVideoPlayerControls([videoInfo.videoUri], true);
+  } = useVideoPlayerControls([videoInfo], true);
 
   async function handleSaveThumb() {
     if (isSaving || isLocked) return;
@@ -115,7 +115,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
               }
               onValueChange={(val) => onSliderChange(Number(val))}
               onSlidingStart={onSlidingStart}
-              onSlidingComplete={(val) => onSlidingComplete(Number(val))}
+              onSlidingComplete={onSlidingComplete}
             />
           </View>
         </View>

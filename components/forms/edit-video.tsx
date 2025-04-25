@@ -264,7 +264,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
           <View className="flex-1">
             <Button
               size="lg"
-              className="bg-brand flex w-full flex-row items-center justify-center gap-4"
+              className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
               onPress={form.handleSubmit(onSubmit)}>
               <SaveIcon
                 className="text-white"

@@ -49,9 +49,9 @@ export default function WatchPlaylistScreen() {
     toast.error("Failed to get playlist videos.");
   }
 
-  if (!playlistVideosQuery?.data) return;
+  if (!playlistVideosQuery?.data?.length) return null;
 
-  const videoSources = playlistVideosQuery.data.map((item) => item.videos.videoUri);
+  const videoSources = playlistVideosQuery.data.map((item) => item.videos);
 
   return <VideoPlayer videoSources={videoSources} />;
 }

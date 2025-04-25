@@ -7,6 +7,7 @@ import { Slider } from "@miblanchard/react-native-slider";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 
+import { VideoMeta } from "@/db/schema";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
 import { SLIDER_THEME } from "@/lib/constants";
@@ -28,7 +29,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 
-export default function VideoPlayer({ videoSources }: { videoSources: string[] }) {
+export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[] }) {
   useKeepAwake();
 
   const { isDarkColorScheme } = useColorScheme();
@@ -38,6 +39,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
     videoRef,
     player,
     isPlaying,
+    currentIndex,
     time,
     progress,
     muted,
@@ -97,25 +99,34 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
               style={animatedStyle}>
               {controlsVisible && (
                 <View className="flex-1 justify-between gap-2">
-                  <View className="flex-row items-center justify-between gap-4 pt-4">
-                    <Button
-                      className="p-3"
-                      variant="ghost"
-                      size="unset"
-                      onPressIn={handleButtonPressIn}
-                      onPressOut={handleButtonPressOut}
-                      onPress={handleGoBack}>
-                      <ChevronLeftIcon
-                        className="text-white"
-                        size={32}
-                        strokeWidth={1.25}
-                      />
-                    </Button>
+                  <View className="flex-row items-center justify-between gap-4 pt-2">
+                    <View>
+                      <Button
+                        className="rounded-full p-1 active:bg-transparent"
+                        variant="ghost"
+                        size="unset"
+                        onPressIn={handleButtonPressIn}
+                        onPressOut={handleButtonPressOut}
+                        onPress={handleGoBack}>
+                        <ChevronLeftIcon
+                          className="text-white group-active:opacity-70"
+                          size={32}
+                          strokeWidth={1.25}
+                        />
+                      </Button>
+                    </View>
+                    <View className="mr-8 flex-1">
+                      <Text
+                        className="text-lg font-semibold"
+                        numberOfLines={1}>
+                        {videoSources[currentIndex].title}
+                      </Text>
+                    </View>
                   </View>
-                  <View className="mt-16 flex-row items-center justify-center gap-5">
+                  <View className="flex-row items-center justify-center gap-5">
                     {isPlaylist && (
                       <Button
-                        className="p-3"
+                        className="rounded-full p-1 active:bg-transparent"
                         variant="ghost"
                         size="unset"
                         disabled={hasEnded}
@@ -123,7 +134,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                         onPressOut={handleButtonPressOut}
                         onPress={() => changeVideoSource(-1)}>
                         <SkipBackIcon
-                          className="text-white"
+                          className="text-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
@@ -131,7 +142,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                     )}
 
                     <Button
-                      className="p-3"
+                      className="rounded-full p-1 active:bg-transparent"
                       variant="ghost"
                       size="unset"
                       disabled={hasEnded}
@@ -139,14 +150,14 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       onPressOut={handleButtonPressOut}
                       onPress={() => safeSeekBy(-5)}>
                       <RewindIcon
-                        className="fill-white"
+                        className="fill-white group-active:opacity-70"
                         size={32}
                         strokeWidth={1.25}
                       />
                     </Button>
 
                     <Button
-                      className="p-3"
+                      className="rounded-full p-1 active:bg-transparent"
                       variant="ghost"
                       size="unset"
                       onPressIn={handleButtonPressIn}
@@ -154,26 +165,26 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       onPress={togglePlay}>
                       {hasEnded ? (
                         <RotateCcwIcon
-                          className="text-white"
+                          className="text-white group-active:opacity-70"
                           size={32}
                           strokeWidth={2.25}
                         />
                       ) : isPlaying ? (
                         <PauseIcon
-                          className="fill-white"
+                          className="fill-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
                       ) : (
                         <PlayIcon
-                          className="fill-white"
+                          className="fill-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
                       )}
                     </Button>
                     <Button
-                      className="p-3"
+                      className="rounded-full p-1 active:bg-transparent"
                       variant="ghost"
                       size="unset"
                       disabled={hasEnded}
@@ -181,7 +192,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       onPressOut={handleButtonPressOut}
                       onPress={() => safeSeekBy(5)}>
                       <FastForwardIcon
-                        className="fill-white"
+                        className="fill-white group-active:opacity-70"
                         size={32}
                         strokeWidth={1.25}
                       />
@@ -189,7 +200,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
 
                     {isPlaylist && (
                       <Button
-                        className="p-3"
+                        className="rounded-full p-1 active:bg-transparent"
                         variant="ghost"
                         size="unset"
                         disabled={hasEnded}
@@ -197,18 +208,18 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                         onPressOut={handleButtonPressOut}
                         onPress={() => changeVideoSource(1)}>
                         <SkipForwardIcon
-                          className="text-white"
+                          className="text-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
                       </Button>
                     )}
                   </View>
-                  <View className="portrait:pb-8 landscape:pb-4">
+                  <View className="portrait:pb-4 landscape:px-2 landscape:pb-8">
                     <View className="flex-row items-center justify-between gap-4 pl-4 pr-2">
                       <Text className="text-sm text-white/70">{time}</Text>
                       <Button
-                        className="p-3"
+                        className="rounded-full p-1 active:bg-transparent"
                         variant="ghost"
                         size="unset"
                         onPressIn={handleButtonPressIn}

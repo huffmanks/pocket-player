@@ -6,10 +6,11 @@ import { Gesture } from "react-native-gesture-handler";
 import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useShallow } from "zustand/react/shallow";
 
+import { VideoMeta } from "@/db/schema";
 import { useSettingsStore } from "@/lib/store";
 import { secondsToMMSS, throttle } from "@/lib/utils";
 
-export function useVideoPlayerControls(videoSources: string[], isThumbView?: boolean) {
+export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: boolean) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [time, setTime] = useState<string | null>("00:00");
   const [progress, setProgress] = useState(0);
@@ -29,11 +30,12 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
     }))
   );
 
-  const player = useVideoPlayer(videoSources[currentIndex], (p) => {
+  const player = useVideoPlayer(videoSources[currentIndex].videoUri, (p) => {
     p.loop = !isPlaylist && (loop ?? false);
     p.muted = isThumbView || !!mute;
 
     if (autoPlay || isPlaylist) {
+      controlsVisible.value = 0;
       p.play();
     } else {
       p.pause();
@@ -94,7 +96,7 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
 
       setCurrentIndex((prev) => {
         const next = prev + 1;
-        player.replace(videoSources[next]);
+        player.replace(videoSources[next].videoUri);
         return next;
       });
     }
@@ -133,7 +135,7 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
       setHasEnded(false);
 
       setCurrentIndex(0);
-      player.replace(videoSources[0]);
+      player.replace(videoSources[0].videoUri);
       player.play();
 
       controlsVisible.value = 0;
@@ -156,7 +158,7 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
   function changeVideoSource(inverse: number) {
     const newIndex = (currentIndex + inverse + videoSources.length) % videoSources.length;
     setCurrentIndex(newIndex);
-    player.replace(videoSources[newIndex]);
+    player.replace(videoSources[newIndex].videoUri);
   }
 
   function handleButtonPressIn() {
@@ -182,6 +184,7 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
     videoRef,
     player,
     isPlaying,
+    currentIndex,
     time,
     progress,
     setProgress,
