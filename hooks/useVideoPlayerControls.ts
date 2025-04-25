@@ -1,4 +1,4 @@
-import { useEvent } from "expo";
+import { useEvent, useEventListener } from "expo";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 
@@ -29,46 +29,28 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
     }))
   );
 
-  const player = useVideoPlayer(videoSources[currentIndex], (player) => {
-    if (isThumbView) {
-      player.loop = false;
-      player.muted = true;
-      player.pause();
-      return;
-    }
-
-    player.loop = !isPlaylist && (loop ?? false);
-    player.muted = mute || false;
+  const player = useVideoPlayer(videoSources[currentIndex], (p) => {
+    p.loop = !isPlaylist && (loop ?? false);
+    p.muted = isThumbView || !!mute;
 
     if (autoPlay || isPlaylist) {
-      player.play();
+      p.play();
+    } else {
+      p.pause();
     }
   });
 
   const { isPlaying } = useEvent(player, "playingChange", { isPlaying: player.playing });
   const { muted } = useEvent(player, "mutedChange", { muted: player.muted });
+  const { status, oldStatus } = useEvent(player, "statusChange", {
+    status: player.status,
+    oldStatus: player.status,
+  });
+
+  useEventListener(player, "playToEnd", handlePlayToEnd);
 
   useEffect(() => {
     if (!player) return;
-
-    function handlePlayToEnd() {
-      const atLastVideo = currentIndex >= videoSources.length - 1;
-
-      if (!atLastVideo) {
-        setCurrentIndex((prev) => {
-          const next = prev + 1;
-          player.replace(videoSources[next]);
-          return next;
-        });
-        return;
-      }
-
-      if (!isThumbView) {
-        loop ? (setHasEnded(false), player.replay()) : setHasEnded(true);
-      }
-    }
-
-    const subscription = player.addListener("playToEnd", handlePlayToEnd);
 
     const updateProgress = throttle(() => {
       const currentTime = player?.currentTime ?? 0;
@@ -83,10 +65,9 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
     const interval = setInterval(updateProgress, 100);
 
     return () => {
-      subscription.remove();
       clearInterval(interval);
     };
-  }, [player, currentIndex, videoSources]);
+  }, [player]);
 
   useEffect(() => {
     if (!isPlaying || isButtonTouched) return;
@@ -98,27 +79,45 @@ export function useVideoPlayerControls(videoSources: string[], isThumbView?: boo
     return () => clearTimeout(timeout);
   }, [isPlaying, isButtonTouched, controlsVisible]);
 
+  function handlePlayToEnd() {
+    if (isThumbView) return;
+
+    if (status === "readyToPlay" && oldStatus === "loading") {
+      const atLastVideo = currentIndex >= videoSources.length - 1;
+
+      if (atLastVideo) {
+        setHasEnded(!loop);
+        if (loop) player.replay();
+
+        return;
+      }
+
+      setCurrentIndex((prev) => {
+        const next = prev + 1;
+        player.replace(videoSources[next]);
+        return next;
+      });
+    }
+  }
+
   function onSliderChange(value: number) {
     const duration = player.duration;
     const currentTime = value * duration;
 
+    player.currentTime = currentTime;
+    setProgress(currentTime / duration);
     setTime(secondsToMMSS(currentTime));
   }
 
   function onSlidingStart() {
     setIsButtonTouched(true);
-
+    setHasEnded(false);
     setIsOldPlaying(isPlaying);
     player.pause();
   }
 
-  function onSlidingComplete(value: number) {
+  function onSlidingComplete() {
     setIsButtonTouched(false);
-
-    const duration = player.duration;
-    const newTime = value * duration;
-
-    safeSeekBy(newTime - player.currentTime);
 
     if (isOldPlaying) {
       player.play();

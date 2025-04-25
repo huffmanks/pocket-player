@@ -118,6 +118,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                         className="p-3"
                         variant="ghost"
                         size="unset"
+                        disabled={hasEnded}
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
                         onPress={() => changeVideoSource(-1)}>
@@ -133,6 +134,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       className="p-3"
                       variant="ghost"
                       size="unset"
+                      disabled={hasEnded}
                       onPressIn={handleButtonPressIn}
                       onPressOut={handleButtonPressOut}
                       onPress={() => safeSeekBy(-5)}>
@@ -150,17 +152,17 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       onPressIn={handleButtonPressIn}
                       onPressOut={handleButtonPressOut}
                       onPress={togglePlay}>
-                      {isPlaying ? (
-                        <PauseIcon
-                          className="fill-white"
-                          size={32}
-                          strokeWidth={1.25}
-                        />
-                      ) : hasEnded ? (
+                      {hasEnded ? (
                         <RotateCcwIcon
                           className="text-white"
                           size={32}
                           strokeWidth={2.25}
+                        />
+                      ) : isPlaying ? (
+                        <PauseIcon
+                          className="fill-white"
+                          size={32}
+                          strokeWidth={1.25}
                         />
                       ) : (
                         <PlayIcon
@@ -174,6 +176,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                       className="p-3"
                       variant="ghost"
                       size="unset"
+                      disabled={hasEnded}
                       onPressIn={handleButtonPressIn}
                       onPressOut={handleButtonPressOut}
                       onPress={() => safeSeekBy(5)}>
@@ -189,6 +192,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                         className="p-3"
                         variant="ghost"
                         size="unset"
+                        disabled={hasEnded}
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
                         onPress={() => changeVideoSource(1)}>
@@ -237,7 +241,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: string[] }
                         maximumTrackTintColor={SLIDER_THEME.maximumTrackTintColor}
                         onValueChange={(val) => onSliderChange(Number(val))}
                         onSlidingStart={onSlidingStart}
-                        onSlidingComplete={(val) => onSlidingComplete(Number(val))}
+                        onSlidingComplete={onSlidingComplete}
                       />
                     </View>
                   </View>
