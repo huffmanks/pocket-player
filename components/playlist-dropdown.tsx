@@ -38,8 +38,8 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
   const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
 
   const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
+    top: insets.top + 100,
+    bottom: insets.bottom + 100,
     left: 12,
     right: 12,
   };

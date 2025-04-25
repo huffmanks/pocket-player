@@ -18,24 +18,19 @@ import {
   EyeIcon,
   EyeOffIcon,
   FastForwardIcon,
-  GitMergeIcon,
   GripVerticalIcon,
   ImageDownIcon,
-  ImageIcon,
   ImportIcon,
   KeyRoundIcon,
   ListMusicIcon,
   ListVideoIcon,
   LockIcon,
   LockOpenIcon,
-  MaximizeIcon,
-  MinimizeIcon,
   MoonStarIcon,
   PauseIcon,
   PencilIcon,
   PlayIcon,
   PlusIcon,
-  RepeatIcon,
   RewindIcon,
   RotateCcwIcon,
   SaveIcon,
@@ -114,14 +109,8 @@ export { EyeOffIcon };
 iconWithClassName(FastForwardIcon);
 export { FastForwardIcon };
 
-iconWithClassName(GitMergeIcon);
-export { GitMergeIcon };
-
 iconWithClassName(GripVerticalIcon);
 export { GripVerticalIcon };
-
-iconWithClassName(ImageIcon);
-export { ImageIcon };
 
 iconWithClassName(ImageDownIcon);
 export { ImageDownIcon };
@@ -144,12 +133,6 @@ export { LockIcon };
 iconWithClassName(LockOpenIcon);
 export { LockOpenIcon };
 
-iconWithClassName(MaximizeIcon);
-export { MaximizeIcon };
-
-iconWithClassName(MinimizeIcon);
-export { MinimizeIcon };
-
 iconWithClassName(MoonStarIcon);
 export { MoonStarIcon };
 
@@ -164,9 +147,6 @@ export { PlayIcon };
 
 iconWithClassName(PlusIcon);
 export { PlusIcon };
-
-iconWithClassName(RepeatIcon);
-export { RepeatIcon };
 
 iconWithClassName(RewindIcon);
 export { RewindIcon };

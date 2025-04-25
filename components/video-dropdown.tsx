@@ -58,8 +58,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
   const router = useRouter();
 
   const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
+    top: insets.top + 100,
+    bottom: insets.bottom + 100,
     left: 12,
     right: 12,
   };
