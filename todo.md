@@ -7,9 +7,12 @@
 2. [Search bar](components/search-bar.tsx):
    - move to header.
    - use `headerTransparent: true` and `headerBlurEffect: regular`.
-3. Modal screens
+3. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
-4. Cleanup:
+4. [video-dropdown](components/video-dropdown.tsx):
+   - Delete text is smaller.
+   - Set width like playlistDropdown.
+5. Cleanup:
    - Update version
    - Update readme.md
    - Upgrade packages
