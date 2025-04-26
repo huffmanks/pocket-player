@@ -27,4 +27,4 @@ Download the latest APK from the [Releases](https://github.com/huffmanks/video-p
 
 ## License
 
-MIT
+[MIT](LICENSE)
