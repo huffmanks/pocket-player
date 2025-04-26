@@ -34,7 +34,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     p.loop = !isPlaylist && (loop ?? false);
     p.muted = isThumbView || !!mute;
 
-    if (autoPlay || isPlaylist) {
+    if ((autoPlay || isPlaylist) && !isThumbView) {
       controlsVisible.value = 0;
       p.play();
     } else {
