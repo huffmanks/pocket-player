@@ -18,7 +18,9 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <ScrollViewStyleReset />
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
       </head>
-      <body>{children}</body>
+      <body className="bg-background text-foreground dark:bg-background dark:text-foreground">
+        {children}
+      </body>
     </html>
   );
 }

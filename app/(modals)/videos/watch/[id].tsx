@@ -23,12 +23,11 @@ export default function WatchModal() {
   useFocusEffect(
     useCallback(() => {
       const enableOrientation = async () => {
+        if (!videoQuery?.data?.[0]) return;
         if (!overrideOrientation) {
           await ScreenOrientation.unlockAsync();
           return;
         }
-
-        if (!videoQuery?.data?.[0]) return;
 
         const orientation =
           videoQuery.data[0].orientation === "Landscape"
@@ -49,7 +48,7 @@ export default function WatchModal() {
         disableOrientation();
         setIsLockDisabled(false);
       };
-    }, [videoQuery?.data?.[0]])
+    }, [videoQuery.data])
   );
 
   if (videoQuery.error) {

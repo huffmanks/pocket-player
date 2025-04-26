@@ -22,7 +22,11 @@ export default function PlaylistsScreen() {
   const db = useDatabaseStore.getState().db;
 
   const playlistsQuery = useLiveQuery(db.select().from(playlists).orderBy(playlists.title));
-  const { data: playlistsData, error: playlistsError } = playlistsQuery;
+  const {
+    data: playlistsData,
+    error: playlistsError,
+    updatedAt: playlistsLoading,
+  } = playlistsQuery;
 
   const thumbUrisQuery = useLiveQuery(
     db.query.playlistVideos.findMany({
@@ -62,7 +66,10 @@ export default function PlaylistsScreen() {
   if (playlistsError || thumbUrisError) {
     toast.error("Error loading data.");
   }
-  const playlistsExist = playlistsData?.length > 0;
+
+  if (playlistsLoading === undefined) return null;
+
+  const playlistsExist = playlistsData?.length;
 
   return (
     <ScrollView
@@ -146,7 +153,7 @@ function ListHeaderComponent() {
 function ListEmptyComponent() {
   return (
     <View className="pt-5">
-      <H2 className="text-brand-foreground mb-4">No playlists yet!</H2>
+      <H2 className="mb-4 text-brand-foreground">No playlists yet!</H2>
       <Text className="mb-12">Your playlists will be displayed here.</Text>
       <Link
         href="/(modals)/playlists/create"

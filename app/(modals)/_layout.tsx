@@ -30,6 +30,7 @@ export default function ModalLayout() {
         name="playlists/view/[id]"
         options={{
           title: "Playlist",
+          presentation: "card",
           headerBackVisible: true,
           animation: "slide_from_right",
         }}
@@ -38,6 +39,7 @@ export default function ModalLayout() {
         name="playlists/edit/[id]"
         options={{
           title: "Edit playlist",
+          presentation: "card",
           headerBackVisible: true,
           animation: "slide_from_bottom",
         }}
@@ -46,6 +48,7 @@ export default function ModalLayout() {
         name="playlists/create"
         options={{
           title: "Create playlist",
+          presentation: "card",
           headerBackVisible: true,
           animation: "slide_from_bottom",
         }}
@@ -63,6 +66,7 @@ export default function ModalLayout() {
         name="videos/edit/[id]"
         options={{
           title: "Edit video",
+          presentation: "card",
           headerBackVisible: true,
           animation: "slide_from_bottom",
         }}
@@ -80,6 +84,7 @@ export default function ModalLayout() {
         options={{
           title: "Passcode",
           headerBackVisible: true,
+          headerRight: () => null,
           animation: "slide_from_right",
         }}
       />

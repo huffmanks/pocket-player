@@ -43,30 +43,30 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
       router.push("/(modals)/lock");
     }
 
-    function handleAppStateChange(nextAppState: AppStateStatus) {
-      if (!enablePasscode || isLockDisabled) return;
-
-      if (nextAppState === "background") {
-        setBackgroundTime();
-      } else if (nextAppState === "active") {
-        const newTime = backgroundTime || 0;
-        const elapsedTime = Date.now() - newTime;
-        dismissAll();
-
-        if (elapsedTime > lockInterval) {
-          setIsLocked(true);
-          router.push("/(modals)/lock");
-        }
-      }
-
-      appState.current = nextAppState;
-    }
-
     return () => {
       setBackgroundTime();
       subscription.remove();
     };
   }, [isLockDisabled]);
+
+  function handleAppStateChange(nextAppState: AppStateStatus) {
+    if (!enablePasscode || isLockDisabled) return;
+
+    if (nextAppState === "background") {
+      setBackgroundTime();
+    } else if (nextAppState === "active") {
+      const newTime = backgroundTime || 0;
+      const elapsedTime = Date.now() - newTime;
+      dismissAll();
+
+      if (elapsedTime > lockInterval) {
+        setIsLocked(true);
+        router.push("/(modals)/lock");
+      }
+    }
+
+    appState.current = nextAppState;
+  }
 
   return children;
 }

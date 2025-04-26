@@ -9,10 +9,7 @@
    - use `headerTransparent: true` and `headerBlurEffect: regular`.
 3. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
-4. [video-dropdown](components/video-dropdown.tsx):
-   - Delete text is smaller.
-   - Set width like playlistDropdown.
-5. Cleanup:
+4. Cleanup:
    - Update version
    - Update readme.md
    - Upgrade packages
@@ -20,8 +17,7 @@
 
 ## Features
 
-1. Add custom expo config plugin to enable flag_secure. Hide/blackout screen when inactive or in background.
-2. Save timestamp of last view of video.
+1. Save timestamp of last view of video.
    - Use zustand and mmkv.
    - [key = `videoProgress:${videoId}`](lib/store.ts#L449)
    - value = `10` (player.currentTime | number | seconds)

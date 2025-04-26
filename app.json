@@ -7,10 +7,20 @@
     "orientation": "portrait",
     "icon": "./assets/icons/ios_app_logo_marketing.png",
     "userInterfaceStyle": "dark",
+    "backgroundColor": "#09090b",
+    "primaryColor": "#0d968b",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/icons/splash.png",
       "resizeMode": "contain",
+      "backgroundColor": "#09090b"
+    },
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#09090b"
+    },
+    "androidNavigationBar": {
+      "barStyle": "light-content",
       "backgroundColor": "#09090b"
     },
     "web": {
@@ -51,10 +61,12 @@
     "ios": {
       "icon": "./assets/icons/ios_app_logo_marketing.png",
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.videoplayerapp"
+      "bundleIdentifier": "com.anonymous.videoplayerapp",
+      "backgroundColor": "#09090b"
     },
     "android": {
       "icon": "./assets/icons/android_adaptive_logo_foreground.png",
+      "backgroundColor": "#09090b",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/android_adaptive_logo_foreground.png",
         "backgroundColor": "#09090b"

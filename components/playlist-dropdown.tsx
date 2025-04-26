@@ -24,6 +24,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -67,21 +68,29 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
           <EllipsisVerticalIcon
             className="text-foreground"
             size={20}
-            strokeWidth={1.25}
+            strokeWidth={1.5}
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent insets={contentInsets}>
+      <DropdownMenuContent
+        className="native:w-72 w-64"
+        insets={contentInsets}>
+        <DropdownMenuLabel
+          className="native:text-xl"
+          numberOfLines={1}>
+          {item.title}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="gap-4"
             onPress={() => router.push(`/(modals)/playlists/watch/${item.id}`)}>
             <TvIcon
               className="text-foreground"
-              size={20}
-              strokeWidth={1.25}
+              size={24}
+              strokeWidth={1.5}
             />
-            <Text className="text-lg text-foreground">Watch</Text>
+            <Text className="native:text-xl text-foreground">Watch</Text>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -89,20 +98,20 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
             onPress={() => router.push(`/(modals)/playlists/edit/${item.id}`)}>
             <PencilIcon
               className="text-foreground"
-              size={20}
-              strokeWidth={1.25}
+              size={24}
+              strokeWidth={1.5}
             />
-            <Text className="text-lg text-foreground">Edit</Text>
+            <Text className="native:text-xl text-foreground">Edit</Text>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="gap-4"
             onPress={() => router.push(`/(modals)/playlists/view/${item.id}`)}>
             <ViewIcon
               className="text-foreground"
-              size={20}
-              strokeWidth={1.25}
+              size={24}
+              strokeWidth={1.5}
             />
-            <Text className="text-lg text-foreground">View</Text>
+            <Text className="native:text-xl text-foreground">View</Text>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -118,10 +127,10 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
                 variant="ghost">
                 <TrashIcon
                   className="text-destructive"
-                  size={20}
-                  strokeWidth={1.25}
+                  size={24}
+                  strokeWidth={1.5}
                 />
-                <Text className="native:text-lg font-normal text-foreground">Delete</Text>
+                <Text className="native:text-xl font-normal text-destructive">Delete</Text>
               </Button>
             </AlertDialogTrigger>
           </DropdownMenuItem>
