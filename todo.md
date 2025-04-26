@@ -7,7 +7,9 @@
 2. [Search bar](components/search-bar.tsx):
    - move to header.
    - use `headerTransparent: true` and `headerBlurEffect: regular`.
-3. Cleanup:
+3. Modal screens
+   - HeaderItems are not clickable.
+4. Cleanup:
    - Update version
    - Update readme.md
    - Add app screenshots to repo
