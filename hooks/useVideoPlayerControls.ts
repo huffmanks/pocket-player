@@ -89,7 +89,12 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
       if (atLastVideo) {
         setHasEnded(!loop);
-        if (loop) player.replay();
+
+        if (loop) {
+          player.replay();
+        } else {
+          controlsVisible.value = 1;
+        }
 
         return;
       }
