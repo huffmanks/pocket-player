@@ -1,6 +1,6 @@
 # TODOS
 
-## Issues/Modifications
+## Issues
 
 1. [Video player](components/video-player.tsx):
    - Sometimes video orientation loads incorrectly.
@@ -10,8 +10,6 @@
 3. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
 4. Cleanup:
-   - Update version
-   - Update readme.md
    - Upgrade packages
    - Add app screenshots to repo
 
