@@ -12,6 +12,7 @@
 4. Cleanup:
    - Update version
    - Update readme.md
+   - Upgrade packages
    - Add app screenshots to repo
 
 ## Features
