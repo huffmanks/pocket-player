@@ -1,12 +1,11 @@
 import { Stack } from "expo-router";
-import { View } from "react-native";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { NAV_THEME } from "@/lib/constants";
 
 import HeaderItems from "@/components/header-items";
 
-export default function ModalLayout() {
+export default function ModalsLayout() {
   const { colorScheme, isDarkColorScheme } = useColorScheme();
 
   return (
@@ -16,6 +15,7 @@ export default function ModalLayout() {
         headerStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,
         },
+        headerRight: () => <HeaderItems />,
       }}>
       <Stack.Screen
         name="playlists/watch/[id]"
@@ -30,9 +30,7 @@ export default function ModalLayout() {
         name="playlists/view/[id]"
         options={{
           title: "Playlist",
-          presentation: "card",
           headerBackVisible: true,
-          headerRight: () => <ModalHeaderItems />,
           animation: "slide_from_right",
         }}
       />
@@ -40,9 +38,7 @@ export default function ModalLayout() {
         name="playlists/edit/[id]"
         options={{
           title: "Edit playlist",
-          presentation: "card",
           headerBackVisible: true,
-          headerRight: () => <ModalHeaderItems />,
           animation: "slide_from_bottom",
         }}
       />
@@ -50,9 +46,7 @@ export default function ModalLayout() {
         name="playlists/create"
         options={{
           title: "Create playlist",
-          presentation: "card",
           headerBackVisible: true,
-          headerRight: () => <ModalHeaderItems />,
           animation: "slide_from_bottom",
         }}
       />
@@ -69,9 +63,7 @@ export default function ModalLayout() {
         name="videos/edit/[id]"
         options={{
           title: "Edit video",
-          presentation: "card",
           headerBackVisible: true,
-          headerRight: () => <ModalHeaderItems />,
           animation: "slide_from_bottom",
         }}
       />
@@ -92,13 +84,5 @@ export default function ModalLayout() {
         }}
       />
     </Stack>
-  );
-}
-
-function ModalHeaderItems() {
-  return (
-    <View className="z-50">
-      <HeaderItems />
-    </View>
   );
 }

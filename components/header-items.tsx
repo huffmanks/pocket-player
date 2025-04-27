@@ -1,7 +1,6 @@
-import { router, usePathname } from "expo-router";
+import { useRouter } from "expo-router";
 import { View } from "react-native";
 
-import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -24,16 +23,10 @@ function ThemeToggle() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
   const setTheme = useSettingsStore((state) => state.setTheme);
 
-  // REMOVE
-  const pathname = usePathname();
-
   function handlePress() {
     const newTheme = isDarkColorScheme ? "light" : "dark";
     setColorScheme(newTheme);
     setTheme(newTheme);
-
-    // REMOVE
-    toast.info(pathname);
   }
 
   return (
@@ -61,6 +54,8 @@ function ThemeToggle() {
 }
 
 function LockScreen() {
+  const router = useRouter();
+
   const { isLockable, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       isLockable: state.isLockable,
