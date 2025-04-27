@@ -9,7 +9,9 @@
    - use `headerTransparent: true` and `headerBlurEffect: regular`.
 3. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
-4. Cleanup:
+4. [Videos screen](<app/(tabs)/index.tsx>), [Lock screen](<app/(modals)/lock.tsx>):
+   - scrollPosition is not working when being redirected back from lock screen.
+5. Cleanup:
    - Upgrade packages
    - Add app screenshots to repo
 
