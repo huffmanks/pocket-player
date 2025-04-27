@@ -137,7 +137,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
         insets={contentInsets}
         className="native:w-80 w-64">
         <DropdownMenuLabel
-          className="native:text-xl"
+          className="native:text-lg"
           numberOfLines={1}>
           {item.title}
         </DropdownMenuLabel>
@@ -148,30 +148,30 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
             onPress={() => router.push(`/(modals)/videos/watch/${item.id}`)}>
             <TvIcon
               className="text-foreground"
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
-            <Text className="native:text-xl text-foreground">Watch</Text>
+            <Text className="native:text-lg text-foreground">Watch</Text>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="gap-4"
             onPress={() => router.push(`/(modals)/videos/edit/${item.id}`)}>
             <PencilIcon
               className="text-foreground"
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
-            <Text className="native:text-xl text-foreground">Edit</Text>
+            <Text className="native:text-lg text-foreground">Edit</Text>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="gap-4"
             onPress={handleFavorite}>
             <StarIcon
               className={cn("text-foreground", item.isFavorite && "fill-foreground")}
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
-            <Text className="native:text-xl text-foreground">Favorite</Text>
+            <Text className="native:text-lg text-foreground">Favorite</Text>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -180,7 +180,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
             <DropdownMenuSeparator />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
-                <Text className="native:text-xl text-foreground">Add to playlist</Text>
+                <Text className="native:text-lg text-foreground">Add to playlist</Text>
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 <Animated.ScrollView
@@ -198,7 +198,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
                       <View className="flex-1 flex-row items-center gap-4">
                         <ListMusicIcon
                           className="text-foreground"
-                          size={24}
+                          size={20}
                           strokeWidth={1.5}
                         />
                         <Text
@@ -210,7 +210,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
                       <View>
                         {item?.playlists?.includes(playlist.value) && (
                           <CheckIcon
-                            size={24}
+                            size={20}
                             strokeWidth={1.5}
                             className={"text-foreground"}
                           />
@@ -235,10 +235,10 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
                 variant="ghost">
                 <TrashIcon
                   className="text-destructive"
-                  size={24}
+                  size={20}
                   strokeWidth={1.5}
                 />
-                <Text className="native:text-xl font-normal text-destructive">Delete</Text>
+                <Text className="native:text-lg font-normal text-destructive">Delete</Text>
               </Button>
             </AlertDialogTrigger>
           </DropdownMenuItem>

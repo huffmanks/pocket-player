@@ -76,7 +76,7 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
         className="native:w-72 w-64"
         insets={contentInsets}>
         <DropdownMenuLabel
-          className="native:text-xl"
+          className="native:text-lg"
           numberOfLines={1}>
           {item.title}
         </DropdownMenuLabel>
@@ -87,10 +87,10 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
             onPress={() => router.push(`/(modals)/playlists/watch/${item.id}`)}>
             <TvIcon
               className="text-foreground"
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
-            <Text className="native:text-xl text-foreground">Watch</Text>
+            <Text className="native:text-lg text-foreground">Watch</Text>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -98,20 +98,20 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
             onPress={() => router.push(`/(modals)/playlists/edit/${item.id}`)}>
             <PencilIcon
               className="text-foreground"
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
-            <Text className="native:text-xl text-foreground">Edit</Text>
+            <Text className="native:text-lg text-foreground">Edit</Text>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="gap-4"
             onPress={() => router.push(`/(modals)/playlists/view/${item.id}`)}>
             <ViewIcon
               className="text-foreground"
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
-            <Text className="native:text-xl text-foreground">View</Text>
+            <Text className="native:text-lg text-foreground">View</Text>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -127,10 +127,10 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
                 variant="ghost">
                 <TrashIcon
                   className="text-destructive"
-                  size={24}
+                  size={20}
                   strokeWidth={1.5}
                 />
-                <Text className="native:text-xl font-normal text-destructive">Delete</Text>
+                <Text className="native:text-lg font-normal text-destructive">Delete</Text>
               </Button>
             </AlertDialogTrigger>
           </DropdownMenuItem>
