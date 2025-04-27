@@ -11,10 +11,9 @@ import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
-import { orientationOptions } from "@/lib/constants";
+import { BOTTOM_TABS_OFFSET, orientationOptions } from "@/lib/constants";
 import { SaveIcon, TrashIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
 
 import {
   AlertDialog,
@@ -81,8 +80,8 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
   useScrollToTop(ref);
 
   const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
+    top: insets.top + BOTTOM_TABS_OFFSET,
+    bottom: insets.bottom + BOTTOM_TABS_OFFSET,
     left: 12,
     right: 12,
   };
@@ -183,10 +182,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                     setSelectTriggerWidth(ev.nativeEvent.layout.width);
                   }}>
                   <SelectValue
-                    className={cn(
-                      "native:text-lg text-sm",
-                      field.value ? "text-foreground" : "text-muted-foreground"
-                    )}
+                    className="native:text-lg text-sm text-foreground"
                     placeholder="Select an orientation"
                   />
                 </SelectTrigger>

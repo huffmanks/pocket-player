@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { View } from "react-native";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { NAV_THEME } from "@/lib/constants";
@@ -15,7 +16,6 @@ export default function ModalLayout() {
         headerStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,
         },
-        // headerRight: () => <HeaderItems />,
       }}>
       <Stack.Screen
         name="playlists/watch/[id]"
@@ -32,7 +32,7 @@ export default function ModalLayout() {
           title: "Playlist",
           presentation: "card",
           headerBackVisible: true,
-          headerRight: () => <HeaderItems />,
+          headerRight: () => <ModalHeaderItems />,
           animation: "slide_from_right",
         }}
       />
@@ -42,7 +42,7 @@ export default function ModalLayout() {
           title: "Edit playlist",
           presentation: "card",
           headerBackVisible: true,
-          headerRight: () => <HeaderItems />,
+          headerRight: () => <ModalHeaderItems />,
           animation: "slide_from_bottom",
         }}
       />
@@ -52,7 +52,7 @@ export default function ModalLayout() {
           title: "Create playlist",
           presentation: "card",
           headerBackVisible: true,
-          headerRight: () => <HeaderItems />,
+          headerRight: () => <ModalHeaderItems />,
           animation: "slide_from_bottom",
         }}
       />
@@ -71,7 +71,7 @@ export default function ModalLayout() {
           title: "Edit video",
           presentation: "card",
           headerBackVisible: true,
-          headerRight: () => <HeaderItems />,
+          headerRight: () => <ModalHeaderItems />,
           animation: "slide_from_bottom",
         }}
       />
@@ -88,10 +88,17 @@ export default function ModalLayout() {
         options={{
           title: "Passcode",
           headerBackVisible: true,
-          // headerRight: () => null,
           animation: "slide_from_right",
         }}
       />
     </Stack>
+  );
+}
+
+function ModalHeaderItems() {
+  return (
+    <View className="z-50">
+      <HeaderItems />
+    </View>
   );
 }

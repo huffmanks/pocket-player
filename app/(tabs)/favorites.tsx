@@ -9,7 +9,7 @@ import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta, playlists } from "@/db/schema";
-import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
+import { BOTTOM_TABS_OFFSET, ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { useDatabaseStore, useSettingsStore } from "@/lib/store";
 import { formatDuration } from "@/lib/utils";
 
@@ -146,7 +146,7 @@ export default function FavoritesScreen() {
         data={sortedData}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
         ListHeaderComponent={
           <ListHeaderComponent

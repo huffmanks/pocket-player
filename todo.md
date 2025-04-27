@@ -9,9 +9,7 @@
    - use `headerTransparent: true` and `headerBlurEffect: regular`.
 3. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
-4. [Settings screen](<app/(tabs)/settings.tsx>):
-   - Add select for lock timeout.
-5. Cleanup:
+4. Cleanup:
    - Upgrade packages
    - Add app screenshots to repo
 

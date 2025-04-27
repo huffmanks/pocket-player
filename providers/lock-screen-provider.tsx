@@ -46,7 +46,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     return () => {
       subscription.remove();
     };
-  }, [isLockDisabled, isLockable]);
+  }, [isLockDisabled, isLockable, lockInterval]);
 
   function handleAppStateChange(nextAppState: AppStateStatus) {
     if (!enablePasscode || !passcode || isLockDisabled) return;

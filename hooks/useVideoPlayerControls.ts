@@ -8,7 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
 import { useSettingsStore } from "@/lib/store";
-import { secondsToMMSS, throttle } from "@/lib/utils";
+import { secondsToAdaptiveTime, throttle } from "@/lib/utils";
 
 export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: boolean) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -60,7 +60,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
       if (duration > 0) {
         setProgress(currentTime / duration);
-        setTime(secondsToMMSS(currentTime));
+        setTime(secondsToAdaptiveTime(currentTime));
       }
     }, 100);
 
@@ -113,7 +113,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
     player.currentTime = currentTime;
     setProgress(currentTime / duration);
-    setTime(secondsToMMSS(currentTime));
+    setTime(secondsToAdaptiveTime(currentTime));
   }
 
   function onSlidingStart() {

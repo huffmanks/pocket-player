@@ -5,11 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getRandomTwoItems<T>(array: Array<T>): Array<T> {
-  const shuffled = [...array].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, 2);
-}
-
 export function formatDateString(date: string | Date) {
   const localDate = new Date(date).toLocaleDateString();
   const [month, day, year] = localDate.split("/");
@@ -32,11 +27,17 @@ export function formatDuration(seconds: number): string {
     .trim();
 }
 
-export function secondsToMMSS(seconds: number): string {
+export function secondsToAdaptiveTime(seconds: number): string {
   const totalSeconds = Math.ceil(seconds);
-  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const remainingSeconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+  } else {
+    return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
+  }
 }
 
 export function withDelay<T>(fn: () => Promise<T>, ms: number): Promise<T> {

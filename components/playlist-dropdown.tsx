@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { PlaylistMeta } from "@/db/schema";
+import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
 import { EllipsisVerticalIcon, PencilIcon, TrashIcon, TvIcon, ViewIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 
@@ -39,8 +40,8 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
   const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
 
   const contentInsets = {
-    top: insets.top + 100,
-    bottom: insets.bottom + 100,
+    top: insets.top + BOTTOM_TABS_OFFSET,
+    bottom: insets.bottom + BOTTOM_TABS_OFFSET,
     left: 12,
     right: 12,
   };

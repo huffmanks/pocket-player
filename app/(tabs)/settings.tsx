@@ -9,10 +9,15 @@ import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { clearDirectory, resetTables } from "@/db/drop";
-import { VIDEOS_DIR, settingsSwitches } from "@/lib/constants";
+import {
+  BOTTOM_TABS_OFFSET,
+  VIDEOS_DIR,
+  lockIntervalOptions,
+  settingsSwitches,
+} from "@/lib/constants";
 import { KeyRoundIcon, TrashIcon } from "@/lib/icons";
 import { resetPersistedStorage, useSecurityStore } from "@/lib/store";
-import { withDelay } from "@/lib/utils";
+import { cn, withDelay } from "@/lib/utils";
 
 import SettingSwitch from "@/components/setting-switch";
 import {
@@ -27,20 +32,39 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 
 export default function SettingsModal() {
-  const [isMigrationDisabled, setIsMigrationDisabled] = useState(false);
+  const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
   const insets = useSafeAreaInsets();
 
-  const { passcode, enablePasscode, setEnablePasscode } = useSecurityStore(
-    useShallow((state) => ({
-      passcode: state.passcode,
-      enablePasscode: state.enablePasscode,
-      setEnablePasscode: state.setEnablePasscode,
-    }))
-  );
+  const contentInsets = {
+    top: insets.top + BOTTOM_TABS_OFFSET,
+    bottom: insets.bottom + BOTTOM_TABS_OFFSET,
+    left: 12,
+    right: 12,
+  };
+
+  const { passcode, enablePasscode, lockInterval, setEnablePasscode, setLockInterval } =
+    useSecurityStore(
+      useShallow((state) => ({
+        passcode: state.passcode,
+        enablePasscode: state.enablePasscode,
+        lockInterval: state.lockInterval,
+        setEnablePasscode: state.setEnablePasscode,
+        setLockInterval: state.setLockInterval,
+      }))
+    );
 
   async function handleClearData() {
     const promise = withDelay(async () => {
@@ -69,6 +93,10 @@ export default function SettingsModal() {
       unsubscribe();
     };
   }, []);
+
+  const selectedOption = lockIntervalOptions.find(
+    (option) => option.value === lockInterval?.toString()
+  );
 
   return (
     <ScrollView
@@ -117,6 +145,49 @@ export default function SettingsModal() {
               {passcode !== null ? "Change" : "Create"} passcode
             </Text>
           </Button>
+
+          <View>
+            <Select
+              disabled={!enablePasscode}
+              value={selectedOption}
+              onValueChange={(option) => option && setLockInterval(Number(option.value))}>
+              <SelectLabel
+                className={cn(
+                  "native:pl-0 native:text-lg pl-0 text-base",
+                  !enablePasscode ? "opacity-50" : "opacity-100"
+                )}>
+                Lock timeout
+              </SelectLabel>
+              <SelectTrigger
+                disabled={!enablePasscode}
+                onLayout={(ev) => {
+                  setSelectTriggerWidth(ev.nativeEvent.layout.width);
+                }}>
+                <SelectValue
+                  className="native:text-lg text-sm text-foreground"
+                  placeholder="Select a lock timeout"
+                />
+              </SelectTrigger>
+              <SelectContent
+                insets={contentInsets}
+                style={{ width: selectTriggerWidth }}>
+                <SelectGroup>
+                  <SelectLabel className="native:pl-3 native:text-lg pl-3 text-base">
+                    Lock timeout
+                  </SelectLabel>
+                  <Separator />
+                  {lockIntervalOptions.map((interval) => (
+                    <SelectItem
+                      key={interval.value}
+                      label={interval.label}
+                      value={interval.value}>
+                      <Text>{interval.label}</Text>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </View>
         </View>
 
         <Separator className="mb-6 mt-2" />

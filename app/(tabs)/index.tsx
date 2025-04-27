@@ -10,7 +10,7 @@ import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta, playlists } from "@/db/schema";
-import { ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
+import { BOTTOM_TABS_OFFSET, ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
 import { useAppStore, useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { formatDuration, throttle } from "@/lib/utils";
@@ -206,7 +206,7 @@ export default function HomeScreen() {
         ref={flashListRef}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
         scrollEventThrottle={250}
         onScroll={handleScroll}

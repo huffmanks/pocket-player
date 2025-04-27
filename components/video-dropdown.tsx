@@ -7,6 +7,7 @@ import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMetaWithPlaylists } from "@/app/(tabs)";
+import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
 import {
   CheckIcon,
   EllipsisVerticalIcon,
@@ -58,8 +59,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
   const router = useRouter();
 
   const contentInsets = {
-    top: insets.top + 100,
-    bottom: insets.bottom + 100,
+    top: insets.top + BOTTOM_TABS_OFFSET,
+    bottom: insets.bottom + BOTTOM_TABS_OFFSET,
     left: 12,
     right: 12,
   };
