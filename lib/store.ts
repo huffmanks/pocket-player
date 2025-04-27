@@ -459,14 +459,12 @@ export const useSettingsStore = create<SettingsStoreState>()(
 );
 
 type SecurityStoreState = {
-  backgroundTime: number | null;
   isLocked: boolean;
   enablePasscode: boolean;
   passcode: string | null;
   isLockable: boolean;
   lockInterval: number;
   isLockDisabled: boolean;
-  setBackgroundTime: () => void;
   setPasscode: (code: string | null) => void;
   setIsLocked: (lock: boolean) => void;
   setEnablePasscode: (enable: boolean) => void;
@@ -477,14 +475,12 @@ type SecurityStoreState = {
 export const useSecurityStore = create<SecurityStoreState>()(
   persist(
     (set) => ({
-      backgroundTime: null,
       isLocked: false,
       enablePasscode: false,
       passcode: null,
       isLockable: false,
       lockInterval: LOCK_INTERVAL_DEFAULT,
       isLockDisabled: false,
-      setBackgroundTime: () => set({ backgroundTime: Date.now() }),
       setPasscode: (code) =>
         set(() => {
           return { passcode: code, isLockable: true, enablePasscode: true };
@@ -492,11 +488,17 @@ export const useSecurityStore = create<SecurityStoreState>()(
       setIsLocked: (lock) => set({ isLocked: lock }),
       setEnablePasscode: (enable) =>
         set((state) => {
-          const isLockable = enable && state.passcode !== null;
+          if (!enable) {
+            return {
+              enablePasscode: false,
+              isLockable: false,
+              passcode: null,
+            };
+          }
+
           return {
-            enablePasscode: enable,
-            isLockable,
-            passcode: isLockable ? state.passcode : null,
+            enablePasscode: true,
+            isLockable: state.passcode !== null,
           };
         }),
       setLockInterval: (milliseconds) => set({ lockInterval: milliseconds }),

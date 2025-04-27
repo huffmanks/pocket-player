@@ -118,7 +118,7 @@ export default function HomeScreen() {
   const videosExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
 
   function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    if (!canSaveScroll.current) return;
+    if (!canSaveScroll.current || !isAppReady || isLocked) return;
     saveScrollY(e.nativeEvent.contentOffset.y);
   }
 
@@ -176,10 +176,15 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       canSaveScroll.current = true;
-      hasRestoredScroll.current = false;
+      if (!isLocked) {
+        hasRestoredScroll.current = false;
+      }
 
-      return () => (canSaveScroll.current = false);
-    }, [])
+      return () => {
+        hasRestoredScroll.current = false;
+        canSaveScroll.current = false;
+      };
+    }, [isLocked])
   );
 
   if (videosQuery.error) {

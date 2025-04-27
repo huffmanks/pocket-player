@@ -10,32 +10,32 @@ import { useSecurityStore } from "@/lib/store";
 export function LockScreenProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const appState = useRef(AppState.currentState);
+  const backgroundTimestamp = useRef<number | null>(null);
+
   const { dismissAll } = useBottomSheetModal();
 
   const {
-    backgroundTime,
     enablePasscode,
+    passcode,
     isLocked,
     isLockable,
     lockInterval,
     isLockDisabled,
-    setBackgroundTime,
     setIsLocked,
   } = useSecurityStore(
     useShallow((state) => ({
-      backgroundTime: state.backgroundTime,
       enablePasscode: state.enablePasscode,
+      passcode: state.passcode,
       isLocked: state.isLocked,
       isLockable: state.isLockable,
       lockInterval: state.lockInterval,
       isLockDisabled: state.isLockDisabled,
-      setBackgroundTime: state.setBackgroundTime,
       setIsLocked: state.setIsLocked,
     }))
   );
 
   useEffect(() => {
-    if (!isLockable) return;
+    if (!isLockable || isLockDisabled) return;
 
     const subscription = AppState.addEventListener("change", handleAppStateChange);
 
@@ -44,24 +44,26 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     }
 
     return () => {
-      setBackgroundTime();
       subscription.remove();
     };
-  }, [isLockDisabled]);
+  }, [isLockDisabled, isLockable]);
 
   function handleAppStateChange(nextAppState: AppStateStatus) {
-    if (!enablePasscode || isLockDisabled) return;
+    if (!enablePasscode || !passcode || isLockDisabled) return;
 
     if (nextAppState === "background") {
-      setBackgroundTime();
+      backgroundTimestamp.current = Date.now();
     } else if (nextAppState === "active") {
-      const newTime = backgroundTime || 0;
-      const elapsedTime = Date.now() - newTime;
       dismissAll();
 
-      if (elapsedTime > lockInterval) {
-        setIsLocked(true);
-        router.push("/(modals)/lock");
+      if (backgroundTimestamp.current) {
+        const elapsedTime = Date.now() - backgroundTimestamp.current;
+        if (elapsedTime > lockInterval) {
+          setIsLocked(true);
+          router.push("/(modals)/lock");
+        }
+
+        backgroundTimestamp.current = null;
       }
     }
 
