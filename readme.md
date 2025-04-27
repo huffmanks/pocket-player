@@ -12,7 +12,7 @@ A simple mobile app to locally upload, store and watch videos.
 ## Tech Stack
 
 - React Native with Expo.
-- SQLite with Drizzle for local storage.
+- Drizzle with SQLite for local storage.
 - Video player with custom video controls.
 - Thumbnail generation and metadata extraction.
 
