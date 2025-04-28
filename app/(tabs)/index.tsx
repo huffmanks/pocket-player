@@ -87,11 +87,13 @@ export default function HomeScreen() {
     }))
   );
 
+const fuse = new Fuse([], { keys: ["title"], threshold: 0.5 });
+
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
 
-    const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
+    fuse.setCollection(videosWithPlaylists);
     return fuse.search(searchQuery).map((result) => result.item);
   }, [videosQuery, searchQuery]);
 
@@ -118,36 +120,41 @@ export default function HomeScreen() {
   const videosExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
 
   function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    if (!canSaveScroll.current || !isAppReady || isLocked) return;
+    if (!canSaveScroll.current || isLocked) return;
     saveScrollY(e.nativeEvent.contentOffset.y);
   }
 
   const saveScrollY = useRef(
     throttle((y: number) => {
       setScrollPosition(y);
-    }, 250)
+    }, 100)
   ).current;
 
-  const handleContentSizeChange = useCallback(() => {
+  const handleOnLoad = useCallback(() => {
     if (
       !flashListRef.current ||
       scrollPosition <= 0 ||
       hasRestoredScroll.current ||
-      !isAppReady ||
       isLocked ||
       !videosExist
     ) {
       return;
     }
 
-    InteractionManager.runAfterInteractions(() => {
-      flashListRef.current?.scrollToOffset({
-        offset: scrollPosition,
-        animated: false,
+    handleRestoreScroll();
+  }, [isLocked, videosExist]);
+
+  function handleRestoreScroll() {
+    setTimeout(() => {
+      InteractionManager.runAfterInteractions(() => {
+        flashListRef.current?.scrollToOffset({
+          offset: scrollPosition,
+          animated: false,
+        });
+        hasRestoredScroll.current = true;
       });
-      hasRestoredScroll.current = true;
-    });
-  }, [isAppReady, isLocked, videosExist]);
+    }, 100);
+  }
 
   function handleSortDate() {
     setSortKey("date");
@@ -175,8 +182,10 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      canSaveScroll.current = true;
-      if (!isLocked) {
+      if (isLocked) {
+        canSaveScroll.current = false;
+      } else {
+        canSaveScroll.current = true;
         hasRestoredScroll.current = false;
       }
 
@@ -208,9 +217,9 @@ export default function HomeScreen() {
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
-        scrollEventThrottle={250}
+        scrollEventThrottle={100}
         onScroll={handleScroll}
-        onContentSizeChange={handleContentSizeChange}
+        onLoad={handleOnLoad}
         ListHeaderComponent={
           <ListHeaderComponent
             videosExist={videosExist}
