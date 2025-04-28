@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import { useShallow } from "zustand/react/shallow";
@@ -24,12 +23,7 @@ interface SettingSwitchProps {
   description?: string;
 }
 
-export default function SettingSwitch({
-  id,
-  defaultChecked = false,
-  label,
-  description,
-}: SettingSwitchProps) {
+export default function SettingSwitch({ id, label, description }: SettingSwitchProps) {
   const {
     autoPlay,
     loop,
@@ -81,28 +75,23 @@ export default function SettingSwitch({
     overrideOrientation: setOverrideOrientation,
   } as const;
 
-  const [checked, setChecked] = useState(
-    settingsMap[id as keyof typeof settingsMap] ?? defaultChecked
-  );
+  const checked = settingsMap[id as keyof typeof settingsMap];
 
-  useEffect(() => {
-    const setter = settersMap[id as keyof typeof settersMap];
-    setter(checked);
-  }, [checked, id]);
+  const setter = settersMap[id as keyof typeof settersMap];
 
   return (
     <View className="flex-row items-center gap-6">
       <Switch
         nativeID={id}
         checked={checked}
-        onCheckedChange={setChecked}
+        onCheckedChange={(newChecked) => setter(newChecked)}
       />
       <View>
         <Label
           nativeID={id}
           className="native:text-lg"
           style={{ paddingBottom: 0 }}
-          onPress={() => setChecked((prev) => !prev)}>
+          onPress={() => setter(!checked)}>
           {label}
         </Label>
         {!!description && <Text className="pt-1 text-sm text-muted-foreground">{description}</Text>}

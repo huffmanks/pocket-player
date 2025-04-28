@@ -18,6 +18,7 @@ import {
   EyeIcon,
   EyeOffIcon,
   FastForwardIcon,
+  FileVideo2Icon,
   GripVerticalIcon,
   ImageDownIcon,
   ImportIcon,
@@ -108,6 +109,9 @@ export { EyeOffIcon };
 
 iconWithClassName(FastForwardIcon);
 export { FastForwardIcon };
+
+iconWithClassName(FileVideo2Icon);
+export { FileVideo2Icon };
 
 iconWithClassName(GripVerticalIcon);
 export { GripVerticalIcon };

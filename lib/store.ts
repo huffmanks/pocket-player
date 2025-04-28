@@ -402,8 +402,11 @@ type SettingsStoreState = {
   sortDateOrder: "asc" | "desc";
   sortTitleOrder: "asc" | "desc";
   scrollPosition: number;
-  previousPath: string | null;
+  previousPath: string;
   videoProgress: Record<string, number>;
+};
+
+type SettingsStoreActions = {
   setAutoPlay: (autoPlay: boolean) => void;
   setLoop: (loop: boolean) => void;
   setMute: (mute: boolean) => void;
@@ -416,23 +419,28 @@ type SettingsStoreState = {
   setScrollPosition: (position: number) => void;
   setPreviousPath: (path: string) => void;
   setVideoProgress: (videoId: string, time: number) => void;
+  reset: () => void;
 };
 
-export const useSettingsStore = create<SettingsStoreState>()(
+const initialSettingsStoreState: SettingsStoreState = {
+  autoPlay: false,
+  loop: false,
+  mute: false,
+  isNativeControls: false,
+  overrideOrientation: false,
+  theme: "dark",
+  sortKey: "date",
+  sortDateOrder: "asc",
+  sortTitleOrder: "asc",
+  scrollPosition: 0,
+  previousPath: "/",
+  videoProgress: {},
+};
+
+export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions>()(
   persist(
     (set) => ({
-      autoPlay: false,
-      loop: false,
-      mute: false,
-      isNativeControls: false,
-      overrideOrientation: false,
-      theme: "dark",
-      sortKey: "date",
-      sortDateOrder: "asc",
-      sortTitleOrder: "asc",
-      scrollPosition: 0,
-      previousPath: null,
-      videoProgress: {},
+      ...initialSettingsStoreState,
       setAutoPlay: (autoPlay) => set({ autoPlay }),
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
@@ -450,6 +458,9 @@ export const useSettingsStore = create<SettingsStoreState>()(
         set((state) => ({
           videoProgress: { ...state.videoProgress, [videoId]: time },
         })),
+      reset: () => {
+        set(initialSettingsStoreState);
+      },
     }),
     {
       name: "settings-store",
@@ -465,22 +476,30 @@ type SecurityStoreState = {
   isLockable: boolean;
   lockInterval: number;
   isLockDisabled: boolean;
+};
+
+type SecurityStoreActions = {
   setPasscode: (code: string | null) => void;
   setIsLocked: (lock: boolean) => void;
   setEnablePasscode: (enable: boolean) => void;
   setLockInterval: (milliseconds: number) => void;
   setIsLockDisabled: (bool: boolean) => void;
+  reset: () => void;
 };
 
-export const useSecurityStore = create<SecurityStoreState>()(
+const initialSecurityStoreState: SecurityStoreState = {
+  isLocked: false,
+  enablePasscode: false,
+  passcode: null,
+  isLockable: false,
+  lockInterval: LOCK_INTERVAL_DEFAULT,
+  isLockDisabled: false,
+};
+
+export const useSecurityStore = create<SecurityStoreState & SecurityStoreActions>()(
   persist(
     (set) => ({
-      isLocked: false,
-      enablePasscode: false,
-      passcode: null,
-      isLockable: false,
-      lockInterval: LOCK_INTERVAL_DEFAULT,
-      isLockDisabled: false,
+      ...initialSecurityStoreState,
       setPasscode: (code) =>
         set(() => {
           return { passcode: code, isLockable: true, enablePasscode: true };
@@ -503,6 +522,9 @@ export const useSecurityStore = create<SecurityStoreState>()(
         }),
       setLockInterval: (milliseconds) => set({ lockInterval: milliseconds }),
       setIsLockDisabled: (bool) => set({ isLockDisabled: bool }),
+      reset: () => {
+        set(initialSecurityStoreState);
+      },
     }),
     {
       name: "security-store",
@@ -514,7 +536,9 @@ export const useSecurityStore = create<SecurityStoreState>()(
 export function resetPersistedStorage() {
   settingsStorage.clearAll();
   useSettingsStore.persist.clearStorage();
+  useSettingsStore.getState().reset();
 
   securityStorage.clearAll();
   useSecurityStore.persist.clearStorage();
+  useSecurityStore.getState().reset();
 }

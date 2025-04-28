@@ -1,5 +1,5 @@
 import { cacheDirectory } from "expo-file-system";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
@@ -15,7 +15,7 @@ import {
   lockIntervalOptions,
   settingsSwitches,
 } from "@/lib/constants";
-import { KeyRoundIcon, TrashIcon } from "@/lib/icons";
+import { FileVideo2Icon, KeyRoundIcon, SettingsIcon, TrashIcon } from "@/lib/icons";
 import { resetPersistedStorage, useSecurityStore } from "@/lib/store";
 import { cn, withDelay } from "@/lib/utils";
 
@@ -47,6 +47,7 @@ import { Text } from "@/components/ui/text";
 export default function SettingsModal() {
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const contentInsets = {
     top: insets.top + BOTTOM_TABS_OFFSET,
@@ -66,13 +67,41 @@ export default function SettingsModal() {
       }))
     );
 
-  async function handleClearData() {
+  async function handleResetSettings() {
+    const promise = withDelay(async () => {
+      resetPersistedStorage();
+      return { message: "Settings has been reset." };
+    }, 500);
+
+    toast.promise(promise, {
+      loading: "Settings being reset...",
+      success: ({ message }) => message,
+      error: "Reset settings has failed.",
+    });
+  }
+
+  async function handleDeleteFiles() {
+    const promise = withDelay(async () => {
+      await clearDirectory(VIDEOS_DIR);
+      await clearDirectory(cacheDirectory || "");
+      await resetTables();
+      return { message: "All files have been deleted." };
+    }, 1000);
+
+    toast.promise(promise, {
+      loading: "Files being deleted...",
+      success: ({ message }) => message,
+      error: "File deletion has failed.",
+    });
+  }
+
+  async function handleClearAllData() {
     const promise = withDelay(async () => {
       await clearDirectory(VIDEOS_DIR);
       await clearDirectory(cacheDirectory || "");
       await resetTables();
       resetPersistedStorage();
-      return { message: "Data has been deleted." };
+      return { message: "All data has been deleted." };
     }, 2000);
 
     toast.promise(promise, {
@@ -193,8 +222,81 @@ export default function SettingsModal() {
         <Separator className="mb-6 mt-2" />
 
         <View className="mb-6 gap-6">
-          <Text className="text-xl font-semibold">Database</Text>
+          <Text className="text-xl font-semibold">Data</Text>
 
+          <View className="mt-3 gap-6">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="secondary"
+                  className="flex flex-row items-center justify-center gap-4">
+                  <SettingsIcon
+                    className="text-foreground"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <Text className="native:text-base font-semibold uppercase tracking-wider">
+                    Reset settings
+                  </Text>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will reset all settings.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    <Text>Cancel</Text>
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive"
+                    onPress={handleResetSettings}>
+                    <Text className="text-destructive-foreground">Reset</Text>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </View>
+          <View className="mt-3 gap-6">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="flex flex-row items-center justify-center gap-4">
+                  <FileVideo2Icon
+                    className="text-destructive-foreground"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <Text className="native:text-base font-semibold uppercase tracking-wider">
+                    Delete files
+                  </Text>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete all uploaded videos
+                    and thumbnails.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    <Text>Cancel</Text>
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive"
+                    onPress={handleDeleteFiles}>
+                    <Text className="text-destructive-foreground">Delete</Text>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </View>
           <View className="mt-3 gap-6">
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -202,7 +304,7 @@ export default function SettingsModal() {
                   variant="destructive"
                   className="flex flex-row items-center justify-center gap-4">
                   <TrashIcon
-                    className="text-white"
+                    className="text-destructive-foreground"
                     size={24}
                     strokeWidth={1.5}
                   />
@@ -225,8 +327,8 @@ export default function SettingsModal() {
                   </AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-destructive"
-                    onPress={handleClearData}>
-                    <Text className="text-white">Delete</Text>
+                    onPress={handleClearAllData}>
+                    <Text className="text-destructive-foreground">Delete</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

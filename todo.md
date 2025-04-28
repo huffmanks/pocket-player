@@ -12,10 +12,6 @@
 4. Cleanup:
    - Upgrade packages
    - Add app screenshots to repo
-5. Settings
-   - Delete cache button.
-   - Delete local storage.
-   - Delete files.
 
 ## Features
 

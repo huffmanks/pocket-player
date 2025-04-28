@@ -2,7 +2,6 @@ import * as FileSystem from "expo-file-system";
 
 import { playlists, videos } from "@/db/schema";
 import { useDatabaseStore } from "@/lib/store";
-import { ensureDirectory } from "@/lib/upload";
 
 export async function resetTables() {
   try {
@@ -19,17 +18,13 @@ export async function resetTables() {
 
 export async function clearDirectory(directoryUri: string) {
   try {
-    const dirExists = await ensureDirectory(directoryUri);
+    if (!directoryUri) throw new Error("Invalid directoryUri");
 
-    if (!dirExists) return;
+    const normalizedUri = directoryUri.replace(/\/$/, "");
+    await FileSystem.deleteAsync(normalizedUri, { idempotent: true });
 
-    const files = await FileSystem.readDirectoryAsync(directoryUri);
-    for (const file of files) {
-      const fileUri = `${directoryUri}/${file}`;
-      await FileSystem.deleteAsync(fileUri, { idempotent: true });
-    }
-    return { message: "Directory files deleted successfully.", type: "success" };
-  } catch (error) {
-    return { message: "Failed to delete directory files.", type: "error" };
+    return { message: "Directory cleared successfully.", type: "success" };
+  } catch {
+    return { message: "Failed to clear directory.", type: "error" };
   }
 }
