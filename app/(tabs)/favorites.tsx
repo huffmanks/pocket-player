@@ -53,9 +53,6 @@ export default function FavoritesScreen() {
     db.select({ value: playlists.id, label: playlists.title }).from(playlists)
   );
 
-  const favoritesExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
-  const isFavoritesLoading = !favoritesExist && videosQuery.error === undefined;
-
   const videosWithPlaylists = useMemo(() => {
     if (!videosQuery || !playlistVideosQuery) return [];
 
@@ -105,6 +102,8 @@ export default function FavoritesScreen() {
     }
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
+
+  const favoritesExist = !!sortedData.length;
 
   function handleSortDate() {
     setSortKey("date");
@@ -156,25 +155,13 @@ export default function FavoritesScreen() {
             sortedData={sortedData}
           />
         }
-        ListEmptyComponent={
-          <ListEmptyComponent
-            isFavoritesLoading={isFavoritesLoading}
-            favoritesExist={favoritesExist}
-          />
-        }
+        ListEmptyComponent={<ListEmptyComponent favoritesExist={favoritesExist} />}
       />
     </View>
   );
 }
 
-function ListEmptyComponent({
-  isFavoritesLoading,
-  favoritesExist,
-}: {
-  isFavoritesLoading: boolean;
-  favoritesExist: boolean;
-}) {
-  if (isFavoritesLoading) return null;
+function ListEmptyComponent({ favoritesExist }: { favoritesExist: boolean }) {
   return (
     <View className="p-5">
       <H2 className="mb-4 text-brand-foreground">
