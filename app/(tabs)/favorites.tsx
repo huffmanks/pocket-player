@@ -23,6 +23,23 @@ export default function FavoritesScreen() {
 
   const insets = useSafeAreaInsets();
 
+  const {
+    sortKey,
+    sortDateOrder,
+    sortTitleOrder,
+    setSortKey,
+    toggleSortDateOrder,
+    toggleSortTitleOrder,
+  } = useSettingsStore(
+    useShallow((state) => ({
+      sortKey: state.sortKey,
+      sortDateOrder: state.sortDateOrder,
+      sortTitleOrder: state.sortTitleOrder,
+      setSortKey: state.setSortKey,
+      toggleSortDateOrder: state.toggleSortDateOrder,
+      toggleSortTitleOrder: state.toggleSortTitleOrder,
+    }))
+  );
   const db = useDatabaseStore.getState().db;
 
   const videosQuery = useLiveQuery(
@@ -31,8 +48,13 @@ export default function FavoritesScreen() {
       orderBy: (videos, { asc }) => [asc(videos.createdAt)],
     })
   );
-
   const playlistVideosQuery = useLiveQuery(db.query.playlistVideos.findMany());
+  const playlistsQuery = useLiveQuery(
+    db.select({ value: playlists.id, label: playlists.title }).from(playlists)
+  );
+
+  const favoritesExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
+  const isFavoritesLoading = !favoritesExist && videosQuery.error === undefined;
 
   const videosWithPlaylists = useMemo(() => {
     if (!videosQuery || !playlistVideosQuery) return [];
@@ -52,35 +74,15 @@ export default function FavoritesScreen() {
     }));
   }, [videosQuery.data, playlistVideosQuery.data]);
 
-  const playlistsQuery = useLiveQuery(
-    db.select({ value: playlists.id, label: playlists.title }).from(playlists)
-  );
-
-  const {
-    sortKey,
-    sortDateOrder,
-    sortTitleOrder,
-    setSortKey,
-    toggleSortDateOrder,
-    toggleSortTitleOrder,
-  } = useSettingsStore(
-    useShallow((state) => ({
-      sortKey: state.sortKey,
-      sortDateOrder: state.sortDateOrder,
-      sortTitleOrder: state.sortTitleOrder,
-      setSortKey: state.setSortKey,
-      toggleSortDateOrder: state.toggleSortDateOrder,
-      toggleSortTitleOrder: state.toggleSortTitleOrder,
-    }))
-  );
-
-  const fuse = new Fuse([], { keys: ["title"], threshold: 0.5 });
+  const fuse = new Fuse(videosWithPlaylists, {
+    keys: ["title"],
+    threshold: 0.5,
+  });
 
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
 
-    fuse.setCollection(videosWithPlaylists);
     return fuse.search(searchQuery).map((result) => result.item);
   }, [videosQuery, searchQuery]);
 
@@ -132,8 +134,6 @@ export default function FavoritesScreen() {
     toast.error("Error loading data.");
   }
 
-  const favoritesExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
-
   return (
     <View className="relative min-h-full pt-4">
       {favoritesExist && (
@@ -156,13 +156,25 @@ export default function FavoritesScreen() {
             sortedData={sortedData}
           />
         }
-        ListEmptyComponent={<ListEmptyComponent favoritesExist={favoritesExist} />}
+        ListEmptyComponent={
+          <ListEmptyComponent
+            isFavoritesLoading={isFavoritesLoading}
+            favoritesExist={favoritesExist}
+          />
+        }
       />
     </View>
   );
 }
 
-function ListEmptyComponent({ favoritesExist }: { favoritesExist: boolean }) {
+function ListEmptyComponent({
+  isFavoritesLoading,
+  favoritesExist,
+}: {
+  isFavoritesLoading: boolean;
+  favoritesExist: boolean;
+}) {
+  if (isFavoritesLoading) return null;
   return (
     <View className="p-5">
       <H2 className="mb-4 text-brand-foreground">

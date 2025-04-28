@@ -33,38 +33,6 @@ export default function HomeScreen() {
 
   const isAppReady = useAppStore((state) => state.isAppReady);
   const isLocked = useSecurityStore((state) => state.isLocked);
-  const db = useDatabaseStore.getState().db;
-
-  const videosQuery = useLiveQuery(
-    db.query.videos.findMany({
-      orderBy: (videos, { asc }) => [asc(videos.createdAt)],
-    })
-  );
-
-  const playlistVideosQuery = useLiveQuery(db.query.playlistVideos.findMany());
-
-  const videosWithPlaylists = useMemo(() => {
-    if (!videosQuery || !playlistVideosQuery) return [];
-
-    const videoToPlaylistsMap: Record<string, string[]> = {};
-
-    for (const { videoId, playlistId } of playlistVideosQuery.data) {
-      if (!videoToPlaylistsMap[videoId]) {
-        videoToPlaylistsMap[videoId] = [];
-      }
-      videoToPlaylistsMap[videoId].push(playlistId);
-    }
-
-    return videosQuery.data.map((video) => ({
-      ...video,
-      playlists: videoToPlaylistsMap[video.id] || [],
-    }));
-  }, [videosQuery.data, playlistVideosQuery.data]);
-
-  const playlistsQuery = useLiveQuery(
-    db.select({ value: playlists.id, label: playlists.title }).from(playlists)
-  );
-
   const {
     sortKey,
     sortDateOrder,
@@ -86,14 +54,45 @@ export default function HomeScreen() {
       setScrollPosition: state.setScrollPosition,
     }))
   );
+  const db = useDatabaseStore.getState().db;
 
-  const fuse = new Fuse([], { keys: ["title"], threshold: 0.5 });
+  const videosQuery = useLiveQuery(
+    db.query.videos.findMany({
+      orderBy: (videos, { asc }) => [asc(videos.createdAt)],
+    })
+  );
+  const playlistVideosQuery = useLiveQuery(db.query.playlistVideos.findMany());
+  const playlistsQuery = useLiveQuery(
+    db.select({ value: playlists.id, label: playlists.title }).from(playlists)
+  );
+
+  const videosExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
+  const isVideosLoading = !videosExist && videosQuery.error === undefined;
+
+  const videosWithPlaylists = useMemo(() => {
+    if (!videosQuery || !playlistVideosQuery) return [];
+
+    const videoToPlaylistsMap: Record<string, string[]> = {};
+
+    for (const { videoId, playlistId } of playlistVideosQuery.data) {
+      if (!videoToPlaylistsMap[videoId]) {
+        videoToPlaylistsMap[videoId] = [];
+      }
+      videoToPlaylistsMap[videoId].push(playlistId);
+    }
+
+    return videosQuery.data.map((video) => ({
+      ...video,
+      playlists: videoToPlaylistsMap[video.id] || [],
+    }));
+  }, [videosQuery.data, playlistVideosQuery.data]);
+
+  const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
 
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
 
-    fuse.setCollection(videosWithPlaylists);
     return fuse.search(searchQuery).map((result) => result.item);
   }, [videosQuery, searchQuery]);
 
@@ -117,35 +116,23 @@ export default function HomeScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
-  const videosExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
-
   function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    if (!canSaveScroll.current || isLocked) return;
+    if (!canSaveScroll.current || !isAppReady || isLocked) return;
     saveScrollY(e.nativeEvent.contentOffset.y);
   }
 
   const saveScrollY = useRef(
     throttle((y: number) => {
       setScrollPosition(y);
-    }, 100)
+    }, 150)
   ).current;
 
-  const handleOnLoad = useCallback(() => {
-    if (
-      !flashListRef.current ||
-      scrollPosition <= 0 ||
-      hasRestoredScroll.current ||
-      isLocked ||
-      !videosExist
-    ) {
+  const handleContentSizeChange = useCallback(() => {
+    if (!flashListRef.current || !isAppReady || isLocked || !videosExist) {
       return;
     }
 
-    handleRestoreScroll();
-  }, [isLocked, videosExist]);
-
-  function handleRestoreScroll() {
-    setTimeout(() => {
+    if (scrollPosition > 0 && !hasRestoredScroll.current) {
       InteractionManager.runAfterInteractions(() => {
         flashListRef.current?.scrollToOffset({
           offset: scrollPosition,
@@ -153,8 +140,10 @@ export default function HomeScreen() {
         });
         hasRestoredScroll.current = true;
       });
-    }, 100);
-  }
+    }
+
+    canSaveScroll.current = true;
+  }, [isAppReady, isLocked, videosExist]);
 
   function handleSortDate() {
     setSortKey("date");
@@ -182,18 +171,13 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (isLocked) {
-        canSaveScroll.current = false;
-      } else {
-        canSaveScroll.current = true;
-        hasRestoredScroll.current = false;
-      }
+      hasRestoredScroll.current = false;
 
       return () => {
         hasRestoredScroll.current = false;
         canSaveScroll.current = false;
       };
-    }, [isLocked])
+    }, [])
   );
 
   if (videosQuery.error) {
@@ -217,22 +201,34 @@ export default function HomeScreen() {
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
-        scrollEventThrottle={100}
+        scrollEventThrottle={150}
         onScroll={handleScroll}
-        onLoad={handleOnLoad}
+        onContentSizeChange={handleContentSizeChange}
         ListHeaderComponent={
           <ListHeaderComponent
             videosExist={videosExist}
             sortedData={sortedData}
           />
         }
-        ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
+        ListEmptyComponent={
+          <ListEmptyComponent
+            isVideosLoading={isVideosLoading}
+            videosExist={videosExist}
+          />
+        }
       />
     </View>
   );
 }
 
-function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
+function ListEmptyComponent({
+  isVideosLoading,
+  videosExist,
+}: {
+  isVideosLoading: boolean;
+  videosExist: boolean;
+}) {
+  if (isVideosLoading) return null;
   return (
     <View className="p-5">
       <H2 className="mb-4 text-brand-foreground">
