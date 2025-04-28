@@ -74,11 +74,13 @@ export default function FavoritesScreen() {
     }))
   );
 
+  const fuse = new Fuse([], { keys: ["title"], threshold: 0.5 });
+
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
 
-    const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
+    fuse.setCollection(videosWithPlaylists);
     return fuse.search(searchQuery).map((result) => result.item);
   }, [videosQuery, searchQuery]);
 
