@@ -87,7 +87,7 @@ export default function HomeScreen() {
     }))
   );
 
-const fuse = new Fuse([], { keys: ["title"], threshold: 0.5 });
+  const fuse = new Fuse([], { keys: ["title"], threshold: 0.5 });
 
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
