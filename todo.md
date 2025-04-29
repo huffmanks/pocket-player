@@ -14,6 +14,7 @@
    - add XIcon to clear search.
 3. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
+   - try overriding the whole header and adding custom back and title.
 4. [index](<app/(tabs)/index.tsx>):
    - make index route splash screen with logo and then reroute to lock or videos screen. this should help with scrollPosition.
    - make tab option `href: null`.
