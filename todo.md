@@ -4,11 +4,19 @@
 
 1. [Video player](components/video-player.tsx):
    - Sometimes video orientation loads incorrectly.
+   - Add orientation override to playlists player.
 2. [Search bar](components/search-bar.tsx):
    - move to header.
    - use `headerTransparent: true` and `headerBlurEffect: regular`.
+   - when searching and nothing matches search bar is hidden.
+   - make click area bigger.
+   - add ring when focused.
+   - add XIcon to clear search.
 3. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
+4. [index](<app/(tabs)/index.tsx>):
+   - make index route splash screen with logo and then reroute to lock or videos screen. this should help with scrollPosition.
+   - make tab option `href: null`.
 4. Cleanup:
    - Upgrade packages
    - Add app screenshots to repo
