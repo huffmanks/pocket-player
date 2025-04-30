@@ -2,7 +2,7 @@ import { Link, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { InteractionManager, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
-import { FlashList } from "@shopify/flash-list";
+import { FlashList, ViewToken } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Fuse from "fuse.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,7 +12,7 @@ import { useShallow } from "zustand/react/shallow";
 import { VideoMeta, playlists } from "@/db/schema";
 import { BOTTOM_TABS_OFFSET, ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
-import { useAppStore, useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
+import { useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { formatDuration, throttle } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
@@ -27,11 +27,12 @@ export default function VideosScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
+  const hasRenderedOnce = useRef(false);
+  const hasUserScrolled = useRef(false);
   const canSaveScroll = useRef(false);
   const hasRestoredScroll = useRef(false);
   const insets = useSafeAreaInsets();
 
-  const isAppReady = useAppStore((state) => state.isAppReady);
   const isLocked = useSecurityStore((state) => state.isLocked);
   const {
     sortKey,
@@ -115,7 +116,8 @@ export default function VideosScreen() {
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
   function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    if (!canSaveScroll.current || !isAppReady || isLocked) return;
+    hasUserScrolled.current = true;
+    if (!canSaveScroll.current || isLocked) return;
     saveScrollY(e.nativeEvent.contentOffset.y);
   }
 
@@ -124,24 +126,6 @@ export default function VideosScreen() {
       setScrollPosition(y);
     }, 150)
   ).current;
-
-  const handleContentSizeChange = useCallback(() => {
-    if (!flashListRef.current || !isAppReady || isLocked || !videosExist) {
-      return;
-    }
-
-    if (scrollPosition > 0 && !hasRestoredScroll.current) {
-      InteractionManager.runAfterInteractions(() => {
-        flashListRef.current?.scrollToOffset({
-          offset: scrollPosition,
-          animated: false,
-        });
-        hasRestoredScroll.current = true;
-      });
-    }
-
-    canSaveScroll.current = true;
-  }, [isAppReady, isLocked, videosExist]);
 
   function handleSortDate() {
     setSortKey("date");
@@ -167,11 +151,41 @@ export default function VideosScreen() {
     [playlistsQuery?.data]
   );
 
+  function restoreScroll() {
+    if (
+      hasRestoredScroll.current ||
+      hasUserScrolled.current ||
+      !flashListRef.current ||
+      scrollPosition < 0
+    )
+      return;
+
+    flashListRef.current.scrollToOffset({
+      offset: scrollPosition,
+      animated: false,
+    });
+  }
+
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (!hasRenderedOnce.current && viewableItems.length > 0) {
+      InteractionManager.runAfterInteractions(() => {
+        requestAnimationFrame(() => {
+          restoreScroll();
+          hasRenderedOnce.current = true;
+          hasRestoredScroll.current = true;
+          canSaveScroll.current = true;
+        });
+      });
+    }
+  }).current;
+
   useFocusEffect(
     useCallback(() => {
       hasRestoredScroll.current = false;
 
       return () => {
+        hasRenderedOnce.current = false;
+        hasUserScrolled.current = false;
         hasRestoredScroll.current = false;
         canSaveScroll.current = false;
       };
@@ -202,7 +216,7 @@ export default function VideosScreen() {
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={150}
         onScroll={handleScroll}
-        onContentSizeChange={handleContentSizeChange}
+        onViewableItemsChanged={onViewableItemsChanged}
         ListHeaderComponent={
           <ListHeaderComponent
             videosExist={videosExist}

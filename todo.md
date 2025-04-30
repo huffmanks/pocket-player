@@ -11,17 +11,9 @@
 3. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
    - try overriding the whole header and adding custom back and title.
-4. [index](<app/(tabs)/index.tsx>):
-   - make index route splash screen with logo and then reroute to lock or videos screen. this should help with scrollPosition.
-   - make tab option `href: null`.
-5. Cleanup:
-   - Upgrade packages
+4. Cleanup:
+   - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
-6. playlist sortable
-   <!-- - remove scrollbar visible add some padding top of list remove some at bottom.
-   - favorites and index hide scrollbar -->
-   <!-- - combobox select all deselect all, remove scrollbar -->
-   <!-- - search remove focus -->
 
 ## Features
 
