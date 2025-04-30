@@ -105,7 +105,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
       if (status === "success") {
         toast.error(message);
-        router.push("/");
+        router.push("/videos");
       }
     } catch (error) {
       toast.error("Failed to delete video.");
@@ -131,7 +131,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       if (router.canGoBack()) {
         router.back();
       } else {
-        router.push("/");
+        router.push("/videos");
       }
     } catch (error) {
       toast.error(`Error updating ${values.title}!`);

@@ -18,9 +18,10 @@
    - Upgrade packages
    - Add app screenshots to repo
 6. playlist sortable
-   - remove scrollbar visible add some padding top of list remove some at bottom.
-   - favorites and index hide scrollbar
-   - combobox select all deselect all, remove scrollbar
+   <!-- - remove scrollbar visible add some padding top of list remove some at bottom.
+   - favorites and index hide scrollbar -->
+   <!-- - combobox select all deselect all, remove scrollbar -->
+   <!-- - search remove focus -->
 
 ## Features
 

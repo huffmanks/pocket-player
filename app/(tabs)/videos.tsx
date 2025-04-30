@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
-import { View } from "react-native";
+import { Link, useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { InteractionManager, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -10,41 +11,53 @@ import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta, playlists } from "@/db/schema";
 import { BOTTOM_TABS_OFFSET, ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
-import { useDatabaseStore, useSettingsStore } from "@/lib/store";
-import { formatDuration } from "@/lib/utils";
+import { CloudUploadIcon } from "@/lib/icons";
+import { useAppStore, useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
+import { formatDuration, throttle } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
+import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
-export default function FavoritesScreen() {
+export type VideoMetaWithPlaylists = VideoMeta & { playlists?: string[] };
+
+export default function VideosScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
+  const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
+  const canSaveScroll = useRef(false);
+  const hasRestoredScroll = useRef(false);
   const insets = useSafeAreaInsets();
 
+  const isAppReady = useAppStore((state) => state.isAppReady);
+  const isLocked = useSecurityStore((state) => state.isLocked);
   const {
     sortKey,
     sortDateOrder,
     sortTitleOrder,
+    scrollPosition,
     setSortKey,
     toggleSortDateOrder,
     toggleSortTitleOrder,
+    setScrollPosition,
   } = useSettingsStore(
     useShallow((state) => ({
       sortKey: state.sortKey,
       sortDateOrder: state.sortDateOrder,
       sortTitleOrder: state.sortTitleOrder,
+      scrollPosition: state.scrollPosition,
       setSortKey: state.setSortKey,
       toggleSortDateOrder: state.toggleSortDateOrder,
       toggleSortTitleOrder: state.toggleSortTitleOrder,
+      setScrollPosition: state.setScrollPosition,
     }))
   );
   const db = useDatabaseStore.getState().db;
 
   const videosQuery = useLiveQuery(
     db.query.videos.findMany({
-      where: (videos, { eq }) => eq(videos.isFavorite, true),
       orderBy: (videos, { asc }) => [asc(videos.createdAt)],
     })
   );
@@ -71,16 +84,13 @@ export default function FavoritesScreen() {
     }));
   }, [videosQuery, playlistVideosQuery]);
 
-  const favoritesExist = !!videosWithPlaylists.length;
+  const videosExist = !!videosWithPlaylists.length;
 
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
 
-    const fuse = new Fuse(videosWithPlaylists, {
-      keys: ["title"],
-      threshold: 0.5,
-    });
+    const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
     return fuse.search(searchQuery).map((result) => result.item);
   }, [searchQuery, videosWithPlaylists]);
 
@@ -104,6 +114,35 @@ export default function FavoritesScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
+  function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
+    if (!canSaveScroll.current || !isAppReady || isLocked) return;
+    saveScrollY(e.nativeEvent.contentOffset.y);
+  }
+
+  const saveScrollY = useRef(
+    throttle((y: number) => {
+      setScrollPosition(y);
+    }, 150)
+  ).current;
+
+  const handleContentSizeChange = useCallback(() => {
+    if (!flashListRef.current || !isAppReady || isLocked || !videosExist) {
+      return;
+    }
+
+    if (scrollPosition > 0 && !hasRestoredScroll.current) {
+      InteractionManager.runAfterInteractions(() => {
+        flashListRef.current?.scrollToOffset({
+          offset: scrollPosition,
+          animated: false,
+        });
+        hasRestoredScroll.current = true;
+      });
+    }
+
+    canSaveScroll.current = true;
+  }, [isAppReady, isLocked, videosExist]);
+
   function handleSortDate() {
     setSortKey("date");
     toggleSortDateOrder();
@@ -115,7 +154,7 @@ export default function FavoritesScreen() {
   }
 
   const renderItem = useCallback(
-    ({ item }: { item: VideoMeta }) => {
+    ({ item }: { item: VideoMetaWithPlaylists }) => {
       return (
         <View className="px-2">
           <VideoItem
@@ -128,13 +167,24 @@ export default function FavoritesScreen() {
     [playlistsQuery?.data]
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      hasRestoredScroll.current = false;
+
+      return () => {
+        hasRestoredScroll.current = false;
+        canSaveScroll.current = false;
+      };
+    }, [])
+  );
+
   if (videosQuery.error) {
     toast.error("Error loading data.");
   }
 
   return (
     <View className="relative min-h-full pt-4">
-      {favoritesExist && (
+      {videosExist && (
         <SearchBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -144,44 +194,66 @@ export default function FavoritesScreen() {
       )}
       <FlashList
         data={sortedData}
+        ref={flashListRef}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
         showsVerticalScrollIndicator={false}
+        scrollEventThrottle={150}
+        onScroll={handleScroll}
+        onContentSizeChange={handleContentSizeChange}
         ListHeaderComponent={
           <ListHeaderComponent
-            favoritesExist={favoritesExist}
+            videosExist={videosExist}
             sortedData={sortedData}
           />
         }
-        ListEmptyComponent={<ListEmptyComponent favoritesExist={favoritesExist} />}
+        ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
       />
     </View>
   );
 }
 
-function ListEmptyComponent({ favoritesExist }: { favoritesExist: boolean }) {
+function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
   return (
     <View className="p-5">
       <H2 className="mb-4 text-brand-foreground">
-        {favoritesExist ? "No results" : "No favorite videos yet!"}
+        {videosExist ? "No results" : "No videos yet!"}
       </H2>
-      {!favoritesExist && (
-        <Text className="mb-12">Your favorite videos will be displayed here.</Text>
+      {!videosExist && (
+        <>
+          <Text className="mb-12">Your videos will be displayed here.</Text>
+          <Link
+            href="/(tabs)/upload"
+            asChild>
+            <Button
+              size="lg"
+              className="flex flex-row items-center justify-center gap-4">
+              <CloudUploadIcon
+                className="text-background"
+                size={24}
+                strokeWidth={1.5}
+              />
+              <Text className="native:text-base font-semibold uppercase tracking-wider">
+                Upload videos
+              </Text>
+            </Button>
+          </Link>
+        </>
       )}
     </View>
   );
 }
 
 function ListHeaderComponent({
-  favoritesExist,
+  videosExist,
   sortedData,
 }: {
-  favoritesExist: boolean;
+  videosExist: boolean;
   sortedData: VideoMeta[];
 }) {
-  if (!favoritesExist) return null;
+  if (!videosExist) return null;
 
   const videosDuration = formatDuration(
     sortedData?.reduce((total, item) => total + item.duration, 0)

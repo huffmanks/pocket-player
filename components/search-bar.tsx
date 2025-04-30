@@ -40,6 +40,11 @@ export default function SearchBar({
     }))
   );
 
+  function handleClear() {
+    setSearchQuery("");
+    inputRef.current?.blur();
+  }
+
   return (
     <View className="mb-4 flex-row gap-2">
       <View
@@ -47,11 +52,9 @@ export default function SearchBar({
           "ml-2 flex-1 flex-row items-center gap-3 rounded-md border px-3",
           isFocused ? "border-brand" : "border-input"
         )}>
-        <Pressable
-          disabled={!searchQuery}
-          onPress={() => inputRef.current?.blur()}>
+        <Pressable onPress={() => inputRef.current?.blur()}>
           <SearchIcon
-            className={cn(searchQuery ? "text-foreground" : "text-muted-foreground")}
+            className={cn(isFocused ? "text-foreground" : "text-brand-foreground")}
             size={20}
             strokeWidth={1.25}
           />
@@ -65,9 +68,7 @@ export default function SearchBar({
           onChangeText={setSearchQuery}
           placeholder="Search videos"
         />
-        <Pressable
-          disabled={!searchQuery}
-          onPress={() => setSearchQuery("")}>
+        <Pressable onPress={handleClear}>
           <XIcon
             className={cn(searchQuery ? "text-foreground" : "text-muted-foreground")}
             size={20}

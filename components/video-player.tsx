@@ -63,7 +63,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
     if (router.canGoBack()) {
       router.back();
     } else {
-      router.push("/");
+      router.push("/videos");
     }
   }
 

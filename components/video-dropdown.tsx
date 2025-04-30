@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
-import { VideoMetaWithPlaylists } from "@/app/(tabs)";
+import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
 import {
   CheckIcon,

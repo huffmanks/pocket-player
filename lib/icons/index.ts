@@ -27,6 +27,7 @@ import {
   ListVideoIcon,
   LockIcon,
   LockOpenIcon,
+  MinusIcon,
   MoonStarIcon,
   PauseIcon,
   PencilIcon,
@@ -136,6 +137,9 @@ export { LockIcon };
 
 iconWithClassName(LockOpenIcon);
 export { LockOpenIcon };
+
+iconWithClassName(MinusIcon);
+export { MinusIcon };
 
 iconWithClassName(MoonStarIcon);
 export { MoonStarIcon };

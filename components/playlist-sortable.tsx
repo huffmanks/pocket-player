@@ -8,7 +8,6 @@ import ReorderableList, {
 } from "react-native-reorderable-list";
 
 import { VideoMeta } from "@/db/schema";
-import { ESTIMATED_PLAYLIST_ITEM_HEIGHT } from "@/lib/constants";
 import { ListVideoIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 
@@ -59,14 +58,16 @@ export default function PlaylistSortable({ playlistId, videosData }: PlaylistSor
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       onReorder={handleReorder}
-      ListFooterComponent={<View style={{ paddingTop: ESTIMATED_PLAYLIST_ITEM_HEIGHT + 16 }} />}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={<View style={{ paddingTop: 40 }} />}
+      ListFooterComponent={<View style={{ paddingBottom: 40 }} />}
     />
   );
 }
 
 function ListEmptyComponent({ playlistId }: { playlistId: string }) {
   return (
-    <View className="">
+    <View>
       <H3 className="mb-2">Playlist empty</H3>
       <Text className="mb-8 text-muted-foreground">Add some videos to this playlist.</Text>
       <Link

@@ -1,9 +1,9 @@
 import * as React from "react";
-import { ListRenderItemInfo, Text, View } from "react-native";
+import { ListRenderItemInfo, Pressable, Text, View } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { CheckIcon, ChevronsUpDownIcon, SearchIcon } from "@/lib/icons";
+import { CheckIcon, ChevronsUpDownIcon, MinusIcon, SearchIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 import {
@@ -131,6 +131,18 @@ const Combobox = React.forwardRef<
       }
     }
 
+    const isAllSelected = (selectedItemsProp ?? selectedItems).length === items.length;
+    const isSomeSelected = (selectedItemsProp ?? selectedItems).length > 0 && !isAllSelected;
+
+    function handleIsAllSelected() {
+      const newSelection = isAllSelected ? [] : items;
+      if (onSelectedItemsChange) {
+        onSelectedItemsChange(newSelection);
+      } else {
+        setSelectedItems(newSelection);
+      }
+    }
+
     const selected = selectedItemsProp ?? selectedItems;
     const displayText =
       selected.length > 0 ? selected.map((i) => i.label).join(", ") : (placeholder ?? "");
@@ -193,6 +205,35 @@ const Combobox = React.forwardRef<
               />
             </Button>
           </View>
+          {items.length > 0 && (
+            <Pressable
+              className="mx-5 flex-row items-center gap-3"
+              onPress={handleIsAllSelected}>
+              <Text className="font-bold text-foreground">Select all</Text>
+              <View
+                className={cn(
+                  "web:peer native:h-[20] native:w-[20] native:rounded h-4 w-4 shrink-0 rounded-sm border border-primary disabled:cursor-not-allowed disabled:opacity-50 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
+                  isAllSelected || isSomeSelected ? "bg-primary" : ""
+                )}>
+                <View className="h-full w-full items-center justify-center">
+                  {isAllSelected && (
+                    <CheckIcon
+                      size={12}
+                      strokeWidth={3.5}
+                      className="text-primary-foreground"
+                    />
+                  )}
+                  {isSomeSelected && (
+                    <MinusIcon
+                      size={12}
+                      strokeWidth={3.5}
+                      className="text-primary-foreground"
+                    />
+                  )}
+                </View>
+              </View>
+            </Pressable>
+          )}
           <BottomSheetFlatList
             data={listItems}
             contentContainerStyle={{
@@ -203,6 +244,7 @@ const Combobox = React.forwardRef<
             renderItem={renderItem}
             keyExtractor={(item, index) => (item as ComboboxOption)?.value ?? index.toString()}
             className={"px-4"}
+            showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             ListEmptyComponent={() => {
               return (

@@ -29,6 +29,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          headerShown: false,
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="videos"
+        options={{
           title: "Videos",
           tabBarIcon: ({ color }) => (
             <VideoIcon

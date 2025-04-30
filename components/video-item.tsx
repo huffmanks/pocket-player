@@ -3,7 +3,7 @@ import { Image, Pressable, View } from "react-native";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
-import { VideoMetaWithPlaylists } from "@/app/(tabs)";
+import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
 import { formatDateString } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";

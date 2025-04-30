@@ -72,8 +72,8 @@ export default function ViewPlaylistScreen() {
   return (
     <View
       style={{ paddingTop: 16, paddingBottom: insets.bottom }}
-      className="flex-1 px-5">
-      <View className="mb-8">
+      className="flex-1 px-3">
+      <View className="mb-8 px-2">
         <H2 className="mb-4">{playlistQuery.data[0].title}</H2>
         <Text className="text-muted-foreground">
           {playlistQuery.data[0]?.description
@@ -81,7 +81,7 @@ export default function ViewPlaylistScreen() {
             : "No description."}
         </Text>
       </View>
-      <View className="mb-12 flex-row items-center justify-center gap-2">
+      <View className="mb-1 flex-row items-center justify-center gap-2 px-2">
         <View className="flex-1">
           <Link
             href={`/(modals)/playlists/watch/${id}`}
