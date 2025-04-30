@@ -1,5 +1,7 @@
 # TODOS
 
+## rename to pocket-player
+
 ## Issues
 
 1. [Video player](components/video-player.tsx):
