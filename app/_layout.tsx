@@ -107,7 +107,7 @@ export default function RootLayout() {
     }
 
     restorePreviousRoute();
-  }, [isAppReady]);
+  }, [isAppReady, isLocked]);
 
   if (!isAppReady) {
     return null;

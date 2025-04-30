@@ -66,8 +66,6 @@ export default function HomeScreen() {
     db.select({ value: playlists.id, label: playlists.title }).from(playlists)
   );
 
-  // const videosExist = Array.isArray(videosQuery.data) && videosQuery.data.length > 0;
-
   const videosWithPlaylists = useMemo(() => {
     if (!videosQuery || !playlistVideosQuery) return [];
 
@@ -84,16 +82,17 @@ export default function HomeScreen() {
       ...video,
       playlists: videoToPlaylistsMap[video.id] || [],
     }));
-  }, [videosQuery.data, playlistVideosQuery.data]);
+  }, [videosQuery, playlistVideosQuery]);
 
-  const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
+  const videosExist = !!videosWithPlaylists.length;
 
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
 
+    const fuse = new Fuse(videosWithPlaylists, { keys: ["title"], threshold: 0.5 });
     return fuse.search(searchQuery).map((result) => result.item);
-  }, [videosQuery, searchQuery]);
+  }, [searchQuery, videosWithPlaylists]);
 
   const sortedData = useMemo(() => {
     const sorted = [...filteredData];
@@ -114,8 +113,6 @@ export default function HomeScreen() {
     }
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
-
-  const videosExist = !!sortedData.length;
 
   function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
     if (!canSaveScroll.current || !isAppReady || isLocked) return;
@@ -167,7 +164,7 @@ export default function HomeScreen() {
         </View>
       );
     },
-    [sortedData]
+    [playlistsQuery?.data]
   );
 
   useFocusEffect(

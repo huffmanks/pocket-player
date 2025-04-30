@@ -83,7 +83,7 @@ export default function LockModal() {
     } else {
       handleErrorShake();
     }
-  }, [setIsLocked, router]);
+  }, []);
 
   const handleErrorShake = useCallback(async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);

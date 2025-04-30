@@ -258,7 +258,7 @@ const FormInput = React.forwardRef<
       return {} as React.ComponentRef<typeof Input>;
     }
     return inputRef.current;
-  }, [inputRef.current]);
+  }, [inputRef]);
 
   function handleOnLabelPress() {
     if (!inputRef.current) {
@@ -314,7 +314,7 @@ const FormTextarea = React.forwardRef<
       return {} as React.ComponentRef<typeof Textarea>;
     }
     return textareaRef.current;
-  }, [textareaRef.current]);
+  }, [textareaRef]);
 
   function handleOnLabelPress() {
     if (!textareaRef.current) {
@@ -536,7 +536,7 @@ const FormSwitch = React.forwardRef<React.ElementRef<typeof Switch>, FormSwitchP
         return {} as React.ComponentRef<typeof Switch>;
       }
       return switchRef.current;
-    }, [switchRef.current]);
+    }, [switchRef]);
 
     function handleOnLabelPress() {
       onChange?.(!value);

@@ -28,11 +28,11 @@ import { Button } from "@/components/ui/button";
 type BottomSheetRef = React.ElementRef<typeof View>;
 type BottomSheetProps = React.ComponentPropsWithoutRef<typeof View>;
 
-interface BottomSheetContext {
+interface IBottomSheetContext {
   sheetRef: React.RefObject<BottomSheetModal>;
 }
 
-const BottomSheetContext = React.createContext({} as BottomSheetContext);
+const BottomSheetContext = React.createContext({} as IBottomSheetContext);
 
 const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(({ ...props }, ref) => {
   const sheetRef = React.useRef<BottomSheetModal>(null);
@@ -46,6 +46,8 @@ const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(({ ...pro
     </BottomSheetContext.Provider>
   );
 });
+
+BottomSheet.displayName = "BottomSheet";
 
 function useBottomSheetContext() {
   const context = React.useContext(BottomSheetContext);
@@ -90,7 +92,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
         return {} as BottomSheetModalMethods;
       }
       return sheetRef.current;
-    }, [sheetRef.current]);
+    }, [sheetRef]);
 
     const renderBackdrop = React.useCallback(
       (props: BottomSheetBackdropProps) => {
@@ -121,7 +123,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
           />
         );
       },
-      [backdropProps, NAV_THEME[colorScheme]]
+      [backdropProps, isDarkColorScheme]
     );
 
     return (
@@ -143,6 +145,8 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
     );
   }
 );
+
+BottomSheetContent.displayName = "BottomSheetContent";
 
 const BottomSheetOpenTrigger = React.forwardRef<
   React.ElementRef<typeof Pressable>,
@@ -168,6 +172,8 @@ const BottomSheetOpenTrigger = React.forwardRef<
   );
 });
 
+BottomSheetOpenTrigger.displayName = "BottomSheetOpenTrigger";
+
 const BottomSheetCloseTrigger = React.forwardRef<
   React.ElementRef<typeof Pressable>,
   React.ComponentPropsWithoutRef<typeof Pressable> & {
@@ -191,6 +197,8 @@ const BottomSheetCloseTrigger = React.forwardRef<
     />
   );
 });
+
+BottomSheetCloseTrigger.displayName = "BottomSheetCloseTrigger";
 
 const BOTTOM_SHEET_HEADER_HEIGHT = 60;
 
@@ -243,6 +251,8 @@ const BottomSheetTextInput = React.forwardRef<BottomSheetTextInputRef, BottomShe
   }
 );
 
+BottomSheetTextInput.displayName = "BottomSheetTextInput";
+
 type BottomSheetFlatListRef = React.ElementRef<typeof GBottomSheetFlatList>;
 type BottomSheetFlatListProps = React.ComponentPropsWithoutRef<typeof GBottomSheetFlatList>;
 const BottomSheetFlatList = React.forwardRef<BottomSheetFlatListRef, BottomSheetFlatListProps>(
@@ -262,6 +272,8 @@ const BottomSheetFlatList = React.forwardRef<BottomSheetFlatListRef, BottomSheet
     );
   }
 );
+
+BottomSheetFlatList.displayName = "BottomSheetFlatList";
 
 type BottomSheetHeaderRef = React.ElementRef<typeof View>;
 type BottomSheetHeaderProps = React.ComponentPropsWithoutRef<typeof View>;
@@ -297,6 +309,8 @@ const BottomSheetHeader = React.forwardRef<BottomSheetHeaderRef, BottomSheetHead
   }
 );
 
+BottomSheetHeader.displayName = "BottomSheetHeader";
+
 type BottomSheetFooterRef = React.ElementRef<typeof View>;
 type BottomSheetFooterProps = Omit<React.ComponentPropsWithoutRef<typeof View>, "style"> & {
   bottomSheetFooterProps: GBottomSheetFooterProps;
@@ -320,6 +334,8 @@ const BottomSheetFooter = React.forwardRef<BottomSheetFooterRef, BottomSheetFoot
     );
   }
 );
+
+BottomSheetFooter.displayName = "BottomSheetFooter";
 
 function useBottomSheet() {
   const ref = React.useRef<BottomSheetContentRef>(null);

@@ -69,19 +69,20 @@ export default function FavoritesScreen() {
       ...video,
       playlists: videoToPlaylistsMap[video.id] || [],
     }));
-  }, [videosQuery.data, playlistVideosQuery.data]);
+  }, [videosQuery, playlistVideosQuery]);
 
-  const fuse = new Fuse(videosWithPlaylists, {
-    keys: ["title"],
-    threshold: 0.5,
-  });
+  const favoritesExist = !!videosWithPlaylists.length;
 
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
 
+    const fuse = new Fuse(videosWithPlaylists, {
+      keys: ["title"],
+      threshold: 0.5,
+    });
     return fuse.search(searchQuery).map((result) => result.item);
-  }, [videosQuery, searchQuery]);
+  }, [searchQuery, videosWithPlaylists]);
 
   const sortedData = useMemo(() => {
     const sorted = [...filteredData];
@@ -102,8 +103,6 @@ export default function FavoritesScreen() {
     }
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
-
-  const favoritesExist = !!sortedData.length;
 
   function handleSortDate() {
     setSortKey("date");
@@ -126,7 +125,7 @@ export default function FavoritesScreen() {
         </View>
       );
     },
-    [videosQuery, playlistsQuery]
+    [playlistsQuery?.data]
   );
 
   if (videosQuery.error) {
