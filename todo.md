@@ -8,7 +8,10 @@
 2. [Modal screens](<app/(modals)/_layout.tsx>):
    - HeaderItems are not clickable.
    - try overriding the whole header and adding custom back and title.
-3. Cleanup:
+3. [index splash screen](<app/(tabs)/index.tsx>):
+   - add get started button that goes to upload screen.
+   - Add title.
+4. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
 
