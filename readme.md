@@ -1,4 +1,4 @@
-# Video Player App
+# Pocket Player
 
 A simple mobile app to locally upload, store and watch videos.
 
@@ -18,7 +18,7 @@ A simple mobile app to locally upload, store and watch videos.
 
 ## Install
 
-Download the latest APK from the [Releases](https://github.com/huffmanks/video-player-app/releases) page and install it on your Android device.
+Download the latest APK from the [Releases](https://github.com/huffmanks/pocket-player/releases) page and install it on your Android device.
 
 ## Notes
 

@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Video Player",
-    "slug": "video-player-app",
-    "version": "1.2.0",
-    "scheme": "video-player-app",
+    "name": "Pocket Player",
+    "slug": "pocket-player",
+    "version": "1.0.0",
+    "scheme": "pocket-player",
     "orientation": "portrait",
     "icon": "./assets/icons/ios_app_logo_marketing.png",
     "userInterfaceStyle": "dark",
@@ -61,7 +61,7 @@
     "ios": {
       "icon": "./assets/icons/ios_app_logo_marketing.png",
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.videoplayerapp",
+      "bundleIdentifier": "com.anonymous.pocketplayer",
       "backgroundColor": "#09090b"
     },
     "android": {
@@ -80,7 +80,7 @@
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT"
       ],
-      "package": "com.anonymous.videoplayerapp",
+      "package": "com.anonymous.pocketplayer",
       "softwareKeyboardLayoutMode": "pan"
     },
     "plugins": [
@@ -104,8 +104,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "281e8b25-a139-475d-889f-92bfa9fde7e8"
+        "projectId": "24f3ef50-04cd-4c54-bb3c-598d81de285d"
       }
-    }
+    },
+    "owner": "huffmanks"
   }
 }
