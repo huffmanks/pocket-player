@@ -22,7 +22,7 @@ import { RouteTracker } from "@/components/route-tracker";
 export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
-  initialRouteName: "(tabs)",
+  initialRouteName: "index",
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -31,11 +31,11 @@ export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const router = useRouter();
 
-  const { appLoadedOnce, isAppReady, setAppLoadedOnce, setIsAppReady } = useAppStore(
+  const { isAppStartUp, isAppReady, setIsAppStartUp, setIsAppReady } = useAppStore(
     useShallow((state) => ({
-      appLoadedOnce: state.appLoadedOnce,
+      isAppStartUp: state.isAppStartUp,
       isAppReady: state.isAppReady,
-      setAppLoadedOnce: state.setAppLoadedOnce,
+      setIsAppStartUp: state.setIsAppStartUp,
       setIsAppReady: state.setIsAppReady,
     }))
   );
@@ -58,9 +58,9 @@ export default function RootLayout() {
   useEffect(() => {
     async function initializeApp() {
       try {
-        if (!appLoadedOnce) {
+        if (!isAppStartUp) {
           await migrateDatabase();
-          setAppLoadedOnce(true);
+          setIsAppStartUp(true);
         }
 
         if (!isAppReady) {
@@ -127,6 +127,10 @@ export default function RootLayout() {
                   statusBarBackgroundColor: NAV_THEME[colorScheme].background,
                   statusBarHidden: false,
                 }}>
+                <Stack.Screen
+                  name="index"
+                  options={{ headerShown: false }}
+                />
                 <Stack.Screen
                   name="(modals)"
                   options={{ headerShown: false }}

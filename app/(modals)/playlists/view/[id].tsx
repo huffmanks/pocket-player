@@ -38,17 +38,9 @@ export default function ViewPlaylistScreen() {
     db.select().from(playlists).where(eq(playlists.id, id)).orderBy(playlists.title)
   );
 
-  const videosQuery = useLiveQuery(
-    db.query.playlistVideos.findMany({
-      where: eq(playlistVideos.playlistId, id),
-      columns: { playlistId: true, order: true },
-      with: {
-        video: true,
-      },
-    })
+  const playlistVideosQuery = useLiveQuery(
+    db.select().from(playlistVideos).where(eq(playlistVideos.playlistId, id)).limit(1)
   );
-
-  const videosData = videosQuery.data.sort((a, b) => a.order - b.order).map(({ video }) => video);
 
   async function handleDelete() {
     try {
@@ -63,11 +55,11 @@ export default function ViewPlaylistScreen() {
     }
   }
 
-  if (playlistQuery.error || videosQuery.error) {
+  if (playlistQuery.error || playlistVideosQuery.error) {
     toast.error("Error loading data.");
   }
 
-  if (!playlistQuery.data[0]) return;
+  if (!playlistQuery.data?.length) return null;
 
   return (
     <View
@@ -86,7 +78,9 @@ export default function ViewPlaylistScreen() {
           <Link
             href={`/(modals)/playlists/watch/${id}`}
             asChild>
-            <Button className="flex flex-row items-center justify-center gap-4">
+            <Button
+              disabled={!playlistVideosQuery.data?.length}
+              className="flex flex-row items-center justify-center gap-4">
               <TvIcon
                 className="text-background"
                 size={24}
@@ -147,10 +141,7 @@ export default function ViewPlaylistScreen() {
         </View>
       </View>
 
-      <PlaylistSortable
-        playlistId={id}
-        videosData={videosData}
-      />
+      <PlaylistSortable playlistId={id} />
     </View>
   );
 }

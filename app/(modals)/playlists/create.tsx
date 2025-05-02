@@ -1,17 +1,12 @@
-import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import { toast } from "sonner-native";
 
 import { videos } from "@/db/schema";
-import { CloudUploadIcon } from "@/lib/icons";
 import { useDatabaseStore } from "@/lib/store";
 
 import CreatePlaylistForm from "@/components/forms/create-playlist";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { H2 } from "@/components/ui/typography";
 
 export interface VideoData {
   value: string;
@@ -35,29 +30,7 @@ export default function CreatePlaylistScreen() {
     });
   }, []);
 
-  if (!videoData || !videoData.length)
-    return (
-      <View className="px-5 pt-4">
-        <H2 className="text-brand-foreground mb-4">No videos yet!</H2>
-        <Text className="mb-12">Upload some videos to create a playlist.</Text>
-        <Link
-          href="/(tabs)/upload"
-          asChild>
-          <Button
-            size="lg"
-            className="flex flex-row items-center justify-center gap-4">
-            <CloudUploadIcon
-              className="text-background"
-              size={24}
-              strokeWidth={1.5}
-            />
-            <Text className="native:text-base font-semibold uppercase tracking-wider">
-              Upload videos
-            </Text>
-          </Button>
-        </Link>
-      </View>
-    );
+  if (!videoData?.length) return null;
 
   return (
     <View className="mx-auto mb-8 w-full max-w-md px-4 py-8">

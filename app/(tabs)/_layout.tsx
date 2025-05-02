@@ -5,6 +5,7 @@ import { NAV_THEME } from "@/lib/constants";
 import { CloudUploadIcon, ListMusicIcon, SettingsIcon, StarIcon, VideoIcon } from "@/lib/icons";
 
 import HeaderItems from "@/components/header-items";
+import HeaderLogo from "@/components/header-logo";
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
@@ -16,6 +17,7 @@ export default function TabLayout() {
         headerStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,
         },
+        headerTitle: () => <HeaderLogo />,
         headerRight: () => <HeaderItems />,
         tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: NAV_THEME[colorScheme].brandForeground,
@@ -26,13 +28,6 @@ export default function TabLayout() {
           height: 75,
         },
       }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          headerShown: false,
-          href: null,
-        }}
-      />
       <Tabs.Screen
         name="videos"
         options={{

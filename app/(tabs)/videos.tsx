@@ -18,7 +18,7 @@ import { formatDuration, throttle } from "@/lib/utils";
 import SearchBar from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { H2 } from "@/components/ui/typography";
+import { H1, H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
 export type VideoMetaWithPlaylists = VideoMeta & { playlists?: string[] };
@@ -231,7 +231,8 @@ export default function VideosScreen() {
 
 function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
   return (
-    <View className="p-5">
+    <View className="px-4 py-2">
+      {!videosExist && <H1 className="mb-6">Videos</H1>}
       <H2 className="mb-4 text-brand-foreground">
         {videosExist ? "No results" : "No videos yet!"}
       </H2>

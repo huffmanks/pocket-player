@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
+import { H1 } from "@/components/ui/typography";
 
 export default function SettingsModal() {
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
@@ -130,10 +131,11 @@ export default function SettingsModal() {
   return (
     <ScrollView
       contentInset={insets}
-      contentContainerClassName="pb-20"
+      contentContainerClassName="pt-6 pb-20 px-3"
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
-      <View className="mx-auto w-full max-w-lg p-6">
+      <H1 className="mb-6">Settings</H1>
+      <View className="px-3">
         <View className="mb-6 gap-6">
           <View>
             <Text className="mb-1 text-xl font-semibold">Video player</Text>

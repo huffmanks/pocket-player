@@ -94,7 +94,11 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
       await updatePlaylist({ id: editPlaylistInfo.id, values: parsedValues });
       toast.success(`${values.title} playlist updated successfully.`);
 
-      router.push("/(tabs)/playlists");
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.push("/(tabs)/playlists");
+      }
     } catch (error) {
       toast.error("Error updating playlist!");
     }
@@ -196,7 +200,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
         <View className="flex-1">
           <Button
             size="lg"
-            className="bg-brand flex w-full flex-row items-center justify-center gap-4"
+            className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
             onPress={form.handleSubmit(onSubmit)}>
             <SaveIcon
               className="text-white"

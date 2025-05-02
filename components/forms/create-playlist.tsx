@@ -59,11 +59,14 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
     try {
       const parsedValues = formSchema.parse(values);
 
-      await addPlaylist(parsedValues);
+      const { message, status } = await addPlaylist(parsedValues);
 
-      toast.success(`${values.title} playlist created successfully.`);
-
-      router.push("/(tabs)/playlists");
+      if (status === "success") {
+        toast.success(`${values.title} playlist created successfully.`);
+        router.push("/(tabs)/playlists");
+      } else {
+        toast.error(message);
+      }
     } catch (error) {
       toast.error("Error creating playlist!");
     }

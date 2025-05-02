@@ -1,4 +1,5 @@
 import { Link } from "expo-router";
+import { useMemo } from "react";
 import { View } from "react-native";
 
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -6,7 +7,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { playlists } from "@/db/schema";
+import { playlists, videos } from "@/db/schema";
 import { ListMusicIcon } from "@/lib/icons";
 import { useDatabaseStore } from "@/lib/store";
 import { formatDuration } from "@/lib/utils";
@@ -15,18 +16,13 @@ import PlaylistCollage from "@/components/playlist-collage";
 import PlaylistDropdown from "@/components/playlist-dropdown";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { H2 } from "@/components/ui/typography";
+import { H1, H2 } from "@/components/ui/typography";
 
 export default function PlaylistsScreen() {
   const insets = useSafeAreaInsets();
   const db = useDatabaseStore.getState().db;
 
   const playlistsQuery = useLiveQuery(db.select().from(playlists).orderBy(playlists.title));
-  const {
-    data: playlistsData,
-    error: playlistsError,
-    updatedAt: playlistsLoading,
-  } = playlistsQuery;
 
   const thumbUrisQuery = useLiveQuery(
     db.query.playlistVideos.findMany({
@@ -39,37 +35,41 @@ export default function PlaylistsScreen() {
     })
   );
 
-  const { data: thumbUrisData, error: thumbUrisError } = thumbUrisQuery;
+  const videosQuery = useLiveQuery(db.select().from(videos).limit(1));
 
-  const playlistsWithThumbUris = (playlistsData ?? []).map((playlist) => {
-    if (!thumbUrisData.length) {
-      return {
+  const playlistsWithThumbUris = useMemo(() => {
+    if (!thumbUrisQuery.data?.length) {
+      return playlistsQuery.data.map((playlist) => ({
         ...playlist,
         playlistCount: null,
         playlistDuration: null,
         thumbUris: null,
-      };
+      }));
     }
 
-    const relatedThumbs = thumbUrisData.filter((item) => item.playlistId === playlist.id);
+    return playlistsQuery.data.map((playlist) => {
+      const relatedThumbs = thumbUrisQuery.data.filter((item) => item.playlistId === playlist.id);
 
-    const playlistDuration = relatedThumbs?.reduce((total, item) => total + item.video.duration, 0);
+      const playlistDuration = relatedThumbs.reduce(
+        (total, item) => total + item.video.duration,
+        0
+      );
 
-    return {
-      ...playlist,
-      playlistCount: relatedThumbs.length,
-      playlistDuration: formatDuration(playlistDuration),
-      thumbUris: relatedThumbs.map((item) => item.video.thumbUri).slice(0, 6),
-    };
-  });
+      return {
+        ...playlist,
+        playlistCount: relatedThumbs.length,
+        playlistDuration: formatDuration(playlistDuration),
+        thumbUris: relatedThumbs.map((item) => item.video.thumbUri).slice(0, 6),
+      };
+    });
+  }, [playlistsQuery.data, thumbUrisQuery.data]);
 
-  if (playlistsError || thumbUrisError) {
+  const playlistsExist = !!playlistsWithThumbUris.length;
+  const videosExist = !!videosQuery.data?.length;
+
+  if (playlistsQuery.error) {
     toast.error("Error loading data.");
   }
-
-  if (playlistsLoading === undefined) return null;
-
-  const playlistsExist = playlistsData?.length;
 
   return (
     <ScrollView
@@ -77,7 +77,7 @@ export default function PlaylistsScreen() {
       contentContainerClassName="pb-20"
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
-      <View className="px-5 pt-4">
+      <View className="p-4">
         {playlistsExist ? (
           <>
             <ListHeaderComponent />
@@ -112,7 +112,10 @@ export default function PlaylistsScreen() {
                     </View>
 
                     <View>
-                      <PlaylistDropdown item={playlist} />
+                      <PlaylistDropdown
+                        item={playlist}
+                        playlistVideosExist={!!playlist.thumbUris?.length}
+                      />
                     </View>
                   </View>
                 </View>
@@ -120,7 +123,7 @@ export default function PlaylistsScreen() {
             </View>
           </>
         ) : (
-          <ListEmptyComponent />
+          <ListEmptyComponent videosExist={videosExist} />
         )}
       </View>
     </ScrollView>
@@ -150,27 +153,30 @@ function ListHeaderComponent() {
   );
 }
 
-function ListEmptyComponent() {
+function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
   return (
-    <View className="pt-5">
+    <View className="py-2">
+      <H1 className="mb-6">Playlists</H1>
       <H2 className="mb-4 text-brand-foreground">No playlists yet!</H2>
       <Text className="mb-12">Your playlists will be displayed here.</Text>
-      <Link
-        href="/(modals)/playlists/create"
-        asChild>
-        <Button
-          size="lg"
-          className="flex flex-row items-center justify-center gap-4">
-          <ListMusicIcon
-            className="text-background"
-            size={24}
-            strokeWidth={1.5}
-          />
-          <Text className="native:text-base font-semibold uppercase tracking-wider">
-            Create playlist
-          </Text>
-        </Button>
-      </Link>
+      {videosExist && (
+        <Link
+          href="/(modals)/playlists/create"
+          asChild>
+          <Button
+            size="lg"
+            className="flex flex-row items-center justify-center gap-4">
+            <ListMusicIcon
+              className="text-background"
+              size={24}
+              strokeWidth={1.5}
+            />
+            <Text className="native:text-base font-semibold uppercase tracking-wider">
+              Create playlist
+            </Text>
+          </Button>
+        </Link>
+      )}
     </View>
   );
 }

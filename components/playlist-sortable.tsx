@@ -1,35 +1,46 @@
 import { Link } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ListRenderItemInfo, View } from "react-native";
 
+import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import ReorderableList, {
   ReorderableListReorderEvent,
   reorderItems,
 } from "react-native-reorderable-list";
 
-import { VideoMeta } from "@/db/schema";
+import { VideoMeta, playlistVideos } from "@/db/schema";
 import { ListVideoIcon } from "@/lib/icons";
-import { usePlaylistStore } from "@/lib/store";
+import { useDatabaseStore, usePlaylistStore } from "@/lib/store";
 
 import PlaylistItem from "@/components/playlist-item";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { H3 } from "@/components/ui/typography";
+import { H2 } from "@/components/ui/typography";
 
 interface PlaylistSortableProps {
   playlistId: string;
-  videosData: VideoMeta[];
 }
 
-export default function PlaylistSortable({ playlistId, videosData }: PlaylistSortableProps) {
-  const [data, setData] = useState<VideoMeta[] | null>(null);
+export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) {
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  const db = useDatabaseStore.getState().db;
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
 
-  useEffect(() => {
-    if (videosData?.length) {
-      setData(videosData);
-    }
-  }, [videosData]);
+  const playlistVideosQuery = useLiveQuery(
+    db.query.playlistVideos.findMany({
+      where: eq(playlistVideos.playlistId, playlistId),
+      columns: { playlistId: true, order: true },
+      with: {
+        video: true,
+      },
+    })
+  );
+
+  const videosData = useMemo(() => {
+    return playlistVideosQuery.data.sort((a, b) => a.order - b.order).map(({ video }) => video);
+  }, [playlistVideosQuery]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<VideoMeta>) => (
@@ -42,19 +53,24 @@ export default function PlaylistSortable({ playlistId, videosData }: PlaylistSor
   );
 
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
-    if (!data) return;
-    const newData = reorderItems(data, from, to);
+    if (!videosData) return;
+    const newData = reorderItems(videosData, from, to);
     await updatePlaylistOrder({ playlistId, videosOrder: newData });
-    setData(newData);
   };
 
-  if (!data?.length) {
+  useEffect(() => {
+    if (!hasLoaded && (!!playlistVideosQuery.data || playlistVideosQuery.error)) {
+      setHasLoaded(true);
+    }
+  }, [playlistVideosQuery]);
+
+  if (hasLoaded && !videosData?.length) {
     return <ListEmptyComponent playlistId={playlistId} />;
   }
 
   return (
     <ReorderableList
-      data={data}
+      data={videosData}
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       onReorder={handleReorder}
@@ -67,8 +83,8 @@ export default function PlaylistSortable({ playlistId, videosData }: PlaylistSor
 
 function ListEmptyComponent({ playlistId }: { playlistId: string }) {
   return (
-    <View>
-      <H3 className="mb-2">Playlist empty</H3>
+    <View className="mt-10 px-2">
+      <H2 className="mb-4 text-brand-foreground">Playlist empty</H2>
       <Text className="mb-8 text-muted-foreground">Add some videos to this playlist.</Text>
       <Link
         href={`/(modals)/playlists/edit/${playlistId}`}

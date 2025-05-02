@@ -33,9 +33,10 @@ import { Text } from "@/components/ui/text";
 
 interface PlaylistDropdownProps {
   item: PlaylistMeta;
+  playlistVideosExist: boolean;
 }
 
-export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
+export default function PlaylistDropdown({ item, playlistVideosExist }: PlaylistDropdownProps) {
   const insets = useSafeAreaInsets();
   const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
 
@@ -84,6 +85,7 @@ export default function PlaylistDropdown({ item }: PlaylistDropdownProps) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
+            disabled={!playlistVideosExist}
             className="gap-4"
             onPress={() => router.push(`/(modals)/playlists/watch/${item.id}`)}>
             <TvIcon

@@ -36,16 +36,16 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 }));
 
 type AppStoreState = {
-  appLoadedOnce: boolean;
+  isAppStartUp: boolean;
   isAppReady: boolean;
-  setAppLoadedOnce: (bool: boolean) => void;
+  setIsAppStartUp: (bool: boolean) => void;
   setIsAppReady: (bool: boolean) => void;
 };
 
 export const useAppStore = create<AppStoreState>((set) => ({
-  appLoadedOnce: false,
+  isAppStartUp: false,
   isAppReady: false,
-  setAppLoadedOnce: (bool) => set({ appLoadedOnce: bool }),
+  setIsAppStartUp: (bool) => set({ isAppStartUp: bool }),
   setIsAppReady: (bool) => set({ isAppReady: bool }),
 }));
 
@@ -178,6 +178,8 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
           })
           .returning();
 
+        if (!created) throw new Error();
+
         const videoInserts = values.videos.map((video, index) =>
           tx.insert(playlistVideos).values({
             playlistId: created.id,
@@ -196,7 +198,13 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         message: `Playlist ${createdPlaylist.title} created successfully.`,
       };
     } catch (error) {
-      return { status: "error", message: "Failed to create playlist." };
+      const message =
+        error instanceof Error &&
+        error.message.includes("UNIQUE constraint failed: playlists.title")
+          ? "Playlist title already exists."
+          : "Failed to create playlist.";
+
+      return { status: "error", message };
     }
   },
   updatePlaylist: async ({ id, values }) => {
@@ -392,6 +400,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 }));
 
 type SettingsStoreState = {
+  isFirstAppLoad: boolean;
   autoPlay: boolean;
   loop: boolean;
   mute: boolean;
@@ -407,6 +416,7 @@ type SettingsStoreState = {
 };
 
 type SettingsStoreActions = {
+  setIsFirstAppLoad: () => void;
   setAutoPlay: (autoPlay: boolean) => void;
   setLoop: (loop: boolean) => void;
   setMute: (mute: boolean) => void;
@@ -423,6 +433,7 @@ type SettingsStoreActions = {
 };
 
 const initialSettingsStoreState: SettingsStoreState = {
+  isFirstAppLoad: true,
   autoPlay: false,
   loop: false,
   mute: false,
@@ -441,6 +452,7 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
   persist(
     (set) => ({
       ...initialSettingsStoreState,
+      setIsFirstAppLoad: () => set({ isFirstAppLoad: false }),
       setAutoPlay: (autoPlay) => set({ autoPlay }),
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
