@@ -1,8 +1,10 @@
 import { useRouter } from "expo-router";
+import { useEffect } from "react";
 import { Image, View } from "react-native";
 
 import { useShallow } from "zustand/react/shallow";
 
+import { EXCLUDED_PATHS } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
 import { useSettingsStore } from "@/lib/store";
 
@@ -12,9 +14,10 @@ import { H1 } from "@/components/ui/typography";
 
 export default function IndexScreen() {
   const router = useRouter();
-  const { isFirstAppLoad, setIsFirstAppLoad } = useSettingsStore(
+  const { isFirstAppLoad, previousPath, setIsFirstAppLoad } = useSettingsStore(
     useShallow((state) => ({
       isFirstAppLoad: state.isFirstAppLoad,
+      previousPath: state.previousPath,
       setIsFirstAppLoad: state.setIsFirstAppLoad,
     }))
   );
@@ -24,8 +27,19 @@ export default function IndexScreen() {
     router.push("/(tabs)/upload");
   }
 
+  useEffect(() => {
+    if (!isFirstAppLoad) {
+      const timeout = setTimeout(() => {
+        if (previousPath && !EXCLUDED_PATHS.includes(previousPath)) {
+          router.push(previousPath as any);
+        }
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, []);
+
   return (
-    <View className="flex-1 items-center justify-center">
+    <View className="flex-1 items-center justify-center pb-20">
       <Image
         className="mb-10"
         style={{ width: 75, height: 75 }}

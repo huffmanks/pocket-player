@@ -134,7 +134,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressOut={handleButtonPressOut}
                         onPress={() => changeVideoSource(-1)}>
                         <SkipBackIcon
-                          className="text-white group-active:opacity-70"
+                          className="fill-white stroke-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
@@ -150,7 +150,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       onPressOut={handleButtonPressOut}
                       onPress={() => safeSeekBy(-5)}>
                       <RewindIcon
-                        className="fill-white group-active:opacity-70"
+                        className="fill-white stroke-white group-active:opacity-70"
                         size={32}
                         strokeWidth={1.25}
                       />
@@ -165,19 +165,19 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       onPress={togglePlay}>
                       {hasEnded ? (
                         <RotateCcwIcon
-                          className="text-white group-active:opacity-70"
+                          className="stroke-white group-active:opacity-70"
                           size={32}
                           strokeWidth={2.25}
                         />
                       ) : isPlaying ? (
                         <PauseIcon
-                          className="fill-white group-active:opacity-70"
+                          className="fill-white stroke-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
                       ) : (
                         <PlayIcon
-                          className="fill-white group-active:opacity-70"
+                          className="fill-white stroke-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
@@ -192,7 +192,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       onPressOut={handleButtonPressOut}
                       onPress={() => safeSeekBy(5)}>
                       <FastForwardIcon
-                        className="fill-white group-active:opacity-70"
+                        className="fill-white stroke-white group-active:opacity-70"
                         size={32}
                         strokeWidth={1.25}
                       />
@@ -208,7 +208,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressOut={handleButtonPressOut}
                         onPress={() => changeVideoSource(1)}>
                         <SkipForwardIcon
-                          className="text-white group-active:opacity-70"
+                          className="fill-white stroke-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
@@ -227,13 +227,13 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPress={toggleMute}>
                         {muted ? (
                           <VolumeXIcon
-                            className="text-white/70"
+                            className="stroke-white/70"
                             size={24}
                             strokeWidth={1.25}
                           />
                         ) : (
                           <Volume2Icon
-                            className="text-white"
+                            className="stroke-white"
                             size={24}
                             strokeWidth={1.25}
                           />

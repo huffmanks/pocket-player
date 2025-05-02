@@ -82,7 +82,7 @@ export const LOCK_INTERVAL_DEFAULT = 15000;
 export const ERROR_SHAKE_OFFSET = 20;
 export const ERROR_SHAKE_TIME = 80;
 
-export const EXCLUDED_PATHS = ["/passcode", "/lock"];
+export const EXCLUDED_PATHS = ["/passcode", "/lock", "/"];
 
 export const settingsSwitches: { id: SettingId; label: string; description?: string }[] = [
   {
