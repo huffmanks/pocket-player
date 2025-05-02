@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { VideoData } from "@/app/(modals)/playlists/create";
+import { VideoData } from "@/app/(screens)/playlists/create";
 import { ListMusicIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 

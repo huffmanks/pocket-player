@@ -5,7 +5,7 @@ import { NAV_THEME } from "@/lib/constants";
 
 import HeaderItems from "@/components/header-items";
 
-export default function ModalsLayout() {
+export default function ScreensLayout() {
   const { colorScheme, isDarkColorScheme } = useColorScheme();
 
   return (

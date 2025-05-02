@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import * as LocalAuthentication from "expo-local-authentication";
-import { useRouter } from "expo-router";
+import { RelativePathString, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Image, Pressable, SafeAreaView, View } from "react-native";
 
@@ -22,14 +22,14 @@ import { cn } from "@/lib/utils";
 import KeypadRow from "@/components/keypad-row";
 import { Text } from "@/components/ui/text";
 
-export default function LockModal() {
+export default function LockScreen() {
   const [code, setCode] = useState<number[]>([]);
   const [isPressed, setIsPressed] = useState(false);
   const codeLength = Array(4).fill(0);
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const previousPath = useSettingsStore((state) => state.previousPath);
+  const currentPath = useSettingsStore((state) => state.currentPath);
   const { passcode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       passcode: state.passcode,
@@ -51,7 +51,7 @@ export default function LockModal() {
       if (code.join("") === passcode) {
         setIsLocked(false);
 
-        router.replace(previousPath as any);
+        router.replace(currentPath as RelativePathString);
       } else {
         offset.value = withSequence(
           withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
@@ -79,7 +79,7 @@ export default function LockModal() {
 
     if (success) {
       setIsLocked(false);
-      router.replace(previousPath as any);
+      router.replace(currentPath as RelativePathString);
     } else {
       handleErrorShake();
     }

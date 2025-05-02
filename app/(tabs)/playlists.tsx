@@ -86,7 +86,7 @@ export default function PlaylistsScreen() {
                 <View
                   key={playlist.id}
                   className="gap-2">
-                  <Link href={`/(modals)/playlists/view/${playlist.id}`}>
+                  <Link href={`/(screens)/playlists/view/${playlist.id}`}>
                     <PlaylistCollage images={playlist.thumbUris} />
                   </Link>
 
@@ -134,7 +134,7 @@ function ListHeaderComponent() {
   return (
     <View className="mb-10">
       <Link
-        href="/(modals)/playlists/create"
+        href="/(screens)/playlists/create"
         asChild>
         <Button
           size="lg"
@@ -161,7 +161,7 @@ function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
       <Text className="mb-12">Your playlists will be displayed here.</Text>
       {videosExist && (
         <Link
-          href="/(modals)/playlists/create"
+          href="/(screens)/playlists/create"
           asChild>
           <Button
             size="lg"

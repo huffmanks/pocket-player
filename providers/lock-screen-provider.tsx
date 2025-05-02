@@ -40,7 +40,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     const subscription = AppState.addEventListener("change", handleAppStateChange);
 
     if (isLocked) {
-      router.push("/(modals)/lock");
+      router.push("/(screens)/lock");
     }
 
     return () => {
@@ -60,7 +60,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
         const elapsedTime = Date.now() - backgroundTimestamp.current;
         if (elapsedTime > lockInterval) {
           setIsLocked(true);
-          router.push("/(modals)/lock");
+          router.push("/(screens)/lock");
         }
 
         backgroundTimestamp.current = null;

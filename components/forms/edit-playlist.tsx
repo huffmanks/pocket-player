@@ -9,7 +9,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { EditPlaylistInfo } from "@/app/(modals)/playlists/edit/[id]";
+import { EditPlaylistInfo } from "@/app/(screens)/playlists/edit/[id]";
 import { SaveIcon, TrashIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 

@@ -11,7 +11,7 @@ import { useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/stor
 
 import VideoPlayer from "@/components/video-player";
 
-export default function WatchModal() {
+export default function WatchVideoScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const db = useDatabaseStore.getState().db;

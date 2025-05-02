@@ -12,7 +12,7 @@ import { useDatabaseStore } from "@/lib/store";
 
 import EditVideoForm from "@/components/forms/edit-video";
 
-export default function EditModal() {
+export default function EditVideoScreen() {
   const [videoInfo, setVideoInfo] = useState<VideoMeta | null>(null);
 
   const insets = useSafeAreaInsets();

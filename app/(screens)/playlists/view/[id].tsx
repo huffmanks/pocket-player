@@ -76,7 +76,7 @@ export default function ViewPlaylistScreen() {
       <View className="mb-1 flex-row items-center justify-center gap-2 px-2">
         <View className="flex-1">
           <Link
-            href={`/(modals)/playlists/watch/${id}`}
+            href={`/(screens)/playlists/watch/${id}`}
             asChild>
             <Button
               disabled={!playlistVideosQuery.data?.length}
@@ -92,7 +92,7 @@ export default function ViewPlaylistScreen() {
         </View>
         <View>
           <Link
-            href={`/(modals)/playlists/edit/${id}`}
+            href={`/(screens)/playlists/edit/${id}`}
             asChild>
             <Button
               variant="secondary"

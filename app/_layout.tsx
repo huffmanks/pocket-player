@@ -1,4 +1,4 @@
-import { SplashScreen, Stack, useRouter } from "expo-router";
+import { RelativePathString, SplashScreen, Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -39,9 +39,9 @@ export default function RootLayout() {
       setIsAppReady: state.setIsAppReady,
     }))
   );
-  const { previousPath, theme, setTheme } = useSettingsStore(
+  const { currentPath, theme, setTheme } = useSettingsStore(
     useShallow((state) => ({
-      previousPath: state.previousPath,
+      currentPath: state.currentPath,
       theme: state.theme,
       setTheme: state.setTheme,
     }))
@@ -96,8 +96,8 @@ export default function RootLayout() {
       try {
         if (isLocked) return;
 
-        if (previousPath && !EXCLUDED_PATHS.includes(previousPath)) {
-          router.push(previousPath as any);
+        if (currentPath && !EXCLUDED_PATHS.includes(currentPath)) {
+          router.push(currentPath as RelativePathString);
         }
       } catch (error) {
         toast.error("Restoring previous route failed.");
@@ -132,7 +132,7 @@ export default function RootLayout() {
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                  name="(modals)"
+                  name="(screens)"
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen

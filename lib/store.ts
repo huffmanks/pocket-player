@@ -3,7 +3,7 @@ import { MMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 
-import { EditPlaylistInfo } from "@/app/(modals)/playlists/edit/[id]";
+import { EditPlaylistInfo } from "@/app/(screens)/playlists/edit/[id]";
 import { db as drizzleDb } from "@/db/drizzle";
 import { VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
 import { LOCK_INTERVAL_DEFAULT } from "@/lib/constants";
@@ -411,6 +411,7 @@ type SettingsStoreState = {
   sortDateOrder: "asc" | "desc";
   sortTitleOrder: "asc" | "desc";
   scrollPosition: number;
+  currentPath: string;
   previousPath: string;
   videoProgress: Record<string, number>;
 };
@@ -427,6 +428,7 @@ type SettingsStoreActions = {
   toggleSortDateOrder: () => void;
   toggleSortTitleOrder: () => void;
   setScrollPosition: (position: number) => void;
+  setCurrentPath: (path: string) => void;
   setPreviousPath: (path: string) => void;
   setVideoProgress: (videoId: string, time: number) => void;
   reset: () => void;
@@ -444,6 +446,7 @@ const initialSettingsStoreState: SettingsStoreState = {
   sortDateOrder: "asc",
   sortTitleOrder: "asc",
   scrollPosition: 0,
+  currentPath: "/",
   previousPath: "/",
   videoProgress: {},
 };
@@ -465,6 +468,7 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
       toggleSortTitleOrder: () =>
         set((state) => ({ sortTitleOrder: state.sortTitleOrder === "asc" ? "desc" : "asc" })),
       setScrollPosition: (position) => set({ scrollPosition: position }),
+      setCurrentPath: (path) => set({ currentPath: path }),
       setPreviousPath: (path) => set({ previousPath: path }),
       setVideoProgress: (videoId, time) =>
         set((state) => ({

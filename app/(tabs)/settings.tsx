@@ -45,7 +45,7 @@ import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
 import { H1 } from "@/components/ui/typography";
 
-export default function SettingsModal() {
+export default function SettingsScreen() {
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -166,7 +166,7 @@ export default function SettingsModal() {
             disabled={!enablePasscode}
             variant="secondary"
             className="mt-2 flex flex-row items-center justify-center gap-4"
-            onPress={() => router.push("/(modals)/passcode")}>
+            onPress={() => router.push("/(screens)/passcode")}>
             <KeyRoundIcon
               className="text-foreground"
               size={24}
