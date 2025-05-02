@@ -105,7 +105,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
       if (status === "success") {
         toast.error(message);
-        router.push("/videos");
+        router.dismissTo("/(tabs)/videos");
       }
     } catch (error) {
       toast.error("Failed to delete video.");

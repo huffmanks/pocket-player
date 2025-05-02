@@ -61,7 +61,7 @@ export default function CreatePasscodeForm() {
 
       toast.success("Passcode set successfully!");
 
-      router.push("/(tabs)/settings");
+      router.dismissTo("/(tabs)/settings");
     } catch (error) {
       toast.error("Error setting passcode");
     }

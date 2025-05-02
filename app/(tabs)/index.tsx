@@ -21,7 +21,7 @@ export default function IndexScreen() {
       <Image
         className="mb-10"
         style={{ width: 75, height: 75 }}
-        source={require("../assets/icons/base_logo.png")}
+        source={require("../../assets/icons/base_logo.png")}
       />
       <H1 className="mb-3 text-center text-foreground">Pocket Player</H1>
       {!!videosQuery?.data?.length ? (

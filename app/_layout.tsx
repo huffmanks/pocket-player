@@ -22,7 +22,7 @@ import { RouteTracker } from "@/components/route-tracker";
 export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
-  initialRouteName: "index",
+  initialRouteName: "(tabs)",
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -127,10 +127,6 @@ export default function RootLayout() {
                   statusBarBackgroundColor: NAV_THEME[colorScheme].background,
                   statusBarHidden: false,
                 }}>
-                <Stack.Screen
-                  name="index"
-                  options={{ headerShown: false }}
-                />
                 <Stack.Screen
                   name="(screens)"
                   options={{ headerShown: false }}

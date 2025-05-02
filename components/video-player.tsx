@@ -6,6 +6,7 @@ import { View } from "react-native";
 import { Slider } from "@miblanchard/react-native-slider";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
+import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -33,7 +34,13 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   useKeepAwake();
 
   const { isDarkColorScheme } = useColorScheme();
-  const isNativeControls = useSettingsStore((state) => state.isNativeControls);
+
+  const { currentPath, isNativeControls } = useSettingsStore(
+    useShallow((state) => ({
+      currentPath: state.currentPath,
+      isNativeControls: state.isNativeControls,
+    }))
+  );
 
   const {
     videoRef,
@@ -60,10 +67,11 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   } = useVideoPlayerControls(videoSources);
 
   function handleGoBack() {
-    if (router.canGoBack()) {
-      router.back();
+    if (currentPath.startsWith("/playlists/watch/")) {
+      const id = currentPath.split("/").pop();
+      router.dismissTo(`/(screens)/playlists/view/${id}`);
     } else {
-      router.push("/videos");
+      router.push("/(tabs)/videos");
     }
   }
 

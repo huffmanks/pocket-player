@@ -6,12 +6,10 @@
    - Add orientation override to playlists player.
 2. [Modal screens](<app/(screens)/_layout.tsx>):
    - HeaderItems are not clickable.
-   - try overriding the whole header and adding custom back and title.
-3. [Index screen](app/index.tsx):
-   - if modal is currentPath and go back it will auto push back to same spot so it wont dismiss the modal.
-4. [Videos screen](<app/(tabs)/videos.tsx>), [Favorites screen](<app/(tabs)/favorites.tsx>), [Playlists screen](<app/(tabs)/playlists.tsx>):
+3. [Videos screen](<app/(tabs)/videos.tsx>), [Favorites screen](<app/(tabs)/favorites.tsx>), [Playlists screen](<app/(tabs)/playlists.tsx>):
    - flash ListEmptyComponent on screen focus.
-5. If no videos delete all playlists.
+4. If no videos delete all playlists.
+5. If currentPath is a modal when app reloads goBack goes to index. Find a way to refactor.
 6. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
