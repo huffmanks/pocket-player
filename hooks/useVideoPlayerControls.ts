@@ -3,12 +3,12 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 
 import { Gesture } from "react-native-gesture-handler";
-import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { runOnUI, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
 import { useSettingsStore } from "@/lib/store";
-import { secondsToAdaptiveTime, throttle } from "@/lib/utils";
+import { secondsToAdaptiveTime } from "@/lib/utils";
 
 export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: boolean) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -30,12 +30,19 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     }))
   );
 
+  function updateControlsVisible(newValue: number) {
+    runOnUI(() => {
+      controlsVisible.value = newValue;
+    })();
+  }
+
   const player = useVideoPlayer(videoSources[currentIndex].videoUri, (p) => {
+    p.timeUpdateEventInterval = 0.5;
     p.loop = !isPlaylist && (loop ?? false);
     p.muted = isThumbView || !!mute;
 
     if ((autoPlay || isPlaylist) && !isThumbView) {
-      controlsVisible.value = 0;
+      updateControlsVisible(0);
       p.play();
     } else {
       p.pause();
@@ -50,33 +57,19 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   });
 
   useEventListener(player, "playToEnd", handlePlayToEnd);
+  useEventListener(player, "timeUpdate", ({ currentTime }) => {
+    const duration = player.duration;
 
-  useEffect(() => {
-    if (!player) return;
-
-    const updateProgress = throttle(() => {
-      const currentTime = player?.currentTime ?? 0;
-      const duration = player?.duration ?? 0;
-
-      if (duration > 0) {
-        setProgress(currentTime / duration);
-        setTime(secondsToAdaptiveTime(currentTime));
-      }
-    }, 100);
-
-    const interval = setInterval(updateProgress, 100);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [player]);
+    if (duration > 0) {
+      setProgress(currentTime / duration);
+      setTime(secondsToAdaptiveTime(currentTime));
+    }
+  });
 
   useEffect(() => {
     if (!isPlaying || isButtonTouched) return;
 
-    const timeout = setTimeout(() => {
-      controlsVisible.value = 0;
-    }, 5000);
+    const timeout = setTimeout(() => updateControlsVisible(0), 5000);
 
     return () => clearTimeout(timeout);
   }, [isPlaying, isButtonTouched, controlsVisible]);
@@ -93,7 +86,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
         if (loop) {
           player.replay();
         } else {
-          controlsVisible.value = 1;
+          updateControlsVisible(1);
         }
 
         return;
@@ -143,15 +136,15 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       player.replace(videoSources[0].videoUri);
       player.play();
 
-      controlsVisible.value = 0;
+      updateControlsVisible(0);
     } else if (isPlaying) {
       player.pause();
 
-      controlsVisible.value = 1;
+      updateControlsVisible(1);
     } else {
       player.play();
 
-      controlsVisible.value = 0;
+      updateControlsVisible(0);
     }
   }
 
@@ -180,8 +173,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
   const tapGesture = Gesture.Tap().onEnd((_, success) => {
     if (success && !isButtonTouched) {
-      const newValue = controlsVisible.value === 1 ? 0 : 1;
-      controlsVisible.value = newValue;
+      controlsVisible.value = controlsVisible.value === 1 ? 0 : 1;
     }
   });
 

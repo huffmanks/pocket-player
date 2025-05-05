@@ -8,9 +8,8 @@
    - HeaderItems are not clickable.
 3. [Videos screen](<app/(tabs)/videos.tsx>), [Favorites screen](<app/(tabs)/favorites.tsx>), [Playlists screen](<app/(tabs)/playlists.tsx>):
    - flash ListEmptyComponent on screen focus.
-4. If no videos delete all playlists.
-5. If currentPath is a modal when app reloads goBack goes to index. Find a way to refactor.
-6. Cleanup:
+4. If currentPath is a modal when app reloads goBack goes to index. Find a way to refactor.
+5. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
 

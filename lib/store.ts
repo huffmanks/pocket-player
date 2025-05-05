@@ -1,4 +1,4 @@
-import { and, eq, inArray, notInArray } from "drizzle-orm";
+import { and, count, eq, inArray, notInArray } from "drizzle-orm";
 import { MMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
@@ -102,6 +102,12 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
     try {
       const db = useDatabaseStore.getState().db;
       const [deletedVideo] = await db.delete(videos).where(eq(videos.id, id)).returning();
+
+      const [allVideos] = await db.select({ count: count() }).from(videos);
+
+      if (allVideos.count === 0) {
+        await db.delete(playlists);
+      }
 
       return { status: "success", message: `Video ${deletedVideo.title} successfully deleted.` };
     } catch (error) {
