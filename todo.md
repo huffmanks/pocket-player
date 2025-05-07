@@ -8,7 +8,9 @@
    - HeaderItems are not clickable.
 3. [Videos screen](<app/(tabs)/videos.tsx>), [Favorites screen](<app/(tabs)/favorites.tsx>), [Playlists screen](<app/(tabs)/playlists.tsx>):
    - flash ListEmptyComponent on screen focus.
-4. Cleanup:
+4. [Screens layout](<app/(screens)/_layout.tsx>):
+   - Refactor dynamic route navigation behaviors when lock screen enabled.
+5. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
 
