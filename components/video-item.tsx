@@ -26,7 +26,7 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
       className="mb-8 flex-row items-start gap-4"
       entering={FadeIn.duration(250)}
       exiting={FadeOut.duration(250)}>
-      <Pressable onPress={() => router.push(`/(screens)/videos/watch/${item.id}`)}>
+      <Pressable onPress={() => router.push(`/(screens)/videos/${item.id}/watch`)}>
         <Image
           className="rounded-md bg-card"
           style={{ width: 225, height: 125 }}

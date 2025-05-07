@@ -87,7 +87,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
           <DropdownMenuItem
             disabled={!playlistVideosExist}
             className="gap-4"
-            onPress={() => router.push(`/(screens)/playlists/watch/${item.id}`)}>
+            onPress={() => router.push(`/(screens)/playlists/${item.id}/watch`)}>
             <TvIcon
               className="text-foreground"
               size={20}
@@ -98,7 +98,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="gap-4"
-            onPress={() => router.push(`/(screens)/playlists/edit/${item.id}`)}>
+            onPress={() => router.push(`/(screens)/playlists/${item.id}/edit`)}>
             <PencilIcon
               className="text-foreground"
               size={20}
@@ -108,7 +108,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
           </DropdownMenuItem>
           <DropdownMenuItem
             className="gap-4"
-            onPress={() => router.push(`/(screens)/playlists/view/${item.id}`)}>
+            onPress={() => router.push(`/(screens)/playlists/${item.id}/view`)}>
             <ViewIcon
               className="text-foreground"
               size={20}

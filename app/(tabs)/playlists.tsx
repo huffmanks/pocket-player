@@ -86,7 +86,7 @@ export default function PlaylistsScreen() {
                 <View
                   key={playlist.id}
                   className="gap-2">
-                  <Link href={`/(screens)/playlists/view/${playlist.id}`}>
+                  <Link href={`/(screens)/playlists/${playlist.id}/view`}>
                     <PlaylistCollage images={playlist.thumbUris} />
                   </Link>
 

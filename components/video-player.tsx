@@ -1,7 +1,7 @@
 import { useKeepAwake } from "expo-keep-awake";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { VideoView } from "expo-video";
-import { View } from "react-native";
+import { InteractionManager, View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
 import { GestureDetector } from "react-native-gesture-handler";
@@ -33,6 +33,7 @@ import { Text } from "@/components/ui/text";
 export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[] }) {
   useKeepAwake();
 
+  const router = useRouter();
   const { isDarkColorScheme } = useColorScheme();
 
   const { currentPath, isNativeControls } = useSettingsStore(
@@ -67,11 +68,16 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   } = useVideoPlayerControls(videoSources);
 
   function handleGoBack() {
-    if (currentPath.startsWith("/playlists/watch/")) {
-      const id = currentPath.split("/").pop();
-      router.dismissTo(`/(screens)/playlists/view/${id}`);
+    if (currentPath.startsWith("/playlists") && currentPath.endsWith("/watch")) {
+      const segments = currentPath.split("/");
+      const id = segments[segments.length - 2];
+
+      router.dismissTo("/(tabs)/playlists");
+      InteractionManager.runAfterInteractions(() => {
+        router.push(`/(screens)/playlists/${id}/view`);
+      });
     } else {
-      router.push("/(tabs)/videos");
+      router.dismissTo("/(tabs)/videos");
     }
   }
 

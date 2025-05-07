@@ -87,7 +87,7 @@ function ListEmptyComponent({ playlistId }: { playlistId: string }) {
       <H2 className="mb-4 text-brand-foreground">Playlist empty</H2>
       <Text className="mb-8 text-muted-foreground">Add some videos to this playlist.</Text>
       <Link
-        href={`/(screens)/playlists/edit/${playlistId}`}
+        href={`/(screens)/playlists/${playlistId}/edit`}
         asChild>
         <Button
           size="lg"

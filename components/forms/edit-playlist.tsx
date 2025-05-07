@@ -9,7 +9,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { EditPlaylistInfo } from "@/app/(screens)/playlists/edit/[id]";
+import { EditPlaylistInfo } from "@/app/(screens)/playlists/[id]/edit";
 import { SaveIcon, TrashIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 
@@ -94,7 +94,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
       await updatePlaylist({ id: editPlaylistInfo.id, values: parsedValues });
       toast.success(`${values.title} playlist updated successfully.`);
 
-      router.dismissTo(`/(screens)/playlists/view/${editPlaylistInfo.id}`);
+      router.dismissTo(`/(screens)/playlists/${editPlaylistInfo.id}/view`);
     } catch (error) {
       toast.error("Error updating playlist!");
     }
