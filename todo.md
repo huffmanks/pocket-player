@@ -11,7 +11,12 @@
    - flash ListEmptyComponent on screen focus.
 4. [Screens layout](<app/(screens)/_layout.tsx>):
    - Refactor dynamic route navigation behaviors when lock screen enabled.
-5. Cleanup:
+5. [video thumb picker](components/video-thumb-picker.tsx):
+   - change isLocked, setIsLocked state to isDisabled, setIsDisabled.
+   - thumb gen and saving to DB change to Math.round(player.currentTime * 1000).
+   - show null or loading state so progress and player.currentTime can be set without flashing.
+   - Refactor slider min/max to 0 and player.duration. Step to 0.25.
+6. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
 
