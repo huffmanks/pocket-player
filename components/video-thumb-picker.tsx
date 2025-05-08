@@ -49,10 +49,13 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
     setIsSaving(true);
 
     try {
-      const newThumbTimestamp = Math.floor((player.currentTime * 1000) / 250) * 250;
+      const fps = videoInfo.fps;
+      const frameDuration = 1000 / fps;
+      const frameNumber = Math.round((player.currentTime * 1000) / frameDuration);
+      const exactFrameTime = frameNumber * frameDuration;
 
       const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
-        time: newThumbTimestamp,
+        time: exactFrameTime,
       });
 
       const fileId = createId();
@@ -63,7 +66,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
 
       await updateVideo({
         id: videoInfo.id,
-        values: { thumbUri: newUri, thumbTimestamp: newThumbTimestamp },
+        values: { thumbUri: newUri, thumbTimestamp: exactFrameTime },
       });
       toast.success("Thumbnail updated.");
     } catch (err) {
