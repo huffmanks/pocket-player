@@ -15,6 +15,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   const [time, setTime] = useState<string | null>("00:00");
   const [progress, setProgress] = useState(0);
   const [isButtonTouched, setIsButtonTouched] = useState(false);
+  const [showPlaybackControls, setShowPlaybackControls] = useState(true);
   const [hasEnded, setHasEnded] = useState(false);
   const [isOldPlaying, setIsOldPlaying] = useState(false);
 
@@ -111,6 +112,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
   function onSlidingStart() {
     setIsButtonTouched(true);
+    setShowPlaybackControls(false);
     setHasEnded(false);
     setIsOldPlaying(isPlaying);
     player.pause();
@@ -121,7 +123,10 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
     if (isOldPlaying) {
       player.play();
+      updateControlsVisible(0);
     }
+
+    setShowPlaybackControls(true);
   }
 
   function toggleMute() {
@@ -188,6 +193,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     muted,
     isPlaylist,
     controlsVisible,
+    showPlaybackControls,
     hasEnded,
     onSliderChange,
     onSlidingStart,

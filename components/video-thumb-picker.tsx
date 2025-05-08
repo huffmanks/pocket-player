@@ -15,6 +15,7 @@ import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
 import { SLIDER_THEME, VIDEOS_DIR } from "@/lib/constants";
 import { ImageDownIcon, LockIcon, LockOpenIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -24,7 +25,8 @@ interface VideoThumbPickerProps {
 }
 
 export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
-  const [isLocked, setIsLocked] = useState(true);
+  const [isReady, setIsReady] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   const { isDarkColorScheme } = useColorScheme();
@@ -43,11 +45,12 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
   } = useVideoPlayerControls([videoInfo], true);
 
   async function handleSaveThumb() {
-    if (isSaving || isLocked) return;
+    if (isSaving || isDisabled) return;
     setIsSaving(true);
 
     try {
-      const newThumbTimestamp = player.currentTime * 1000;
+      const newThumbTimestamp = Math.floor((player.currentTime * 1000) / 250) * 250;
+
       const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
         time: newThumbTimestamp,
       });
@@ -71,9 +74,19 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
   }
 
   useEffect(() => {
-    setProgress(videoInfo.thumbTimestamp);
-    player.currentTime = videoInfo.thumbTimestamp / 1000;
-  }, []);
+    if (player.duration > 0) {
+      player.currentTime = videoInfo.thumbTimestamp / 1000;
+      setProgress(videoInfo.thumbTimestamp / player.duration);
+
+      requestAnimationFrame(() => {
+        setIsReady(true);
+      });
+    }
+
+    return () => {
+      setIsReady(false);
+    };
+  }, [player.duration]);
 
   return (
     <GestureDetector gesture={tapGesture}>
@@ -81,27 +94,27 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
         <View className="mb-3 h-[215px] w-full overflow-hidden rounded-md bg-card">
           <VideoView
             ref={videoRef}
-            style={{ width: "100%", height: 215 }}
+            style={{ width: "100%", height: 215, opacity: isReady ? 1 : 0 }}
             player={player}
             contentFit="contain"
             nativeControls={false}
           />
         </View>
 
-        <View className="mb-5 gap-2">
+        <View className={cn("mb-5 gap-2", isReady ? "visible" : "invisible")}>
           <View>
             <Text className="text-sm text-foreground">{time}</Text>
           </View>
 
           <View>
             <Slider
-              disabled={isLocked}
+              disabled={isDisabled}
               value={progress}
               minimumValue={0}
               maximumValue={1}
               step={0.01}
               thumbTintColor={
-                isLocked ? SLIDER_THEME.thumbDisabledTintColor : SLIDER_THEME.thumbTintColor
+                isDisabled ? SLIDER_THEME.thumbDisabledTintColor : SLIDER_THEME.thumbTintColor
               }
               minimumTrackTintColor={
                 !isDarkColorScheme
@@ -124,8 +137,8 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
           <Button
             variant="secondary"
             className="flex flex-1 flex-row items-center justify-center gap-4"
-            onPress={() => setIsLocked((prev) => !prev)}>
-            {isLocked ? (
+            onPress={() => setIsDisabled((prev) => !prev)}>
+            {isDisabled ? (
               <LockIcon
                 className="text-foreground"
                 size={20}
@@ -139,12 +152,12 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
               />
             )}
             <Text className="native:text-base font-semibold uppercase tracking-wider">
-              {isLocked ? "Unlock" : "Lock"}
+              {isDisabled ? "Unlock" : "Lock"}
             </Text>
           </Button>
           <Button
             className="flex flex-1 flex-row items-center justify-center gap-4"
-            disabled={isSaving || isLocked}
+            disabled={isSaving || isDisabled}
             onPress={handleSaveThumb}>
             <ImageDownIcon
               className="text-background"

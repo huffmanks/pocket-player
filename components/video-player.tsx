@@ -53,6 +53,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
     muted,
     isPlaylist,
     controlsVisible,
+    showPlaybackControls,
     hasEnded,
     onSliderChange,
     onSlidingStart,
@@ -137,82 +138,25 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       </Text>
                     </View>
                   </View>
-                  <View className="flex-row items-center justify-center gap-5">
-                    {isPlaylist && (
-                      <Button
-                        className="rounded-full p-1 active:bg-transparent"
-                        variant="ghost"
-                        size="unset"
-                        disabled={hasEnded}
-                        onPressIn={handleButtonPressIn}
-                        onPressOut={handleButtonPressOut}
-                        onPress={() => changeVideoSource(-1)}>
-                        <SkipBackIcon
-                          className="fill-white stroke-white group-active:opacity-70"
-                          size={32}
-                          strokeWidth={1.25}
-                        />
-                      </Button>
-                    )}
-
-                    <Button
-                      className="rounded-full p-1 active:bg-transparent"
-                      variant="ghost"
-                      size="unset"
-                      disabled={hasEnded}
-                      onPressIn={handleButtonPressIn}
-                      onPressOut={handleButtonPressOut}
-                      onPress={() => safeSeekBy(-5)}>
-                      <RewindIcon
-                        className="fill-white stroke-white group-active:opacity-70"
-                        size={32}
-                        strokeWidth={1.25}
-                      />
-                    </Button>
-
-                    <Button
-                      className="rounded-full p-1 active:bg-transparent"
-                      variant="ghost"
-                      size="unset"
-                      onPressIn={handleButtonPressIn}
-                      onPressOut={handleButtonPressOut}
-                      onPress={togglePlay}>
-                      {hasEnded ? (
-                        <RotateCcwIcon
-                          className="stroke-white group-active:opacity-70"
-                          size={32}
-                          strokeWidth={2.25}
-                        />
-                      ) : isPlaying ? (
-                        <PauseIcon
-                          className="fill-white stroke-white group-active:opacity-70"
-                          size={32}
-                          strokeWidth={1.25}
-                        />
-                      ) : (
-                        <PlayIcon
-                          className="fill-white stroke-white group-active:opacity-70"
-                          size={32}
-                          strokeWidth={1.25}
-                        />
+                  {showPlaybackControls && (
+                    <View className="flex-row items-center justify-center gap-5">
+                      {isPlaylist && (
+                        <Button
+                          className="rounded-full p-1 active:bg-transparent"
+                          variant="ghost"
+                          size="unset"
+                          disabled={hasEnded}
+                          onPressIn={handleButtonPressIn}
+                          onPressOut={handleButtonPressOut}
+                          onPress={() => changeVideoSource(-1)}>
+                          <SkipBackIcon
+                            className="fill-white stroke-white group-active:opacity-70"
+                            size={32}
+                            strokeWidth={1.25}
+                          />
+                        </Button>
                       )}
-                    </Button>
-                    <Button
-                      className="rounded-full p-1 active:bg-transparent"
-                      variant="ghost"
-                      size="unset"
-                      disabled={hasEnded}
-                      onPressIn={handleButtonPressIn}
-                      onPressOut={handleButtonPressOut}
-                      onPress={() => safeSeekBy(5)}>
-                      <FastForwardIcon
-                        className="fill-white stroke-white group-active:opacity-70"
-                        size={32}
-                        strokeWidth={1.25}
-                      />
-                    </Button>
 
-                    {isPlaylist && (
                       <Button
                         className="rounded-full p-1 active:bg-transparent"
                         variant="ghost"
@@ -220,15 +164,74 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         disabled={hasEnded}
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
-                        onPress={() => changeVideoSource(1)}>
-                        <SkipForwardIcon
+                        onPress={() => safeSeekBy(-5)}>
+                        <RewindIcon
                           className="fill-white stroke-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
                         />
                       </Button>
-                    )}
-                  </View>
+
+                      <Button
+                        className="rounded-full p-1 active:bg-transparent"
+                        variant="ghost"
+                        size="unset"
+                        onPressIn={handleButtonPressIn}
+                        onPressOut={handleButtonPressOut}
+                        onPress={togglePlay}>
+                        {hasEnded ? (
+                          <RotateCcwIcon
+                            className="stroke-white group-active:opacity-70"
+                            size={32}
+                            strokeWidth={2.25}
+                          />
+                        ) : isPlaying ? (
+                          <PauseIcon
+                            className="fill-white stroke-white group-active:opacity-70"
+                            size={32}
+                            strokeWidth={1.25}
+                          />
+                        ) : (
+                          <PlayIcon
+                            className="fill-white stroke-white group-active:opacity-70"
+                            size={32}
+                            strokeWidth={1.25}
+                          />
+                        )}
+                      </Button>
+                      <Button
+                        className="rounded-full p-1 active:bg-transparent"
+                        variant="ghost"
+                        size="unset"
+                        disabled={hasEnded}
+                        onPressIn={handleButtonPressIn}
+                        onPressOut={handleButtonPressOut}
+                        onPress={() => safeSeekBy(5)}>
+                        <FastForwardIcon
+                          className="fill-white stroke-white group-active:opacity-70"
+                          size={32}
+                          strokeWidth={1.25}
+                        />
+                      </Button>
+
+                      {isPlaylist && (
+                        <Button
+                          className="rounded-full p-1 active:bg-transparent"
+                          variant="ghost"
+                          size="unset"
+                          disabled={hasEnded}
+                          onPressIn={handleButtonPressIn}
+                          onPressOut={handleButtonPressOut}
+                          onPress={() => changeVideoSource(1)}>
+                          <SkipForwardIcon
+                            className="fill-white stroke-white group-active:opacity-70"
+                            size={32}
+                            strokeWidth={1.25}
+                          />
+                        </Button>
+                      )}
+                    </View>
+                  )}
                   <View className="portrait:pb-4 landscape:px-2 landscape:pb-8">
                     <View className="flex-row items-center justify-between gap-4 pl-4 pr-2">
                       <Text className="text-sm text-white/70">{time}</Text>
