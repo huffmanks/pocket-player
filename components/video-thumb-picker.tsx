@@ -2,20 +2,24 @@ import * as FileSystem from "expo-file-system";
 import { VideoView } from "expo-video";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { InteractionManager, View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
-import { createId } from "@paralleldrive/cuid2";
 import { GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { toast } from "sonner-native";
 
 import { VideoMeta } from "@/db/schema";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
-import { SLIDER_THEME, VIDEOS_DIR } from "@/lib/constants";
+import { SLIDER_THEME } from "@/lib/constants";
 import { ImageDownIcon, LockIcon, LockOpenIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -44,29 +48,25 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
     tapGesture,
   } = useVideoPlayerControls([videoInfo], true);
 
+  const opacityFast = useSharedValue(0);
+  const opacityDelay = useSharedValue(0);
+
   async function handleSaveThumb() {
     if (isSaving || isDisabled) return;
     setIsSaving(true);
 
     try {
-      const fps = videoInfo.fps;
-      const frameDuration = 1000 / fps;
-      const frameNumber = Math.round((player.currentTime * 1000) / frameDuration);
-      const exactFrameTime = frameNumber * frameDuration;
+      const thumbTimestamp = +(player.currentTime * 1000).toFixed(5);
 
       const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
-        time: exactFrameTime,
+        time: thumbTimestamp,
       });
 
-      const fileId = createId();
-      const newUri = `${VIDEOS_DIR}${videoInfo.title}-${fileId}.jpg`;
-
-      await FileSystem.moveAsync({ from: uri, to: newUri });
-      await FileSystem.deleteAsync(videoInfo.thumbUri, { idempotent: true });
+      await FileSystem.moveAsync({ from: uri, to: videoInfo.thumbUri });
 
       await updateVideo({
         id: videoInfo.id,
-        values: { thumbUri: newUri, thumbTimestamp: exactFrameTime },
+        values: { thumbTimestamp },
       });
       toast.success("Thumbnail updated.");
     } catch (err) {
@@ -81,7 +81,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
       player.currentTime = videoInfo.thumbTimestamp / 1000;
       setProgress(videoInfo.thumbTimestamp / player.duration);
 
-      requestAnimationFrame(() => {
+      InteractionManager.runAfterInteractions(() => {
         setIsReady(true);
       });
     }
@@ -91,25 +91,44 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
     };
   }, [player.duration]);
 
+  useEffect(() => {
+    if (isReady) {
+      opacityFast.value = withTiming(1, { duration: 200, easing: Easing.inOut(Easing.quad) });
+      opacityDelay.value = withTiming(1, { duration: 500, easing: Easing.inOut(Easing.quad) });
+    }
+  }, [isReady]);
+
+  const animatedStyleFast = useAnimatedStyle(() => ({
+    opacity: opacityFast.value,
+  }));
+
+  const animatedStyleDelay = useAnimatedStyle(() => ({
+    opacity: opacityDelay.value,
+  }));
+
   return (
     <GestureDetector gesture={tapGesture}>
       <View>
         <View className="mb-3 h-[215px] w-full overflow-hidden rounded-md bg-card">
-          <VideoView
-            ref={videoRef}
-            style={{ width: "100%", height: 215, opacity: isReady ? 1 : 0 }}
-            player={player}
-            contentFit="contain"
-            nativeControls={false}
-          />
+          <Animated.View
+            className="h-[215px] w-full"
+            style={animatedStyleFast}>
+            <VideoView
+              ref={videoRef}
+              style={{ width: "100%", height: 215 }}
+              player={player}
+              contentFit="contain"
+              nativeControls={false}
+            />
+          </Animated.View>
         </View>
 
-        <View className={cn("mb-5 gap-2", isReady ? "visible" : "invisible")}>
-          <View>
+        <View className="mb-5 gap-2">
+          <Animated.View style={animatedStyleFast}>
             <Text className="text-sm text-foreground">{time}</Text>
-          </View>
+          </Animated.View>
 
-          <View>
+          <Animated.View style={animatedStyleDelay}>
             <Slider
               disabled={isDisabled}
               value={progress}
@@ -133,7 +152,7 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
               onSlidingStart={onSlidingStart}
               onSlidingComplete={onSlidingComplete}
             />
-          </View>
+          </Animated.View>
         </View>
 
         <View className="flex-row items-center justify-center gap-4">

@@ -1,13 +1,15 @@
 import { useEvent, useEventListener } from "expo";
+import { useFocusEffect } from "expo-router";
+import * as ScreenOrientation from "expo-screen-orientation";
 import { VideoView, useVideoPlayer } from "expo-video";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Gesture } from "react-native-gesture-handler";
 import { runOnUI, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
-import { useSettingsStore } from "@/lib/store";
+import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { secondsToAdaptiveTime } from "@/lib/utils";
 
 export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: boolean) {
@@ -23,11 +25,13 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   const controlsVisible = useSharedValue(1);
   const isPlaylist = videoSources.length > 1;
 
-  const { autoPlay, mute, loop } = useSettingsStore(
+  const setIsLockDisabled = useSecurityStore((state) => state.setIsLockDisabled);
+  const { autoPlay, mute, loop, overrideOrientation } = useSettingsStore(
     useShallow((state) => ({
       autoPlay: state.autoPlay,
       mute: state.mute,
       loop: state.loop,
+      overrideOrientation: state.overrideOrientation,
     }))
   );
 
@@ -42,7 +46,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     p.loop = !isPlaylist && (loop ?? false);
     p.muted = isThumbView || !!mute;
 
-    if (autoPlay && !isThumbView) {
+    if ((autoPlay || isPlaylist) && !isThumbView) {
       updateControlsVisible(0);
       p.play();
     } else {
@@ -66,6 +70,36 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       setTime(secondsToAdaptiveTime(currentTime));
     }
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      const enableOrientation = async () => {
+        if (!overrideOrientation) {
+          await ScreenOrientation.unlockAsync();
+          return;
+        }
+
+        const orientation =
+          videoSources[currentIndex].orientation === "Landscape"
+            ? ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
+            : ScreenOrientation.OrientationLock.PORTRAIT_UP;
+
+        await ScreenOrientation.lockAsync(orientation);
+      };
+
+      const disableOrientation = async () => {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      };
+
+      enableOrientation();
+      setIsLockDisabled(true);
+
+      return () => {
+        disableOrientation();
+        setIsLockDisabled(false);
+      };
+    }, [currentIndex])
+  );
 
   useEffect(() => {
     if (!isPlaying || isButtonTouched) return;
