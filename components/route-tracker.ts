@@ -9,13 +9,13 @@ export function RouteTracker() {
 
   const isAppReady = useAppStore((state) => state.isAppReady);
   const isLocked = useSecurityStore((state) => state.isLocked);
-  const setCurrentPath = useSettingsStore((state) => state.setCurrentPath);
+  const setLastVisitedPath = useSettingsStore((state) => state.setLastVisitedPath);
 
   useEffect(() => {
     if (!isAppReady || isLocked) return;
 
     if (!EXCLUDED_PATHS.includes(pathname)) {
-      setCurrentPath(pathname);
+      setLastVisitedPath(pathname);
     }
   }, [isAppReady, isLocked, pathname]);
 

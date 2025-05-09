@@ -36,9 +36,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   const router = useRouter();
   const { isDarkColorScheme } = useColorScheme();
 
-  const { currentPath, isNativeControls } = useSettingsStore(
+  const { lastVisitedPath, isNativeControls } = useSettingsStore(
     useShallow((state) => ({
-      currentPath: state.currentPath,
+      lastVisitedPath: state.lastVisitedPath,
       isNativeControls: state.isNativeControls,
     }))
   );
@@ -69,8 +69,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   } = useVideoPlayerControls(videoSources);
 
   function handleGoBack() {
-    if (currentPath.startsWith("/playlists") && currentPath.endsWith("/watch")) {
-      const segments = currentPath.split("/");
+    if (lastVisitedPath.startsWith("/playlists/") && lastVisitedPath.endsWith("/watch")) {
+      const segments = lastVisitedPath.split("/");
       const id = segments[segments.length - 2];
 
       router.dismissTo("/(tabs)/playlists");

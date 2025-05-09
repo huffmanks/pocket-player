@@ -2,7 +2,6 @@ import { useNavigation } from "expo-router";
 import { useEffect } from "react";
 import { InteractionManager } from "react-native";
 
-import { useNavigationState } from "@react-navigation/native";
 import { useShallow } from "zustand/react/shallow";
 
 import handleRedirect from "@/lib/handle-redirect";
@@ -10,7 +9,6 @@ import { useAppStore, useSettingsStore } from "@/lib/store";
 
 export function useNavigationInterceptor() {
   const navigation = useNavigation();
-  const navState = useNavigationState((state) => state);
 
   const { hasRedirected, setHasRedirected } = useAppStore(
     useShallow((state) => ({
@@ -18,10 +16,10 @@ export function useNavigationInterceptor() {
       setHasRedirected: state.setHasRedirected,
     }))
   );
-  const { currentPath, previousPath } = useSettingsStore(
+  const { lastVisitedPath, previousVisitedPath } = useSettingsStore(
     useShallow((state) => ({
-      currentPath: state.currentPath,
-      previousPath: state.previousPath,
+      lastVisitedPath: state.lastVisitedPath,
+      previousVisitedPath: state.previousVisitedPath,
     }))
   );
 
@@ -33,7 +31,7 @@ export function useNavigationInterceptor() {
 
       setHasRedirected(true);
       InteractionManager.runAfterInteractions(() => {
-        handleRedirect({ currentPath, previousPath });
+        handleRedirect({ lastVisitedPath, previousVisitedPath });
       });
     });
 
@@ -41,5 +39,5 @@ export function useNavigationInterceptor() {
       setHasRedirected(false);
       unsubscribe();
     };
-  }, [navigation, navState]);
+  }, []);
 }

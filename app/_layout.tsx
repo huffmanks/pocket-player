@@ -39,9 +39,9 @@ export default function RootLayout() {
       setIsAppReady: state.setIsAppReady,
     }))
   );
-  const { currentPath, theme, setTheme } = useSettingsStore(
+  const { lastVisitedPath, theme, setTheme } = useSettingsStore(
     useShallow((state) => ({
-      currentPath: state.currentPath,
+      lastVisitedPath: state.lastVisitedPath,
       theme: state.theme,
       setTheme: state.setTheme,
     }))
@@ -96,8 +96,8 @@ export default function RootLayout() {
       try {
         if (isLocked) return;
 
-        if (currentPath && !EXCLUDED_PATHS.includes(currentPath)) {
-          router.push(currentPath as RelativePathString);
+        if (lastVisitedPath && !EXCLUDED_PATHS.includes(lastVisitedPath)) {
+          router.push(lastVisitedPath as RelativePathString);
         }
       } catch (error) {
         toast.error("Restoring previous route failed.");
@@ -107,11 +107,9 @@ export default function RootLayout() {
     }
 
     restorePreviousRoute();
-  }, [isAppReady, isLocked]);
+  }, [isAppReady]);
 
-  if (!isAppReady) {
-    return null;
-  }
+  if (!isAppReady) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

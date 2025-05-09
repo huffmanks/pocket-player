@@ -410,7 +410,6 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
 }));
 
 type SettingsStoreState = {
-  isFirstAppLoad: boolean;
   autoPlay: boolean;
   loop: boolean;
   mute: boolean;
@@ -421,13 +420,12 @@ type SettingsStoreState = {
   sortDateOrder: "asc" | "desc";
   sortTitleOrder: "asc" | "desc";
   scrollPosition: number;
-  currentPath: string;
-  previousPath: string;
+  lastVisitedPath: string;
+  previousVisitedPath: string;
   videoProgress: Record<string, number>;
 };
 
 type SettingsStoreActions = {
-  setIsFirstAppLoad: () => void;
   setAutoPlay: (autoPlay: boolean) => void;
   setLoop: (loop: boolean) => void;
   setMute: (mute: boolean) => void;
@@ -438,13 +436,12 @@ type SettingsStoreActions = {
   toggleSortDateOrder: () => void;
   toggleSortTitleOrder: () => void;
   setScrollPosition: (position: number) => void;
-  setCurrentPath: (path: string) => void;
+  setLastVisitedPath: (path: string) => void;
   setVideoProgress: (videoId: string, time: number) => void;
   reset: () => void;
 };
 
 const initialSettingsStoreState: SettingsStoreState = {
-  isFirstAppLoad: true,
   autoPlay: false,
   loop: false,
   mute: false,
@@ -455,8 +452,8 @@ const initialSettingsStoreState: SettingsStoreState = {
   sortDateOrder: "asc",
   sortTitleOrder: "asc",
   scrollPosition: 0,
-  currentPath: "/",
-  previousPath: "/",
+  lastVisitedPath: "/",
+  previousVisitedPath: "/",
   videoProgress: {},
 };
 
@@ -464,7 +461,6 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
   persist(
     (set) => ({
       ...initialSettingsStoreState,
-      setIsFirstAppLoad: () => set({ isFirstAppLoad: false }),
       setAutoPlay: (autoPlay) => set({ autoPlay }),
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
@@ -477,12 +473,12 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
       toggleSortTitleOrder: () =>
         set((state) => ({ sortTitleOrder: state.sortTitleOrder === "asc" ? "desc" : "asc" })),
       setScrollPosition: (position) => set({ scrollPosition: position }),
-      setCurrentPath: (path) =>
+      setLastVisitedPath: (path) =>
         set((state) => {
-          if (state.currentPath === path) return {};
+          if (state.lastVisitedPath === path) return {};
           return {
-            previousPath: state.currentPath,
-            currentPath: path,
+            previousVisitedPath: state.lastVisitedPath,
+            lastVisitedPath: path,
           };
         }),
       setVideoProgress: (videoId, time) =>

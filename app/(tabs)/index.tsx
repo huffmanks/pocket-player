@@ -4,7 +4,7 @@ import { Image, View } from "react-native";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
 import { videos } from "@/db/schema";
-import { CloudUploadIcon, TvIcon } from "@/lib/icons";
+import { CloudUploadIcon } from "@/lib/icons";
 import { useDatabaseStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
@@ -24,28 +24,7 @@ export default function IndexScreen() {
         source={require("../../assets/icons/base_logo.png")}
       />
       <H1 className="mb-3 text-center text-foreground">Pocket Player</H1>
-      {!!videosQuery?.data?.length ? (
-        <View>
-          <Text className="mb-10 text-center text-muted-foreground">Explore your videos.</Text>
-
-          <Link
-            asChild
-            href="/(tabs)/videos">
-            <Button
-              size="lg"
-              className="flex flex-row items-center justify-center gap-4 bg-brand">
-              <TvIcon
-                className="text-foreground"
-                size={24}
-                strokeWidth={1.5}
-              />
-              <Text className="native:text-lg font-semibold uppercase tracking-wider text-foreground">
-                Watch
-              </Text>
-            </Button>
-          </Link>
-        </View>
-      ) : (
+      {!videosQuery?.data?.length && (
         <View>
           <Text className="mb-10 text-center text-muted-foreground">
             Get started by uploading some videos.
