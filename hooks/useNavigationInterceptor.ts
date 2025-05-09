@@ -28,10 +28,6 @@ export function useNavigationInterceptor() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
       if (hasRedirected) return;
-
-      const isRouteStale = navState.routes[navState.index - 1].state?.stale;
-      if (!isRouteStale) return;
-
       e.preventDefault();
       unsubscribe();
 

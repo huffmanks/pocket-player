@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 
-import { useNavigationInterceptor } from "@/hooks/use-navigation-interceptor";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useNavigationInterceptor } from "@/hooks/useNavigationInterceptor";
 import { NAV_THEME } from "@/lib/constants";
 
 import HeaderItems from "@/components/header-items";
