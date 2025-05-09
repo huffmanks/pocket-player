@@ -38,15 +38,19 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 type AppStoreState = {
   isAppStartUp: boolean;
   isAppReady: boolean;
+  hasRedirected: boolean;
   setIsAppStartUp: (bool: boolean) => void;
   setIsAppReady: (bool: boolean) => void;
+  setHasRedirected: (bool: boolean) => void;
 };
 
 export const useAppStore = create<AppStoreState>((set) => ({
   isAppStartUp: false,
   isAppReady: false,
+  hasRedirected: false,
   setIsAppStartUp: (bool) => set({ isAppStartUp: bool }),
   setIsAppReady: (bool) => set({ isAppReady: bool }),
+  setHasRedirected: (bool) => set({ hasRedirected: bool }),
 }));
 
 type VideoStoreState = {

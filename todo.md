@@ -9,6 +9,8 @@
 3. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
+4. store
+   - rename currentPath and previousPath to lastVisitedPath and previousVisitedPath.
 
 ## Features
 

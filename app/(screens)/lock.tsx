@@ -2,7 +2,7 @@ import * as Haptics from "expo-haptics";
 import * as LocalAuthentication from "expo-local-authentication";
 import { RelativePathString, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Image, Pressable, SafeAreaView, View } from "react-native";
+import { Image, InteractionManager, Pressable, SafeAreaView, View } from "react-native";
 
 import Animated, {
   useAnimatedStyle,
@@ -15,8 +15,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
 import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
+import handleRedirect from "@/lib/handle-redirect";
 import { DeleteIcon, ScanFaceIcon } from "@/lib/icons";
-import { useSecurityStore, useSettingsStore } from "@/lib/store";
+import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import KeypadRow from "@/components/keypad-row";
@@ -29,7 +30,13 @@ export default function LockScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const currentPath = useSettingsStore((state) => state.currentPath);
+  const setHasRedirected = useAppStore((state) => state.setHasRedirected);
+  const { currentPath, previousPath } = useSettingsStore(
+    useShallow((state) => ({
+      currentPath: state.currentPath,
+      previousPath: state.previousPath,
+    }))
+  );
   const { passcode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       passcode: state.passcode,
@@ -51,7 +58,10 @@ export default function LockScreen() {
       if (code.join("") === passcode) {
         setIsLocked(false);
 
-        router.replace(currentPath as RelativePathString);
+        setHasRedirected(true);
+        InteractionManager.runAfterInteractions(() => {
+          handleRedirect({ currentPath, previousPath });
+        });
       } else {
         offset.value = withSequence(
           withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
