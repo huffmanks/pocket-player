@@ -1,8 +1,7 @@
 import * as Haptics from "expo-haptics";
 import * as LocalAuthentication from "expo-local-authentication";
-import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Image, InteractionManager, Pressable, SafeAreaView, View } from "react-native";
+import { Image, Pressable, SafeAreaView, View } from "react-native";
 
 import Animated, {
   useAnimatedStyle,
@@ -27,7 +26,6 @@ export default function LockScreen() {
   const [code, setCode] = useState<number[]>([]);
   const [isPressed, setIsPressed] = useState(false);
   const codeLength = Array(4).fill(0);
-  const router = useRouter();
   const insets = useSafeAreaInsets();
 
   const setHasRedirected = useAppStore((state) => state.setHasRedirected);
@@ -58,9 +56,9 @@ export default function LockScreen() {
       if (code.join("") === passcode) {
         setIsLocked(false);
         setHasRedirected(true);
-        InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
           handleRedirect({ lastVisitedPath, previousVisitedPath });
-        });
+        }, 0);
       } else {
         offset.value = withSequence(
           withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
@@ -89,9 +87,9 @@ export default function LockScreen() {
     if (success) {
       setIsLocked(false);
       setHasRedirected(true);
-      InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
         handleRedirect({ lastVisitedPath, previousVisitedPath });
-      });
+      }, 0);
     } else {
       handleErrorShake();
     }

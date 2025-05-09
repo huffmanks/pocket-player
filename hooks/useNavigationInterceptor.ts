@@ -1,15 +1,15 @@
 import { useNavigation } from "expo-router";
 import { useEffect } from "react";
-import { InteractionManager } from "react-native";
 
 import { useShallow } from "zustand/react/shallow";
 
 import handleRedirect from "@/lib/handle-redirect";
-import { useAppStore, useSettingsStore } from "@/lib/store";
+import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 
 export function useNavigationInterceptor() {
   const navigation = useNavigation();
 
+  const isLockable = useSecurityStore((state) => state.isLockable);
   const { hasRedirected, setHasRedirected } = useAppStore(
     useShallow((state) => ({
       hasRedirected: state.hasRedirected,
@@ -25,19 +25,17 @@ export function useNavigationInterceptor() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      if (hasRedirected) return;
+      if (hasRedirected || isLockable) return;
       e.preventDefault();
       unsubscribe();
 
       setHasRedirected(true);
-      InteractionManager.runAfterInteractions(() => {
+
+      setTimeout(() => {
         handleRedirect({ lastVisitedPath, previousVisitedPath });
-      });
+      }, 0);
     });
 
-    return () => {
-      setHasRedirected(false);
-      unsubscribe();
-    };
+    return unsubscribe;
   }, []);
 }

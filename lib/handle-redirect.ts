@@ -1,5 +1,4 @@
 import { type Route, router } from "expo-router";
-import { InteractionManager } from "react-native";
 
 interface HandleRedirectProps {
   lastVisitedPath: string;
@@ -12,14 +11,16 @@ export default function handleRedirect({
 }: HandleRedirectProps) {
   if (lastVisitedPath.startsWith("/playlists/")) {
     router.replace("/(tabs)/playlists");
-    InteractionManager.runAfterInteractions(() => {
+
+    setTimeout(() => {
       router.push(lastVisitedPath as Route);
-    });
+    }, 0);
   } else if (lastVisitedPath.startsWith("/videos/")) {
     router.replace(previousVisitedPath as Route);
-    InteractionManager.runAfterInteractions(() => {
+
+    setTimeout(() => {
       router.push(lastVisitedPath as Route);
-    });
+    }, 0);
   } else {
     router.push(lastVisitedPath as Route);
   }
