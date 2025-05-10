@@ -249,14 +249,13 @@ export default function SettingsScreen() {
                     This action cannot be undone. This will reset all settings.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+
                 <AlertDialogFooter>
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive"
-                    onPress={handleResetSettings}>
-                    <Text className="text-destructive-foreground">Reset</Text>
+                  <AlertDialogAction onPress={handleResetSettings}>
+                    <Text>Reset</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -290,10 +289,8 @@ export default function SettingsScreen() {
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive"
-                    onPress={handleDeleteFiles}>
-                    <Text className="text-destructive-foreground">Delete</Text>
+                  <AlertDialogAction onPress={handleDeleteFiles}>
+                    <Text>Delete</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -327,10 +324,8 @@ export default function SettingsScreen() {
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive"
-                    onPress={handleClearAllData}>
-                    <Text className="text-destructive-foreground">Delete</Text>
+                  <AlertDialogAction onPress={handleClearAllData}>
+                    <Text>Delete</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

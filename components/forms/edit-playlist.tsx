@@ -1,9 +1,8 @@
 import { router } from "expo-router";
-import { useRef } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useScrollToTop } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
@@ -55,15 +54,13 @@ interface EditPlaylistFormProps {
 }
 
 export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { updatePlaylist, deletePlaylist } = usePlaylistStore(
     useShallow((state) => ({
       updatePlaylist: state.updatePlaylist,
       deletePlaylist: state.deletePlaylist,
     }))
   );
-
-  const ref = useRef(null);
-  useScrollToTop(ref);
 
   const form = useForm<EditPlaylistFormData>({
     resolver: zodResolver(formSchema),
@@ -90,6 +87,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
 
   async function onSubmit(values: EditPlaylistFormData) {
     try {
+      setIsSubmitting(true);
       const parsedValues = formSchema.parse(values);
       await updatePlaylist({ id: editPlaylistInfo.id, values: parsedValues });
       toast.success(`${values.title} playlist updated successfully.`);
@@ -97,6 +95,8 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
       router.dismissTo(`/(screens)/playlists/${editPlaylistInfo.id}/view`);
     } catch (error) {
       toast.error("Error updating playlist!");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -156,15 +156,16 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
-                variant="outline"
+                disabled={isSubmitting}
+                variant="destructive"
                 size="lg"
-                className="flex w-full flex-row items-center justify-center gap-4 border-destructive">
+                className="flex w-full flex-row items-center justify-center gap-4">
                 <TrashIcon
-                  className="text-destructive"
+                  className="text-destructive-foreground"
                   size={24}
                   strokeWidth={1.5}
                 />
-                <Text className="native:text-base font-semibold uppercase tracking-wider text-destructive">
+                <Text className="native:text-base font-semibold uppercase tracking-wider text-destructive-foreground">
                   Delete
                 </Text>
               </Button>
@@ -181,12 +182,10 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>
-                  <Text className="text-foreground">Cancel</Text>
+                  <Text>Cancel</Text>
                 </AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-destructive"
-                  onPress={handleDelete}>
-                  <Text className="text-white">Delete</Text>
+                <AlertDialogAction onPress={handleDelete}>
+                  <Text>Delete</Text>
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -195,6 +194,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
 
         <View className="flex-1">
           <Button
+            disabled={isSubmitting}
             size="lg"
             className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
             onPress={form.handleSubmit(onSubmit)}>

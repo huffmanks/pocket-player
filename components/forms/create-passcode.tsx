@@ -1,9 +1,8 @@
 import { router } from "expo-router";
-import { useRef } from "react";
+import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useScrollToTop } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
@@ -32,9 +31,8 @@ const formSchema = z
 export type CreatePasscodeFormData = z.infer<typeof formSchema>;
 
 export default function CreatePasscodeForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const setPasscode = useSecurityStore((state) => state.setPasscode);
-  const ref = useRef(null);
-  useScrollToTop(ref);
 
   const form = useForm<CreatePasscodeFormData>({
     resolver: zodResolver(formSchema),
@@ -55,6 +53,7 @@ export default function CreatePasscodeForm() {
 
   async function onSubmit(values: CreatePasscodeFormData) {
     try {
+      setIsSubmitting(true);
       const parsedValues = formSchema.parse(values);
 
       setPasscode(parsedValues.passcode);
@@ -64,6 +63,8 @@ export default function CreatePasscodeForm() {
       router.dismissTo("/(tabs)/settings");
     } catch (error) {
       toast.error("Error setting passcode");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -171,6 +172,7 @@ export default function CreatePasscodeForm() {
 
       <View>
         <Button
+          disabled={isSubmitting}
           className="bg-brand"
           size="lg"
           onPress={form.handleSubmit(onSubmit)}>

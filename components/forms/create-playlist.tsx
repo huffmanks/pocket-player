@@ -1,9 +1,8 @@
 import { router } from "expo-router";
-import { useRef } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useScrollToTop } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
@@ -42,9 +41,8 @@ interface CreatePlaylistFormProps {
 }
 
 export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const addPlaylist = usePlaylistStore((state) => state.addPlaylist);
-  const ref = useRef(null);
-  useScrollToTop(ref);
 
   const form = useForm<CreatePlaylistFormData>({
     resolver: zodResolver(formSchema),
@@ -57,6 +55,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
   async function onSubmit(values: CreatePlaylistFormData) {
     try {
+      setIsSubmitting(true);
       const parsedValues = formSchema.parse(values);
 
       const { message, status } = await addPlaylist(parsedValues);
@@ -69,6 +68,8 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
       }
     } catch (error) {
       toast.error("Error creating playlist!");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -125,6 +126,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
       <View>
         <Button
+          disabled={isSubmitting}
           className="bg-brand"
           size="lg"
           onPress={form.handleSubmit(onSubmit)}>

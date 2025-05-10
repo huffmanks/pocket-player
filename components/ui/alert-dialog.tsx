@@ -132,10 +132,14 @@ const AlertDialogAction = React.forwardRef<
   AlertDialogPrimitive.ActionRef,
   AlertDialogPrimitive.ActionProps
 >(({ className, ...props }, ref) => (
-  <TextClassContext.Provider value={buttonTextVariants({ className })}>
+  <TextClassContext.Provider
+    value={buttonTextVariants({ className, variant: "destructive", size: "unset" })}>
     <AlertDialogPrimitive.Action
       ref={ref}
-      className={cn(buttonVariants(), className)}
+      className={cn(
+        buttonVariants({ variant: "destructive", size: "unset", className }),
+        "px-5 py-3"
+      )}
       {...props}
     />
   </TextClassContext.Provider>
@@ -146,10 +150,11 @@ const AlertDialogCancel = React.forwardRef<
   AlertDialogPrimitive.CancelRef,
   AlertDialogPrimitive.CancelProps
 >(({ className, ...props }, ref) => (
-  <TextClassContext.Provider value={buttonTextVariants({ className, variant: "outline" })}>
+  <TextClassContext.Provider
+    value={buttonTextVariants({ className, variant: "outline", size: "unset" })}>
     <AlertDialogPrimitive.Cancel
       ref={ref}
-      className={cn(buttonVariants({ variant: "outline", className }))}
+      className={cn(buttonVariants({ variant: "outline", size: "unset", className }), "px-5 py-3")}
       {...props}
     />
   </TextClassContext.Provider>

@@ -128,12 +128,10 @@ export default function ViewPlaylistScreen() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>
-                  <Text className="text-foreground">Cancel</Text>
+                  <Text>Cancel</Text>
                 </AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-destructive"
-                  onPress={handleDelete}>
-                  <Text className="text-white">Delete</Text>
+                <AlertDialogAction onPress={handleDelete}>
+                  <Text>Delete</Text>
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

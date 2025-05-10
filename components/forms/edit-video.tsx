@@ -66,6 +66,7 @@ interface EditFormProps {
 }
 
 export default function EditVideoForm({ videoInfo }: EditFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
 
   const { updateVideo, deleteVideo } = useVideoStore(
@@ -114,6 +115,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setIsSubmitting(true);
       const parsedValues = formSchema.parse(values);
 
       await updateVideo({
@@ -135,6 +137,8 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       }
     } catch (error) {
       toast.error(`Error updating ${values.title}!`);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -220,15 +224,16 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
-                  variant="outline"
+                  disabled={isSubmitting}
+                  variant="destructive"
                   size="lg"
-                  className="flex w-full flex-row items-center justify-center gap-4 border-destructive">
+                  className="flex w-full flex-row items-center justify-center gap-4">
                   <TrashIcon
-                    className="text-destructive"
+                    className="text-destructive-foreground"
                     size={24}
                     strokeWidth={1.5}
                   />
-                  <Text className="native:text-base font-semibold uppercase tracking-wider text-destructive">
+                  <Text className="native:text-base font-semibold uppercase tracking-wider text-destructive-foreground">
                     Delete
                   </Text>
                 </Button>
@@ -245,12 +250,10 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>
-                    <Text className="text-foreground">Cancel</Text>
+                    <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive"
-                    onPress={handleDelete}>
-                    <Text className="text-white">Delete</Text>
+                  <AlertDialogAction onPress={handleDelete}>
+                    <Text>Delete</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -259,6 +262,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
           <View className="flex-1">
             <Button
+              disabled={isSubmitting}
               size="lg"
               className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
               onPress={form.handleSubmit(onSubmit)}>
