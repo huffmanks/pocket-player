@@ -1,4 +1,4 @@
-import { RelativePathString, SplashScreen, Stack, useRouter } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -12,7 +12,7 @@ import { useShallow } from "zustand/react/shallow";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
-import { DARK_THEME, EXCLUDED_PATHS, LIGHT_THEME, NAV_THEME } from "@/lib/constants";
+import { DARK_THEME, LIGHT_THEME, NAV_THEME } from "@/lib/constants";
 import { migrateDatabase } from "@/lib/migrate-database";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
@@ -29,7 +29,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
-  const router = useRouter();
 
   const { isAppStartUp, isAppReady, setIsAppStartUp, setIsAppReady } = useAppStore(
     useShallow((state) => ({
@@ -39,17 +38,15 @@ export default function RootLayout() {
       setIsAppReady: state.setIsAppReady,
     }))
   );
-  const { lastVisitedPath, theme, setTheme } = useSettingsStore(
+  const { theme, setTheme } = useSettingsStore(
     useShallow((state) => ({
-      lastVisitedPath: state.lastVisitedPath,
       theme: state.theme,
       setTheme: state.setTheme,
     }))
   );
-  const { isLockable, isLocked, setEnablePasscode, setIsLocked } = useSecurityStore(
+  const { isLockable, setEnablePasscode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       isLockable: state.isLockable,
-      isLocked: state.isLocked,
       setEnablePasscode: state.setEnablePasscode,
       setIsLocked: state.setIsLocked,
     }))
@@ -88,26 +85,6 @@ export default function RootLayout() {
 
     if (theme !== colorScheme) setColorScheme(navColorScheme);
   }, [colorScheme, theme]);
-
-  useEffect(() => {
-    if (!isAppReady) return;
-
-    async function restorePreviousRoute() {
-      try {
-        if (isLocked) return;
-
-        if (lastVisitedPath && !EXCLUDED_PATHS.includes(lastVisitedPath)) {
-          router.push(lastVisitedPath as RelativePathString);
-        }
-      } catch (error) {
-        toast.error("Restoring previous route failed.");
-      } finally {
-        await SplashScreen.hideAsync();
-      }
-    }
-
-    restorePreviousRoute();
-  }, [isAppReady]);
 
   if (!isAppReady) return null;
 

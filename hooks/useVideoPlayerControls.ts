@@ -44,7 +44,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   const player = useVideoPlayer(videoSources[currentIndex].videoUri, (p) => {
     p.timeUpdateEventInterval = 0.5;
     p.loop = !isPlaylist && (loop ?? false);
-    p.muted = isThumbView || !!mute;
+    p.muted = !!isThumbView || mute;
 
     if ((autoPlay || isPlaylist) && !isThumbView) {
       updateControlsVisible(0);
@@ -55,7 +55,6 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   });
 
   const { isPlaying } = useEvent(player, "playingChange", { isPlaying: player.playing });
-  const { muted } = useEvent(player, "mutedChange", { muted: player.muted });
   const { status, oldStatus } = useEvent(player, "statusChange", {
     status: player.status,
     oldStatus: player.status,
@@ -224,7 +223,6 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     time,
     progress,
     setProgress,
-    muted,
     isPlaylist,
     controlsVisible,
     showPlaybackControls,

@@ -2,11 +2,9 @@
 
 ## Issues
 
-1. [Modal screens](<app/(screens)/_layout.tsx>):
+1. [Screens](<app/(screens)/_layout.tsx>):
    - HeaderItems are not clickable.
-2. [Screens layout](<app/(screens)/_layout.tsx>):
-   - Refactor dynamic route navigation behaviors when lock screen enabled.
-3. Cleanup:
+2. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
 
@@ -14,5 +12,5 @@
 
 1. Save timestamp of last view of video.
    - Use zustand and mmkv.
-   - [key = `videoProgress:${videoId}`](lib/store.ts#L449)
+   - [key = `videoProgress:${videoId}`](lib/store.ts#L453)
    - value = `10` (player.currentTime | number | seconds)

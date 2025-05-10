@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { InteractionManager, View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
+import { createId } from "@paralleldrive/cuid2";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Easing,
@@ -17,7 +18,7 @@ import { toast } from "sonner-native";
 import { VideoMeta } from "@/db/schema";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
-import { SLIDER_THEME } from "@/lib/constants";
+import { SLIDER_THEME, VIDEOS_DIR } from "@/lib/constants";
 import { ImageDownIcon, LockIcon, LockOpenIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
 
@@ -56,17 +57,21 @@ export default function VideoThumbPicker({ videoInfo }: VideoThumbPickerProps) {
     setIsSaving(true);
 
     try {
-      const thumbTimestamp = +(player.currentTime * 1000).toFixed(5);
+      const thumbTimestamp = Math.trunc(player.currentTime * 100000) / 100;
 
       const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
         time: thumbTimestamp,
       });
 
-      await FileSystem.moveAsync({ from: uri, to: videoInfo.thumbUri });
+      const fileId = createId();
+      const newUri = `${VIDEOS_DIR}${videoInfo.title}-${fileId}.jpg`;
+
+      await FileSystem.moveAsync({ from: uri, to: newUri });
+      await FileSystem.deleteAsync(videoInfo.thumbUri, { idempotent: true });
 
       await updateVideo({
         id: videoInfo.id,
-        values: { thumbTimestamp },
+        values: { thumbUri: newUri, thumbTimestamp },
       });
       toast.success("Thumbnail updated.");
     } catch (err) {

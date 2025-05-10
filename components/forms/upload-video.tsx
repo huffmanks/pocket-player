@@ -17,6 +17,7 @@ import { CircleXIcon, CloudUploadIcon, ImportIcon } from "@/lib/icons";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import { ensureDirectory, requestPermissions } from "@/lib/upload";
 import {
+  delay,
   formatDuration,
   formatFileSize,
   getOrientation,
@@ -152,10 +153,9 @@ export default function UploadForm() {
     } catch (error) {
       toast.error("Error trying to upload!");
     } finally {
-      setTimeout(() => {
-        setIsLockDisabled(false);
-        setIsLocked(false);
-      }, 100);
+      await delay(100);
+      setIsLockDisabled(false);
+      setIsLocked(false);
     }
   }
 

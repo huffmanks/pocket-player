@@ -1,7 +1,7 @@
 import { useKeepAwake } from "expo-keep-awake";
 import { useRouter } from "expo-router";
 import { VideoView } from "expo-video";
-import { InteractionManager, View } from "react-native";
+import { View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
 import { GestureDetector } from "react-native-gesture-handler";
@@ -50,7 +50,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
     currentIndex,
     time,
     progress,
-    muted,
     isPlaylist,
     controlsVisible,
     showPlaybackControls,
@@ -69,14 +68,12 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   } = useVideoPlayerControls(videoSources);
 
   function handleGoBack() {
-    if (lastVisitedPath.startsWith("/playlists/") && lastVisitedPath.endsWith("/watch")) {
-      const segments = lastVisitedPath.split("/");
-      const id = segments[segments.length - 2];
-
+    if (router.canGoBack()) {
+      router.back();
+    } else if (lastVisitedPath.startsWith("/playlists")) {
       router.dismissTo("/(tabs)/playlists");
-      InteractionManager.runAfterInteractions(() => {
-        router.push(`/(screens)/playlists/${id}/view`);
-      });
+    } else if (lastVisitedPath.startsWith("/favorites")) {
+      router.dismissTo("/(tabs)/favorites");
     } else {
       router.dismissTo("/(tabs)/videos");
     }
@@ -242,7 +239,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
                         onPress={toggleMute}>
-                        {muted ? (
+                        {player.muted ? (
                           <VolumeXIcon
                             className="stroke-white/70"
                             size={24}

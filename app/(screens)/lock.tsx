@@ -16,7 +16,7 @@ import { useShallow } from "zustand/react/shallow";
 import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
 import handleRedirect from "@/lib/handle-redirect";
 import { DeleteIcon, ScanFaceIcon } from "@/lib/icons";
-import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
+import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import KeypadRow from "@/components/keypad-row";
@@ -28,7 +28,6 @@ export default function LockScreen() {
   const codeLength = Array(4).fill(0);
   const insets = useSafeAreaInsets();
 
-  const setHasRedirected = useAppStore((state) => state.setHasRedirected);
   const { lastVisitedPath, previousVisitedPath } = useSettingsStore(
     useShallow((state) => ({
       lastVisitedPath: state.lastVisitedPath,
@@ -51,22 +50,20 @@ export default function LockScreen() {
 
   useEffect(() => {
     if (code.length === 4) {
-      setCode([]);
+      (async () => {
+        setCode([]);
 
-      if (code.join("") === passcode) {
-        setIsLocked(false);
-        setHasRedirected(true);
-        setTimeout(() => {
-          handleRedirect({ lastVisitedPath, previousVisitedPath });
-        }, 0);
-      } else {
-        offset.value = withSequence(
-          withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
-          withRepeat(withTiming(ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME }), 4, true),
-          withTiming(0, { duration: ERROR_SHAKE_TIME / 2 })
-        );
-        handleErrorShake();
-      }
+        if (code.join("") === passcode) {
+          await handleUnlockApp();
+        } else {
+          offset.value = withSequence(
+            withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
+            withRepeat(withTiming(ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME }), 4, true),
+            withTiming(0, { duration: ERROR_SHAKE_TIME / 2 })
+          );
+          await handleErrorShake();
+        }
+      })();
     }
   }, [code]);
 
@@ -85,19 +82,20 @@ export default function LockScreen() {
     setCode([]);
 
     if (success) {
-      setIsLocked(false);
-      setHasRedirected(true);
-      setTimeout(() => {
-        handleRedirect({ lastVisitedPath, previousVisitedPath });
-      }, 0);
+      await handleUnlockApp();
     } else {
-      handleErrorShake();
+      await handleErrorShake();
     }
   }, []);
 
   const handleErrorShake = useCallback(async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
   }, []);
+
+  async function handleUnlockApp() {
+    setIsLocked(false);
+    await handleRedirect({ lastVisitedPath, previousVisitedPath });
+  }
 
   return (
     <SafeAreaView style={{ marginTop: insets.top + 40 }}>

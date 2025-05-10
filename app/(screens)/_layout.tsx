@@ -1,15 +1,12 @@
 import { Stack } from "expo-router";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useNavigationInterceptor } from "@/hooks/useNavigationInterceptor";
 import { NAV_THEME } from "@/lib/constants";
 
 import HeaderItems from "@/components/header-items";
 
 export default function ScreensLayout() {
   const { colorScheme, isDarkColorScheme } = useColorScheme();
-
-  useNavigationInterceptor();
 
   return (
     <Stack
@@ -26,7 +23,7 @@ export default function ScreensLayout() {
           headerShown: false,
           statusBarHidden: true,
           navigationBarHidden: true,
-          animation: "slide_from_right",
+          animation: "fade",
         }}
       />
       <Stack.Screen
@@ -34,7 +31,7 @@ export default function ScreensLayout() {
         options={{
           title: "Playlist",
           headerBackVisible: true,
-          animation: "slide_from_right",
+          animation: "fade",
         }}
       />
       <Stack.Screen
@@ -42,7 +39,7 @@ export default function ScreensLayout() {
         options={{
           title: "Edit playlist",
           headerBackVisible: true,
-          animation: "slide_from_bottom",
+          animation: "fade_from_bottom",
         }}
       />
       <Stack.Screen
@@ -50,7 +47,7 @@ export default function ScreensLayout() {
         options={{
           title: "Create playlist",
           headerBackVisible: true,
-          animation: "slide_from_bottom",
+          animation: "fade_from_bottom",
         }}
       />
       <Stack.Screen
@@ -59,7 +56,7 @@ export default function ScreensLayout() {
           headerShown: false,
           statusBarHidden: true,
           navigationBarHidden: true,
-          animation: "slide_from_right",
+          animation: "fade",
         }}
       />
       <Stack.Screen
@@ -67,7 +64,7 @@ export default function ScreensLayout() {
         options={{
           title: "Edit video",
           headerBackVisible: true,
-          animation: "slide_from_bottom",
+          animation: "fade_from_bottom",
         }}
       />
       <Stack.Screen
@@ -83,7 +80,7 @@ export default function ScreensLayout() {
         options={{
           title: "Passcode",
           headerBackVisible: true,
-          animation: "slide_from_right",
+          animation: "fade_from_bottom",
         }}
       />
     </Stack>

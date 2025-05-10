@@ -40,6 +40,10 @@ export function secondsToAdaptiveTime(seconds: number): string {
   }
 }
 
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function withDelay<T>(fn: () => Promise<T>, ms: number): Promise<T> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
