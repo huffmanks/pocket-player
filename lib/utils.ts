@@ -106,7 +106,7 @@ export function splitFilename(filename: string): [string, string] {
   return [name, extension];
 }
 
-export function imagesToRows(images: string[]): string[][] {
+export function imagesToRows<T>(images: T[]): T[][] {
   const layoutMap: Record<number, number[]> = {
     1: [1],
     2: [1, 1],
@@ -117,11 +117,11 @@ export function imagesToRows(images: string[]): string[][] {
   };
 
   const layout = layoutMap[images.length];
-  const rows: string[][] = [];
+  const rows: T[][] = [];
 
   let index = 0;
   for (const count of layout) {
-    const row: string[] = [];
+    const row: T[] = [];
     for (let i = 0; i < count; i++) {
       row.push(images[index++]);
     }

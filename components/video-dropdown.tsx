@@ -7,7 +7,8 @@ import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
-import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { BOTTOM_TABS_OFFSET, NAV_THEME } from "@/lib/constants";
 import {
   CheckIcon,
   EllipsisVerticalIcon,
@@ -57,6 +58,7 @@ interface VideoDropdownProps {
 export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
 
   const contentInsets = {
     top: insets.top + BOTTOM_TABS_OFFSET,
@@ -168,7 +170,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
             className="gap-4"
             onPress={handleFavorite}>
             <StarIcon
-              className={cn("text-foreground", item.isFavorite && "fill-foreground")}
+              className="text-foreground"
+              fill={item.isFavorite ? NAV_THEME[colorScheme].text : "none"}
               size={20}
               strokeWidth={1.5}
             />

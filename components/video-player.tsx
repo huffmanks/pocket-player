@@ -111,7 +111,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
               style={animatedStyle}>
               {controlsVisible && (
                 <View className="flex-1 justify-between gap-2">
-                  <View className="flex-row items-center justify-between gap-4 pt-2">
+                  <View className="flex-row items-center justify-between gap-4 portrait:pt-12 landscape:px-14 landscape:pt-2">
                     <View>
                       <Button
                         className="rounded-full p-1 active:bg-transparent"
@@ -147,7 +147,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                           onPressOut={handleButtonPressOut}
                           onPress={() => changeVideoSource(-1)}>
                           <SkipBackIcon
-                            className="fill-white stroke-white group-active:opacity-70"
+                            className="group-active:opacity-70"
+                            fill="white"
+                            stroke="white"
                             size={32}
                             strokeWidth={1.25}
                           />
@@ -163,7 +165,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressOut={handleButtonPressOut}
                         onPress={() => safeSeekBy(-5)}>
                         <RewindIcon
-                          className="fill-white stroke-white group-active:opacity-70"
+                          className="group-active:opacity-70"
+                          fill="white"
+                          stroke="white"
                           size={32}
                           strokeWidth={1.25}
                         />
@@ -178,19 +182,24 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPress={togglePlay}>
                         {hasEnded ? (
                           <RotateCcwIcon
-                            className="stroke-white group-active:opacity-70"
+                            className="group-active:opacity-70"
+                            stroke="white"
                             size={32}
                             strokeWidth={2.25}
                           />
                         ) : isPlaying ? (
                           <PauseIcon
-                            className="fill-white stroke-white group-active:opacity-70"
+                            className="group-active:opacity-70"
+                            fill="white"
+                            stroke="white"
                             size={32}
                             strokeWidth={1.25}
                           />
                         ) : (
                           <PlayIcon
-                            className="fill-white stroke-white group-active:opacity-70"
+                            className="group-active:opacity-70"
+                            fill="white"
+                            stroke="white"
                             size={32}
                             strokeWidth={1.25}
                           />
@@ -205,7 +214,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressOut={handleButtonPressOut}
                         onPress={() => safeSeekBy(5)}>
                         <FastForwardIcon
-                          className="fill-white stroke-white group-active:opacity-70"
+                          className="group-active:opacity-70"
+                          fill="white"
+                          stroke="white"
                           size={32}
                           strokeWidth={1.25}
                         />
@@ -221,7 +232,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                           onPressOut={handleButtonPressOut}
                           onPress={() => changeVideoSource(1)}>
                           <SkipForwardIcon
-                            className="fill-white stroke-white group-active:opacity-70"
+                            className="group-active:opacity-70"
+                            fill="white"
+                            stroke="white"
                             size={32}
                             strokeWidth={1.25}
                           />
@@ -229,9 +242,10 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       )}
                     </View>
                   )}
-                  <View className="portrait:pb-4 landscape:px-2 landscape:pb-8">
-                    <View className="flex-row items-center justify-between gap-4 pl-4 pr-2">
-                      <Text className="text-sm text-white/70">{time}</Text>
+
+                  <View className="portrait:mb-20 portrait:px-3 landscape:mb-16 landscape:px-16">
+                    <View className="flex-row items-center justify-between gap-4 landscape:pl-4">
+                      <Text className="text-base text-white/90">{time}</Text>
                       <Button
                         className="rounded-full p-1 active:bg-transparent"
                         variant="ghost"
@@ -241,13 +255,14 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPress={toggleMute}>
                         {player.muted ? (
                           <VolumeXIcon
-                            className="stroke-white/70"
+                            stroke="white"
+                            opacity={0.7}
                             size={24}
                             strokeWidth={1.25}
                           />
                         ) : (
                           <Volume2Icon
-                            className="stroke-white"
+                            stroke="white"
                             size={24}
                             strokeWidth={1.25}
                           />
@@ -255,7 +270,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       </Button>
                     </View>
 
-                    <View className="flex-1 px-2 portrait:mb-8 landscape:mb-4">
+                    <View className="flex-1 landscape:pl-4">
                       <Slider
                         value={progress}
                         minimumValue={0}

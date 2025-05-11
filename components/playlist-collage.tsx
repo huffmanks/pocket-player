@@ -3,7 +3,16 @@ import { Image, View } from "react-native";
 
 import { cn, imagesToRows } from "@/lib/utils";
 
-const PlaylistCollage = memo(function PlaylistCollage({ images }: { images: string[] | null }) {
+interface PlaylistCollageProps {
+  images:
+    | {
+        id: string;
+        thumbUri: string;
+      }[]
+    | null;
+}
+
+const PlaylistCollage = memo(function PlaylistCollage({ images }: PlaylistCollageProps) {
   if (!images || images.length === 0) {
     return <ImageCard viewClassName="h-48 w-48 overflow-hidden rounded-lg bg-secondary" />;
   }
@@ -16,56 +25,56 @@ const PlaylistCollage = memo(function PlaylistCollage({ images }: { images: stri
     <View>
       {isSingleImage ? (
         <ImageCard
-          imgUri={rows[0][0]}
+          imgUri={rows[0][0].thumbUri}
           viewClassName="h-48 w-48 overflow-hidden rounded-lg bg-card"
         />
       ) : (
         <View className="h-48 w-48 overflow-hidden rounded-lg bg-card">
-          {rows.map((item, idx) => (
+          {rows.map((item, rowIndex) => (
             <View
-              key={idx}
+              key={`row-${rowIndex}`}
               className={cn("rotate-[9deg] flex-row gap-2")}>
               {item.map((img, index) => (
                 <ImageCard
-                  key={img}
-                  imgUri={img}
+                  key={img.id}
+                  imgUri={img.thumbUri}
                   viewClassName={cn(
                     "h-24 w-24 overflow-hidden rounded-lg",
                     item.length === 3 && index === 0 && "-ml-8",
                     item.length === 3 && index === 2 && "-mr-8",
                     item.length === 2 && index === 0 && "-ml-2",
                     item.length === 2 && index === 1 && "-mr-2",
-                    rows.length === 2 && item.length >= 2 && idx === 0 && "-mt-2",
-                    rows.length === 2 && item.length >= 2 && idx === 1 && "mt-2",
+                    rows.length === 2 && item.length >= 2 && rowIndex === 0 && "-mt-2",
+                    rows.length === 2 && item.length >= 2 && rowIndex === 1 && "mt-2",
                     rows.length === 2 &&
                       rows[0].length === 2 &&
                       rows[1].length === 2 &&
-                      idx === 0 &&
+                      rowIndex === 0 &&
                       "-mt-2",
                     rows.length === 2 &&
                       rows[0].length === 2 &&
                       rows[1].length === 2 &&
-                      idx === 1 &&
+                      rowIndex === 1 &&
                       "mt-2",
                     rows.length === 2 &&
                       item.length === 1 &&
                       rows[1].length === 2 &&
-                      idx === 0 &&
+                      rowIndex === 0 &&
                       "mx-auto -mt-2",
                     rows.length === 2 &&
                       item.length === 2 &&
                       rows[0].length === 1 &&
-                      idx === 1 &&
+                      rowIndex === 1 &&
                       "mt-2",
                     rows.length === 2 &&
                       item.length === 1 &&
                       rows[1].length === 1 &&
-                      idx === 0 &&
+                      rowIndex === 0 &&
                       "ml-1 mt-2",
                     rows.length === 2 &&
                       item.length === 1 &&
                       rows[0].length === 1 &&
-                      idx === 1 &&
+                      rowIndex === 1 &&
                       "-mt-3 ml-[52px]"
                   )}
                 />

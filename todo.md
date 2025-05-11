@@ -9,13 +9,7 @@
    - Add app screenshots to repo
 3. Miscellaneous:
    - Alert cancel text isn't centered.
-   - Disable buttons on settings screen when submitting.
    - When resorting playlist items, sometimes image flashes.
-   - Reset settings isn't deleting persistent storage. i.e. lastVisitedPath, etc.
-   - enableOrientation should be ignored on video-thumb-picker.
-   - video player, on swipe up disable slider. Or move slider up some.
-   - favorite star is not being filled.
-   - player icons arent filled.
 
 ## Features
 

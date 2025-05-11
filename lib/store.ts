@@ -481,9 +481,7 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
         set((state) => ({
           videoProgress: { ...state.videoProgress, [videoId]: time },
         })),
-      reset: () => {
-        set(initialSettingsStoreState);
-      },
+      reset: () => set(initialSettingsStoreState),
     }),
     {
       name: "settings-store",
@@ -545,9 +543,7 @@ export const useSecurityStore = create<SecurityStoreState & SecurityStoreActions
         }),
       setLockInterval: (milliseconds) => set({ lockInterval: milliseconds }),
       setIsLockDisabled: (bool) => set({ isLockDisabled: bool }),
-      reset: () => {
-        set(initialSecurityStoreState);
-      },
+      reset: () => set(initialSecurityStoreState),
     }),
     {
       name: "security-store",
@@ -557,11 +553,12 @@ export const useSecurityStore = create<SecurityStoreState & SecurityStoreActions
 );
 
 export function resetPersistedStorage() {
-  settingsStorage.clearAll();
   useSettingsStore.persist.clearStorage();
-  useSettingsStore.getState().reset();
-
-  securityStorage.clearAll();
   useSecurityStore.persist.clearStorage();
+
+  useSettingsStore.getState().reset();
   useSecurityStore.getState().reset();
+
+  settingsStorage.clearAll();
+  securityStorage.clearAll();
 }

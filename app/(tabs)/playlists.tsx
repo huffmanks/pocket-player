@@ -29,7 +29,7 @@ export default function PlaylistsScreen() {
       columns: { playlistId: true },
       with: {
         video: {
-          columns: { thumbUri: true, duration: true },
+          columns: { id: true, thumbUri: true, duration: true },
         },
       },
     })
@@ -59,7 +59,12 @@ export default function PlaylistsScreen() {
         ...playlist,
         playlistCount: relatedThumbs.length,
         playlistDuration: formatDuration(playlistDuration),
-        thumbUris: relatedThumbs.map((item) => item.video.thumbUri).slice(0, 6),
+        thumbUris: relatedThumbs
+          .map((item) => ({
+            id: item.video.id,
+            thumbUri: item.video.thumbUri,
+          }))
+          .slice(0, 6),
       };
     });
   }, [playlistsQuery.data, thumbUrisQuery.data]);

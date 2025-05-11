@@ -72,6 +72,8 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
   useFocusEffect(
     useCallback(() => {
+      if (isThumbView) return;
+
       const enableOrientation = async () => {
         if (!overrideOrientation) {
           await ScreenOrientation.unlockAsync();

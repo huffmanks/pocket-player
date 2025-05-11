@@ -46,6 +46,7 @@ import { Text } from "@/components/ui/text";
 import { H1 } from "@/components/ui/typography";
 
 export default function SettingsScreen() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -69,47 +70,74 @@ export default function SettingsScreen() {
     );
 
   async function handleResetSettings() {
-    const promise = withDelay(async () => {
-      resetPersistedStorage();
-      return { message: "Settings has been reset." };
-    }, 500);
+    try {
+      setIsSubmitting(true);
+      const promise = withDelay(async () => {
+        resetPersistedStorage();
+        return { message: "Settings has been reset." };
+      }, 500);
 
-    toast.promise(promise, {
-      loading: "Settings being reset...",
-      success: ({ message }) => message,
-      error: "Reset settings has failed.",
-    });
+      const result = await promise;
+
+      toast.promise(Promise.resolve(result), {
+        loading: "Settings being reset...",
+        success: ({ message }) => message,
+        error: "Reset settings has failed.",
+      });
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   async function handleDeleteFiles() {
-    const promise = withDelay(async () => {
-      await clearDirectory(VIDEOS_DIR);
-      await clearDirectory(cacheDirectory || "");
-      await resetTables();
-      return { message: "All files have been deleted." };
-    }, 1000);
+    try {
+      setIsSubmitting(true);
+      const promise = withDelay(async () => {
+        await clearDirectory(VIDEOS_DIR);
+        await clearDirectory(cacheDirectory || "");
+        await resetTables();
+        return { message: "All files have been deleted." };
+      }, 1000);
 
-    toast.promise(promise, {
-      loading: "Files being deleted...",
-      success: ({ message }) => message,
-      error: "File deletion has failed.",
-    });
+      const result = await promise;
+
+      toast.promise(Promise.resolve(result), {
+        loading: "Files being deleted...",
+        success: ({ message }) => message,
+        error: "File deletion has failed.",
+      });
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   async function handleClearAllData() {
-    const promise = withDelay(async () => {
-      await clearDirectory(VIDEOS_DIR);
-      await clearDirectory(cacheDirectory || "");
-      await resetTables();
-      resetPersistedStorage();
-      return { message: "All data has been deleted." };
-    }, 2000);
+    try {
+      setIsSubmitting(true);
+      const promise = withDelay(async () => {
+        await clearDirectory(VIDEOS_DIR);
+        await clearDirectory(cacheDirectory || "");
+        await resetTables();
+        resetPersistedStorage();
+        return { message: "All data has been deleted." };
+      }, 2000);
 
-    toast.promise(promise, {
-      loading: "Data being deleted...",
-      success: ({ message }) => message,
-      error: "Data deletion has failed.",
-    });
+      const result = await promise;
+
+      toast.promise(Promise.resolve(result), {
+        loading: "Data being deleted...",
+        success: ({ message }) => message,
+        error: "Data deletion has failed.",
+      });
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   useEffect(() => {
@@ -230,6 +258,7 @@ export default function SettingsScreen() {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
+                  disabled={isSubmitting}
                   variant="secondary"
                   className="flex flex-row items-center justify-center gap-4">
                   <SettingsIcon
@@ -265,6 +294,7 @@ export default function SettingsScreen() {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
+                  disabled={isSubmitting}
                   variant="destructive"
                   className="flex flex-row items-center justify-center gap-4">
                   <FileVideo2Icon
@@ -300,6 +330,7 @@ export default function SettingsScreen() {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
+                  disabled={isSubmitting}
                   variant="destructive"
                   className="flex flex-row items-center justify-center gap-4">
                   <TrashIcon

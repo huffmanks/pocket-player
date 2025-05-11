@@ -6,6 +6,8 @@ export function iconWithClassName(icon: LucideIcon) {
     className: {
       target: "style",
       nativeStyleToProp: {
+        fill: true,
+        stroke: true,
         color: true,
         opacity: true,
       },
