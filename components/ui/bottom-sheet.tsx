@@ -25,11 +25,11 @@ import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 
-type BottomSheetRef = React.ElementRef<typeof View>;
+type BottomSheetRef = React.ComponentRef<typeof View>;
 type BottomSheetProps = React.ComponentPropsWithoutRef<typeof View>;
 
 interface IBottomSheetContext {
-  sheetRef: React.RefObject<BottomSheetModal>;
+  sheetRef: React.RefObject<BottomSheetModal | null>;
 }
 
 const BottomSheetContext = React.createContext({} as IBottomSheetContext);
