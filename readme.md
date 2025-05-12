@@ -18,7 +18,32 @@ A simple mobile app to locally upload, store and watch videos.
 
 ## Install
 
+### Option 1: Download prebuilt APK
+
 Download the latest APK from the [Releases](https://github.com/huffmanks/pocket-player/releases) page and install it on your Android device.
+
+### Option 2: Build a device-specific APK
+
+You can generate a smaller, optimized APK for your specific device using the provided `generate-device-apk.sh` script:
+
+1. Build the AAB with EAS:
+   ```sh
+   # use --local to build on device.
+   eas build -p android --profile production
+   ```
+2. If built on expo.dev, download the .aab and place it in the project root.
+3. Create .env.local and update values. (Optional will fallback to defaults.)
+   ```env
+   cp example.env .env.local
+   ```
+4. Make script executable:
+   ```sh
+   chmod +x generate-device-apk.sh
+   ```
+5. Run the script:
+   ```sh
+   ./generate-device-apk.sh
+   ```
 
 ## Notes
 

@@ -19,7 +19,11 @@
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "developmentClient": false,
+      "android": {
+        "buildType": "app-bundle"
+      }
     }
   },
   "submit": {

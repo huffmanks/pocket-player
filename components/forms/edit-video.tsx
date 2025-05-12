@@ -133,7 +133,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       if (router.canGoBack()) {
         router.back();
       } else {
-        router.push("/videos");
+        router.push("/(tabs)/videos");
       }
     } catch (error) {
       toast.error(`Error updating ${values.title}!`);

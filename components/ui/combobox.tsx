@@ -1,9 +1,10 @@
 import * as React from "react";
 import { ListRenderItemInfo, Pressable, Text, View } from "react-native";
 
+import Fuse from "fuse.js";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { CheckIcon, ChevronsUpDownIcon, MinusIcon, SearchIcon } from "@/lib/icons";
+import { CheckIcon, ChevronsUpDownIcon, MinusIcon, SearchIcon, XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 import {
@@ -17,6 +18,8 @@ import {
 } from "@/components/ui/bottom-sheet";
 import { Button, buttonTextVariants, buttonVariants } from "@/components/ui/button";
 
+import { Input } from "./input";
+
 const HEADER_HEIGHT = 100;
 
 interface ComboboxOption {
@@ -25,9 +28,10 @@ interface ComboboxOption {
 }
 
 const Combobox = React.forwardRef<
-  React.ElementRef<typeof Button>,
+  React.ComponentRef<typeof Button>,
   Omit<React.ComponentPropsWithoutRef<typeof Button>, "children"> & {
     items: ComboboxOption[];
+    includeSearch?: boolean;
     placeholder?: string;
     inputProps?: React.ComponentPropsWithoutRef<typeof BottomSheetTextInput>;
     emptyText?: string;
@@ -45,6 +49,7 @@ const Combobox = React.forwardRef<
       inputProps,
       placeholder,
       items,
+      includeSearch = false,
       emptyText = "Nothing found...",
       selectedItems: selectedItemsProp,
       onSelectedItemsChange,
@@ -54,17 +59,18 @@ const Combobox = React.forwardRef<
   ) => {
     const insets = useSafeAreaInsets();
     const [search, setSearch] = React.useState("");
+    const [isFocused, setIsFocused] = React.useState(false);
     const [selectedItems, setSelectedItems] = React.useState<ComboboxOption[]>([]);
     const bottomSheet = useBottomSheet();
     const inputRef = React.useRef<React.ComponentRef<typeof BottomSheetTextInput>>(null);
 
-    const listItems = React.useMemo(() => {
-      return search
-        ? items.filter((item) => {
-            return item.label?.toLocaleLowerCase().includes(search.toLocaleLowerCase());
-          })
-        : items;
-    }, [items, search]);
+    const filteredItems = React.useMemo(() => {
+      if (!items) return [];
+      if (!search) return items;
+
+      const fuse = new Fuse(items, { keys: ["label"], threshold: 0.5 });
+      return fuse.search(search).map((result) => result.item);
+    }, [search, items]);
 
     function onItemToggle(listItem: ComboboxOption) {
       const current = selectedItemsProp ?? selectedItems;
@@ -78,8 +84,6 @@ const Combobox = React.forwardRef<
       } else {
         setSelectedItems(updated);
       }
-
-      setSearch("");
     }
 
     const renderItem = React.useCallback(
@@ -98,7 +102,7 @@ const Combobox = React.forwardRef<
             )}
             onPress={() => onItemToggle(listItem)}>
             <View className="flex-1 flex-row">
-              <Text className={"text-lg text-foreground"}>{listItem.label}</Text>
+              <Text className="text-lg text-foreground">{listItem.label}</Text>
             </View>
             {isSelected && (
               <CheckIcon
@@ -112,25 +116,6 @@ const Combobox = React.forwardRef<
       [selectedItems, selectedItemsProp]
     );
 
-    function onSubmitEditing() {
-      const firstItem = listItems[0];
-      if (!firstItem) return;
-      if (onSelectedItemsChange) {
-        onSelectedItemsChange([firstItem]);
-      } else {
-        setSelectedItems([firstItem]);
-      }
-      bottomSheet.close();
-    }
-
-    function onSearchIconPress() {
-      if (!inputRef.current) return;
-      const input = inputRef.current;
-      if (input && "focus" in input && typeof input.focus === "function") {
-        input.focus();
-      }
-    }
-
     const isAllSelected = (selectedItemsProp ?? selectedItems).length === items.length;
     const isSomeSelected = (selectedItemsProp ?? selectedItems).length > 0 && !isAllSelected;
 
@@ -141,6 +126,11 @@ const Combobox = React.forwardRef<
       } else {
         setSelectedItems(newSelection);
       }
+    }
+
+    function handleClear() {
+      setSearch("");
+      inputRef.current?.blur();
     }
 
     const selected = selectedItemsProp ?? selectedItems;
@@ -181,35 +171,48 @@ const Combobox = React.forwardRef<
               {placeholder}
             </Text>
           </BottomSheetHeader>
-          <View className="relative mb-4 border-b border-border px-4 pb-6">
-            <BottomSheetTextInput
-              role="searchbox"
-              ref={inputRef}
-              className="pl-12"
-              value={search}
-              onChangeText={setSearch}
-              onSubmitEditing={onSubmitEditing}
-              returnKeyType="next"
-              clearButtonMode="while-editing"
-              placeholder="Search..."
-              {...inputProps}
-            />
-            <Button
-              variant={"ghost"}
-              size="sm"
-              className="absolute left-4 top-2.5"
-              onPress={onSearchIconPress}>
-              <SearchIcon
-                size={18}
-                className="text-foreground opacity-50"
-              />
-            </Button>
-          </View>
+
+          {includeSearch && (
+            <View className="mb-8 flex-row gap-2 px-4">
+              <View
+                className={cn(
+                  "flex-1 flex-row items-center gap-3 rounded-md border bg-background px-3",
+                  isFocused ? "border-brand" : "border-input"
+                )}>
+                <Pressable onPress={() => inputRef.current?.blur()}>
+                  <SearchIcon
+                    className={cn(isFocused ? "text-foreground" : "text-brand-foreground")}
+                    size={20}
+                    strokeWidth={1.25}
+                  />
+                </Pressable>
+                <Input
+                  ref={inputRef}
+                  className="native:text-xl flex-1 border-0 px-0 placeholder:text-muted-foreground"
+                  role="searchbox"
+                  value={search}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  onChangeText={setSearch}
+                  returnKeyType="next"
+                  clearButtonMode="while-editing"
+                  placeholder="Search videos"
+                />
+                <Pressable onPress={handleClear}>
+                  <XIcon
+                    className={cn(search ? "text-foreground" : "text-muted-foreground")}
+                    size={20}
+                    strokeWidth={1.25}
+                  />
+                </Pressable>
+              </View>
+            </View>
+          )}
+
           {items.length > 0 && (
             <Pressable
               className="mx-5 flex-row items-center gap-3"
               onPress={handleIsAllSelected}>
-              <Text className="font-bold text-foreground">Select all</Text>
               <View
                 className={cn(
                   "web:peer native:h-[20] native:w-[20] native:rounded h-4 w-4 shrink-0 rounded-sm border border-primary disabled:cursor-not-allowed disabled:opacity-50 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
@@ -232,18 +235,19 @@ const Combobox = React.forwardRef<
                   )}
                 </View>
               </View>
+              <Text className="font-bold text-muted-foreground">Select all</Text>
             </Pressable>
           )}
           <BottomSheetFlatList
-            data={listItems}
+            data={filteredItems}
             contentContainerStyle={{
-              paddingTop: HEADER_HEIGHT / 4 + insets.top,
+              paddingTop: insets.top / 2,
               paddingBottom: HEADER_HEIGHT / 2 + insets.bottom,
               gap: 6,
             }}
             renderItem={renderItem}
             keyExtractor={(item, index) => (item as ComboboxOption)?.value ?? index.toString()}
-            className={"px-4"}
+            className="px-4"
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             ListEmptyComponent={() => {
