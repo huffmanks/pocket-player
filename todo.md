@@ -5,6 +5,7 @@
 1. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - use modular imports. remove all * imports.
+   - try removing expo web browser and others that I don't need.
    - Add app screenshots to repo
 2. Miscellaneous:
    - Alert cancel text isn't centered.
