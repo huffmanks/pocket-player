@@ -10,6 +10,7 @@
 3. Miscellaneous:
    - Alert cancel text isn't centered.
    - When resorting playlist items, sometimes image flashes.
+   - Redirecting happening in modals after first load.
 
 ## Features
 

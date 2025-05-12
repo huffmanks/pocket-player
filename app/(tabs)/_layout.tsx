@@ -25,7 +25,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: NAV_THEME[colorScheme].background,
           paddingTop: 10,
-          height: 75,
+          height: 90,
         },
       }}>
       <Tabs.Screen

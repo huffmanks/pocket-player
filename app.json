@@ -85,7 +85,9 @@
       "softwareKeyboardLayoutMode": "pan"
     },
     "plugins": [
+      "expo-font",
       "expo-router",
+      "expo-sqlite",
       "expo-video",
       [
         "expo-local-authentication",
@@ -93,10 +95,10 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
       ],
-      "expo-font",
-      "expo-sqlite",
       "expo-web-browser",
-      "./plugins/post-prebuild"
+      "./plugins/flag-secure.js",
+      "./plugins/custom-app-theme.js",
+      "./plugins/custom-colors.js"
     ],
     "experiments": {
       "typedRoutes": true
