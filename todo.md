@@ -4,6 +4,7 @@
 
 1. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
+   - use modular imports. remove all * imports.
    - Add app screenshots to repo
 2. Miscellaneous:
    - Alert cancel text isn't centered.
