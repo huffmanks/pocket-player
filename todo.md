@@ -12,7 +12,8 @@
    - Mute icon off increase opacity.
    - Playlist view make edit and delete vertical dots drop-down.
    - Forms delete and update make neutral colors white and black. secondary and default.
-   - Video thumb picker make slider able to get more seconds and frames.
+   - Video thumb picker make slider able to get more seconds and frames. add input, slider and skip frame buttons. maybe detach from hook and use inline videoplayer.
+   - if watch screen is last visited it will not lock. need to remove disableLock.
 
 ## Features
 
