@@ -9,9 +9,9 @@
     "web": "expo start --web",
     "start": "expo start",
     "prebuild": "expo prebuild --platform android --clean",
-    "build:dev": "NODE_ENV=development eas build --clear-cache --platform android --profile development --local",
-    "build:preview": "NODE_ENV=development eas build --clear-cache --platform android --profile preview --local",
-    "build:production": "NODE_ENV=development eas build --clear-cache --platform android --profile production --local",
+    "build:dev": "eas build --clear-cache --platform android --profile development --local",
+    "build:apk": "eas build --clear-cache --platform android --profile preview --local",
+    "build:aab": "eas build --clear-cache --platform android --profile preview-bundle --local",
     "format": "prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "db:generate": "drizzle-kit generate"
   },

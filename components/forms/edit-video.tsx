@@ -225,15 +225,14 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
               <AlertDialogTrigger asChild>
                 <Button
                   disabled={isSubmitting}
-                  variant="destructive"
-                  size="lg"
+                  variant="secondary"
                   className="flex w-full flex-row items-center justify-center gap-4">
                   <TrashIcon
-                    className="text-destructive-foreground"
+                    className="text-foreground"
                     size={24}
                     strokeWidth={1.5}
                   />
-                  <Text className="native:text-base font-semibold uppercase tracking-wider text-destructive-foreground">
+                  <Text className="native:text-base font-semibold uppercase tracking-wider">
                     Delete
                   </Text>
                 </Button>
@@ -263,7 +262,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
           <View className="flex-1">
             <Button
               disabled={isSubmitting}
-              size="lg"
               className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
               onPress={form.handleSubmit(onSubmit)}>
               <SaveIcon

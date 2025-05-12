@@ -256,7 +256,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         {player.muted ? (
                           <VolumeXIcon
                             stroke="white"
-                            opacity={0.7}
+                            opacity={0.8}
                             size={24}
                             strokeWidth={1.25}
                           />

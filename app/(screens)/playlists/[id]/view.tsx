@@ -7,7 +7,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { playlistVideos, playlists } from "@/db/schema";
-import { PencilIcon, TrashIcon, TvIcon } from "@/lib/icons";
+import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
+import { EllipsisVerticalIcon, PencilIcon, TrashIcon, TvIcon } from "@/lib/icons";
 import { useDatabaseStore, usePlaylistStore } from "@/lib/store";
 
 import PlaylistSortable from "@/components/playlist-sortable";
@@ -23,6 +24,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Text } from "@/components/ui/text";
 import { H2 } from "@/components/ui/typography";
 
@@ -30,6 +40,13 @@ export default function ViewPlaylistScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  const contentInsets = {
+    top: insets.top + BOTTOM_TABS_OFFSET,
+    bottom: insets.bottom + BOTTOM_TABS_OFFSET,
+    left: 12,
+    right: 12,
+  };
 
   const db = useDatabaseStore.getState().db;
   const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
@@ -80,63 +97,94 @@ export default function ViewPlaylistScreen() {
             asChild>
             <Button
               disabled={!playlistVideosQuery.data?.length}
-              className="flex flex-row items-center justify-center gap-4">
+              className="flex flex-row items-center justify-center gap-4 bg-brand">
               <TvIcon
-                className="text-background"
+                className="text-foreground"
                 size={24}
                 strokeWidth={1.5}
               />
-              <Text className="native:text-base font-semibold uppercase tracking-wider">Watch</Text>
+              <Text className="native:text-base font-semibold uppercase tracking-wider text-foreground">
+                Watch
+              </Text>
             </Button>
           </Link>
         </View>
-        <View>
-          <Link
-            href={`/(screens)/playlists/${id}/edit`}
-            asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
-              variant="secondary"
-              className="flex flex-row items-center justify-center gap-4">
-              <PencilIcon
+              className="px-4 py-3"
+              variant="ghost"
+              size="unset">
+              <EllipsisVerticalIcon
                 className="text-foreground"
                 size={24}
                 strokeWidth={1.5}
               />
             </Button>
-          </Link>
-        </View>
-        <View>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="flex flex-row items-center justify-center gap-4 bg-destructive">
-                <TrashIcon
-                  className="text-destructive-foreground"
-                  size={24}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="native:w-72 w-64"
+            insets={contentInsets}>
+            <DropdownMenuLabel
+              className="native:text-lg"
+              numberOfLines={1}>
+              {playlistQuery.data[0].title}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                className="gap-4"
+                onPress={() => router.push(`/(screens)/playlists/${id}/edit`)}>
+                <PencilIcon
+                  className="text-foreground"
+                  size={20}
                   strokeWidth={1.5}
                 />
-              </Button>
-            </AlertDialogTrigger>
+                <Text className="native:text-lg text-foreground">Edit</Text>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
 
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  <Text>This will delete the </Text>
-                  <Text className="font-semibold">“{playlistQuery.data[0].title}”</Text>
-                  <Text> playlist permanently.</Text>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>
-                  <Text>Cancel</Text>
-                </AlertDialogCancel>
-                <AlertDialogAction onPress={handleDelete}>
-                  <Text>Delete</Text>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </View>
+            <DropdownMenuSeparator />
+
+            <AlertDialog>
+              <DropdownMenuItem>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    style={{ margin: -8 }}
+                    className="w-full flex-1 flex-row justify-start gap-4 rounded-sm p-2"
+                    size="unset"
+                    variant="ghost">
+                    <TrashIcon
+                      className="text-destructive"
+                      size={20}
+                      strokeWidth={1.5}
+                    />
+                    <Text className="native:text-lg font-normal text-destructive">Delete</Text>
+                  </Button>
+                </AlertDialogTrigger>
+              </DropdownMenuItem>
+
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <Text>This will delete the </Text>
+                    <Text className="font-semibold">“{playlistQuery.data[0].title}”</Text>
+                    <Text> playlist permanently.</Text>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    <Text>Cancel</Text>
+                  </AlertDialogCancel>
+                  <AlertDialogAction onPress={handleDelete}>
+                    <Text>Delete</Text>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </View>
 
       <PlaylistSortable playlistId={id} />

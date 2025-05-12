@@ -26,11 +26,12 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   const isPlaylist = videoSources.length > 1;
 
   const setIsLockDisabled = useSecurityStore((state) => state.setIsLockDisabled);
-  const { autoPlay, mute, loop, overrideOrientation } = useSettingsStore(
+  const { autoPlay, mute, loop, isNativeControls, overrideOrientation } = useSettingsStore(
     useShallow((state) => ({
       autoPlay: state.autoPlay,
       mute: state.mute,
       loop: state.loop,
+      isNativeControls: state.isNativeControls,
       overrideOrientation: state.overrideOrientation,
     }))
   );
@@ -93,7 +94,10 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       };
 
       enableOrientation();
-      setIsLockDisabled(true);
+
+      if (isNativeControls) {
+        setIsLockDisabled(true);
+      }
 
       return () => {
         disableOrientation();

@@ -1,14 +1,16 @@
 {
   "cli": {
-    "version": ">= 16.3.1",
+    "version": ">= 16.4.1",
     "appVersionSource": "remote"
   },
   "build": {
     "development": {
+      "environment": "development",
       "developmentClient": true,
       "distribution": "internal"
     },
     "preview": {
+      "environment": "preview",
       "developmentClient": false,
       "distribution": "internal",
       "android": {
@@ -18,15 +20,16 @@
         "disabled": true
       }
     },
-    "production": {
-      "autoIncrement": true,
+    "preview-bundle": {
+      "environment": "preview",
+      "autoIncrement": false,
       "developmentClient": false,
       "android": {
         "buildType": "app-bundle"
+      },
+      "cache": {
+        "disabled": true
       }
     }
-  },
-  "submit": {
-    "production": {}
   }
 }
