@@ -5,8 +5,12 @@
 1. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
-2. Miscellaneous:
-   - Video thumb picker make slider able to get more seconds and frames. add input, slider and skip frame buttons. maybe detach from hook and use inline videoplayer.
+2. [VideoThumbPicker](components/video-thumb-picker-next.tsx):
+   - Make this an input and slider.
+3. [FormDatePicker](components/ui/form.tsx#L182):
+   - Make this an input and datepicker. User can do it either way.
+4. [Upload videos](components/forms/upload-video.tsx#L115):
+   - Test adding creationDate ffmpeg to see if video metadata is available.
 
 ## Features
 

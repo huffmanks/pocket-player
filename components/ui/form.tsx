@@ -26,6 +26,8 @@ import { Switch, SwitchProps } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { Textarea } from "@/components/ui/textarea";
 
+import { Button } from "./button";
+
 const Form = FormProvider;
 
 type FormFieldContextValue<
@@ -180,8 +182,17 @@ type FormItemProps<T extends React.ElementType<any>, U> = Override<
 const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePicker, Date>>(
   ({ label, description, value, onChange }, ref) => {
     const [show, setShow] = React.useState(false);
+    const [inputValue, setInputValue] = React.useState(formatDateString(value));
     const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } =
       useFormField();
+
+    function handleInputChange(val: string) {
+      const digits = val.replace(/\D/g, "").slice(0, 8);
+      const parts = [digits.slice(0, 4), digits.slice(4, 6), digits.slice(6, 8)].filter(Boolean);
+      const masked = parts.join("-");
+
+      setInputValue(masked);
+    }
 
     function handleChange(_e: DateTimePickerEvent, selectedDate?: Date) {
       setShow(false);
@@ -204,23 +215,35 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
           </FormLabel>
         )}
 
-        <Pressable
-          className="native:h-12 h-10 flex-row items-center justify-between gap-4 rounded-md border border-input px-3 web:py-2 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2"
-          onPress={showDatepicker}>
+        <View className="native:h-12 h-10 flex-row items-center justify-between gap-4 rounded-md border border-input px-3 web:py-2 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2">
           <Input
             ref={ref}
-            readOnly
             className="border-0 p-0"
             style={{ height: "auto" }}
-            value={formatDateString(value)}
+            inputMode="numeric"
+            placeholder="YYYY-MM-DD"
+            value={inputValue}
+            onChangeText={handleInputChange}
+            aria-labelledby={formItemNativeID}
+            aria-describedby={
+              !error
+                ? `${formDescriptionNativeID}`
+                : `${formDescriptionNativeID} ${formMessageNativeID}`
+            }
+            aria-invalid={!!error}
           />
 
-          <CalendarIcon
-            className="text-brand-foreground"
-            size={24}
-            strokeWidth={1.5}
-          />
-        </Pressable>
+          <Button
+            variant="ghost"
+            size="icon"
+            onPress={showDatepicker}>
+            <CalendarIcon
+              className="text-brand-foreground"
+              size={24}
+              strokeWidth={1.5}
+            />
+          </Button>
+        </View>
 
         {show && (
           <DateTimePicker
