@@ -244,7 +244,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                   <AlertDialogDescription>
                     <Text>This will delete the </Text>
                     <Text className="font-semibold">“{videoInfo.title}”</Text>
-                    <Text> playlist permanently.</Text>
+                    <Text> video permanently.</Text>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

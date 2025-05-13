@@ -4,11 +4,8 @@
 
 1. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
-   - use modular imports. remove all \* imports.
    - Add app screenshots to repo
 2. Miscellaneous:
-   - Alert cancel text isn't centered.
-   - When resorting playlist items, sometimes image flashes.
    - Video thumb picker make slider able to get more seconds and frames. add input, slider and skip frame buttons. maybe detach from hook and use inline videoplayer.
 
 ## Features

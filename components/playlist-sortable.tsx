@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ListRenderItemInfo, View } from "react-native";
 
 import { eq } from "drizzle-orm";
@@ -42,14 +42,11 @@ export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) 
     return playlistVideosQuery.data.sort((a, b) => a.order - b.order).map(({ video }) => video);
   }, [playlistVideosQuery]);
 
-  const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<VideoMeta>) => (
-      <PlaylistItem
-        item={item}
-        playlistId={playlistId}
-      />
-    ),
-    [playlistId]
+  const renderItem = ({ item }: ListRenderItemInfo<VideoMeta>) => (
+    <PlaylistItem
+      item={item}
+      playlistId={playlistId}
+    />
   );
 
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
