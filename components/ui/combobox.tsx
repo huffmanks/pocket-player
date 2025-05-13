@@ -17,8 +17,7 @@ import {
   useBottomSheet,
 } from "@/components/ui/bottom-sheet";
 import { Button, buttonTextVariants, buttonVariants } from "@/components/ui/button";
-
-import { Input } from "./input";
+import { Input } from "@/components/ui/input";
 
 const HEADER_HEIGHT = 100;
 
