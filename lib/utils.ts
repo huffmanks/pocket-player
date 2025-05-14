@@ -5,6 +5,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function normalizeDate(input?: string): string | undefined {
+  if (!input) return undefined;
+
+  const date = new Date(input);
+  if (isNaN(date.getTime())) return undefined;
+
+  if (date.getTime() < 0) return undefined;
+
+  return date.toISOString();
+}
+
 export function formatDateString(date: string | Date) {
   if (!date) return "";
 

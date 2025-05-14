@@ -97,7 +97,8 @@
       ],
       "./plugins/flag-secure.js",
       "./plugins/custom-app-theme.js",
-      "./plugins/custom-colors.js"
+      "./plugins/custom-colors.js",
+      "./plugins/video-metadata/index.js"
     ],
     "experiments": {
       "typedRoutes": true

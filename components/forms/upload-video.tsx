@@ -22,8 +22,10 @@ import {
   formatFileSize,
   getOrientation,
   getResolutionLabel,
+  normalizeDate,
   splitFilename,
 } from "@/lib/utils";
+import VideoMetadata from "@/lib/video-metadata";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
@@ -49,6 +51,7 @@ const formSchema = z.object({
         hasAudio: z.boolean(),
         videoCodec: z.string().nullable(),
         audioCodec: z.string().nullable(),
+        createdAt: z.string().or(z.undefined()),
       })
     )
     .min(1, { message: "Must select at least one video." }),
@@ -92,6 +95,7 @@ export default function UploadForm() {
         hasAudio: boolean;
         videoCodec: string;
         audioCodec: string;
+        createdAt: string | undefined;
       }[]
     ) => void
   ) {
@@ -119,6 +123,8 @@ export default function UploadForm() {
             const thumbUri = `${VIDEOS_DIR}${title}.jpg`;
 
             const videoMeta = await getVideoInfoAsync(uri);
+            const nativeVideoMeta = await VideoMetadata.getMetadata(uri);
+
             const durationLabel = formatDuration(videoMeta.duration);
             const fileSize = videoMeta.fileSize;
             const fileSizeLabel = formatFileSize(fileSize);
@@ -144,6 +150,7 @@ export default function UploadForm() {
               hasAudio: !!videoMeta.hasAudio,
               videoCodec: videoMeta.codec ?? null,
               audioCodec: videoMeta.audioCodec ?? null,
+              createdAt: normalizeDate(nativeVideoMeta?.creationTime),
             };
           })
         );

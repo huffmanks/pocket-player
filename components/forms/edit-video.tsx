@@ -45,7 +45,6 @@ import {
 } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
 import VideoThumbPicker from "@/components/video-thumb-picker";
-import VideoThumbPickerNext from "@/components/video-thumb-picker-next";
 
 const formSchema = z.object({
   title: z
@@ -147,7 +146,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
     <Form {...form}>
       <View className="mb-7">
         <Label className="native:text-lg mb-2">Thumbnail</Label>
-        <VideoThumbPickerNext videoInfo={videoInfo} />
+        {/* <VideoThumbPickerNext videoInfo={videoInfo} /> */}
         <VideoThumbPicker videoInfo={videoInfo} />
       </View>
       <View className="flex-1 gap-7">
