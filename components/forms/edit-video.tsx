@@ -172,6 +172,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
             render={({ field }) => (
               <FormDateTimePicker
                 label="Created at"
+                description="YYYY-MM-DD"
                 {...field}
               />
             )}

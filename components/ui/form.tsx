@@ -83,7 +83,7 @@ type FormItemContextValue = {
 const FormItemContext = React.createContext<FormItemContextValue>({} as FormItemContextValue);
 
 const FormItem = React.forwardRef<
-  React.ElementRef<typeof View>,
+  React.ComponentRef<typeof View>,
   React.ComponentPropsWithoutRef<typeof View>
 >(({ className, ...props }, ref) => {
   const nativeID = React.useId();
@@ -101,7 +101,7 @@ const FormItem = React.forwardRef<
 FormItem.displayName = "FormItem";
 
 const FormLabel = React.forwardRef<
-  React.ElementRef<typeof Label>,
+  React.ComponentRef<typeof Label>,
   Omit<React.ComponentPropsWithoutRef<typeof Label>, "children"> & {
     children: string;
   }
@@ -120,7 +120,7 @@ const FormLabel = React.forwardRef<
 FormLabel.displayName = "FormLabel";
 
 const FormDescription = React.forwardRef<
-  React.ElementRef<typeof Text>,
+  React.ComponentRef<typeof Text>,
   React.ComponentPropsWithoutRef<typeof Text>
 >(({ className, ...props }, ref) => {
   const { formDescriptionNativeID } = useFormField();
@@ -129,7 +129,7 @@ const FormDescription = React.forwardRef<
     <Text
       ref={ref}
       nativeID={formDescriptionNativeID}
-      className={cn("ml-0.5 pt-3 text-sm text-muted-foreground", className)}
+      className={cn("ml-1 pt-3 text-sm text-muted-foreground", className)}
       {...props}
     />
   );
@@ -137,7 +137,7 @@ const FormDescription = React.forwardRef<
 FormDescription.displayName = "FormDescription";
 
 const FormMessage = React.forwardRef<
-  React.ElementRef<typeof Animated.Text>,
+  React.ComponentRef<typeof Animated.Text>,
   React.ComponentPropsWithoutRef<typeof Animated.Text>
 >(({ className, children, ...props }, ref) => {
   const { error, formMessageNativeID } = useFormField();
@@ -183,15 +183,52 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
   ({ label, description, value, onChange }, ref) => {
     const [show, setShow] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(formatDateString(value));
+    const [isInvalid, setIsInvalid] = React.useState(false);
+    const [isTouched, setIsTouched] = React.useState(false);
+    const [isInternalChange, setIsInternalChange] = React.useState(false);
     const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } =
       useFormField();
 
-    function handleInputChange(val: string) {
-      const digits = val.replace(/\D/g, "").slice(0, 8);
-      const parts = [digits.slice(0, 4), digits.slice(4, 6), digits.slice(6, 8)].filter(Boolean);
-      const masked = parts.join("-");
+    React.useEffect(() => {
+      if (isInternalChange) {
+        setIsInternalChange(false);
+        return;
+      }
 
-      setInputValue(masked);
+      setInputValue(formatDateString(value));
+      setIsInvalid(false);
+      setIsTouched(false);
+    }, [value]);
+
+    function validateDate(val: string) {
+      if (val.trim() === "") {
+        return true;
+      }
+
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(val)) {
+        return false;
+      }
+
+      const parsedDate = new Date(val);
+      return !isNaN(parsedDate.getTime());
+    }
+
+    function handleInputChange(val: string) {
+      setInputValue(val);
+
+      if (validateDate(val) && val.trim() !== "") {
+        const [year, month, day] = val.split("-").map(Number);
+        const parsedDate = new Date(year, month - 1, day);
+
+        setIsInternalChange(true);
+        onChange(parsedDate);
+      }
+    }
+
+    function handleBlur() {
+      setIsTouched(true);
+      setIsInvalid(!validateDate(inputValue));
     }
 
     function handleChange(_e: DateTimePickerEvent, selectedDate?: Date) {
@@ -215,34 +252,39 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
           </FormLabel>
         )}
 
-        <View className="native:h-12 h-10 flex-row items-center justify-between gap-4 rounded-md border border-input px-3 web:py-2 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2">
+        <View
+          className={cn(
+            "native:h-12 h-10 flex-row items-center justify-between rounded-md border border-input web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
+            isInvalid && isTouched && "border-red-500"
+          )}>
           <Input
             ref={ref}
-            className="border-0 p-0"
+            className={cn(
+              "flex-1 border-0 px-3 web:py-2",
+              isInvalid && isTouched && "text-destructive"
+            )}
             style={{ height: "auto" }}
             inputMode="numeric"
             placeholder="YYYY-MM-DD"
             value={inputValue}
             onChangeText={handleInputChange}
-            aria-labelledby={formItemNativeID}
-            aria-describedby={
-              !error
-                ? `${formDescriptionNativeID}`
-                : `${formDescriptionNativeID} ${formMessageNativeID}`
-            }
-            aria-invalid={!!error}
+            onBlur={handleBlur}
           />
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onPress={showDatepicker}>
-            <CalendarIcon
-              className="text-brand-foreground"
-              size={24}
-              strokeWidth={1.5}
-            />
-          </Button>
+          <View className="px-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onPress={showDatepicker}>
+              <CalendarIcon
+                className={cn(
+                  isInvalid && isTouched ? "text-destructive" : "text-brand-foreground"
+                )}
+                size={24}
+                strokeWidth={1.5}
+              />
+            </Button>
+          </View>
         </View>
 
         {show && (
@@ -253,7 +295,7 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
                 ? `${formDescriptionNativeID}`
                 : `${formDescriptionNativeID} ${formMessageNativeID}`
             }
-            aria-invalid={!!error}
+            aria-invalid={!!error || isInvalid}
             value={value}
             mode="date"
             onChange={handleChange}
@@ -270,7 +312,7 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
 FormDateTimePicker.displayName = "FormDateTimePicker";
 
 const FormInput = React.forwardRef<
-  React.ElementRef<typeof Input>,
+  React.ComponentRef<typeof Input>,
   FormItemProps<typeof Input, string>
 >(({ label, description, onChange, ...props }, ref) => {
   const inputRef = React.useRef<React.ComponentRef<typeof Input>>(null);
@@ -326,7 +368,7 @@ const FormInput = React.forwardRef<
 FormInput.displayName = "FormInput";
 
 const FormTextarea = React.forwardRef<
-  React.ElementRef<typeof Textarea>,
+  React.ComponentRef<typeof Textarea>,
   FormItemProps<typeof Textarea, string>
 >(({ label, description, onChange, ...props }, ref) => {
   const textareaRef = React.useRef<React.ComponentRef<typeof Textarea>>(null);
@@ -382,7 +424,7 @@ const FormTextarea = React.forwardRef<
 FormTextarea.displayName = "FormTextarea";
 
 const FormCheckbox = React.forwardRef<
-  React.ElementRef<typeof Checkbox>,
+  React.ComponentRef<typeof Checkbox>,
   Omit<FormItemProps<typeof Checkbox, boolean>, "checked" | "onCheckedChange">
 >(({ label, description, value, onChange, ...props }, ref) => {
   const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } = useFormField();
@@ -429,7 +471,7 @@ const FormCheckbox = React.forwardRef<
 FormCheckbox.displayName = "FormCheckbox";
 
 const FormRadioGroup = React.forwardRef<
-  React.ElementRef<typeof RadioGroup>,
+  React.ComponentRef<typeof RadioGroup>,
   Omit<FormItemProps<typeof RadioGroup, string>, "onValueChange">
 >(({ label, description, value, onChange, ...props }, ref) => {
   const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } = useFormField();
@@ -462,7 +504,7 @@ const FormRadioGroup = React.forwardRef<
 FormRadioGroup.displayName = "FormRadioGroup";
 
 const FormCombobox = React.forwardRef<
-  React.ElementRef<typeof Combobox>,
+  React.ComponentRef<typeof Combobox>,
   FormItemProps<typeof Combobox, ComboboxOption[]>
 >(({ label, description, placeholder, value, onChange, ...props }, ref) => {
   const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } = useFormField();
@@ -509,7 +551,7 @@ type FormSelectProps = {
   onFocus?: () => void;
 };
 
-const FormSelect = React.forwardRef<React.ElementRef<typeof Select>, FormSelectProps>(
+const FormSelect = React.forwardRef<React.ComponentRef<typeof Select>, FormSelectProps>(
   ({ label, description, onChange, value, ...props }, ref) => {
     const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } =
       useFormField();
@@ -548,7 +590,7 @@ FormSelect.displayName = "FormSelect";
 type FormSwitchProps = Omit<FormItemProps<typeof Switch, boolean>, "checked" | "onCheckedChange"> &
   Pick<SwitchProps, "size">;
 
-const FormSwitch = React.forwardRef<React.ElementRef<typeof Switch>, FormSwitchProps>(
+const FormSwitch = React.forwardRef<React.ComponentRef<typeof Switch>, FormSwitchProps>(
   ({ label, description, value, size = "lg", onChange, ...props }, ref) => {
     const switchRef = React.useRef<React.ComponentRef<typeof Switch>>(null);
     const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } =
