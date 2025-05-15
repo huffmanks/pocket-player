@@ -7,8 +7,6 @@
    - Add app screenshots to repo
 2. [VideoThumbPicker](components/video-thumb-picker-next.tsx):
    - Make this an input and slider.
-3. [Upload videos](components/forms/upload-video.tsx#L115):
-   - Test adding creationDate ffmpeg to see if video metadata is available.
 
 ## Features
 
