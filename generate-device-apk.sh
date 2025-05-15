@@ -46,7 +46,18 @@ if ! adb devices | grep -q "device$"; then
   exit 1
 fi
 
-# 3. Create device spec if not exists
+# 3. Exit if bundletool not installed
+if ! command -v bundletool &> /dev/null; then
+  echo "❌ bundletool is not installed."
+  read -p "Install bundletool using homebrew? (y/N): " installBundletool
+  if [[ "$installBundletool" == "y" || "$installBundletool" == "Y" ]]; then
+    brew install bundletool
+  else
+    exit 1
+  fi
+fi
+
+# 4. Create device spec if not exists
 if [ ! -f "$DEVICE_SPEC" ]; then
   echo "📝 Generating device spec from connected device..."
   bundletool get-device-spec --output="$DEVICE_SPEC"
@@ -54,31 +65,32 @@ else
   echo "✅ Device spec already exists."
 fi
 
-# 4. Exit if bundletool not installed
-if ! command -v bundletool &> /dev/null; then
-  echo "❌ bundletool is not installed. Install it using:"
-  echo "brew install bundletool"
+# 5. Build APKS
+if [ ! -f "credentials/android/$KEYSTORE" ]; then
+  echo "❌ Keystore file credentials/android/$KEYSTORE not found."
   exit 1
 fi
 
-# 5. Build APKS
 echo "📦 Building optimized .apks..."
-bundletool build-apks \
+if ! bundletool build-apks \
   --bundle="$AAB_FILE" \
   --output=output/output.apks \
   --ks="credentials/android/$KEYSTORE" \
   --ks-key-alias="$KEY_ALIAS" \
   --ks-pass=pass:"$KEYSTORE_PASS" \
   --key-pass=pass:"$KEY_PASS" \
-  --device-spec="$DEVICE_SPEC"
+  --device-spec="$DEVICE_SPEC"; then
+  echo "❌ bundletool failed to build .apks"
+  exit 1
+fi
 
 # 6. Unzip result
 rm -rf output/apks && mkdir output/apks
 unzip -o output/output.apks -d output/apks
 
 # 7. Optional: install on connected device
-read -p "Do you want to install the APK on a connected device? (y/N): " install
-if [[ "$install" == "y" || "$install" == "Y" ]]; then
+read -p "Do you want to install the APK on a connected device? (y/N): " installApk
+if [[ "$installApk" == "y" || "$installApk" == "Y" ]]; then
   echo "📲 Installing APK..."
   bundletool install-apks --apks=output/output.apks
 fi

@@ -128,7 +128,7 @@ const FormDescription = React.forwardRef<
     <Text
       ref={ref}
       nativeID={formDescriptionNativeID}
-      className={cn("ml-1 pt-3 text-sm text-muted-foreground", className)}
+      className={cn("ml-3 pt-3 text-sm text-muted-foreground", className)}
       {...props}
     />
   );
