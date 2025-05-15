@@ -5,8 +5,6 @@
 1. Cleanup:
    - add [react-native-boost](https://github.com/kuatsu/react-native-boost)
    - Add app screenshots to repo
-2. [VideoThumbPicker](components/video-thumb-picker-next.tsx):
-   - Make this an input and slider.
 
 ## Features
 

@@ -47,6 +47,73 @@ export function secondsToAdaptiveTime(seconds: number): string {
   }
 }
 
+export function formatTimerInputDisplay(input: string) {
+  if (!input) return "";
+
+  const digits = input.padStart(7, "0");
+  const ms = digits.slice(-3);
+  const s = digits.slice(-5, -3);
+  const m = digits.length > 5 ? digits.slice(-7, -5) : "";
+  const h = digits.length > 7 ? digits.slice(0, -7) : "";
+
+  const parts = [];
+  if (h) parts.push(h);
+  if (m || h) parts.push(m || "00");
+  parts.push(s);
+  parts.push(ms);
+
+  return parts.join(":");
+}
+
+export function toSeconds(input: string) {
+  if (!input) return 0;
+
+  const digits = input.padStart(7, "0");
+  const ms = parseInt(digits.slice(-3)) / 1000;
+  const s = parseInt(digits.slice(-5, -3));
+  const m = digits.length > 5 ? parseInt(digits.slice(-7, -5)) : 0;
+  const h = digits.length > 7 ? parseInt(digits.slice(0, -7)) : 0;
+
+  return h * 3600 + m * 60 + s + ms;
+}
+
+export function fromSeconds(seconds: number) {
+  if (seconds === 0) return "";
+
+  const totalMs = Math.floor(seconds * 1000);
+  const ms = totalMs % 1000;
+  const s = Math.floor(totalMs / 1000) % 60;
+  const m = Math.floor(totalMs / 60000) % 60;
+  const h = Math.floor(totalMs / 3600000);
+
+  let result = ms.toString().padStart(3, "0");
+  result = s.toString().padStart(2, "0") + result;
+
+  if (m > 0 || h > 0) {
+    result = m.toString().padStart(2, "0") + result;
+  }
+
+  if (h > 0) {
+    result = h.toString() + result;
+  }
+
+  return result;
+}
+
+export function getClampedDelta(absTime: number, duration: number, currentTime: number) {
+  if (!Number.isFinite(absTime) || !Number.isFinite(duration) || !Number.isFinite(currentTime)) {
+    return;
+  }
+  if (duration < 0) {
+    return;
+  }
+
+  const clamped = Math.min(Math.max(absTime, 0), duration);
+  const delta = clamped - currentTime;
+  const hasMeaningfulChange = Math.abs(delta) > 0.05;
+  return { clamped, delta, hasMeaningfulChange };
+}
+
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
