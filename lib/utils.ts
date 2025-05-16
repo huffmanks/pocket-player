@@ -47,22 +47,18 @@ export function secondsToAdaptiveTime(seconds: number): string {
   }
 }
 
-export function formatTimerInputDisplay(input: string) {
-  if (!input) return "";
+export function formatTimerInputDisplay(input: string | number) {
+  if (typeof input === "number") {
+    input = fromSeconds(input);
+  }
 
-  const digits = input.padStart(7, "0");
-  const ms = digits.slice(-3);
-  const s = digits.slice(-5, -3);
-  const m = digits.length > 5 ? digits.slice(-7, -5) : "";
-  const h = digits.length > 7 ? digits.slice(0, -7) : "";
+  const len = input.length;
 
-  const parts = [];
-  if (h) parts.push(h);
-  if (m || h) parts.push(m || "00");
-  parts.push(s);
-  parts.push(ms);
+  if (len === 0) return "";
 
-  return parts.join(":");
+  if (len <= 3) return input;
+  if (len <= 6) return `${input.slice(0, len - 3)}:${input.slice(-3)}`;
+  return `${input.slice(0, len - 6)}:${input.slice(len - 6, len - 3)}:${input.slice(-3)}`;
 }
 
 export function toSeconds(input: string) {

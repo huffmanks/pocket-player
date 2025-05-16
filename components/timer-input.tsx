@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 
-import { cn, formatTimerInputDisplay, fromSeconds, toSeconds } from "@/lib/utils";
+import { cn, formatTimerInputDisplay, toSeconds } from "@/lib/utils";
 
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -17,7 +17,7 @@ type TextInputRef = React.ComponentRef<typeof TextInput>;
 
 const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
   ({ value, max, disabled, onChange, ...props }, ref) => {
-    const [numericInput, setNumericInput] = useState(fromSeconds(value));
+    const [numericInput, setNumericInput] = useState(formatTimerInputDisplay(value));
     const [isEditing, setIsEditing] = useState(false);
 
     const inputRef = useRef<TextInputRef | null>(null);
@@ -25,7 +25,7 @@ const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
 
     useEffect(() => {
       if (!isEditing) {
-        setNumericInput(fromSeconds(value));
+        setNumericInput(formatTimerInputDisplay(value));
       }
     }, [value, isEditing]);
 
@@ -33,20 +33,20 @@ const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
       if (disabled) return;
 
       setIsEditing(true);
-      const cleanInput = input.replace(/\D/g, "");
+      const cleanInput = input.replace(/\D/g, "").slice(0, 9);
 
       if (!cleanInput) {
-        setNumericInput("0");
+        setNumericInput("");
         onChange(0);
         return;
       }
       const seconds = toSeconds(cleanInput);
 
       if (seconds > max) {
-        setNumericInput(fromSeconds(max));
+        setNumericInput(formatTimerInputDisplay(max));
         onChange(max);
       } else {
-        setNumericInput(cleanInput);
+        setNumericInput(formatTimerInputDisplay(cleanInput));
         onChange(seconds);
       }
     }
@@ -66,21 +66,14 @@ const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
             isEditing && "border-brand"
           )}>
           <Input
-            readOnly
+            ref={inputRef}
             className={cn(
               "flex-1 border-0 px-3 web:py-2",
-              isEditing ? "text-brand" : disabled ? "text-muted-foreground" : "text-foreground"
+              isEditing ? "text-brand" : "text-foreground"
             )}
             style={{ height: "auto" }}
-            value={formatTimerInputDisplay(numericInput)}
-            onBlur={handleBlur}
-          />
-
-          <Input
-            ref={inputRef}
-            className="absolute h-full w-full opacity-0"
-            keyboardType="number-pad"
             value={numericInput}
+            keyboardType="number-pad"
             onChangeText={handleChange}
             onBlur={handleBlur}
             onFocus={() => setIsEditing(true)}
@@ -94,7 +87,7 @@ const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
               "native:text-lg px-3 web:py-2",
               isEditing ? "text-foreground" : "text-muted-foreground"
             )}>
-            {formatTimerInputDisplay(fromSeconds(max))}
+            {formatTimerInputDisplay(max)}
           </Text>
         </View>
       </Pressable>

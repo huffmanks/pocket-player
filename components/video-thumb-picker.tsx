@@ -35,6 +35,7 @@ export default function VideoThumbPickerNext({ videoInfo }: VideoThumbPickerProp
   const [isDisabled, setIsDisabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [time, setTime] = useState(videoInfo.thumbTimestamp / 1000);
+  const [progress, setProgress] = useState(videoInfo.thumbTimestamp / 1000 / videoInfo.duration);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [isPlayerUpdating, setIsPlayerUpdating] = useState(false);
 
@@ -65,6 +66,8 @@ export default function VideoThumbPickerNext({ videoInfo }: VideoThumbPickerProp
   async function handleSaveThumb() {
     if (isSaving || isDisabled) return;
     setIsSaving(true);
+    setIsDisabled(true);
+    inputRef.current?.blur();
 
     try {
       const thumbTimestamp = Math.trunc(player.currentTime * 100000) / 100;
@@ -140,13 +143,14 @@ export default function VideoThumbPickerNext({ videoInfo }: VideoThumbPickerProp
   function seekTo(absTime: number) {
     setIsPlayerUpdating(true);
 
-    const result = getClampedDelta(absTime, player.duration, player.currentTime);
+    const result = getClampedDelta(absTime, videoInfo.duration, player.currentTime);
 
     if (result) {
       if (result.hasMeaningfulChange) {
         player.seekBy(result.delta);
       }
 
+      setProgress(result.clamped / videoInfo.duration);
       setTime(result.clamped);
     }
 
@@ -161,8 +165,9 @@ export default function VideoThumbPickerNext({ videoInfo }: VideoThumbPickerProp
     if (isDisabled) return;
 
     setIsScrubbing(true);
-    const currentTime = (Array.isArray(val) ? val[0] : val) * player.duration;
+    const currentTime = (Array.isArray(val) ? val[0] : val) * videoInfo.duration;
 
+    setProgress(currentTime / videoInfo.duration);
     setTime(currentTime);
     seekTo(currentTime);
   }
@@ -188,7 +193,7 @@ export default function VideoThumbPickerNext({ videoInfo }: VideoThumbPickerProp
           <TimerInput
             ref={inputRef}
             value={time}
-            max={player.duration}
+            max={videoInfo.duration}
             onChange={seekTo}
             disabled={isDisabled}
           />
@@ -197,7 +202,7 @@ export default function VideoThumbPickerNext({ videoInfo }: VideoThumbPickerProp
         <Animated.View style={animatedStyleDelay}>
           <Slider
             disabled={isDisabled}
-            value={player.duration > 0 ? time / player.duration : 0}
+            value={progress}
             minimumValue={0}
             maximumValue={1}
             step={0.001}
