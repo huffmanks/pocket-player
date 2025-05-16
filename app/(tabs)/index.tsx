@@ -27,11 +27,11 @@ export default function IndexScreen() {
             size="lg"
             className="flex flex-row items-center justify-center gap-4 bg-brand">
             <CloudUploadIcon
-              className="text-foreground"
+              className="text-white"
               size={24}
               strokeWidth={1.5}
             />
-            <Text className="native:text-lg font-semibold uppercase tracking-wider text-foreground">
+            <Text className="native:text-lg font-semibold uppercase tracking-wider text-white">
               Upload
             </Text>
           </Button>

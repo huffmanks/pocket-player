@@ -1,8 +1,11 @@
+import * as FileSystem from "expo-file-system";
 import { router } from "expo-router";
+import * as VideoThumbnails from "expo-video-thumbnails";
 import { useRef, useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createId } from "@paralleldrive/cuid2";
 import { useScrollToTop } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,7 +14,7 @@ import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
-import { BOTTOM_TABS_OFFSET, orientationOptions } from "@/lib/constants";
+import { BOTTOM_TABS_OFFSET, VIDEOS_DIR, orientationOptions } from "@/lib/constants";
 import { SaveIcon, TrashIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
 
@@ -61,6 +64,8 @@ const formSchema = z.object({
   isFavorite: z.boolean(),
 });
 
+export type EditVideoSchema = z.infer<typeof formSchema>;
+
 interface EditFormProps {
   videoInfo: VideoMeta;
 }
@@ -68,6 +73,7 @@ interface EditFormProps {
 export default function EditVideoForm({ videoInfo }: EditFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
+  const [playerCurrentTime, setPlayerCurrentTime] = useState(0);
 
   const { updateVideo, deleteVideo } = useVideoStore(
     useShallow((state) => ({
@@ -87,7 +93,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
     right: 12,
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<EditVideoSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: videoInfo.title ?? "",
@@ -113,18 +119,32 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
     }
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: EditVideoSchema) {
     try {
       setIsSubmitting(true);
       const parsedValues = formSchema.parse(values);
+
+      const thumbTimestamp = Math.trunc(playerCurrentTime * 100000) / 100;
+
+      const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
+        time: thumbTimestamp,
+      });
+
+      const fileId = createId();
+      const newUri = `${VIDEOS_DIR}${videoInfo.title}-${fileId}.jpg`;
+
+      await FileSystem.moveAsync({ from: uri, to: newUri });
+      await FileSystem.deleteAsync(videoInfo.thumbUri, { idempotent: true });
 
       await updateVideo({
         id: videoInfo.id,
         values: {
           ...parsedValues,
+          thumbUri: newUri,
+          thumbTimestamp,
+          orientation: values.orientation.value,
           createdAt: values.createdAt.toISOString(),
           updatedAt: new Date().toISOString(),
-          orientation: values.orientation.value,
         },
       });
 
@@ -144,9 +164,12 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
   return (
     <Form {...form}>
-      <View className="mb-7">
+      <View className="mb-2">
         <Label className="native:text-lg mb-2">Thumbnail</Label>
-        <VideoThumbPicker videoInfo={videoInfo} />
+        <VideoThumbPicker
+          videoInfo={videoInfo}
+          setPlayerCurrentTime={setPlayerCurrentTime}
+        />
       </View>
       <View className="flex-1 gap-7">
         <View className="mb-12 flex-1 gap-7">
