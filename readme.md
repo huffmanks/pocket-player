@@ -13,7 +13,9 @@ Android app to locally store and watch videos.
 ## Previews
 
 ![Pocket player app screenshot, video player](/previews/1.png)
+
 ![Pocket player app screenshot, light/dark theme](/previews/2.png)
+
 ![Pocket player app screenshot, playlists and settings](/previews/3.png)
 
 ## Tech Stack
