@@ -1,6 +1,6 @@
-# App Logo Overview
+# App Design Overview
 
-This document describes the logos used for the app, their styles and how they were generated.
+This document outlines the app’s design, including themes, logos and asset generation.
 
 ---
 
@@ -64,3 +64,6 @@ iOS icons are generated in various sizes to support different device resolutions
 - **Background Color**: `#09090b`
 
 ---
+
+## App Screenshot Generation
+All app screenshots were made using [Progressier](https://progressier.com/pwa-screenshots-generator).

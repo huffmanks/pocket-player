@@ -129,7 +129,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                     </View>
                     <View className="mr-8 flex-1">
                       <Text
-                        className="text-lg font-semibold"
+                        className="text-lg font-semibold text-white"
                         numberOfLines={1}>
                         {videoSources[currentIndex].title}
                       </Text>

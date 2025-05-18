@@ -134,7 +134,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
       setCurrentIndex((prev) => {
         const next = prev + 1;
-        player.replace(videoSources[next].videoUri);
+        player.replaceAsync(videoSources[next].videoUri);
         return next;
       });
     }
@@ -177,7 +177,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       setHasEnded(false);
 
       setCurrentIndex(0);
-      player.replace(videoSources[0].videoUri);
+      player.replaceAsync(videoSources[0].videoUri);
       player.play();
 
       updateControlsVisible(0);
@@ -200,7 +200,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   function changeVideoSource(inverse: number) {
     const newIndex = (currentIndex + inverse + videoSources.length) % videoSources.length;
     setCurrentIndex(newIndex);
-    player.replace(videoSources[newIndex].videoUri);
+    player.replaceAsync(videoSources[newIndex].videoUri);
   }
 
   function handleButtonPressIn() {

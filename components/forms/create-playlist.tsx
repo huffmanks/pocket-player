@@ -40,17 +40,19 @@ interface CreatePlaylistFormProps {
   videoData: VideoData[];
 }
 
+const defaultValues = {
+  title: "",
+  description: "",
+  videos: [],
+};
+
 export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const addPlaylist = usePlaylistStore((state) => state.addPlaylist);
 
   const form = useForm<CreatePlaylistFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      videos: [],
-    },
+    defaultValues,
   });
 
   async function onSubmit(values: CreatePlaylistFormData) {
@@ -70,6 +72,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
       toast.error("Error creating playlist!");
     } finally {
       setIsSubmitting(false);
+      form.reset(defaultValues);
     }
   }
 

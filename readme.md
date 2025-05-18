@@ -1,20 +1,27 @@
 # Pocket Player
 
-A simple mobile app to locally upload, store and watch videos.
+Android app to locally store and watch videos.
 
 ## Features
 
-- Upload videos from your device.
-- Store videos locally on the device.
-- Watch videos with a custom video player.
-- Lightweight and privacy-friendly (no cloud or network usage).
+- Import videos directly from your device.
+- Store and watch videos entirely offline.
+- Custom video player with enhanced controls.
+- Thumbnail generation and metadata extraction.
+- Lightweight and privacy-friendly — no cloud or network access.
 
 ## Tech Stack
 
-- React Native with Expo.
-- Drizzle with SQLite for local storage.
-- Video player with custom video controls.
-- Thumbnail generation and metadata extraction.
+- React Native with Expo
+- Drizzle ORM with SQLite
+- State and storage: Zustand + react-native-mmkv
+- UI libraries: [RN Primitives](https://github.com/roninoss/rn-primitives), [RN Reusables](https://github.com/mrzachnugent/react-native-reusables), [Nativewind](https://github.com/nativewind/nativewind)
+
+## Notes
+
+- This app is intended for local use only. No data leaves your device.
+- Requires expo-dev-client; not compatible with Expo Go.
+- See the [app design overview](design.md) for themes, logos, and asset generation details.
 
 ## Install
 
@@ -63,11 +70,12 @@ You can generate a smaller, optimized APK for your specific device using the pro
    ./generate-device-apk.sh
    ```
 
-## Notes
+## Roadmap
 
-- This app is intended for local use only. No data leaves your device.
-- Works best with dev clients. Expo Go is not supported.
+- [ ] Save timestamp of last view of video.
+  - [key = `videoProgress:${videoId}`](lib/store.ts#L453)
+  - value = `10` (player.currentTime | number | seconds)
 
 ## License
 
-[MIT](LICENSE)
+[MIT License](LICENSE)
