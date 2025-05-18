@@ -8,7 +8,7 @@ export const NAV_THEME = {
   light: {
     background: "rgb(255, 255, 255)",
     border: "rgb(227, 227, 235)",
-    card: "rgb(250, 250, 250)",
+    card: "rgb(239, 239, 240)",
     notification: "rgb(255, 86, 86)",
     primary: "rgb(26, 26, 36)",
     text: "rgb(9, 9, 12)",
@@ -18,7 +18,7 @@ export const NAV_THEME = {
   dark: {
     background: "rgb(9, 9, 11)",
     border: "rgb(35, 35, 41)",
-    card: "rgb(16, 16, 21)",
+    card: "rgb(21, 21, 24)",
     notification: "rgb(217, 58, 58)",
     primary: "rgb(250, 250, 250)",
     text: "rgb(250, 250, 250)",

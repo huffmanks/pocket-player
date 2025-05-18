@@ -14,7 +14,7 @@ import { VideoMeta } from "@/db/schema";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SLIDER_THEME } from "@/lib/constants";
 import { LockIcon, LockOpenIcon } from "@/lib/icons";
-import { getClampedDelta } from "@/lib/utils";
+import { cn, getClampedDelta } from "@/lib/utils";
 
 import TimerInput from "@/components/timer-input";
 import { Button } from "@/components/ui/button";
@@ -142,10 +142,13 @@ export default function VideoThumbPickerNext({
         <Animated.View
           className="relative h-[215px] w-full"
           style={animatedStyleFast}>
-          <View className="absolute -left-1 -top-2 z-10">
+          <View className="absolute -right-3 -top-4 z-10">
             <Button
               size="circle"
-              className="flex flex-row items-center justify-center bg-brand/80"
+              className={cn(
+                "flex flex-row items-center justify-center",
+                isDisabled ? "bg-brand" : "bg-brand/50"
+              )}
               onPress={() => setIsDisabled((prev) => !prev)}>
               {isDisabled ? (
                 <LockIcon

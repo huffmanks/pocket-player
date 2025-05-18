@@ -52,38 +52,75 @@ export function formatTimerInputDisplay(input: string | number) {
     input = fromSeconds(input);
   }
 
+  if (typeof input === "string") {
+    input = input.replace(/\D/g, "");
+  }
+
   const len = input.length;
 
   if (len === 0) return "";
 
   if (len <= 3) return input;
-  if (len <= 6) return `${input.slice(0, len - 3)}:${input.slice(-3)}`;
-  return `${input.slice(0, len - 6)}:${input.slice(len - 6, len - 3)}:${input.slice(-3)}`;
+
+  if (len <= 5) {
+    const ms = input.slice(-3);
+    const s = input.slice(0, len - 3);
+    return `${s}:${ms}`;
+  }
+
+  if (len <= 7) {
+    const ms = input.slice(-3);
+    const s = input.slice(-5, -3).padStart(2, "0");
+    const m = input.slice(0, len - 5);
+    return `${m}:${s}:${ms}`;
+  }
+
+  const ms = input.slice(-3);
+  const s = input.slice(-5, -3).padStart(2, "0");
+  const m = input.slice(-7, -5).padStart(2, "0");
+  const h = input.slice(0, len - 7);
+  return `${h}:${m}:${s}:${ms}`;
 }
 
 export function toSeconds(input: string) {
   if (!input) return 0;
 
-  const digits = input.padStart(7, "0");
-  const ms = parseInt(digits.slice(-3)) / 1000;
-  const s = parseInt(digits.slice(-5, -3));
-  const m = digits.length > 5 ? parseInt(digits.slice(-7, -5)) : 0;
-  const h = digits.length > 7 ? parseInt(digits.slice(0, -7)) : 0;
+  const digits = input.replace(/\D/g, "");
 
-  return h * 3600 + m * 60 + s + ms;
+  if (digits.length <= 3) {
+    return parseInt(digits) / 1000;
+  } else if (digits.length <= 5) {
+    const ms = parseInt(digits.slice(-3)) / 1000;
+    const s = parseInt(digits.slice(0, digits.length - 3));
+    return s + ms;
+  } else if (digits.length <= 7) {
+    const ms = parseInt(digits.slice(-3)) / 1000;
+    const s = parseInt(digits.slice(-5, -3));
+    const m = parseInt(digits.slice(0, digits.length - 5));
+    return m * 60 + s + ms;
+  } else {
+    const ms = parseInt(digits.slice(-3)) / 1000;
+    const s = parseInt(digits.slice(-5, -3));
+    const m = parseInt(digits.slice(-7, -5));
+    const h = parseInt(digits.slice(0, digits.length - 7));
+    return h * 3600 + m * 60 + s + ms;
+  }
 }
 
 export function fromSeconds(seconds: number) {
   if (seconds === 0) return "";
 
-  const totalMs = Math.floor(seconds * 1000);
+  const totalMs = Math.round(seconds * 1000);
   const ms = totalMs % 1000;
   const s = Math.floor(totalMs / 1000) % 60;
   const m = Math.floor(totalMs / 60000) % 60;
   const h = Math.floor(totalMs / 3600000);
 
   let result = ms.toString().padStart(3, "0");
-  result = s.toString().padStart(2, "0") + result;
+
+  if (s > 0 || m > 0 || h > 0) {
+    result = s.toString().padStart(2, "0") + result;
+  }
 
   if (m > 0 || h > 0) {
     result = m.toString().padStart(2, "0") + result;

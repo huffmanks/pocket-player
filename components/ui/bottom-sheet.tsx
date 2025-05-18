@@ -61,7 +61,7 @@ function useBottomSheetContext() {
 
 const CLOSED_INDEX = -1;
 
-type BottomSheetContentRef = React.ElementRef<typeof BottomSheetModal>;
+type BottomSheetContentRef = React.ComponentRef<typeof BottomSheetModal>;
 
 type BottomSheetContentProps = Omit<
   React.ComponentPropsWithoutRef<typeof BottomSheetModal>,
@@ -149,7 +149,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
 BottomSheetContent.displayName = "BottomSheetContent";
 
 const BottomSheetOpenTrigger = React.forwardRef<
-  React.ElementRef<typeof Pressable>,
+  React.ComponentRef<typeof Pressable>,
   React.ComponentPropsWithoutRef<typeof Pressable> & {
     asChild?: boolean;
   }
@@ -175,7 +175,7 @@ const BottomSheetOpenTrigger = React.forwardRef<
 BottomSheetOpenTrigger.displayName = "BottomSheetOpenTrigger";
 
 const BottomSheetCloseTrigger = React.forwardRef<
-  React.ElementRef<typeof Pressable>,
+  React.ComponentRef<typeof Pressable>,
   React.ComponentPropsWithoutRef<typeof Pressable> & {
     asChild?: boolean;
   }
@@ -226,14 +226,14 @@ function BottomSheetView({
         },
         style,
       ]}
-      className={cn(`px-4`, className)}
+      className={cn("px-4", className)}
       {...props}>
       {children}
     </GBottomSheetView>
   );
 }
 
-type BottomSheetTextInputRef = React.ElementRef<typeof GBottomSheetTextInput>;
+type BottomSheetTextInputRef = React.ComponentRef<typeof GBottomSheetTextInput>;
 type BottomSheetTextInputProps = React.ComponentPropsWithoutRef<typeof GBottomSheetTextInput>;
 const BottomSheetTextInput = React.forwardRef<BottomSheetTextInputRef, BottomSheetTextInputProps>(
   ({ className, placeholderClassName, ...props }, ref) => {
@@ -253,7 +253,7 @@ const BottomSheetTextInput = React.forwardRef<BottomSheetTextInputRef, BottomShe
 
 BottomSheetTextInput.displayName = "BottomSheetTextInput";
 
-type BottomSheetFlatListRef = React.ElementRef<typeof GBottomSheetFlatList>;
+type BottomSheetFlatListRef = React.ComponentRef<typeof GBottomSheetFlatList>;
 type BottomSheetFlatListProps = React.ComponentPropsWithoutRef<typeof GBottomSheetFlatList>;
 const BottomSheetFlatList = React.forwardRef<BottomSheetFlatListRef, BottomSheetFlatListProps>(
   ({ className, ...props }, ref) => {
@@ -275,7 +275,7 @@ const BottomSheetFlatList = React.forwardRef<BottomSheetFlatListRef, BottomSheet
 
 BottomSheetFlatList.displayName = "BottomSheetFlatList";
 
-type BottomSheetHeaderRef = React.ElementRef<typeof View>;
+type BottomSheetHeaderRef = React.ComponentRef<typeof View>;
 type BottomSheetHeaderProps = React.ComponentPropsWithoutRef<typeof View>;
 const BottomSheetHeader = React.forwardRef<BottomSheetHeaderRef, BottomSheetHeaderProps>(
   ({ className, children, ...props }, ref) => {
@@ -311,7 +311,7 @@ const BottomSheetHeader = React.forwardRef<BottomSheetHeaderRef, BottomSheetHead
 
 BottomSheetHeader.displayName = "BottomSheetHeader";
 
-type BottomSheetFooterRef = React.ElementRef<typeof View>;
+type BottomSheetFooterRef = React.ComponentRef<typeof View>;
 type BottomSheetFooterProps = Omit<React.ComponentPropsWithoutRef<typeof View>, "style"> & {
   bottomSheetFooterProps: GBottomSheetFooterProps;
   children?: React.ReactNode;

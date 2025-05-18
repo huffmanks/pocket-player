@@ -8,4 +8,3 @@
    - value = `10` (player.currentTime | number | seconds)
 2. Finalize:
    - Add app screenshots to repo
-   - Finish refactor to edit video form, moved update thumbnail up.

@@ -25,7 +25,10 @@ const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
 
     useEffect(() => {
       if (!isEditing) {
-        setNumericInput(formatTimerInputDisplay(value));
+        const formatted = formatTimerInputDisplay(value);
+        if (formatted !== numericInput) {
+          setNumericInput(formatted);
+        }
       }
     }, [value, isEditing]);
 

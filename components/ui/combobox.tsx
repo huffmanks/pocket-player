@@ -106,7 +106,7 @@ const Combobox = React.forwardRef<
             {isSelected && (
               <CheckIcon
                 size={24}
-                className={"px-4 text-foreground"}
+                className="px-4 text-foreground"
               />
             )}
           </Button>
