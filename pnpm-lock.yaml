@@ -118,8 +118,8 @@ importers:
         specifier: ^4.2.4
         version: 4.2.4(expo@53.0.9(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       expo-router:
-        specifier: ~5.0.6
-        version: 5.0.6(103757f7e45f86fa3f0a7b306da3a09a)
+        specifier: ~5.0.7
+        version: 5.0.7(103757f7e45f86fa3f0a7b306da3a09a)
       expo-screen-orientation:
         specifier: ~8.1.6
         version: 8.1.6(expo@53.0.9(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))
@@ -2834,8 +2834,8 @@ packages:
       react: 19.0.0
       react-native: '*'
 
-  expo-router@5.0.6:
-    resolution: {integrity: sha512-/44G3liB7LMMDoUO+lN5TS8XvZrAhLtq7cVGoilO2QkoSBjFQfxFA9VYOVWVlu2R80tN6dM3cgsEuoA275FGQg==}
+  expo-router@5.0.7:
+    resolution: {integrity: sha512-NlEgRXCKtseDuIHBp87UfkvqsuVrc0MYG+zg33dopaN6wik4RkrWWxUYdNPHub0s/7qMye6zZBY4ZCrXwd/xpA==}
     peerDependencies:
       '@react-navigation/drawer': ^7.3.9
       '@testing-library/jest-native': '*'
@@ -7592,7 +7592,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  expo-router@5.0.6(103757f7e45f86fa3f0a7b306da3a09a):
+  expo-router@5.0.7(103757f7e45f86fa3f0a7b306da3a09a):
     dependencies:
       '@expo/metro-runtime': 5.0.4(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))
       '@expo/server': 0.6.2
