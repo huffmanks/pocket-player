@@ -10,11 +10,17 @@ Android app to locally store and watch videos.
 - Thumbnail generation and metadata extraction.
 - Lightweight and privacy-friendly — no cloud or network access.
 
+## Previews
+
+![Pocket player app screenshot, video player](/previews/1.png)
+![Pocket player app screenshot, light/dark theme](/previews/2.png)
+![Pocket player app screenshot, playlists and settings](/previews/3.png)
+
 ## Tech Stack
 
-- React Native with Expo
-- Drizzle ORM with SQLite
-- State and storage: Zustand + react-native-mmkv
+- [React Native](https://github.com/facebook/react-native)/[Expo](https://github.com/expo/expo)
+- DB: [Drizzle ORM with SQLite](https://github.com/drizzle-team/drizzle-orm)
+- State and storage: [Zustand](https://github.com/pmndrs/zustand) + [react-native-mmkv](https://github.com/mrousavy/react-native-mmkv)
 - UI libraries: [RN Primitives](https://github.com/roninoss/rn-primitives), [RN Reusables](https://github.com/mrzachnugent/react-native-reusables), [Nativewind](https://github.com/nativewind/nativewind)
 
 ## Notes
