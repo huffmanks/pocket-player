@@ -1,7 +1,7 @@
 {
   "name": "pocket-player",
   "main": "expo-router/entry",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "scripts": {
     "dev": "expo start --dev-client --clear",
     "android": "expo run:android",
@@ -9,9 +9,9 @@
     "web": "expo start --web",
     "start": "expo start",
     "prebuild": "expo prebuild --platform android --clean",
-    "build:dev": "eas build --clear-cache --platform android --profile development --local",
-    "build:apk": "eas build --clear-cache --platform android --profile preview --local",
-    "build:aab": "eas build --clear-cache --platform android --profile preview-bundle --local",
+    "build:dev": "pnpx eas-cli build --clear-cache --platform android --profile development --local",
+    "build:apk": "pnpx eas-cli build --clear-cache --platform android --profile preview --local",
+    "build:aab": "pnpx eas-cli build --clear-cache --platform android --profile preview-bundle --local",
     "format": "prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "db:generate": "drizzle-kit generate",
     "lint": "expo lint"
@@ -86,6 +86,7 @@
     "@rn-primitives/types": "^1.1.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/react": "~19.2.18",
+    "babel-preset-expo": "^57.0.5",
     "drizzle-kit": "^0.31.0",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~57.0.1",

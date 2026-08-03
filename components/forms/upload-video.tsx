@@ -21,6 +21,7 @@ import {
   formatFileSize,
   getOrientation,
   getResolutionLabel,
+  parseFilenameDateAndTitle,
   splitFilename,
 } from "@/lib/utils";
 
@@ -48,6 +49,7 @@ const formSchema = z.object({
         hasAudio: z.boolean(),
         videoCodec: z.string().nullable(),
         audioCodec: z.string().nullable(),
+        createdAt: z.string().optional(),
       })
     )
     .min(1, { message: "Must select at least one video." }),
@@ -118,11 +120,12 @@ export default function UploadForm() {
         const videos = await Promise.all(
           result.assets.map(async ({ uri, name }) => {
             const filename = splitFilename(name);
-            const title = filename[0];
+            const rawTitle = filename[0];
             const fileExtension = filename[1];
 
-            const thumbFile = new File(VIDEOS_DIR, `${title}.jpg`);
+            const { title, createdAt } = parseFilenameDateAndTitle(rawTitle);
 
+            const thumbFile = new File(VIDEOS_DIR, `${rawTitle}.jpg`);
             const videoMeta = await getVideoInfoAsync(uri);
 
             const durationLabel = formatDuration(videoMeta.duration);
@@ -150,6 +153,7 @@ export default function UploadForm() {
               hasAudio: !!videoMeta.hasAudio,
               videoCodec: videoMeta.codec ?? null,
               audioCodec: videoMeta.audioCodec ?? null,
+              createdAt,
             };
           })
         );
@@ -229,6 +233,7 @@ export default function UploadForm() {
             ...video,
             videoUri: targetVideoFile.uri,
             thumbUri: targetThumbFile.uri,
+            ...(video.createdAt ? { createdAt: video.createdAt } : {}),
           };
         })
       );

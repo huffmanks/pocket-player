@@ -31,7 +31,7 @@ type DatabaseStore = {
   db: typeof drizzleDb;
 };
 
-export const useDatabaseStore = create<DatabaseStore>((set) => ({
+export const useDatabaseStore = create<DatabaseStore>(() => ({
   db: drizzleDb,
 }));
 
@@ -66,7 +66,7 @@ type VideoStoreState = {
   ) => Promise<{ status: "success" | "error"; isFavorite?: boolean; message: string }>;
 };
 
-export const useVideoStore = create<VideoStoreState>((set) => ({
+export const useVideoStore = create<VideoStoreState>(() => ({
   uploadVideos: async (uploadedVideos) => {
     try {
       const db = useDatabaseStore.getState().db;
@@ -80,7 +80,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
       await db.select().from(videos);
 
       return { status: "success", message: "Videos successfully uploaded." };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to create video." };
     }
   },
@@ -94,7 +94,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
         .returning();
 
       return { status: "success", message: `Video ${updatedVideo.title} successfully updated.` };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to update video." };
     }
   },
@@ -110,7 +110,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
       }
 
       return { status: "success", message: `Video ${deletedVideo.title} successfully deleted.` };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to delete video." };
     }
   },
@@ -126,7 +126,7 @@ export const useVideoStore = create<VideoStoreState>((set) => ({
         isFavorite: updatedFavoriteStatus,
         message: `Video ${video.title} has been ${updatedFavoriteStatus === true ? "favorited" : "unfavorited"}.`,
       };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to toggle favorite video." };
     }
   },
@@ -169,7 +169,7 @@ type PlaylistStoreState = {
   syncVideoPlaylists: (videoId: string, playlists: { id: string }[]) => void;
 };
 
-export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
+export const usePlaylistStore = create<PlaylistStoreState>(() => ({
   addPlaylist: async (values) => {
     try {
       const db = useDatabaseStore.getState().db;
@@ -258,7 +258,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         status: "success",
         message: `Playlist ${updatedPlaylist.title} updated successfully.`,
       };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to update playlist." };
     }
   },
@@ -271,7 +271,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         status: "success",
         message: `Playlist ${deletedPlaylist.title} deleted successfully.`,
       };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to delete playlist." };
     }
   },
@@ -301,7 +301,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         allVideos,
         selectedVideos,
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         status: "error",
         message: "Playlist not found",
@@ -328,7 +328,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
       }
 
       return { status: "success", isAdded: false, message: "Video removed from playlist." };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to update playlist." };
     }
   },
@@ -345,7 +345,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         );
 
       return { status: "success", message: "Video removed from playlist successfully." };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to remove video from playlist." };
     }
   },
@@ -365,7 +365,7 @@ export const usePlaylistStore = create<PlaylistStoreState>((set) => ({
         );
       });
       return { status: "success", message: "Playlist order updated successfully." };
-    } catch (error) {
+    } catch (_error) {
       return { status: "error", message: "Failed to update playlist order." };
     }
   },
@@ -415,7 +415,7 @@ type SettingsStoreState = {
   sortKey: "date" | "title";
   sortDateOrder: "asc" | "desc";
   sortTitleOrder: "asc" | "desc";
-  scrollPosition: number;
+  scrollIndex: number;
   lastVisitedPath: string;
   previousVisitedPath: string;
   videoProgress: Record<string, number>;
@@ -431,7 +431,7 @@ type SettingsStoreActions = {
   setSortKey: (key: "date" | "title") => void;
   toggleSortDateOrder: () => void;
   toggleSortTitleOrder: () => void;
-  setScrollPosition: (position: number) => void;
+  setScrollIndex: (index: number) => void;
   setLastVisitedPath: (path: string) => void;
   setVideoProgress: (videoId: string, time: number) => void;
   reset: () => void;
@@ -447,7 +447,7 @@ const initialSettingsStoreState: SettingsStoreState = {
   sortKey: "date",
   sortDateOrder: "asc",
   sortTitleOrder: "asc",
-  scrollPosition: 0,
+  scrollIndex: 0,
   lastVisitedPath: "/",
   previousVisitedPath: "/",
   videoProgress: {},
@@ -468,7 +468,7 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
         set((state) => ({ sortDateOrder: state.sortDateOrder === "asc" ? "desc" : "asc" })),
       toggleSortTitleOrder: () =>
         set((state) => ({ sortTitleOrder: state.sortTitleOrder === "asc" ? "desc" : "asc" })),
-      setScrollPosition: (position) => set({ scrollPosition: position }),
+      setScrollIndex: (index) => set({ scrollIndex: index }),
       setLastVisitedPath: (path) =>
         set((state) => {
           if (state.lastVisitedPath === path) return {};

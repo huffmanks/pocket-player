@@ -36,29 +36,29 @@ export default function VideosScreen() {
     sortKey,
     sortDateOrder,
     sortTitleOrder,
-    scrollPosition,
+    scrollIndex,
     setSortKey,
     toggleSortDateOrder,
     toggleSortTitleOrder,
-    setScrollPosition,
+    setScrollIndex,
   } = useSettingsStore(
     useShallow((state) => ({
       sortKey: state.sortKey,
       sortDateOrder: state.sortDateOrder,
       sortTitleOrder: state.sortTitleOrder,
-      scrollPosition: state.scrollPosition,
+      scrollIndex: state.scrollIndex,
       setSortKey: state.setSortKey,
       toggleSortDateOrder: state.toggleSortDateOrder,
       toggleSortTitleOrder: state.toggleSortTitleOrder,
-      setScrollPosition: state.setScrollPosition,
+      setScrollIndex: state.setScrollIndex,
     }))
   );
 
-  const [initialScrollIndex] = useState(() => (scrollPosition > 0 ? scrollPosition : 0));
+  const [initialScrollIndex] = useState(() => (scrollIndex > 0 ? scrollIndex : 0));
 
   const saveScrollIndex = useRef(
     throttle((index: number) => {
-      setScrollPosition(index);
+      setScrollIndex(index);
     }, 150)
   ).current;
 

@@ -28,12 +28,18 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  ScreenCapture.usePreventScreenCapture();
-
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
 
   const isAppReady = useAppStore((state) => state.isAppReady);
   const theme = useSettingsStore((state) => state.theme);
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync().catch(() => {});
+
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync().catch(() => {});
+    };
+  }, []);
 
   useEffect(() => {
     async function initializeApp() {

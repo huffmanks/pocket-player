@@ -247,3 +247,58 @@ export function getResolutionLabel({ width, height }: { width: number; height: n
   if (res >= 854) return "480p";
   return "360p";
 }
+
+export function parseFilenameDateAndTitle(rawTitle: string): {
+  title: string;
+  createdAt?: string;
+} {
+  let extractedDate: string | undefined;
+  let cleanTitle = rawTitle;
+
+  const isoMatch = cleanTitle.match(
+    /((?:19|20)\d{2})[-._/\s]?(0[1-9]|1[0-2])[-._/\s]?(0[1-9]|[12]\d|3[01])(?:[-._/\s]?\d{6})?/
+  );
+
+  const dmyMatch = !isoMatch
+    ? cleanTitle.match(/(0[1-9]|[12]\d|3[01])[-._/\s]?(0[1-9]|1[0-2])[-._/\s]?((?:19|20)\d{2})/)
+    : null;
+
+  const match = isoMatch || dmyMatch;
+
+  if (match) {
+    const fullMatchedStr = match[0];
+
+    let year: number, month: number, day: number;
+
+    if (isoMatch) {
+      year = parseInt(match[1], 10);
+      month = parseInt(match[2], 10) - 1;
+      day = parseInt(match[3], 10);
+    } else {
+      day = parseInt(match[1], 10);
+      month = parseInt(match[2], 10) - 1;
+      year = parseInt(match[3], 10);
+    }
+
+    const parsedDate = new Date(Date.UTC(year, month, day));
+
+    if (!isNaN(parsedDate.getTime())) {
+      extractedDate = parsedDate.toISOString();
+      cleanTitle = cleanTitle.replace(fullMatchedStr, "");
+    }
+  }
+
+  cleanTitle = cleanTitle
+    .replace(/^[-._\s]+|[-._\s]+$/g, "")
+    .replace(/[-._\s]{2,}/g, " ")
+    .trim();
+
+  if (!cleanTitle) {
+    cleanTitle = rawTitle;
+  }
+
+  return {
+    title: cleanTitle,
+    createdAt: extractedDate,
+  };
+}

@@ -11,7 +11,7 @@ export async function resetTables() {
     await db.delete(playlists).returning();
 
     return { message: "Videos deleted from the database successfully.", type: "success" };
-  } catch (error) {
+  } catch (_error) {
     return { message: "Failed to delete videos from the database.", type: "error" };
   }
 }

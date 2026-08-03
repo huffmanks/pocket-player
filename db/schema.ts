@@ -29,8 +29,12 @@ export const videos = sqliteTable(
     hasAudio: integer("has_audio", { mode: "boolean" }).notNull(),
     videoCodec: text("video_codec"),
     audioCodec: text("audio_codec"),
-    createdAt: text("created_at").default(new Date().toISOString()).notNull(),
-    updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
+    createdAt: text("created_at")
+      .$defaultFn(() => new Date().toISOString())
+      .notNull(),
+    updatedAt: text("updated_at")
+      .$defaultFn(() => new Date().toISOString())
+      .notNull(),
   },
   (t) => ({
     thumbUriIdx: index("videos_thumb_uri_idx").on(t.thumbUri),
@@ -44,8 +48,12 @@ export const playlists = sqliteTable("playlists", {
     .notNull(),
   title: text("title").unique().notNull(),
   description: text("description").default("").notNull(),
-  createdAt: text("created_at").default(new Date().toISOString()).notNull(),
-  updatedAt: text("updated_at").default(new Date().toISOString()).notNull(),
+  createdAt: text("created_at")
+    .$defaultFn(() => new Date().toISOString())
+    .notNull(),
+  updatedAt: text("updated_at")
+    .$defaultFn(() => new Date().toISOString())
+    .notNull(),
 });
 
 export const playlistVideos = sqliteTable(

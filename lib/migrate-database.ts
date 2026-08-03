@@ -13,7 +13,7 @@ export async function migrateDatabase() {
       message: "Database migration completed",
       isError: false,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       message: "Database migration failed.",
       isError: true,
