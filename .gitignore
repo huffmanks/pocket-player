@@ -11,6 +11,7 @@ ios
 build-*.apk
 build-*.aab
 output/
+builds/
 
 # Native
 *.orig.*

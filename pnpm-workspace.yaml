@@ -1,0 +1,9 @@
+packages:
+  - "."
+
+allowBuilds:
+  esbuild: true
+
+overrides:
+  "@noble/hashes": "1.3.0"
+  react: "19.0.0"
