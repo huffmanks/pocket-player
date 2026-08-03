@@ -80,7 +80,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
         toast.error(message);
         router.push("/(tabs)/playlists");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to delete playlist.");
     }
   }
@@ -93,7 +93,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
       toast.success(`${values.title} playlist updated successfully.`);
 
       router.dismissTo(`/(screens)/playlists/${editPlaylistInfo.id}/view`);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error updating playlist!");
     } finally {
       setIsSubmitting(false);

@@ -16,10 +16,9 @@ export interface VideoData {
 export default function CreatePlaylistScreen() {
   const [videoData, setVideoData] = useState<VideoData[] | null>(null);
 
-  const db = useDatabaseStore.getState().db;
-
   useEffect(() => {
     const fetchVideos = async () => {
+      const db = useDatabaseStore.getState().db;
       const data = await db.select({ value: videos.id, label: videos.title }).from(videos);
 
       setVideoData(data);

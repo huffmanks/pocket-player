@@ -5,6 +5,7 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Gesture } from "react-native-gesture-handler";
+// TODO
 import { runOnUI, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useShallow } from "zustand/react/shallow";
 
@@ -144,6 +145,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     const duration = player.duration;
     const currentTime = value * duration;
 
+    // TODO
     player.currentTime = currentTime;
     setProgress(currentTime / duration);
     setTime(secondsToAdaptiveTime(currentTime));

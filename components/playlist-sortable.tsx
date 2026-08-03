@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ListRenderItemInfo, View } from "react-native";
 
 import { eq } from "drizzle-orm";
@@ -23,8 +23,6 @@ interface PlaylistSortableProps {
 }
 
 export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) {
-  const [hasLoaded, setHasLoaded] = useState(false);
-
   const db = useDatabaseStore.getState().db;
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
 
@@ -38,9 +36,15 @@ export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) 
     })
   );
 
+  const isLoaded = Boolean(playlistVideosQuery.data || playlistVideosQuery.error);
+
   const videosData = useMemo(() => {
-    return playlistVideosQuery.data.sort((a, b) => a.order - b.order).map(({ video }) => video);
-  }, [playlistVideosQuery]);
+    if (!playlistVideosQuery.data) return [];
+    return playlistVideosQuery.data
+      .slice()
+      .sort((a, b) => a.order - b.order)
+      .map(({ video }) => video);
+  }, [playlistVideosQuery.data]);
 
   const renderItem = ({ item }: ListRenderItemInfo<VideoMeta>) => (
     <PlaylistItem
@@ -55,13 +59,7 @@ export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) 
     await updatePlaylistOrder({ playlistId, videosOrder: newData });
   };
 
-  useEffect(() => {
-    if (!hasLoaded && (!!playlistVideosQuery.data || playlistVideosQuery.error)) {
-      setHasLoaded(true);
-    }
-  }, [playlistVideosQuery]);
-
-  if (hasLoaded && !videosData?.length) {
+  if (isLoaded && !videosData.length) {
     return <ListEmptyComponent playlistId={playlistId} />;
   }
 

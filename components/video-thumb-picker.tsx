@@ -32,8 +32,11 @@ export default function VideoThumbPickerNext({
   const [isInitialized, setIsInitialized] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
 
-  const [time, setTime] = useState(videoInfo.thumbTimestamp / 1000);
-  const [progress, setProgress] = useState(videoInfo.thumbTimestamp / 1000 / videoInfo.duration);
+  const initialTimeResult = getClampedDelta(videoInfo.thumbTimestamp / 1000, videoInfo.duration, 0);
+  const initialTime = initialTimeResult?.clamped ?? videoInfo.thumbTimestamp / 1000;
+
+  const [time, setTime] = useState(initialTime);
+  const [progress, setProgress] = useState(initialTime / videoInfo.duration);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [isPlayerUpdating, setIsPlayerUpdating] = useState(false);
 
@@ -62,11 +65,8 @@ export default function VideoThumbPickerNext({
 
   useEffect(() => {
     if (isPlayerReady) {
-      const result = getClampedDelta(time, videoInfo.duration, 0);
-
-      if (result) {
-        player.seekBy(result.delta);
-        setTime(result.clamped);
+      if (initialTimeResult?.delta) {
+        player.seekBy(initialTimeResult.delta);
       }
 
       requestAnimationFrame(() => {
@@ -75,7 +75,7 @@ export default function VideoThumbPickerNext({
         setIsInitialized(true);
       });
     }
-  }, [isPlayerReady]);
+  }, [isPlayerReady, initialTimeResult?.delta, opacityDelay, opacityFast, player]);
 
   useEffect(() => {
     const listener = player.addListener("timeUpdate", ({ currentTime }) => {
@@ -105,7 +105,15 @@ export default function VideoThumbPickerNext({
         clearTimeout(timeUpdateRef.current);
       }
     };
-  }, [isScrubbing, isPlayerUpdating, isInitialized, time]);
+  }, [
+    isScrubbing,
+    isPlayerUpdating,
+    isPlayerReady,
+    isInitialized,
+    time,
+    player,
+    setPlayerCurrentTime,
+  ]);
 
   function seekTo(absTime: number) {
     setIsPlayerUpdating(true);

@@ -55,7 +55,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
         toast.error(message);
         router.push("/(tabs)/playlists");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to delete playlist.");
     }
   }

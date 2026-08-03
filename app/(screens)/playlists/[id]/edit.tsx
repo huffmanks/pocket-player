@@ -37,7 +37,7 @@ export default function EditPlaylistScreen() {
     fetchPlaylist().catch((_err) => {
       toast.error("Failed to find playlist.");
     });
-  }, []);
+  }, [id, getPlaylistWithAllVideos]);
 
   if (!editPlaylistInfo) return null;
 

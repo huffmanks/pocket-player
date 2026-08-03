@@ -1,7 +1,7 @@
 import * as Haptics from "expo-haptics";
 import * as LocalAuthentication from "expo-local-authentication";
-import { useCallback, useEffect, useState } from "react";
-import { Image, Pressable, SafeAreaView, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Image, Pressable, View } from "react-native";
 
 import Animated, {
   useAnimatedStyle,
@@ -10,7 +10,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
 import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
@@ -42,30 +42,22 @@ export default function LockScreen() {
   );
 
   const offset = useSharedValue(0);
+  const offsetRef = useRef(offset);
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: offset.value }],
     };
   });
 
-  useEffect(() => {
-    if (code.length === 4) {
-      (async () => {
-        setCode([]);
+  const handleErrorShake = useCallback(async () => {
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  }, []);
 
-        if (code.join("") === passcode) {
-          await handleUnlockApp();
-        } else {
-          offset.value = withSequence(
-            withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
-            withRepeat(withTiming(ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME }), 4, true),
-            withTiming(0, { duration: ERROR_SHAKE_TIME / 2 })
-          );
-          await handleErrorShake();
-        }
-      })();
-    }
-  }, [code]);
+  const handleUnlockApp = useCallback(async () => {
+    setIsLocked(false);
+    await handleRedirect({ lastVisitedPath, previousVisitedPath });
+  }, [setIsLocked, lastVisitedPath, previousVisitedPath]);
 
   const handleNumberPress = useCallback((number: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -86,16 +78,30 @@ export default function LockScreen() {
     } else {
       await handleErrorShake();
     }
+  }, [handleUnlockApp, handleErrorShake]);
+
+  const triggerShakeAnimation = useCallback(() => {
+    offsetRef.current.value = withSequence(
+      withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
+      withRepeat(withTiming(ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME }), 4, true),
+      withTiming(0, { duration: ERROR_SHAKE_TIME / 2 })
+    );
   }, []);
 
-  const handleErrorShake = useCallback(async () => {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-  }, []);
+  useEffect(() => {
+    if (code.length === 4) {
+      (async () => {
+        setCode([]);
 
-  async function handleUnlockApp() {
-    setIsLocked(false);
-    await handleRedirect({ lastVisitedPath, previousVisitedPath });
-  }
+        if (code.join("") === passcode) {
+          await handleUnlockApp();
+        } else {
+          triggerShakeAnimation();
+          await handleErrorShake();
+        }
+      })();
+    }
+  }, [code, passcode, triggerShakeAnimation, handleUnlockApp, handleErrorShake]);
 
   return (
     <SafeAreaView style={{ marginTop: insets.top + 40 }}>

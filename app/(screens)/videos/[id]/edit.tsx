@@ -17,10 +17,10 @@ export default function EditVideoScreen() {
 
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const db = useDatabaseStore.getState().db;
 
   useEffect(() => {
     const fetchVideo = async () => {
+      const db = useDatabaseStore.getState().db;
       const [video] = await db.select().from(videos).where(eq(videos.id, id));
 
       setVideoInfo(video);
@@ -29,7 +29,7 @@ export default function EditVideoScreen() {
     fetchVideo().catch((_err) => {
       toast.error("Failed to find video.");
     });
-  }, []);
+  }, [id]);
 
   if (!videoInfo) return null;
 

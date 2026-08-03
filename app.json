@@ -9,20 +9,6 @@
     "userInterfaceStyle": "dark",
     "backgroundColor": "#09090b",
     "primaryColor": "#0d968b",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/icons/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#09090b"
-    },
-    "androidStatusBar": {
-      "barStyle": "light-content",
-      "backgroundColor": "#09090b"
-    },
-    "androidNavigationBar": {
-      "barStyle": "light-content",
-      "backgroundColor": "#09090b"
-    },
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -66,7 +52,6 @@
     },
     "android": {
       "package": "com.anonymous.pocketplayer",
-      "edgeToEdgeEnabled": true,
       "icon": "./assets/icons/android_adaptive_logo_foreground.png",
       "backgroundColor": "#09090b",
       "adaptiveIcon": {
@@ -85,6 +70,13 @@
       "softwareKeyboardLayoutMode": "pan"
     },
     "plugins": [
+      [
+        "expo-status-bar",
+        {
+          "style": "light",
+          "backgroundColor": "#09090b"
+        }
+      ],
       "expo-font",
       "expo-router",
       "expo-sqlite",
@@ -95,9 +87,8 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
       ],
-      "./plugins/flag-secure.js",
-      "./plugins/custom-app-theme.js",
-      "./plugins/custom-colors.js"
+      "@react-native-community/datetimepicker",
+      "expo-splash-screen"
     ],
     "experiments": {
       "typedRoutes": true

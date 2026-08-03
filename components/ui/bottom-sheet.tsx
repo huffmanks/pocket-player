@@ -14,7 +14,6 @@ import {
   BottomSheetView as GBottomSheetView,
   useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
-import type { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import * as Slot from "@rn-primitives/slot";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -29,13 +28,13 @@ type BottomSheetRef = React.ComponentRef<typeof View>;
 type BottomSheetProps = React.ComponentPropsWithoutRef<typeof View>;
 
 interface IBottomSheetContext {
-  sheetRef: React.RefObject<BottomSheetModal | null>;
+  sheetRef: React.RefObject<React.ComponentRef<typeof BottomSheetModal> | null>;
 }
 
 const BottomSheetContext = React.createContext({} as IBottomSheetContext);
 
 const BottomSheet = React.forwardRef<BottomSheetRef, BottomSheetProps>(({ ...props }, ref) => {
-  const sheetRef = React.useRef<BottomSheetModal>(null);
+  const sheetRef = React.useRef<React.ComponentRef<typeof BottomSheetModal>>(null);
 
   return (
     <BottomSheetContext.Provider value={{ sheetRef: sheetRef }}>
@@ -87,12 +86,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
     const { isDarkColorScheme, colorScheme } = useColorScheme();
     const { sheetRef } = useBottomSheetContext();
 
-    React.useImperativeHandle(ref, () => {
-      if (!sheetRef.current) {
-        return {} as BottomSheetModalMethods;
-      }
-      return sheetRef.current;
-    }, [sheetRef]);
+    React.useImperativeHandle(ref, () => sheetRef.current as BottomSheetContentRef, [sheetRef]);
 
     const renderBackdrop = React.useCallback(
       (props: BottomSheetBackdropProps) => {

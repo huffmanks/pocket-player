@@ -1,6 +1,6 @@
 import { Link, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { InteractionManager, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
+import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 
 import { FlashList, ViewToken } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -10,7 +10,7 @@ import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta, playlists } from "@/db/schema";
-import { BOTTOM_TABS_OFFSET, ESTIMATED_VIDEO_ITEM_HEIGHT } from "@/lib/constants";
+import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
 import { CloudUploadIcon } from "@/lib/icons";
 import { useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { formatDuration, throttle } from "@/lib/utils";
@@ -26,7 +26,7 @@ export type VideoMetaWithPlaylists = VideoMeta & { playlists?: string[] };
 export default function VideosScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const flashListRef = useRef<FlashList<VideoMeta> | null>(null);
+  const flashListRef = useRef<React.ComponentRef<typeof FlashList<VideoMeta>> | null>(null);
   const hasRenderedOnce = useRef(false);
   const hasUserScrolled = useRef(false);
   const canSaveScroll = useRef(false);
@@ -151,7 +151,7 @@ export default function VideosScreen() {
     [playlistsQuery?.data]
   );
 
-  function restoreScroll() {
+  const restoreScroll = useCallback(() => {
     if (
       hasRestoredScroll.current ||
       hasUserScrolled.current ||
@@ -164,20 +164,21 @@ export default function VideosScreen() {
       offset: scrollPosition,
       animated: false,
     });
-  }
+  }, [scrollPosition]);
 
-  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    if (!hasRenderedOnce.current && viewableItems.length > 0) {
-      InteractionManager.runAfterInteractions(() => {
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken<VideoMeta>[] }) => {
+      if (!hasRenderedOnce.current && viewableItems.length > 0) {
         requestAnimationFrame(() => {
           restoreScroll();
           hasRenderedOnce.current = true;
           hasRestoredScroll.current = true;
           canSaveScroll.current = true;
         });
-      });
-    }
-  }).current;
+      }
+    },
+    [restoreScroll]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -212,7 +213,6 @@ export default function VideosScreen() {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
-        estimatedItemSize={ESTIMATED_VIDEO_ITEM_HEIGHT}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={150}
         onScroll={handleScroll}

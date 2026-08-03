@@ -68,7 +68,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
       } else {
         toast.error(message);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error creating playlist!");
     } finally {
       setIsSubmitting(false);

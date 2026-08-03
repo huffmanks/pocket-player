@@ -1,6 +1,4 @@
-import { documentDirectory } from "expo-file-system";
-
-import { DefaultTheme, type Theme } from "@react-navigation/native";
+import { Directory, Paths } from "expo-file-system";
 
 import { SettingId } from "@/components/setting-switch";
 
@@ -37,17 +35,7 @@ export const SLIDER_THEME = {
 const fontStyle = {
   fontFamily: "Arial",
   fontWeight: "normal" as
-    | "normal"
-    | "bold"
-    | "100"
-    | "200"
-    | "300"
-    | "400"
-    | "500"
-    | "600"
-    | "700"
-    | "800"
-    | "900",
+    "normal" | "bold" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900",
 };
 
 const fonts = {
@@ -57,21 +45,19 @@ const fonts = {
   heavy: fontStyle,
 };
 
-export const LIGHT_THEME: Theme = {
-  ...DefaultTheme,
+export const LIGHT_THEME = {
   dark: false,
   colors: NAV_THEME.light,
   fonts,
 };
 
-export const DARK_THEME: Theme = {
-  ...DefaultTheme,
+export const DARK_THEME = {
   dark: true,
   colors: NAV_THEME.dark,
   fonts,
 };
 
-export const VIDEOS_DIR = `${documentDirectory}videos/`;
+export const VIDEOS_DIR = new Directory(Paths.document, "videos");
 export const ESTIMATED_VIDEO_ITEM_HEIGHT = 157;
 export const ESTIMATED_PLAYLIST_HEIGHT = 40;
 export const ESTIMATED_PLAYLIST_ITEM_HEIGHT = 80;

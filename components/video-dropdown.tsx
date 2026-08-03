@@ -88,7 +88,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
       } else {
         toast.error(message);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to add to favorites.");
     }
   }
@@ -105,7 +105,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
       } else {
         toast.error(message);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to add to playlist.");
     }
   }
@@ -117,7 +117,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
       if (status === "success") {
         toast.error(message);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to delete video.");
     }
   }

@@ -42,7 +42,7 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
       if (status === "success") {
         toast.error(message);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to remove from playlist.");
     }
   }

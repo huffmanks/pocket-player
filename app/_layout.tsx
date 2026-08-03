@@ -1,18 +1,18 @@
-import { SplashScreen, Stack } from "expo-router";
+import { NavigationBar } from "expo-navigation-bar";
+import { SplashScreen, Stack, ThemeProvider } from "expo-router";
+import * as ScreenCapture from "expo-screen-capture";
+import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { ThemeProvider } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toaster, toast } from "sonner-native";
-import { useShallow } from "zustand/react/shallow";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
-import { DARK_THEME, LIGHT_THEME, NAV_THEME } from "@/lib/constants";
+import { DARK_THEME, LIGHT_THEME } from "@/lib/constants";
 import { migrateDatabase } from "@/lib/migrate-database";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
@@ -28,33 +28,19 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  ScreenCapture.usePreventScreenCapture();
+
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
 
-  const { isAppStartUp, isAppReady, setIsAppStartUp, setIsAppReady } = useAppStore(
-    useShallow((state) => ({
-      isAppStartUp: state.isAppStartUp,
-      isAppReady: state.isAppReady,
-      setIsAppStartUp: state.setIsAppStartUp,
-      setIsAppReady: state.setIsAppReady,
-    }))
-  );
-  const { theme, setTheme } = useSettingsStore(
-    useShallow((state) => ({
-      theme: state.theme,
-      setTheme: state.setTheme,
-    }))
-  );
-  const { isLockable, setEnablePasscode, setIsLocked } = useSecurityStore(
-    useShallow((state) => ({
-      isLockable: state.isLockable,
-      setEnablePasscode: state.setEnablePasscode,
-      setIsLocked: state.setIsLocked,
-    }))
-  );
+  const isAppReady = useAppStore((state) => state.isAppReady);
+  const theme = useSettingsStore((state) => state.theme);
 
   useEffect(() => {
     async function initializeApp() {
       try {
+        const { isAppStartUp, setIsAppStartUp, isAppReady } = useAppStore.getState();
+        const { isLockable, setEnablePasscode, setIsLocked } = useSecurityStore.getState();
+
         if (!isAppStartUp) {
           await migrateDatabase();
           setIsAppStartUp(true);
@@ -68,10 +54,10 @@ export default function RootLayout() {
             setIsLocked(false);
           }
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Initializing app failed.");
       } finally {
-        setIsAppReady(true);
+        useAppStore.getState().setIsAppReady(true);
       }
     }
     initializeApp();
@@ -80,27 +66,36 @@ export default function RootLayout() {
   useEffect(() => {
     const navColorScheme = theme || colorScheme;
 
-    setAndroidNavigationBar(navColorScheme);
+    const { setTheme } = useSettingsStore.getState();
     setTheme(navColorScheme);
 
     if (theme !== colorScheme) setColorScheme(navColorScheme);
-  }, [colorScheme, theme]);
+  }, [colorScheme, theme, setColorScheme]);
 
   if (!isAppReady) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView
+      style={{ flex: 1 }}
+      className={isDarkColorScheme ? "dark" : ""}>
       <RouteTracker />
-      <ThemeProvider value={!isDarkColorScheme ? LIGHT_THEME : DARK_THEME}>
+      <StatusBar
+        style={isDarkColorScheme ? "light" : "dark"}
+        animated
+      />
+      <NavigationBar style={isDarkColorScheme ? "light" : "dark"} />
+      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
         <SafeAreaProvider style={{ flex: 1 }}>
           <BottomSheetModalProvider>
             <LockScreenProvider>
               <Stack
                 screenOptions={{
-                  statusBarStyle: isDarkColorScheme ? "light" : "dark",
-                  statusBarAnimation: "fade",
-                  statusBarBackgroundColor: NAV_THEME[colorScheme].background,
-                  statusBarHidden: false,
+                  headerShown: false,
+                  contentStyle: {
+                    backgroundColor: isDarkColorScheme
+                      ? DARK_THEME.colors.background
+                      : LIGHT_THEME.colors.background,
+                  },
                 }}>
                 <Stack.Screen
                   name="(screens)"

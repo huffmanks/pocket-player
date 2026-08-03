@@ -30,7 +30,7 @@ const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
           setNumericInput(formatted);
         }
       }
-    }, [value, isEditing]);
+    }, [value, isEditing, numericInput]);
 
     function handleChange(input: string) {
       if (disabled) return;
@@ -97,5 +97,7 @@ const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
     );
   }
 );
+
+TimerInput.displayName = "TimerInput";
 
 export default TimerInput;

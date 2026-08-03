@@ -1,12 +1,11 @@
-import * as FileSystem from "expo-file-system";
+import { File } from "expo-file-system";
 import { router } from "expo-router";
 import * as VideoThumbnails from "expo-video-thumbnails";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
-import { useScrollToTop } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
@@ -83,8 +82,6 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
   );
 
   const insets = useSafeAreaInsets();
-  const ref = useRef(null);
-  useScrollToTop(ref);
 
   const contentInsets = {
     top: insets.top + BOTTOM_TABS_OFFSET,
@@ -114,7 +111,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         toast.error(message);
         router.dismissTo("/(tabs)/videos");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to delete video.");
     }
   }
@@ -133,8 +130,14 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       const fileId = createId();
       const newUri = `${VIDEOS_DIR}${videoInfo.title}-${fileId}.jpg`;
 
-      await FileSystem.moveAsync({ from: uri, to: newUri });
-      await FileSystem.deleteAsync(videoInfo.thumbUri, { idempotent: true });
+      const tempThumbFile = new File(uri);
+      const targetThumbFile = new File(newUri);
+      tempThumbFile.move(targetThumbFile);
+
+      const oldThumbFile = new File(videoInfo.thumbUri);
+      if (oldThumbFile.exists) {
+        oldThumbFile.delete();
+      }
 
       await updateVideo({
         id: videoInfo.id,
@@ -155,7 +158,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       } else {
         router.push("/(tabs)/videos");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(`Error updating ${values.title}!`);
     } finally {
       setIsSubmitting(false);

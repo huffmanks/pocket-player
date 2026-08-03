@@ -1,5 +1,5 @@
 import { SplashScreen, useRouter } from "expo-router";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
 
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
@@ -44,6 +44,31 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     }))
   );
 
+  const handleAppStateChange = useCallback(
+    (nextAppState: AppStateStatus) => {
+      if (!enablePasscode || !passcode || isLockDisabled) return;
+
+      if (nextAppState === "background") {
+        backgroundTimestamp.current = Date.now();
+      } else if (nextAppState === "active") {
+        dismissAll();
+
+        if (backgroundTimestamp.current) {
+          const elapsedTime = Date.now() - backgroundTimestamp.current;
+          if (elapsedTime > lockInterval) {
+            setIsLocked(true);
+            router.push("/(screens)/lock");
+          }
+
+          backgroundTimestamp.current = null;
+        }
+      }
+
+      appState.current = nextAppState;
+    },
+    [dismissAll, enablePasscode, isLockDisabled, lockInterval, passcode, router, setIsLocked]
+  );
+
   useEffect(() => {
     if (!isLockable || isLockDisabled) return;
 
@@ -52,7 +77,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     return () => {
       subscription.remove();
     };
-  }, [isLockDisabled, isLockable, lockInterval]);
+  }, [handleAppStateChange, isLockDisabled, isLockable]);
 
   useEffect(() => {
     if (!isAppReady) return;
@@ -67,7 +92,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
         }
 
         await handleRedirect({ lastVisitedPath, previousVisitedPath });
-      } catch (error) {
+      } catch (_error) {
         toast.error("Restoring previous route failed.");
       } finally {
         await SplashScreen.hideAsync();
@@ -75,29 +100,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
     }
 
     restorePreviousRoute();
-  }, [isAppReady]);
-
-  function handleAppStateChange(nextAppState: AppStateStatus) {
-    if (!enablePasscode || !passcode || isLockDisabled) return;
-
-    if (nextAppState === "background") {
-      backgroundTimestamp.current = Date.now();
-    } else if (nextAppState === "active") {
-      dismissAll();
-
-      if (backgroundTimestamp.current) {
-        const elapsedTime = Date.now() - backgroundTimestamp.current;
-        if (elapsedTime > lockInterval) {
-          setIsLocked(true);
-          router.push("/(screens)/lock");
-        }
-
-        backgroundTimestamp.current = null;
-      }
-    }
-
-    appState.current = nextAppState;
-  }
+  }, [isAppReady, isLocked, lastVisitedPath, previousVisitedPath, router]);
 
   return children;
 }

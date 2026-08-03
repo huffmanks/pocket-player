@@ -105,7 +105,7 @@ const FormLabel = React.forwardRef<
     children: string;
   }
 >(({ className, nativeID: _nativeID, ...props }, ref) => {
-  const { error, formItemNativeID } = useFormField();
+  const { formItemNativeID } = useFormField();
 
   return (
     <Label
@@ -184,13 +184,14 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
     const [inputValue, setInputValue] = React.useState(formatDateString(value));
     const [isInvalid, setIsInvalid] = React.useState(false);
     const [isTouched, setIsTouched] = React.useState(false);
-    const [isInternalChange, setIsInternalChange] = React.useState(false);
+
+    const isInternalChangeRef = React.useRef(false);
     const { error, formItemNativeID, formDescriptionNativeID, formMessageNativeID } =
       useFormField();
 
     React.useEffect(() => {
-      if (isInternalChange) {
-        setIsInternalChange(false);
+      if (isInternalChangeRef.current) {
+        isInternalChangeRef.current = false;
         return;
       }
 
@@ -220,7 +221,7 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
         const [year, month, day] = val.split("-").map(Number);
         const parsedDate = new Date(year, month - 1, day);
 
-        setIsInternalChange(true);
+        isInternalChangeRef.current = true;
         onChange(parsedDate);
       }
     }

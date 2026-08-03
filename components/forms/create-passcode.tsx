@@ -17,11 +17,9 @@ import { Text } from "@/components/ui/text";
 const formSchema = z
   .object({
     passcode: z.string().regex(/^\d{4}$/, { message: "Passcode must be exactly 4 digits." }),
-    hidePasscode: z.boolean(),
     confirmPasscode: z
       .string()
       .regex(/^\d{4}$/, { message: "Confirm passcode must be exactly 4 digits." }),
-    hideConfirmPasscode: z.boolean(),
   })
   .refine((data) => data.passcode === data.confirmPasscode, {
     message: "Passcodes don't match.",
@@ -32,24 +30,18 @@ export type CreatePasscodeFormData = z.infer<typeof formSchema>;
 
 export default function CreatePasscodeForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hidePasscode, setHidePasscode] = useState(true);
+  const [hideConfirmPasscode, setHideConfirmPasscode] = useState(true);
+
   const setPasscode = useSecurityStore((state) => state.setPasscode);
 
   const form = useForm<CreatePasscodeFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       passcode: "",
-      hidePasscode: true,
       confirmPasscode: "",
-      hideConfirmPasscode: true,
     },
   });
-
-  const hidePasscode = form.watch("hidePasscode");
-  const hideConfirmPasscode = form.watch("hideConfirmPasscode");
-
-  function togglePasscodeVisibility(field: "hidePasscode" | "hideConfirmPasscode") {
-    form.setValue(field, !form.watch(field));
-  }
 
   async function onSubmit(values: CreatePasscodeFormData) {
     try {
@@ -61,7 +53,7 @@ export default function CreatePasscodeForm() {
       toast.success("Passcode set successfully!");
 
       router.dismissTo("/(tabs)/settings");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error setting passcode");
     } finally {
       setIsSubmitting(false);
@@ -101,7 +93,7 @@ export default function CreatePasscodeForm() {
                 {...field}
               />
               <Pressable
-                onPress={() => togglePasscodeVisibility("hidePasscode")}
+                onPress={() => setHidePasscode((prev) => !prev)}
                 className="absolute right-4 top-[34px] py-2">
                 {hidePasscode ? (
                   <EyeOffIcon
@@ -149,7 +141,7 @@ export default function CreatePasscodeForm() {
                 {...field}
               />
               <Pressable
-                onPress={() => togglePasscodeVisibility("hideConfirmPasscode")}
+                onPress={() => setHideConfirmPasscode((prev) => !prev)}
                 className="absolute right-4 top-[34px] py-2">
                 {hideConfirmPasscode ? (
                   <EyeOffIcon

@@ -1,4 +1,4 @@
-import { cacheDirectory } from "expo-file-system";
+import { Paths } from "expo-file-system";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
@@ -84,7 +84,7 @@ export default function SettingsScreen() {
         success: ({ message }) => message,
         error: "Reset settings has failed.",
       });
-    } catch (error) {
+    } catch (_error) {
       toast.error("Something went wrong!");
     } finally {
       setIsSubmitting(false);
@@ -95,8 +95,8 @@ export default function SettingsScreen() {
     try {
       setIsSubmitting(true);
       const promise = withDelay(async () => {
-        await clearDirectory(VIDEOS_DIR);
-        await clearDirectory(cacheDirectory || "");
+        clearDirectory(VIDEOS_DIR);
+        clearDirectory(Paths.cache);
         await resetTables();
         return { message: "All files have been deleted." };
       }, 1000);
@@ -108,7 +108,7 @@ export default function SettingsScreen() {
         success: ({ message }) => message,
         error: "File deletion has failed.",
       });
-    } catch (error) {
+    } catch (_error) {
       toast.error("Something went wrong!");
     } finally {
       setIsSubmitting(false);
@@ -119,8 +119,8 @@ export default function SettingsScreen() {
     try {
       setIsSubmitting(true);
       const promise = withDelay(async () => {
-        await clearDirectory(VIDEOS_DIR);
-        await clearDirectory(cacheDirectory || "");
+        clearDirectory(VIDEOS_DIR);
+        clearDirectory(Paths.cache);
         await resetTables();
         resetPersistedStorage();
         return { message: "All data has been deleted." };
@@ -133,7 +133,7 @@ export default function SettingsScreen() {
         success: ({ message }) => message,
         error: "Data deletion has failed.",
       });
-    } catch (error) {
+    } catch (_error) {
       toast.error("Something went wrong!");
     } finally {
       setIsSubmitting(false);
@@ -150,7 +150,7 @@ export default function SettingsScreen() {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [setEnablePasscode]);
 
   const selectedOption = lockIntervalOptions.find(
     (option) => option.value === lockInterval?.toString()

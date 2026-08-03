@@ -12,6 +12,23 @@ function withCustomAppTheme(config) {
 
     let modified = false;
 
+    styles.resources.style = styles.resources.style || [];
+
+    const hasEdgeToEdge = styles.resources.style.some(s => s.$.name === "Theme.EdgeToEdge");
+    if (!hasEdgeToEdge) {
+      styles.resources.style.push({
+        $: {
+          name: "Theme.EdgeToEdge",
+          parent: "Theme.AppCompat.DayNight.NoActionBar"
+        },
+        item: [
+          { $: { name: "android:navigationBarColor" }, _: "@android:color/transparent" },
+          { $: { name: "android:statusBarColor" }, _: "@android:color/transparent" },
+          { $: { name: "android:windowDrawsSystemBarBackgrounds" }, _: "true" }
+        ]
+      });
+    }
+
     styles.resources.style.forEach((style) => {
       if (style.$.name === "AppTheme") {
         if (!modified) {

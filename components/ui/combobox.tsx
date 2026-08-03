@@ -61,7 +61,7 @@ const Combobox = React.forwardRef<
     const [isFocused, setIsFocused] = React.useState(false);
     const [selectedItems, setSelectedItems] = React.useState<ComboboxOption[]>([]);
     const bottomSheet = useBottomSheet();
-    const inputRef = React.useRef<React.ComponentRef<typeof BottomSheetTextInput>>(null);
+    const inputRef = React.useRef<React.ComponentRef<typeof Input>>(null);
 
     const filteredItems = React.useMemo(() => {
       if (!items) return [];
@@ -71,19 +71,22 @@ const Combobox = React.forwardRef<
       return fuse.search(search).map((result) => result.item);
     }, [search, items]);
 
-    function onItemToggle(listItem: ComboboxOption) {
-      const current = selectedItemsProp ?? selectedItems;
-      const isSelected = current.some((i) => i.value === listItem.value);
-      const updated = isSelected
-        ? current.filter((i) => i.value !== listItem.value)
-        : [...current, listItem];
+    const onItemToggle = React.useCallback(
+      (listItem: ComboboxOption) => {
+        const current = selectedItemsProp ?? selectedItems;
+        const isSelected = current.some((i) => i.value === listItem.value);
+        const updated = isSelected
+          ? current.filter((i) => i.value !== listItem.value)
+          : [...current, listItem];
 
-      if (onSelectedItemsChange) {
-        onSelectedItemsChange(updated);
-      } else {
-        setSelectedItems(updated);
-      }
-    }
+        if (onSelectedItemsChange) {
+          onSelectedItemsChange(updated);
+        } else {
+          setSelectedItems(updated);
+        }
+      },
+      [selectedItemsProp, selectedItems, onSelectedItemsChange]
+    );
 
     const renderItem = React.useCallback(
       ({ item }: ListRenderItemInfo<unknown>) => {
@@ -112,7 +115,7 @@ const Combobox = React.forwardRef<
           </Button>
         );
       },
-      [selectedItems, selectedItemsProp]
+      [selectedItems, selectedItemsProp, onItemToggle]
     );
 
     const isAllSelected = (selectedItemsProp ?? selectedItems).length === items.length;

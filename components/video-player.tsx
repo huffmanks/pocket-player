@@ -87,7 +87,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
             ref={videoRef}
             style={{ flex: 1 }}
             player={player}
-            allowsFullscreen
+            nativeControls
             allowsPictureInPicture
           />
         </View>
@@ -98,7 +98,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
               ref={videoRef}
               style={{ flex: 1 }}
               player={player}
-              allowsFullscreen={false}
+              fullscreenOptions={{ enable: false }}
               allowsPictureInPicture
               nativeControls={false}
             />

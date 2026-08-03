@@ -1,5 +1,5 @@
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
+import { Directory, File, Paths } from "expo-file-system";
 import { useFocusEffect } from "expo-router";
 import { getVideoInfoAsync } from "expo-video-metadata";
 import * as VideoThumbnails from "expo-video-thumbnails";
@@ -7,7 +7,7 @@ import { useCallback } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldErrors, useForm } from "react-hook-form";
+import { FieldErrors, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -15,7 +15,6 @@ import { useShallow } from "zustand/react/shallow";
 import { VIDEOS_DIR } from "@/lib/constants";
 import { CircleXIcon, CloudUploadIcon, ImportIcon } from "@/lib/icons";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
-import { ensureDirectory, requestPermissions } from "@/lib/upload";
 import {
   delay,
   formatDuration,
@@ -73,6 +72,12 @@ export default function UploadForm() {
     },
   });
 
+  const uploadedVideos = useWatch({
+    control: form.control,
+    name: "videos",
+    defaultValue: [],
+  });
+
   async function selectVideoFiles(
     setVideoFields: (
       videos: {
@@ -99,11 +104,10 @@ export default function UploadForm() {
       setIsLocked(false);
       setIsLockDisabled(true);
 
-      const { isError } = await ensureDirectory(VIDEOS_DIR, true);
-
-      if (isError) return;
-
-      if (!(await requestPermissions())) return;
+      const videosDir = new Directory(Paths.document, "videos");
+      if (!videosDir.exists) {
+        videosDir.create();
+      }
 
       const result = await DocumentPicker.getDocumentAsync({
         type: "video/*",
@@ -151,7 +155,7 @@ export default function UploadForm() {
 
         setVideoFields(videos);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error trying to upload!");
     } finally {
       await delay(100);
@@ -160,21 +164,51 @@ export default function UploadForm() {
     }
   }
 
+  const handleReset = useCallback(() => {
+    const prevVideos = form.getValues("videos");
+
+    prevVideos.forEach(({ title, fileExtension }) => {
+      try {
+        const cacheVideoFile = new File(Paths.cache, `${title}.${fileExtension}`);
+
+        if (cacheVideoFile.exists) {
+          cacheVideoFile.delete();
+        }
+      } catch (_error) {}
+    });
+
+    form.reset();
+  }, [form]);
+
   async function onSubmit(values: UploadVideosFormData) {
+    const videosDir = new Directory(Paths.document, "videos");
+    if (!videosDir.exists) {
+      videosDir.create();
+    }
+
     const promise = (async () => {
       const processedVideos = await Promise.all(
         values.videos.map(async (video) => {
-          const newVideoUri = `${VIDEOS_DIR}${video.title}.${video.fileExtension}`;
-          await FileSystem.copyAsync({ from: video.videoUri, to: newVideoUri });
+          const sourceVideoFile = new File(video.videoUri);
+          const targetVideoFile = new File(`${VIDEOS_DIR}${video.title}.${video.fileExtension}`);
 
-          const { uri: tempThumbUri } = await VideoThumbnails.getThumbnailAsync(newVideoUri, {
-            time: 3000,
-          });
-          await FileSystem.moveAsync({ from: tempThumbUri, to: video.thumbUri });
+          sourceVideoFile.copy(targetVideoFile);
+
+          const { uri: tempThumbUri } = await VideoThumbnails.getThumbnailAsync(
+            targetVideoFile.uri,
+            {
+              time: 3000,
+            }
+          );
+
+          const tempThumbFile = new File(tempThumbUri);
+          const targetThumbFile = new File(video.thumbUri);
+
+          tempThumbFile.move(targetThumbFile);
 
           return {
             ...video,
-            videoUri: newVideoUri,
+            videoUri: targetVideoFile.uri,
           };
         })
       );
@@ -195,24 +229,6 @@ export default function UploadForm() {
     promise.finally(handleReset);
   }
 
-  async function handleReset() {
-    const prevVideos = form.getValues("videos");
-
-    await Promise.all(
-      prevVideos.map(async ({ title, fileExtension }) => {
-        try {
-          const cacheVideoUri = `${FileSystem.cacheDirectory}${title}.${fileExtension}`;
-          if (cacheVideoUri && (await FileSystem.getInfoAsync(cacheVideoUri)).exists) {
-            await FileSystem.deleteAsync(cacheVideoUri, { idempotent: true });
-          }
-        } catch (error) {
-        } finally {
-          form.reset();
-        }
-      })
-    );
-  }
-
   function handleErrors(_errors: FieldErrors<UploadVideosFormData>) {
     toast.error("Something went wrong!");
   }
@@ -220,10 +236,9 @@ export default function UploadForm() {
   useFocusEffect(
     useCallback(() => {
       return () => handleReset();
-    }, [])
+    }, [handleReset])
   );
 
-  const uploadedVideos = form.watch("videos");
   const isValid = uploadedVideos.length > 0;
 
   return (
@@ -232,7 +247,7 @@ export default function UploadForm() {
         <FormField
           control={form.control}
           name="videos"
-          render={({ field }) => (
+          render={() => (
             <View className="justify-center rounded-lg border-[16px] border-primary-foreground bg-secondary">
               <View className="justify-center rounded-lg border border-dashed border-muted-foreground">
                 <Button

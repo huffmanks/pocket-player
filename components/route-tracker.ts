@@ -17,7 +17,7 @@ export function RouteTracker() {
     if (!EXCLUDED_PATHS.includes(pathname)) {
       setLastVisitedPath(pathname);
     }
-  }, [isAppReady, isLocked, pathname]);
+  }, [isAppReady, isLocked, pathname, setLastVisitedPath]);
 
   return null;
 }
