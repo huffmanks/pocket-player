@@ -5,13 +5,21 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Gesture } from "react-native-gesture-handler";
-// TODO
-import { runOnUI, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { secondsToAdaptiveTime } from "@/lib/utils";
+
+function setPlayerCurrentTime(targetPlayer: ReturnType<typeof useVideoPlayer>, time: number) {
+  targetPlayer.currentTime = time;
+}
+
+function togglePlayerMute(targetPlayer: ReturnType<typeof useVideoPlayer>) {
+  targetPlayer.muted = !targetPlayer.muted;
+}
 
 export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: boolean) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -37,19 +45,13 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     }))
   );
 
-  function updateControlsVisible(newValue: number) {
-    runOnUI(() => {
-      controlsVisible.value = newValue;
-    })();
-  }
-
   const player = useVideoPlayer(videoSources[currentIndex].videoUri, (p) => {
     p.timeUpdateEventInterval = 0.5;
     p.loop = !isPlaylist && (loop ?? false);
     p.muted = !!isThumbView || mute;
 
     if ((autoPlay || isPlaylist) && !isThumbView) {
-      updateControlsVisible(0);
+      controlsVisible.value = 0;
       p.play();
     } else {
       p.pause();
@@ -62,60 +64,14 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     oldStatus: player.status,
   });
 
-  useEventListener(player, "playToEnd", handlePlayToEnd);
-  useEventListener(player, "timeUpdate", ({ currentTime }) => {
-    const duration = player.duration;
-
-    if (duration > 0) {
-      setProgress(currentTime / duration);
-      setTime(secondsToAdaptiveTime(currentTime));
-    }
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      if (isThumbView) return;
-
-      const enableOrientation = async () => {
-        if (!overrideOrientation) {
-          await ScreenOrientation.unlockAsync();
-          return;
-        }
-
-        const orientation =
-          videoSources[currentIndex].orientation === "Landscape"
-            ? ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
-            : ScreenOrientation.OrientationLock.PORTRAIT_UP;
-
-        await ScreenOrientation.lockAsync(orientation);
-      };
-
-      const disableOrientation = async () => {
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-      };
-
-      enableOrientation();
-
-      if (isNativeControls) {
-        setIsLockDisabled(true);
-      }
-
-      return () => {
-        disableOrientation();
-        setIsLockDisabled(false);
-      };
-    }, [currentIndex])
+  const updateControlsVisible = useCallback(
+    (newValue: number) => {
+      controlsVisible.set(newValue);
+    },
+    [controlsVisible]
   );
 
-  useEffect(() => {
-    if (!isPlaying || isButtonTouched) return;
-
-    const timeout = setTimeout(() => updateControlsVisible(0), 5000);
-
-    return () => clearTimeout(timeout);
-  }, [isPlaying, isButtonTouched, controlsVisible]);
-
-  function handlePlayToEnd() {
+  const handlePlayToEnd = useCallback(() => {
     if (isThumbView) return;
 
     if (status === "readyToPlay" && oldStatus === "loading") {
@@ -139,16 +95,80 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
         return next;
       });
     }
-  }
+  }, [
+    currentIndex,
+    isThumbView,
+    loop,
+    oldStatus,
+    player,
+    status,
+    updateControlsVisible,
+    videoSources,
+  ]);
+
+  useEventListener(player, "playToEnd", handlePlayToEnd);
+  useEventListener(player, "timeUpdate", ({ currentTime }) => {
+    const duration = player.duration;
+
+    if (duration > 0) {
+      setProgress(currentTime / duration);
+      setTime(secondsToAdaptiveTime(currentTime));
+    }
+  });
+
+  const currentOrientation = videoSources[currentIndex]?.orientation;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isThumbView) return;
+
+      let isMounted = true;
+
+      const enableOrientation = async () => {
+        if (!overrideOrientation) {
+          await ScreenOrientation.unlockAsync();
+          return;
+        }
+
+        const targetOrientation =
+          currentOrientation === "Landscape"
+            ? ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
+            : ScreenOrientation.OrientationLock.PORTRAIT_UP;
+
+        if (isMounted) {
+          await ScreenOrientation.lockAsync(targetOrientation);
+        }
+      };
+
+      enableOrientation();
+
+      if (isNativeControls) {
+        setIsLockDisabled(true);
+      }
+
+      return () => {
+        isMounted = false;
+        ScreenOrientation.unlockAsync();
+        setIsLockDisabled(false);
+      };
+    }, [currentOrientation, isNativeControls, isThumbView, overrideOrientation, setIsLockDisabled])
+  );
+
+  useEffect(() => {
+    if (!isPlaying || isButtonTouched) return;
+
+    const timeout = setTimeout(() => updateControlsVisible(0), 5000);
+
+    return () => clearTimeout(timeout);
+  }, [isPlaying, isButtonTouched, updateControlsVisible]);
 
   function onSliderChange(value: number) {
     const duration = player.duration;
-    const currentTime = value * duration;
+    const targetTime = value * duration;
 
-    // TODO
-    player.currentTime = currentTime;
-    setProgress(currentTime / duration);
-    setTime(secondsToAdaptiveTime(currentTime));
+    setPlayerCurrentTime(player, targetTime);
+    setProgress(value);
+    setTime(secondsToAdaptiveTime(targetTime));
   }
 
   function onSlidingStart() {
@@ -171,7 +191,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   }
 
   function toggleMute() {
-    player.muted = !player.muted;
+    togglePlayerMute(player);
   }
 
   function togglePlay() {
@@ -214,12 +234,16 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   }
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(controlsVisible.value, { duration: 300 }),
+    opacity: withTiming(controlsVisible.get(), { duration: 300 }),
   }));
+
+  function toggleControls() {
+    updateControlsVisible(controlsVisible.get() === 1 ? 0 : 1);
+  }
 
   const tapGesture = Gesture.Tap().onEnd((_, success) => {
     if (success && !isButtonTouched) {
-      controlsVisible.value = controlsVisible.value === 1 ? 0 : 1;
+      scheduleOnRN(toggleControls);
     }
   });
 

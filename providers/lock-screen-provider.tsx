@@ -12,8 +12,10 @@ import { delay } from "@/lib/utils";
 
 export function LockScreenProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+
   const appState = useRef(AppState.currentState);
   const backgroundTimestamp = useRef<number | null>(null);
+  const hasRestoredRoute = useRef(false);
 
   const { dismissAll } = useBottomSheetModal();
 
@@ -80,7 +82,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
   }, [handleAppStateChange, isLockDisabled, isLockable]);
 
   useEffect(() => {
-    if (!isAppReady) return;
+    if (!isAppReady || hasRestoredRoute.current) return;
 
     async function restorePreviousRoute() {
       try {
@@ -95,6 +97,7 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
       } catch (_error) {
         toast.error("Restoring previous route failed.");
       } finally {
+        hasRestoredRoute.current = true;
         await SplashScreen.hideAsync();
       }
     }

@@ -1,40 +1,22 @@
 import { type Href, router } from "expo-router";
 
-import { delay } from "@/lib/utils";
-
 interface HandleRedirectProps {
   lastVisitedPath: string;
   previousVisitedPath: string;
 }
+const DEFAULT_FALLBACK: Href = "/(tabs)/videos";
 
 export default async function handleRedirect({
   lastVisitedPath,
   previousVisitedPath,
 }: HandleRedirectProps) {
-  if (
-    (lastVisitedPath.startsWith("/playlists/") && lastVisitedPath.endsWith("/edit")) ||
-    (lastVisitedPath.startsWith("/playlists/") && lastVisitedPath.endsWith("/watch"))
-  ) {
-    const playlistViewPath = lastVisitedPath.replace(/[^/]+$/, "view");
+  const targetPath = (lastVisitedPath || previousVisitedPath || DEFAULT_FALLBACK) as Href;
 
-    router.replace("/(tabs)/playlists");
-    await delay(10);
-    router.push(playlistViewPath as Href);
-    await delay(10);
-    router.push(lastVisitedPath as Href);
-    await delay(250);
-  } else if (lastVisitedPath.startsWith("/playlists/")) {
-    router.replace("/(tabs)/playlists");
-    await delay(10);
-    router.push(lastVisitedPath as Href);
-    await delay(250);
-  } else if (lastVisitedPath.startsWith("/videos/")) {
-    router.replace(previousVisitedPath as Href);
-    await delay(10);
-    router.push(lastVisitedPath as Href);
-    await delay(250);
-  } else {
-    router.push(lastVisitedPath as Href);
-    await delay(250);
+  if (typeof targetPath === "string" && targetPath.includes("/modal")) {
+    const fallbackPath = (previousVisitedPath || DEFAULT_FALLBACK) as Href;
+    router.replace(fallbackPath);
+    return;
   }
+
+  router.replace(targetPath);
 }

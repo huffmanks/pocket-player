@@ -120,7 +120,8 @@ export default function UploadForm() {
             const filename = splitFilename(name);
             const title = filename[0];
             const fileExtension = filename[1];
-            const thumbUri = `${VIDEOS_DIR}${title}.jpg`;
+
+            const thumbFile = new File(VIDEOS_DIR, `${title}.jpg`);
 
             const videoMeta = await getVideoInfoAsync(uri);
 
@@ -135,7 +136,7 @@ export default function UploadForm() {
             return {
               title,
               videoUri: uri,
-              thumbUri,
+              thumbUri: thumbFile.uri,
               fileExtension,
               fileSize,
               fileSizeLabel,
@@ -190,25 +191,44 @@ export default function UploadForm() {
       const processedVideos = await Promise.all(
         values.videos.map(async (video) => {
           const sourceVideoFile = new File(video.videoUri);
-          const targetVideoFile = new File(`${VIDEOS_DIR}${video.title}.${video.fileExtension}`);
+          const targetVideoFile = new File(VIDEOS_DIR, `${video.title}.${video.fileExtension}`);
+
+          if (targetVideoFile.exists) {
+            targetVideoFile.delete();
+          }
 
           sourceVideoFile.copy(targetVideoFile);
 
-          const { uri: tempThumbUri } = await VideoThumbnails.getThumbnailAsync(
-            targetVideoFile.uri,
-            {
-              time: 3000,
-            }
-          );
+          const durationMs = video.duration > 1000 ? video.duration : video.duration * 1000;
+          const safeTime =
+            durationMs > 0 ? Math.min(3000, Math.max(0, Math.floor(durationMs / 2))) : 0;
+
+          let tempThumbUri: string;
+          try {
+            const thumbResult = await VideoThumbnails.getThumbnailAsync(targetVideoFile.uri, {
+              time: safeTime,
+            });
+            tempThumbUri = thumbResult.uri;
+          } catch (_err) {
+            const thumbResult = await VideoThumbnails.getThumbnailAsync(targetVideoFile.uri, {
+              time: 0,
+            });
+            tempThumbUri = thumbResult.uri;
+          }
 
           const tempThumbFile = new File(tempThumbUri);
           const targetThumbFile = new File(video.thumbUri);
+
+          if (targetThumbFile.exists) {
+            targetThumbFile.delete();
+          }
 
           tempThumbFile.move(targetThumbFile);
 
           return {
             ...video,
             videoUri: targetVideoFile.uri,
+            thumbUri: targetThumbFile.uri,
           };
         })
       );

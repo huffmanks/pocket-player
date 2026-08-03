@@ -128,10 +128,9 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       });
 
       const fileId = createId();
-      const newUri = `${VIDEOS_DIR}${videoInfo.title}-${fileId}.jpg`;
+      const targetThumbFile = new File(VIDEOS_DIR, `${videoInfo.title}-${fileId}.jpg`);
 
       const tempThumbFile = new File(uri);
-      const targetThumbFile = new File(newUri);
       tempThumbFile.move(targetThumbFile);
 
       const oldThumbFile = new File(videoInfo.thumbUri);
@@ -143,7 +142,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         id: videoInfo.id,
         values: {
           ...parsedValues,
-          thumbUri: newUri,
+          thumbUri: targetThumbFile.uri,
           thumbTimestamp,
           orientation: values.orientation.value,
           createdAt: values.createdAt.toISOString(),

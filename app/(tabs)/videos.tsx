@@ -1,6 +1,6 @@
 import { Link, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
+import { View } from "react-native";
 
 import { FlashList, ViewToken } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -27,10 +27,8 @@ export default function VideosScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const flashListRef = useRef<React.ComponentRef<typeof FlashList<VideoMeta>> | null>(null);
-  const hasRenderedOnce = useRef(false);
   const hasUserScrolled = useRef(false);
   const canSaveScroll = useRef(false);
-  const hasRestoredScroll = useRef(false);
   const insets = useSafeAreaInsets();
 
   const isLocked = useSecurityStore((state) => state.isLocked);
@@ -55,6 +53,26 @@ export default function VideosScreen() {
       setScrollPosition: state.setScrollPosition,
     }))
   );
+
+  const [initialScrollIndex] = useState(() => (scrollPosition > 0 ? scrollPosition : 0));
+
+  const saveScrollIndex = useRef(
+    throttle((index: number) => {
+      setScrollPosition(index);
+    }, 150)
+  ).current;
+
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken<VideoMeta>[] }) => {
+      hasUserScrolled.current = true;
+      if (!canSaveScroll.current || isLocked) return;
+      if (viewableItems.length > 0 && viewableItems[0].index != null) {
+        saveScrollIndex(viewableItems[0].index);
+      }
+    },
+    [isLocked, saveScrollIndex]
+  );
+
   const db = useDatabaseStore.getState().db;
 
   const videosQuery = useLiveQuery(
@@ -115,17 +133,7 @@ export default function VideosScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
-  function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    hasUserScrolled.current = true;
-    if (!canSaveScroll.current || isLocked) return;
-    saveScrollY(e.nativeEvent.contentOffset.y);
-  }
-
-  const saveScrollY = useRef(
-    throttle((y: number) => {
-      setScrollPosition(y);
-    }, 150)
-  ).current;
+  const isDataReady = videosExist && sortedData.length > 0;
 
   function handleSortDate() {
     setSortKey("date");
@@ -151,43 +159,11 @@ export default function VideosScreen() {
     [playlistsQuery?.data]
   );
 
-  const restoreScroll = useCallback(() => {
-    if (
-      hasRestoredScroll.current ||
-      hasUserScrolled.current ||
-      !flashListRef.current ||
-      scrollPosition < 0
-    )
-      return;
-
-    flashListRef.current.scrollToOffset({
-      offset: scrollPosition,
-      animated: false,
-    });
-  }, [scrollPosition]);
-
-  const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken<VideoMeta>[] }) => {
-      if (!hasRenderedOnce.current && viewableItems.length > 0) {
-        requestAnimationFrame(() => {
-          restoreScroll();
-          hasRenderedOnce.current = true;
-          hasRestoredScroll.current = true;
-          canSaveScroll.current = true;
-        });
-      }
-    },
-    [restoreScroll]
-  );
-
   useFocusEffect(
     useCallback(() => {
-      hasRestoredScroll.current = false;
+      canSaveScroll.current = true;
 
       return () => {
-        hasRenderedOnce.current = false;
-        hasUserScrolled.current = false;
-        hasRestoredScroll.current = false;
         canSaveScroll.current = false;
       };
     }, [])
@@ -208,15 +184,17 @@ export default function VideosScreen() {
         />
       )}
       <FlashList
+        key={isDataReady ? "loaded" : "loading"}
         data={sortedData}
         ref={flashListRef}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         showsVerticalScrollIndicator={false}
-        scrollEventThrottle={150}
-        onScroll={handleScroll}
         onViewableItemsChanged={onViewableItemsChanged}
+        initialScrollIndex={
+          isDataReady && initialScrollIndex < sortedData.length ? initialScrollIndex : undefined
+        }
         ListHeaderComponent={
           <ListHeaderComponent
             videosExist={videosExist}
