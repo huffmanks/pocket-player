@@ -40,6 +40,7 @@
     "drizzle-orm": "^0.36.4",
     "drizzle-zod": "^0.5.1",
     "expo": "~57.0.10",
+    "expo-build-properties": "^57.0.8",
     "expo-constants": "~57.0.9",
     "expo-dev-client": "^57.0.10",
     "expo-document-picker": "^57.0.1",

@@ -1,3 +1,6 @@
+# Automatically load environment variables from .env
+set dotenv-load
+
 # Automatically read version from package.json using Node
 APP_VERSION := `node -p "require('./package.json').version"`
 APP_NAME := "PocketPlayer"
@@ -10,71 +13,76 @@ default:
 
 # Interactive browser login to EAS CLI
 login:
-    pnpm dlx eas-cli login -b
+    pnpx eas-cli login -b
 
 # Fetch and manage project credentials interactively
 credentials:
-    pnpm dlx eas-cli credentials
+    pnpx eas-cli credentials
 
-# --- DEVICE CONFIGURATION ---
+# --- ENVIRONMENT & DEVICE CONFIGURATION ---
 
-# Extract connected device specs for bundletool optimization
-get-device-spec output_path="device-spec2.json":
-    @echo "Extracting connected device specifications..."
-    adb get-state > /dev/null 2>&1 || (echo "Error: No ADB device connected." && exit 1)
+# Print exact toolchain, SDKs and runtime versions driving current builds
+doctor:
+    sh ./build-environment.sh
+
+# Manually extract connected device specs
+get-device-spec output_path="device-spec_adb.json":
     bundletool get-device-spec --output={{ output_path }}
-    @echo "Device spec saved to {{ output_path }}"
 
 # --- BUILDS ---
 
 # Build production/optimized AAB bundle locally
 build-aab:
     mkdir -p builds
-    pnpm dlx eas-cli build --clear-cache --platform android --profile preview-bundle --local
+    pnpm dlx eas-cli build --clear-cache --platform android --profile preview-bundle --local --output="builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab"
 
-# 2. Extract Universal APK from AAB with Versioning
+# Extract Universal APK from AAB with Versioning
 extract-universal-apk aab_file:
     mkdir -p builds
     @echo "Extracting Universal APK for {{ APP_NAME }} v{{ APP_VERSION }}..."
-    bundletool build-apks --bundle={{ aab_file }} --output=builds/universal.apks --mode=universal --overwrite
-    unzip -p builds/universal.apks universal.apk > "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk"
+
+    bundletool build-apks --bundle={{ aab_file }} --output=builds/universal.apks --mode=universal --overwrite \
+        --ks=$KEYSTORE --ks-pass=pass:$KEYSTORE_PASS --ks-key-alias=$KEY_ALIAS --key-pass=pass:$KEY_PASS
+
+    unzip -q -o builds/universal.apks universal.apk -d builds
+
+    mv "builds/universal.apk" "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk"
+
     rm builds/universal.apks
     @echo "Created: builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk"
 
-# 3. Extract arm64-v8a APK from AAB with Versioning
-extract-arm64-apk aab_file spec_file="device-spec.json":
-    mkdir -p builds
-    @echo "Extracting arm64-v8a APK for {{ APP_NAME }} v{{ APP_VERSION }}..."
-    bundletool build-apks --bundle={{ aab_file }} --output=builds/arm64.apks --device-spec={{ spec_file }} --overwrite
-    unzip -p builds/arm64.apks standalones/standalone-arm64_v8a.apk > "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-arm64-v8a.apk" 2>/dev/null || \
-    unzip -p builds/arm64.apks universal.apk > "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-arm64-v8a.apk"
-    rm builds/arm64.apks
-    @echo "Created: builds/{{ APP_NAME }}-v{{ APP_VERSION }}-arm64-v8a.apk"
-
-# Extract BOTH APKs from an AAB file
-extract-all-apks aab_file:
-    just extract-universal-apk {{ aab_file }}
-    just extract-arm64-apk {{ aab_file }}
+# Build AAB and automatically extract APKs
+build-and-extract:
+    just build-aab
+    just extract-universal-apk "builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab"
 
 # --- DEPLOYMENT & GITHUB RELEASES ---
 
-# Deploy extracted APK directly to connected device via ADB
-deploy-apk apk_file:
-    @echo "Installing APK to connected device..."
-    adb install -r {{ apk_file }}
+# Deploy Universal APK directly
+deploy-universal:
+    just deploy-apk "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk"
 
 # Create GitHub Release based on package.json version
-# Usage: just release-github path/to/your.aab
-release-github aab_file:
-    @command -v gh >/dev/null 2>&1 || { echo "Error: GitHub CLI (gh) is not installed."; exit 1; }
+# Usage: just release-github
+release-github:
+    #!/usr/bin/env bash
+    set -euo pipefail
 
-    # 1. First extract both APKs from the AAB
-    just extract-all-apks {{ aab_file }}
+    command -v gh >/dev/null 2>&1 || { echo "Error: GitHub CLI (gh) is not installed."; exit 1; }
 
-    # 2. Tag and publish to GitHub Releases
-    @echo "Creating GitHub Release v{{ APP_VERSION }}..."
+    echo "Creating GitHub Release v{{ APP_VERSION }}..."
+
+    PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)
+
+    if [[ -n "$PREV_TAG" ]]; then
+        git log "$PREV_TAG..HEAD" --oneline > release-notes.txt
+    else
+        git log -n 10 --oneline > release-notes.txt
+    fi
+
     gh release create "v{{ APP_VERSION }}" \
         "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk" \
-        "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-arm64-v8a.apk" \
         --title "{{ APP_NAME }} v{{ APP_VERSION }}" \
-        --notes "Release {{ APP_NAME }} v{{ APP_VERSION }} with Universal and arm64-v8a APKs."
+        --notes-file release-notes.txt
+
+    rm release-notes.txt

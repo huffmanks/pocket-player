@@ -37,45 +37,59 @@ Android app to locally store and watch videos.
 
 Download the latest APK from the [Releases](https://github.com/huffmanks/pocket-player/releases) page and install it on your Android device.
 
-### Option 2: Build a device-specific APK
+### Option 2: Build and deploy locally
 
-You can generate a smaller, optimized APK for your specific device using the provided `generate-device-apk.sh` script:
-
-1. **Build the AAB with EAS**
+1. **Clone the repository**
 
    ```sh
-   # use --local to build on device.
-   eas build -p android --profile preview
+   git clone https://github.com/huffmanks/pocket-player.git
+   cd pocket-player
    ```
 
-2. **Download the .aab file (if built via expo.dev)**
-
-   - Place it in the root directory. You can skip this step if you built it locally.
-
-3. **Get credentials.json and keystore.jks**
+2. **Create your environment file**
 
    ```sh
-   eas credentials -p android
+   cp example.env .env
    ```
 
-4. **Create .env.local**
-
-   - Copy the example .env file and update its values with those from credentials.json.
-
-   ```env
-   cp example.env .env.local
-   ```
-
-5. **Make script executable**
+3. **Log in to EAS (if needed)**
 
    ```sh
-   chmod +x generate-device-apk.sh
+   just login
    ```
 
-6. **Run script**
+4. **Configure Android credentials (if needed)**
 
    ```sh
-   ./generate-device-apk.sh
+   just credentials
+   ```
+
+5. **Generate your device specification**
+
+   Connect your Android device with USB debugging enabled, then run:
+
+   ```sh
+   just get-device-spec
+   ```
+
+6. **Build the app and extract APKs**
+
+   ```sh
+   just build-and-extract
+   ```
+
+7. **Install the APK**
+
+   Install the optimized device-specific APK:
+
+   ```sh
+   just deploy-arm64
+   ```
+
+   Or install the universal APK instead:
+
+   ```sh
+   just deploy-universal
    ```
 
 ## Roadmap
