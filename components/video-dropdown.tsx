@@ -1,14 +1,6 @@
 import { useRouter } from "expo-router";
 import { View } from "react-native";
 
-import Animated, { FadeIn } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { toast } from "sonner-native";
-import { useShallow } from "zustand/react/shallow";
-
-import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { BOTTOM_TABS_OFFSET, NAV_THEME } from "@/lib/constants";
 import {
   CheckIcon,
   EllipsisVerticalIcon,
@@ -17,8 +9,17 @@ import {
   StarIcon,
   TrashIcon,
   TvIcon,
-} from "@/lib/icons";
+} from "lucide-react-native";
+import { useColorScheme } from "nativewind";
+import Animated, { FadeIn } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { toast } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
+
+import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
+import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
 import { usePlaylistStore, useVideoStore } from "@/lib/store";
+import { NAV_THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 import {
@@ -45,6 +46,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 interface VideoDropdownProps {
@@ -59,6 +61,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colorScheme } = useColorScheme();
+  const safeColorScheme = colorScheme ?? "dark";
 
   const contentInsets = {
     top: insets.top + BOTTOM_TABS_OFFSET,
@@ -129,7 +132,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
           className="px-0.5 py-1"
           variant="ghost"
           size="unset">
-          <EllipsisVerticalIcon
+          <Icon
+            as={EllipsisVerticalIcon}
             className="text-foreground"
             size={20}
             strokeWidth={1.5}
@@ -149,7 +153,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
           <DropdownMenuItem
             className="gap-4"
             onPress={() => router.push(`/(screens)/videos/${item.id}/watch`)}>
-            <TvIcon
+            <Icon
+              as={TvIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.5}
@@ -159,7 +164,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
           <DropdownMenuItem
             className="gap-4"
             onPress={() => router.push(`/(screens)/videos/${item.id}/edit`)}>
-            <PencilIcon
+            <Icon
+              as={PencilIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.5}
@@ -169,9 +175,10 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
           <DropdownMenuItem
             className="gap-4"
             onPress={handleFavorite}>
-            <StarIcon
+            <Icon
+              as={StarIcon}
               className="text-foreground"
-              fill={item.isFavorite ? NAV_THEME[colorScheme].text : "none"}
+              fill={item.isFavorite ? NAV_THEME[safeColorScheme].text : "none"}
               size={20}
               strokeWidth={1.5}
             />
@@ -200,7 +207,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
                       )}
                       onPress={() => handleVideoPlaylist(playlist.value)}>
                       <View className="flex-1 flex-row items-center gap-4">
-                        <ListMusicIcon
+                        <Icon
+                          as={ListMusicIcon}
                           className="text-foreground"
                           size={20}
                           strokeWidth={1.5}
@@ -213,7 +221,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
                       </View>
                       <View>
                         {item?.playlists?.includes(playlist.value) && (
-                          <CheckIcon
+                          <Icon
+                            as={CheckIcon}
                             size={20}
                             strokeWidth={1.5}
                             className={"text-foreground"}
@@ -237,7 +246,8 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
                 className="w-full flex-1 flex-row justify-start gap-4 rounded-sm p-2"
                 size="unset"
                 variant="ghost">
-                <TrashIcon
+                <Icon
+                  as={TrashIcon}
                   className="text-destructive"
                   size={20}
                   strokeWidth={1.5}

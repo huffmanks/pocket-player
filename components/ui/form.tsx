@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Pressable, View } from "react-native";
 
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import DateTimePicker, { DateTimePickerChangeEvent } from "@react-native-community/datetimepicker";
+import { CalendarIcon } from "lucide-react-native";
 import {
   Controller,
   ControllerProps,
@@ -13,12 +14,12 @@ import {
 } from "react-hook-form";
 import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
 
-import { CalendarIcon } from "@/lib/icons";
 import { cn, formatDateString } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox, ComboboxOption } from "@/components/ui/combobox";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup } from "@/components/ui/radio-group";
@@ -231,7 +232,7 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
       setIsInvalid(!validateDate(inputValue));
     }
 
-    function handleChange(_e: DateTimePickerEvent, selectedDate?: Date) {
+    function handleChange(_e: DateTimePickerChangeEvent, selectedDate?: Date) {
       setShow(false);
       if (selectedDate) {
         onChange(selectedDate);
@@ -276,7 +277,8 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
               variant="ghost"
               size="icon"
               onPress={showDatepicker}>
-              <CalendarIcon
+              <Icon
+                as={CalendarIcon}
                 className={cn(
                   isInvalid && isTouched ? "text-destructive" : "text-brand-foreground"
                 )}
@@ -298,7 +300,7 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
             aria-invalid={!!error || isInvalid}
             value={value}
             mode="date"
-            onChange={handleChange}
+            onValueChange={handleChange}
           />
         )}
 

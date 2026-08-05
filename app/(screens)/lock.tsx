@@ -1,8 +1,12 @@
 import * as Haptics from "expo-haptics";
 import * as LocalAuthentication from "expo-local-authentication";
+import { NavigationBar } from "expo-navigation-bar";
+import { useFocusEffect } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Image, Pressable, View } from "react-native";
 
+import { DeleteIcon, ScanFaceIcon } from "lucide-react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -15,11 +19,11 @@ import { useShallow } from "zustand/react/shallow";
 
 import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
 import handleRedirect from "@/lib/handle-redirect";
-import { DeleteIcon, ScanFaceIcon } from "@/lib/icons";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import KeypadRow from "@/components/keypad-row";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 export default function LockScreen() {
@@ -103,6 +107,22 @@ export default function LockScreen() {
     }
   }, [code, passcode, triggerShakeAnimation, handleUnlockApp, handleErrorShake]);
 
+  useFocusEffect(
+    useCallback(() => {
+      try {
+        NavigationBar.setHidden(true);
+        StatusBar.setHidden(true);
+      } catch (_error) {}
+
+      return () => {
+        try {
+          NavigationBar.setHidden(false);
+          StatusBar.setHidden(false);
+        } catch (_error) {}
+      };
+    }, [])
+  );
+
   return (
     <SafeAreaView style={{ marginTop: insets.top + 40 }}>
       <View className="mb-12 items-center justify-center">
@@ -143,7 +163,8 @@ export default function LockScreen() {
           <Pressable
             className="flex items-center justify-center rounded-full px-5 py-4"
             onPress={handleBiometricPress}>
-            <ScanFaceIcon
+            <Icon
+              as={ScanFaceIcon}
               size={26}
               className="text-foreground"
             />
@@ -163,7 +184,8 @@ export default function LockScreen() {
             onPress={handleBackspacePress}
             onPressIn={() => setIsPressed(true)}
             onPressOut={() => setIsPressed(false)}>
-            <DeleteIcon
+            <Icon
+              as={DeleteIcon}
               size={26}
               className={cn("text-foreground", code.length < 1 && "text-muted-foreground")}
             />

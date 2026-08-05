@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 
 import * as SwitchPrimitives from "@rn-primitives/switch";
 import { VariantProps, cva } from "class-variance-authority";
+import { useColorScheme } from "nativewind";
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -10,8 +11,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { NAV_THEME } from "@/lib/constants";
+import { NAV_THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 const switchVariants = cva("rounded-full", {
@@ -68,6 +68,7 @@ SwitchWeb.displayName = "SwitchWeb";
 const SwitchNative = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root>, SwitchProps>(
   ({ className, size = "default", ...props }, ref) => {
     const { colorScheme } = useColorScheme();
+    const safeColorScheme = colorScheme ?? "dark";
 
     const TRANSLATE_X_DISTANCE = size === "lg" ? 26 : size === "mega" ? 34 : 18;
 
@@ -77,7 +78,7 @@ const SwitchNative = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.R
         backgroundColor: interpolateColor(
           translateX.value,
           [0, TRANSLATE_X_DISTANCE],
-          [NAV_THEME[colorScheme].border, NAV_THEME[colorScheme].primary]
+          [NAV_THEME[safeColorScheme].border, NAV_THEME[safeColorScheme].primary]
         ),
       };
     });

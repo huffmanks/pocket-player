@@ -6,6 +6,7 @@ import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
+import { SaveIcon, TrashIcon } from "lucide-react-native";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
@@ -14,7 +15,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
 import { BOTTOM_TABS_OFFSET, VIDEOS_DIR, orientationOptions } from "@/lib/constants";
-import { SaveIcon, TrashIcon } from "@/lib/icons";
 import { useVideoStore } from "@/lib/store";
 
 import {
@@ -37,6 +37,7 @@ import {
   FormSelect,
   FormSwitch,
 } from "@/components/ui/form";
+import { Icon } from "@/components/ui/icon";
 import { Label } from "@/components/ui/label";
 import {
   SelectContent,
@@ -275,7 +276,8 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                   disabled={isSubmitting}
                   variant="secondary"
                   className="flex w-full flex-row items-center justify-center gap-4">
-                  <TrashIcon
+                  <Icon
+                    as={TrashIcon}
                     className="text-foreground"
                     size={24}
                     strokeWidth={1.5}
@@ -312,7 +314,8 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
               disabled={isSubmitting}
               className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
               onPress={handleSubmitPress}>
-              <SaveIcon
+              <Icon
+                as={SaveIcon}
                 className="text-white"
                 size={24}
                 strokeWidth={1.5}

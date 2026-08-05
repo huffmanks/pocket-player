@@ -3,15 +3,16 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { EyeIcon, EyeOffIcon, KeyRoundIcon, LockIcon } from "lucide-react-native";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { EyeIcon, EyeOffIcon, KeyRoundIcon, LockIcon } from "@/lib/icons";
 import { useSecurityStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormInput } from "@/components/ui/form";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 const formSchema = z
@@ -69,7 +70,8 @@ export default function CreatePasscodeForm() {
           render={({ field }) => (
             <View className="relative">
               <View className="absolute left-3 top-[34px] z-10 py-2">
-                <LockIcon
+                <Icon
+                  as={LockIcon}
                   className="text-muted-foreground"
                   size={20}
                   strokeWidth={1.25}
@@ -96,13 +98,15 @@ export default function CreatePasscodeForm() {
                 onPress={() => setHidePasscode((prev) => !prev)}
                 className="absolute right-4 top-[34px] py-2">
                 {hidePasscode ? (
-                  <EyeOffIcon
+                  <Icon
+                    as={EyeOffIcon}
                     className="text-muted-foreground"
                     size={20}
                     strokeWidth={1.25}
                   />
                 ) : (
-                  <EyeIcon
+                  <Icon
+                    as={EyeIcon}
                     className="text-foreground"
                     size={20}
                     strokeWidth={1.25}
@@ -118,7 +122,8 @@ export default function CreatePasscodeForm() {
           render={({ field }) => (
             <View className="relative">
               <View className="absolute left-3 top-[34px] z-10 py-2">
-                <LockIcon
+                <Icon
+                  as={LockIcon}
                   className="text-muted-foreground"
                   size={20}
                   strokeWidth={1.25}
@@ -144,13 +149,15 @@ export default function CreatePasscodeForm() {
                 onPress={() => setHideConfirmPasscode((prev) => !prev)}
                 className="absolute right-4 top-[34px] py-2">
                 {hideConfirmPasscode ? (
-                  <EyeOffIcon
+                  <Icon
+                    as={EyeOffIcon}
                     className="text-muted-foreground"
                     size={20}
                     strokeWidth={1.25}
                   />
                 ) : (
-                  <EyeIcon
+                  <Icon
+                    as={EyeIcon}
                     className="text-foreground"
                     size={20}
                     strokeWidth={1.25}
@@ -169,9 +176,10 @@ export default function CreatePasscodeForm() {
           size="lg"
           onPress={form.handleSubmit(onSubmit)}>
           <View className="flex-row items-center gap-4">
-            <KeyRoundIcon
+            <Icon
+              as={KeyRoundIcon}
               className="text-white"
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
             <Text className="native:text-base font-semibold uppercase tracking-wider text-white">

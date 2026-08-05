@@ -8,13 +8,13 @@ import { useCallback, useRef, useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CircleXIcon, CloudUploadIcon, ImportIcon } from "lucide-react-native";
 import { FieldErrors, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { VIDEOS_DIR } from "@/lib/constants";
-import { CircleXIcon, CloudUploadIcon, ImportIcon } from "@/lib/icons";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import {
   delay,
@@ -28,6 +28,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 const formSchema = z.object({
@@ -337,7 +338,8 @@ export default function UploadForm() {
                   size="unset"
                   onPress={handleAddVideos}>
                   <View className="items-center justify-center gap-2">
-                    <CloudUploadIcon
+                    <Icon
+                      as={CloudUploadIcon}
                       className="text-foreground"
                       size={48}
                       strokeWidth={1.5}
@@ -363,7 +365,8 @@ export default function UploadForm() {
             size="lg"
             onPress={handleReset}>
             <View className="flex-row items-center gap-4">
-              <CircleXIcon
+              <Icon
+                as={CircleXIcon}
                 className="text-foreground"
                 size={24}
                 strokeWidth={1.5}
@@ -379,7 +382,8 @@ export default function UploadForm() {
             size="lg"
             onPress={handleSubmitPress}>
             <View className="flex-row items-center gap-4">
-              <ImportIcon
+              <Icon
+                as={ImportIcon}
                 className="text-white"
                 size={24}
                 strokeWidth={1.5}

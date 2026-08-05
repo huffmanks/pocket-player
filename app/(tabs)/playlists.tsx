@@ -3,20 +3,20 @@ import { useMemo } from "react";
 import { View } from "react-native";
 
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { ListMusicIcon } from "lucide-react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { playlists, videos } from "@/db/schema";
-import { ListMusicIcon } from "@/lib/icons";
 import { useDatabaseStore } from "@/lib/store";
 import { formatDuration } from "@/lib/utils";
 
 import PlaylistCollage from "@/components/playlist-collage";
 import PlaylistDropdown from "@/components/playlist-dropdown";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { H1, H2 } from "@/components/ui/typography";
 
 export default function PlaylistsScreen() {
   const insets = useSafeAreaInsets();
@@ -144,7 +144,8 @@ function ListHeaderComponent() {
         <Button
           size="lg"
           className="flex flex-row items-center justify-center gap-4">
-          <ListMusicIcon
+          <Icon
+            as={ListMusicIcon}
             className="text-background"
             size={24}
             strokeWidth={1.5}
@@ -161,8 +162,16 @@ function ListHeaderComponent() {
 function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
   return (
     <View className="py-2">
-      <H1 className="mb-6">Playlists</H1>
-      <H2 className="mb-4 text-brand-foreground">No playlists yet!</H2>
+      <Text
+        variant="h1"
+        className="mb-6">
+        Playlists
+      </Text>
+      <Text
+        variant="h2"
+        className="mb-4 text-brand-foreground">
+        No playlists yet!
+      </Text>
       <Text className="mb-12">Your playlists will be displayed here.</Text>
       {videosExist && (
         <Link

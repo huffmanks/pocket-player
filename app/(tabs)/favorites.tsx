@@ -15,7 +15,6 @@ import { formatDuration } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
 import { Text } from "@/components/ui/text";
-import { H1, H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
 export default function FavoritesScreen() {
@@ -163,10 +162,18 @@ export default function FavoritesScreen() {
 function ListEmptyComponent({ favoritesExist }: { favoritesExist: boolean }) {
   return (
     <View className="px-4 py-2">
-      {!favoritesExist && <H1 className="mb-6">Favorites</H1>}
-      <H2 className="mb-4 text-brand-foreground">
+      {!favoritesExist && (
+        <Text
+          variant="h1"
+          className="mb-6">
+          Favorites
+        </Text>
+      )}
+      <Text
+        variant="h2"
+        className="mb-4 text-brand-foreground">
         {favoritesExist ? "No results" : "No favorite videos yet!"}
-      </H2>
+      </Text>
       {!favoritesExist && (
         <Text className="mb-12">Your favorite videos will be displayed here.</Text>
       )}

@@ -92,7 +92,6 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
       try {
         if (isLocked) {
           router.push("/(screens)/lock");
-          await delay(250);
           return;
         }
 
@@ -101,6 +100,8 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
         toast.error("Restoring previous route failed.");
       } finally {
         hasRestoredRoute.current = true;
+
+        await delay(1000);
         await SplashScreen.hideAsync();
       }
     }

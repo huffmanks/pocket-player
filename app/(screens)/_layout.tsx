@@ -1,20 +1,22 @@
 import { Stack } from "expo-router";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { NAV_THEME } from "@/lib/constants";
+import { useColorScheme } from "nativewind";
+
+import { NAV_THEME } from "@/lib/theme";
 
 import GoBack from "@/components/go-back";
 import HeaderItems from "@/components/header-items";
 
 export default function ScreensLayout() {
-  const { colorScheme, isDarkColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const safeColorScheme = colorScheme ?? "dark";
 
   return (
     <Stack
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: NAV_THEME[colorScheme].background,
+          backgroundColor: NAV_THEME[safeColorScheme].background,
         },
         headerRight: () => <HeaderItems />,
       }}>
@@ -80,7 +82,6 @@ export default function ScreensLayout() {
         name="lock"
         options={{
           headerShown: false,
-          statusBarStyle: isDarkColorScheme ? "dark" : "light",
           animation: "fade",
         }}
       />

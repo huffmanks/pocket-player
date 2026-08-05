@@ -1,11 +1,11 @@
 import { router } from "expo-router";
 
+import { EllipsisVerticalIcon, PencilIcon, TrashIcon, TvIcon, ViewIcon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { PlaylistMeta } from "@/db/schema";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
-import { EllipsisVerticalIcon, PencilIcon, TrashIcon, TvIcon, ViewIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 
 import {
@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 interface PlaylistDropdownProps {
@@ -67,7 +68,8 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
           className="px-0.5 py-1"
           variant="ghost"
           size="unset">
-          <EllipsisVerticalIcon
+          <Icon
+            as={EllipsisVerticalIcon}
             className="text-foreground"
             size={20}
             strokeWidth={1.5}
@@ -88,7 +90,8 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
             disabled={!playlistVideosExist}
             className="gap-4"
             onPress={() => router.push(`/(screens)/playlists/${item.id}/watch`)}>
-            <TvIcon
+            <Icon
+              as={TvIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.5}
@@ -99,7 +102,8 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
           <DropdownMenuItem
             className="gap-4"
             onPress={() => router.push(`/(screens)/playlists/${item.id}/edit`)}>
-            <PencilIcon
+            <Icon
+              as={PencilIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.5}
@@ -109,7 +113,8 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
           <DropdownMenuItem
             className="gap-4"
             onPress={() => router.push(`/(screens)/playlists/${item.id}/view`)}>
-            <ViewIcon
+            <Icon
+              as={ViewIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.5}
@@ -128,7 +133,8 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
                 className="w-full flex-1 flex-row justify-start gap-4 rounded-sm p-2"
                 size="unset"
                 variant="ghost">
-                <TrashIcon
+                <Icon
+                  as={TrashIcon}
                   className="text-destructive"
                   size={20}
                   strokeWidth={1.5}

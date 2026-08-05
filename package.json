@@ -41,7 +41,6 @@
     "drizzle-zod": "^0.5.1",
     "expo": "~57.0.10",
     "expo-asset": "~57.0.8",
-    "expo-build-properties": "^57.0.8",
     "expo-constants": "~57.0.9",
     "expo-dev-client": "^57.0.10",
     "expo-document-picker": "^57.0.1",

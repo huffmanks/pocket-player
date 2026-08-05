@@ -1,14 +1,15 @@
 import { useRouter } from "expo-router";
 import { View } from "react-native";
 
+import { LockIcon, MoonStarIcon, SunIcon } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useShallow } from "zustand/react/shallow";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { LockIcon, MoonStarIcon, SunIcon } from "@/lib/icons";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 
 export default function HeaderItems() {
   return (
@@ -20,7 +21,8 @@ export default function HeaderItems() {
 }
 
 function ThemeToggle() {
-  const { isDarkColorScheme, setColorScheme } = useColorScheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
+  const isDarkColorScheme = colorScheme === "dark";
   const setTheme = useSettingsStore((state) => state.setTheme);
 
   function handlePress() {
@@ -36,13 +38,15 @@ function ThemeToggle() {
       onPress={handlePress}>
       <>
         {isDarkColorScheme ? (
-          <MoonStarIcon
+          <Icon
+            as={MoonStarIcon}
             className="text-foreground"
             size={23}
             strokeWidth={1.25}
           />
         ) : (
-          <SunIcon
+          <Icon
+            as={SunIcon}
             className="text-foreground"
             size={24}
             strokeWidth={1.25}
@@ -74,7 +78,8 @@ function LockScreen() {
       variant="ghost"
       size="icon"
       onPress={handlePress}>
-      <LockIcon
+      <Icon
+        as={LockIcon}
         className={cn(isLockable ? "text-brand-foreground" : "text-muted-foreground")}
         size={26}
         strokeWidth={1.25}

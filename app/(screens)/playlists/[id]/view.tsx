@@ -3,12 +3,12 @@ import { View } from "react-native";
 
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { EllipsisVerticalIcon, PencilIcon, TrashIcon, TvIcon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { playlistVideos, playlists } from "@/db/schema";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
-import { EllipsisVerticalIcon, PencilIcon, TrashIcon, TvIcon } from "@/lib/icons";
 import { useDatabaseStore, usePlaylistStore } from "@/lib/store";
 
 import PlaylistSortable from "@/components/playlist-sortable";
@@ -33,8 +33,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { H2 } from "@/components/ui/typography";
 
 export default function ViewPlaylistScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -84,18 +84,20 @@ export default function ViewPlaylistScreen() {
       className="flex-1 px-3">
       <View className="mb-8 px-2">
         <View className="mb-4 flex-row items-start justify-between gap-2">
-          <H2
+          <Text
+            variant="h2"
             className="flex-1"
             numberOfLines={2}>
             {playlistQuery.data[0].title}
-          </H2>
+          </Text>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 className="-mr-1 p-1"
                 variant="ghost"
                 size="unset">
-                <EllipsisVerticalIcon
+                <Icon
+                  as={EllipsisVerticalIcon}
                   className="text-foreground"
                   size={24}
                   strokeWidth={1.5}
@@ -115,7 +117,8 @@ export default function ViewPlaylistScreen() {
                 <DropdownMenuItem
                   className="gap-4"
                   onPress={() => router.push(`/(screens)/playlists/${id}/edit`)}>
-                  <PencilIcon
+                  <Icon
+                    as={PencilIcon}
                     className="text-foreground"
                     size={20}
                     strokeWidth={1.5}
@@ -134,7 +137,8 @@ export default function ViewPlaylistScreen() {
                       className="w-full flex-1 flex-row justify-start gap-4 rounded-sm p-2"
                       size="unset"
                       variant="ghost">
-                      <TrashIcon
+                      <Icon
+                        as={TrashIcon}
                         className="text-destructive"
                         size={20}
                         strokeWidth={1.5}
@@ -181,7 +185,8 @@ export default function ViewPlaylistScreen() {
               size="lg"
               disabled={!playlistVideosQuery.data?.length}
               className="flex flex-row items-center justify-center gap-4 bg-brand">
-              <TvIcon
+              <Icon
+                as={TvIcon}
                 className="text-white"
                 size={24}
                 strokeWidth={1.5}

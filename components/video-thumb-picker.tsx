@@ -3,6 +3,8 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
+import { LockIcon, LockOpenIcon } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -11,13 +13,12 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { VideoMeta } from "@/db/schema";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { SLIDER_THEME } from "@/lib/constants";
-import { LockIcon, LockOpenIcon } from "@/lib/icons";
+import { SLIDER_THEME } from "@/lib/theme";
 import { cn, getClampedDelta } from "@/lib/utils";
 
 import TimerInput from "@/components/timer-input";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 
 interface VideoThumbPickerProps {
   videoInfo: VideoMeta;
@@ -45,7 +46,8 @@ export default function VideoThumbPicker({
   const timeRef = useRef(time);
   const inputRef = useRef<TextInput>(null);
 
-  const { isDarkColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkColorScheme = colorScheme === "dark";
 
   const opacityFast = useSharedValue(0);
   const opacityDelay = useSharedValue(0);
@@ -156,13 +158,15 @@ export default function VideoThumbPicker({
               )}
               onPress={() => setIsDisabled((prev) => !prev)}>
               {isDisabled ? (
-                <LockIcon
+                <Icon
+                  as={LockIcon}
                   className="text-white"
                   size={24}
                   strokeWidth={1.5}
                 />
               ) : (
-                <LockOpenIcon
+                <Icon
+                  as={LockOpenIcon}
                   className="text-white"
                   size={24}
                   strokeWidth={1.5}

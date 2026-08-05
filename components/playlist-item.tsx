@@ -1,12 +1,11 @@
 import { memo } from "react";
 import { Image, Pressable, View } from "react-native";
 
-import { GripVerticalIcon } from "lucide-react-native";
+import { GripVerticalIcon, XIcon } from "lucide-react-native";
 import { useReorderableDrag } from "react-native-reorderable-list";
 import { toast } from "sonner-native";
 
 import { VideoMeta } from "@/db/schema";
-import { XIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 
 import {
@@ -21,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 interface PlaylistItemProps {
@@ -53,7 +53,8 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
         className="flex-1"
         onLongPress={drag}>
         <View className="flex-row items-center">
-          <GripVerticalIcon
+          <Icon
+            as={GripVerticalIcon}
             className="text-muted-foreground"
             size={24}
             strokeWidth={1.5}
@@ -79,7 +80,8 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
           <Button
             size="icon"
             variant="ghost">
-            <XIcon
+            <Icon
+              as={XIcon}
               className="text-muted-foreground"
               size={20}
               strokeWidth={1.5}

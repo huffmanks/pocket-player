@@ -5,20 +5,20 @@ import { View } from "react-native";
 import { FlashList, ViewToken } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Fuse from "fuse.js";
+import { CloudUploadIcon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta, playlists } from "@/db/schema";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
-import { CloudUploadIcon } from "@/lib/icons";
 import { useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { formatDuration, throttle } from "@/lib/utils";
 
 import SearchBar from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { H1, H2 } from "@/components/ui/typography";
 import VideoItem from "@/components/video-item";
 
 export type VideoMetaWithPlaylists = VideoMeta & { playlists?: string[] };
@@ -210,10 +210,18 @@ export default function VideosScreen() {
 function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
   return (
     <View className="px-4 py-2">
-      {!videosExist && <H1 className="mb-6">Videos</H1>}
-      <H2 className="mb-4 text-brand-foreground">
+      {!videosExist && (
+        <Text
+          variant="h1"
+          className="mb-6">
+          Videos
+        </Text>
+      )}
+      <Text
+        variant="h2"
+        className="mb-4 text-brand-foreground">
         {videosExist ? "No results" : "No videos yet!"}
-      </H2>
+      </Text>
       {!videosExist && (
         <>
           <Text className="mb-12">Your videos will be displayed here.</Text>
@@ -223,7 +231,8 @@ function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
             <Button
               size="lg"
               className="flex flex-row items-center justify-center gap-4">
-              <CloudUploadIcon
+              <Icon
+                as={CloudUploadIcon}
                 className="text-background"
                 size={24}
                 strokeWidth={1.5}

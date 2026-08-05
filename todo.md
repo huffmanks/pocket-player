@@ -1,0 +1,7 @@
+- [ ] Create playist select videos truncate/ 1 line per video title.
+  - [ ] Create playlist(submit button) hover/click color is bad.
+  - [ ] Same with set passcode submit button.
+- [-] Splash screen with logo on launch.
+- [-] If locked enabled never show inside content only lock or splash screen.
+- [-] Button icons look like they got bigger. Most of have been the migration.
+- [x] Lock screen hide statusbar. battery showing through.

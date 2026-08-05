@@ -3,16 +3,17 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ListMusicIcon } from "lucide-react-native";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
 import { VideoData } from "@/app/(screens)/playlists/create";
-import { ListMusicIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormCombobox, FormField, FormInput, FormTextarea } from "@/components/ui/form";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 const formSchema = z.object({
@@ -134,7 +135,8 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
           size="lg"
           onPress={form.handleSubmit(onSubmit)}>
           <View className="flex-row items-center gap-4">
-            <ListMusicIcon
+            <Icon
+              as={ListMusicIcon}
               className="text-white"
               size={24}
               strokeWidth={1.5}

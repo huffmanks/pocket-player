@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
+import { FileVideo2Icon, KeyRoundIcon, SettingsIcon, TrashIcon } from "lucide-react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
@@ -15,7 +16,6 @@ import {
   lockIntervalOptions,
   settingsSwitches,
 } from "@/lib/constants";
-import { FileVideo2Icon, KeyRoundIcon, SettingsIcon, TrashIcon } from "@/lib/icons";
 import { resetPersistedStorage, useSecurityStore } from "@/lib/store";
 import { cn, withDelay } from "@/lib/utils";
 
@@ -32,6 +32,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import {
   Select,
   SelectContent,
@@ -43,7 +44,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
-import { H1 } from "@/components/ui/typography";
 
 export default function SettingsScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -162,7 +162,11 @@ export default function SettingsScreen() {
       contentContainerClassName="pt-6 pb-20 px-3"
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
-      <H1 className="mb-6">Settings</H1>
+      <Text
+        variant="h1"
+        className="mb-6">
+        Settings
+      </Text>
       <View className="px-3">
         <View className="mb-6 gap-6">
           <View>
@@ -195,9 +199,10 @@ export default function SettingsScreen() {
             variant="secondary"
             className="mt-2 flex flex-row items-center justify-center gap-4"
             onPress={() => router.push("/(screens)/passcode")}>
-            <KeyRoundIcon
+            <Icon
+              as={KeyRoundIcon}
               className="text-foreground"
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
             <Text className="native:text-base font-semibold uppercase tracking-wider">
@@ -261,9 +266,10 @@ export default function SettingsScreen() {
                   disabled={isSubmitting}
                   variant="secondary"
                   className="flex flex-row items-center justify-center gap-4">
-                  <SettingsIcon
+                  <Icon
+                    as={SettingsIcon}
                     className="text-foreground"
-                    size={24}
+                    size={20}
                     strokeWidth={1.5}
                   />
                   <Text className="native:text-base font-semibold uppercase tracking-wider">
@@ -297,9 +303,10 @@ export default function SettingsScreen() {
                   disabled={isSubmitting}
                   variant="destructive"
                   className="flex flex-row items-center justify-center gap-4">
-                  <FileVideo2Icon
+                  <Icon
+                    as={FileVideo2Icon}
                     className="text-destructive-foreground"
-                    size={24}
+                    size={20}
                     strokeWidth={1.5}
                   />
                   <Text className="native:text-base font-semibold uppercase tracking-wider">
@@ -333,9 +340,10 @@ export default function SettingsScreen() {
                   disabled={isSubmitting}
                   variant="destructive"
                   className="flex flex-row items-center justify-center gap-4">
-                  <TrashIcon
+                  <Icon
+                    as={TrashIcon}
                     className="text-destructive-foreground"
-                    size={24}
+                    size={20}
                     strokeWidth={1.5}
                   />
                   <Text className="native:text-base font-semibold uppercase tracking-wider">

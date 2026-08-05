@@ -1,8 +1,6 @@
 import { useRef, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 
-import { useShallow } from "zustand/react/shallow";
-
 import {
   ArrowDownAZIcon,
   ArrowUpZAIcon,
@@ -10,11 +8,14 @@ import {
   CalendarArrowUpIcon,
   SearchIcon,
   XIcon,
-} from "@/lib/icons";
+} from "lucide-react-native";
+import { useShallow } from "zustand/react/shallow";
+
 import { useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 
 interface SearchBarProps {
@@ -53,7 +54,8 @@ export default function SearchBar({
           isFocused ? "border-brand" : "border-input"
         )}>
         <Pressable onPress={() => inputRef.current?.blur()}>
-          <SearchIcon
+          <Icon
+            as={SearchIcon}
             className={cn(isFocused ? "text-foreground" : "text-brand-foreground")}
             size={20}
             strokeWidth={1.25}
@@ -69,7 +71,8 @@ export default function SearchBar({
           placeholder="Search videos"
         />
         <Pressable onPress={handleClear}>
-          <XIcon
+          <Icon
+            as={XIcon}
             className={cn(searchQuery ? "text-foreground" : "text-muted-foreground")}
             size={20}
             strokeWidth={1.25}
@@ -84,13 +87,15 @@ export default function SearchBar({
           size="unset"
           onPress={handleSortTitle}>
           {sortTitleOrder === "asc" ? (
-            <ArrowDownAZIcon
+            <Icon
+              as={ArrowDownAZIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.25}
             />
           ) : (
-            <ArrowUpZAIcon
+            <Icon
+              as={ArrowUpZAIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.25}
@@ -104,13 +109,15 @@ export default function SearchBar({
           size="unset"
           onPress={handleSortDate}>
           {sortDateOrder === "asc" ? (
-            <CalendarArrowDownIcon
+            <Icon
+              as={CalendarArrowDownIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.25}
             />
           ) : (
-            <CalendarArrowUpIcon
+            <Icon
+              as={CalendarArrowUpIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.25}

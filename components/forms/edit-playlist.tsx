@@ -3,13 +3,13 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SaveIcon, TrashIcon } from "lucide-react-native";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { EditPlaylistInfo } from "@/app/(screens)/playlists/[id]/edit";
-import { SaveIcon, TrashIcon } from "@/lib/icons";
 import { usePlaylistStore } from "@/lib/store";
 
 import {
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Form, FormCombobox, FormField, FormInput, FormTextarea } from "@/components/ui/form";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 const formSchema = z.object({
@@ -159,7 +160,8 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
                 disabled={isSubmitting}
                 variant="secondary"
                 className="flex w-full flex-row items-center justify-center gap-4">
-                <TrashIcon
+                <Icon
+                  as={TrashIcon}
                   className="text-foreground"
                   size={24}
                   strokeWidth={1.5}
@@ -196,7 +198,8 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
             disabled={isSubmitting}
             className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
             onPress={form.handleSubmit(onSubmit)}>
-            <SaveIcon
+            <Icon
+              as={SaveIcon}
               className="text-white"
               size={24}
               strokeWidth={1.5}

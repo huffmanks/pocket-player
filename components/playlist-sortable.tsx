@@ -4,19 +4,19 @@ import { ListRenderItemInfo, View } from "react-native";
 
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { ListVideoIcon } from "lucide-react-native";
 import ReorderableList, {
   ReorderableListReorderEvent,
   reorderItems,
 } from "react-native-reorderable-list";
 
 import { VideoMeta, playlistVideos } from "@/db/schema";
-import { ListVideoIcon } from "@/lib/icons";
 import { useDatabaseStore, usePlaylistStore } from "@/lib/store";
 
 import PlaylistItem from "@/components/playlist-item";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { H2 } from "@/components/ui/typography";
 
 interface PlaylistSortableProps {
   playlistId: string;
@@ -79,7 +79,11 @@ export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) 
 function ListEmptyComponent({ playlistId }: { playlistId: string }) {
   return (
     <View className="mt-10 px-2">
-      <H2 className="mb-4 text-brand-foreground">Playlist empty</H2>
+      <Text
+        variant="h2"
+        className="mb-4 text-brand-foreground">
+        Playlist empty
+      </Text>
       <Text className="mb-8 text-muted-foreground">Add some videos to this playlist.</Text>
       <Link
         href={`/(screens)/playlists/${playlistId}/edit`}
@@ -87,7 +91,8 @@ function ListEmptyComponent({ playlistId }: { playlistId: string }) {
         <Button
           size="lg"
           className="flex flex-row items-center justify-center gap-4 bg-brand">
-          <ListVideoIcon
+          <Icon
+            as={ListVideoIcon}
             className="text-white"
             size={24}
             strokeWidth={1.5}

@@ -64,26 +64,18 @@ Download the latest APK from the [Releases](https://github.com/huffmanks/pocket-
    just credentials
    ```
 
-5. **Generate your device specification**
-
-   Connect your Android device with USB debugging enabled, then run:
-
-   ```sh
-   just get-device-spec
-   ```
-
-6. **Build the app and extract APKs**
+5. **Build the app and extract APKs**
 
    ```sh
    just build-and-extract
    ```
 
-7. **Install the APK**
+6. **Install the APK**
 
    Install the optimized device-specific APK:
 
    ```sh
-   just deploy-arm64
+   just deploy-deploy-device
    ```
 
    Or install the universal APK instead:

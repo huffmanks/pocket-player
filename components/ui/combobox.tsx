@@ -2,9 +2,9 @@ import * as React from "react";
 import { ListRenderItemInfo, Pressable, Text, View } from "react-native";
 
 import Fuse from "fuse.js";
+import { CheckIcon, ChevronsUpDownIcon, MinusIcon, SearchIcon, XIcon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { CheckIcon, ChevronsUpDownIcon, MinusIcon, SearchIcon, XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 import {
@@ -17,6 +17,7 @@ import {
   useBottomSheet,
 } from "@/components/ui/bottom-sheet";
 import { Button, buttonTextVariants, buttonVariants } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 
 const HEADER_HEIGHT = 100;
@@ -27,7 +28,7 @@ interface ComboboxOption {
 }
 
 const Combobox = React.forwardRef<
-  React.ComponentRef<typeof Button>,
+  View,
   Omit<React.ComponentPropsWithoutRef<typeof Button>, "children"> & {
     items: ComboboxOption[];
     includeSearch?: boolean;
@@ -107,7 +108,8 @@ const Combobox = React.forwardRef<
               <Text className="text-lg text-foreground">{listItem.label}</Text>
             </View>
             {isSelected && (
-              <CheckIcon
+              <Icon
+                as={CheckIcon}
                 size={24}
                 className="px-4 text-foreground"
               />
@@ -160,7 +162,10 @@ const Combobox = React.forwardRef<
               numberOfLines={1}>
               {displayText}
             </Text>
-            <ChevronsUpDownIcon className="ml-2 text-foreground opacity-50" />
+            <Icon
+              as={ChevronsUpDownIcon}
+              className="ml-2 text-foreground opacity-50"
+            />
           </View>
         </BottomSheetOpenTrigger>
         <BottomSheetContent
@@ -182,7 +187,8 @@ const Combobox = React.forwardRef<
                   isFocused ? "border-brand" : "border-input"
                 )}>
                 <Pressable onPress={() => inputRef.current?.blur()}>
-                  <SearchIcon
+                  <Icon
+                    as={SearchIcon}
                     className={cn(isFocused ? "text-foreground" : "text-brand-foreground")}
                     size={20}
                     strokeWidth={1.25}
@@ -201,7 +207,8 @@ const Combobox = React.forwardRef<
                   placeholder="Search videos"
                 />
                 <Pressable onPress={handleClear}>
-                  <XIcon
+                  <Icon
+                    as={XIcon}
                     className={cn(search ? "text-foreground" : "text-muted-foreground")}
                     size={20}
                     strokeWidth={1.25}
@@ -222,14 +229,16 @@ const Combobox = React.forwardRef<
                 )}>
                 <View className="h-full w-full items-center justify-center">
                   {isAllSelected && (
-                    <CheckIcon
+                    <Icon
+                      as={CheckIcon}
                       size={12}
                       strokeWidth={3.5}
                       className="text-primary-foreground"
                     />
                   )}
                   {isSomeSelected && (
-                    <MinusIcon
+                    <Icon
+                      as={MinusIcon}
                       size={12}
                       strokeWidth={3.5}
                       className="text-primary-foreground"

@@ -72,15 +72,6 @@
     },
     "plugins": [
       [
-        "expo-build-properties",
-        {
-          "android": {
-            "extraProguardRules": "-keep class expo.modules.videometadata.** { *; }",
-            "buildArchs": ["arm64-v8a"]
-          }
-        }
-      ],
-      [
         "expo-status-bar",
         {
           "style": "light",
@@ -98,7 +89,14 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-splash-screen",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#09090b",
+          "image": "./assets/icons/ios_app_logo_marketing.png",
+          "imageWidth": 200
+        }
+      ],
       "expo-asset"
     ],
     "experiments": {

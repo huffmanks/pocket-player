@@ -1,41 +1,39 @@
-import * as React from "react";
-import { View } from "react-native";
+import { Platform } from "react-native";
 
 import * as RadioGroupPrimitive from "@rn-primitives/radio-group";
 
 import { cn } from "@/lib/utils";
 
-const RadioGroup = React.forwardRef<RadioGroupPrimitive.RootRef, RadioGroupPrimitive.RootProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <RadioGroupPrimitive.Root
-        className={cn("gap-2 web:grid", className)}
-        {...props}
-        ref={ref}
-      />
-    );
-  }
-);
-RadioGroup.displayName = RadioGroupPrimitive.Root.displayName;
+function RadioGroup({
+  className,
+  ...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
+  return (
+    <RadioGroupPrimitive.Root
+      className={cn("gap-3", className)}
+      {...props}
+    />
+  );
+}
 
-const RadioGroupItem = React.forwardRef<RadioGroupPrimitive.ItemRef, RadioGroupPrimitive.ItemProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <RadioGroupPrimitive.Item
-        ref={ref}
-        className={cn(
-          "native:h-5 native:w-5 aspect-square h-4 w-4 items-center justify-center rounded-full border border-primary text-primary web:ring-offset-background web:focus:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
-          props.disabled && "opacity-50 web:cursor-not-allowed",
-          className
-        )}
-        {...props}>
-        <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-          <View className="native:h-[10] native:w-[10] aspect-square h-[9px] w-[9px] rounded-full bg-primary" />
-        </RadioGroupPrimitive.Indicator>
-      </RadioGroupPrimitive.Item>
-    );
-  }
-);
-RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
+function RadioGroupItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
+  return (
+    <RadioGroupPrimitive.Item
+      className={cn(
+        "aspect-square size-4 shrink-0 items-center justify-center rounded-full border border-input shadow-sm shadow-black/5 dark:bg-input/30",
+        Platform.select({
+          web: "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed",
+        }),
+        props.disabled && "opacity-50",
+        className
+      )}
+      {...props}>
+      <RadioGroupPrimitive.Indicator className="size-2 rounded-full bg-primary" />
+    </RadioGroupPrimitive.Item>
+  );
+}
 
 export { RadioGroup, RadioGroupItem };

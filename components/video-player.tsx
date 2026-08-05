@@ -5,14 +5,6 @@ import { useMemo } from "react";
 import { View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
-import { GestureDetector } from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
-import { useShallow } from "zustand/react/shallow";
-
-import { VideoMeta } from "@/db/schema";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
-import { SLIDER_THEME } from "@/lib/constants";
 import {
   ChevronLeftIcon,
   FastForwardIcon,
@@ -24,18 +16,28 @@ import {
   SkipForwardIcon,
   Volume2Icon,
   VolumeXIcon,
-} from "@/lib/icons";
+} from "lucide-react-native";
+import { useColorScheme } from "nativewind";
+import { GestureDetector } from "react-native-gesture-handler";
+import Animated from "react-native-reanimated";
+import { useShallow } from "zustand/react/shallow";
+
+import { VideoMeta } from "@/db/schema";
+import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
 import { useSettingsStore } from "@/lib/store";
+import { SLIDER_THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[] }) {
   useKeepAwake();
 
   const router = useRouter();
-  const { isDarkColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkColorScheme = colorScheme === "dark";
 
   const sourcesKey = videoSources.map((v) => v.id).join(",");
   const memoizedVideoSources = useMemo(
@@ -128,7 +130,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
                         onPress={handleGoBack}>
-                        <ChevronLeftIcon
+                        <Icon
+                          as={ChevronLeftIcon}
                           className="text-white group-active:opacity-70"
                           size={32}
                           strokeWidth={1.25}
@@ -154,7 +157,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                           onPressIn={handleButtonPressIn}
                           onPressOut={handleButtonPressOut}
                           onPress={() => changeVideoSource(-1)}>
-                          <SkipBackIcon
+                          <Icon
+                            as={SkipBackIcon}
                             className="group-active:opacity-70"
                             fill="white"
                             stroke="white"
@@ -172,7 +176,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
                         onPress={() => safeSeekBy(-5)}>
-                        <RewindIcon
+                        <Icon
+                          as={RewindIcon}
                           className="group-active:opacity-70"
                           fill="white"
                           stroke="white"
@@ -189,14 +194,16 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressOut={handleButtonPressOut}
                         onPress={togglePlay}>
                         {hasEnded ? (
-                          <RotateCcwIcon
+                          <Icon
+                            as={RotateCcwIcon}
                             className="group-active:opacity-70"
                             stroke="white"
                             size={32}
                             strokeWidth={2.25}
                           />
                         ) : isPlaying ? (
-                          <PauseIcon
+                          <Icon
+                            as={PauseIcon}
                             className="group-active:opacity-70"
                             fill="white"
                             stroke="white"
@@ -204,7 +211,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                             strokeWidth={1.25}
                           />
                         ) : (
-                          <PlayIcon
+                          <Icon
+                            as={PlayIcon}
                             className="group-active:opacity-70"
                             fill="white"
                             stroke="white"
@@ -221,7 +229,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
                         onPress={() => safeSeekBy(5)}>
-                        <FastForwardIcon
+                        <Icon
+                          as={FastForwardIcon}
                           className="group-active:opacity-70"
                           fill="white"
                           stroke="white"
@@ -239,7 +248,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                           onPressIn={handleButtonPressIn}
                           onPressOut={handleButtonPressOut}
                           onPress={() => changeVideoSource(1)}>
-                          <SkipForwardIcon
+                          <Icon
+                            as={SkipForwardIcon}
                             className="group-active:opacity-70"
                             fill="white"
                             stroke="white"
@@ -262,14 +272,16 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         onPressOut={handleButtonPressOut}
                         onPress={toggleMute}>
                         {player.muted ? (
-                          <VolumeXIcon
+                          <Icon
+                            as={VolumeXIcon}
                             stroke="white"
                             opacity={0.8}
                             size={24}
                             strokeWidth={1.25}
                           />
                         ) : (
-                          <Volume2Icon
+                          <Icon
+                            as={Volume2Icon}
                             stroke="white"
                             size={24}
                             strokeWidth={1.25}

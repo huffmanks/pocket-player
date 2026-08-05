@@ -15,14 +15,15 @@ import {
   useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
 import * as Slot from "@rn-primitives/slot";
+import { XIcon } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { NAV_THEME } from "@/lib/constants";
-import { XIcon } from "@/lib/icons";
+import { NAV_THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 
 type BottomSheetRef = React.ComponentRef<typeof View>;
 type BottomSheetProps = React.ComponentPropsWithoutRef<typeof View>;
@@ -74,6 +75,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
     {
       enablePanDownToClose = true,
       enableDynamicSizing = false,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       index = 0,
       backdropProps,
       backgroundStyle,
@@ -83,8 +85,11 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
     ref
   ) => {
     const insets = useSafeAreaInsets();
-    const { isDarkColorScheme, colorScheme } = useColorScheme();
     const { sheetRef } = useBottomSheetContext();
+    const { colorScheme } = useColorScheme();
+
+    const safeColorScheme = colorScheme ?? "dark";
+    const isDarkColorScheme = safeColorScheme === "dark";
 
     React.useImperativeHandle(ref, () => sheetRef.current as BottomSheetContentRef, [sheetRef]);
 
@@ -128,9 +133,9 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
         enablePanDownToClose={enablePanDownToClose}
         backdropComponent={renderBackdrop}
         enableDynamicSizing={enableDynamicSizing}
-        backgroundStyle={[{ backgroundColor: NAV_THEME[colorScheme].card }, backgroundStyle]}
+        backgroundStyle={[{ backgroundColor: NAV_THEME[safeColorScheme].card }, backgroundStyle]}
         handleIndicatorStyle={{
-          backgroundColor: NAV_THEME[colorScheme].text,
+          backgroundColor: NAV_THEME[safeColorScheme].text,
         }}
         topInset={insets.top}
         android_keyboardInputMode={android_keyboardInputMode}
@@ -293,7 +298,8 @@ const BottomSheetHeader = React.forwardRef<BottomSheetHeaderRef, BottomSheetHead
           onPress={close}
           variant="ghost"
           className="pr-4">
-          <XIcon
+          <Icon
+            as={XIcon}
             className="text-muted-foreground"
             size={24}
           />
