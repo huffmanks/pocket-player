@@ -81,6 +81,9 @@ importers:
       expo:
         specifier: ~57.0.10
         version: 57.0.10(736ed01f27c9b90ebf703c869ced9e2f)
+      expo-asset:
+        specifier: ~57.0.8
+        version: 57.0.8(expo@57.0.10)(react-native@0.86.2(@babel/core@7.29.7(supports-color@8.1.1))(@react-native-community/cli@20.2.0(supports-color@8.1.1)(typescript@6.0.3))(@react-native/metro-config@0.86.2(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1)(typescript@6.0.3)
       expo-build-properties:
         specifier: ^57.0.8
         version: 57.0.8(expo@57.0.10)

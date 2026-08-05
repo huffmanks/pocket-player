@@ -1,7 +1,7 @@
 import { File } from "expo-file-system";
 import { router } from "expo-router";
 import * as VideoThumbnails from "expo-video-thumbnails";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,6 +74,8 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
   const [playerCurrentTime, setPlayerCurrentTime] = useState(0);
 
+  const isSubmittingRef = useRef(false);
+
   const { updateVideo, deleteVideo } = useVideoStore(
     useShallow((state) => ({
       updateVideo: state.updateVideo,
@@ -103,7 +105,10 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
     },
   });
 
-  async function handleDelete() {
+  const handleDelete = useCallback(async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
     try {
       const { message, status } = await deleteVideo(videoInfo.id);
 
@@ -113,56 +118,73 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       }
     } catch (_error) {
       toast.error("Failed to delete video.");
+    } finally {
+      isSubmittingRef.current = false;
     }
-  }
+  }, [videoInfo, deleteVideo]);
 
-  async function onSubmit(values: EditVideoSchema) {
-    try {
+  const onSubmit = useCallback(
+    async (values: EditVideoSchema) => {
+      if (isSubmittingRef.current) return;
+      isSubmittingRef.current = true;
       setIsSubmitting(true);
-      const parsedValues = formSchema.parse(values);
 
+      const parsedValues = formSchema.parse(values);
       const thumbTimestamp = Math.trunc(playerCurrentTime * 100000) / 100;
 
-      const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
-        time: thumbTimestamp,
-      });
+      let targetThumbFile: File | null = null;
 
-      const fileId = createId();
-      const targetThumbFile = new File(VIDEOS_DIR, `${videoInfo.title}-${fileId}.jpg`);
+      try {
+        const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
+          time: thumbTimestamp,
+        });
 
-      const tempThumbFile = new File(uri);
-      tempThumbFile.move(targetThumbFile);
+        const fileId = createId();
+        targetThumbFile = new File(VIDEOS_DIR, `${videoInfo.title}-${fileId}.jpg`);
 
-      const oldThumbFile = new File(videoInfo.thumbUri);
-      if (oldThumbFile.exists) {
-        oldThumbFile.delete();
+        const tempThumbFile = new File(uri);
+        await tempThumbFile.move(targetThumbFile);
+
+        await updateVideo({
+          id: videoInfo.id,
+          values: {
+            ...parsedValues,
+            thumbUri: targetThumbFile.uri,
+            thumbTimestamp,
+            orientation: values.orientation.value,
+            createdAt: values.createdAt.toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        });
+
+        const oldThumbFile = new File(videoInfo.thumbUri);
+        if (oldThumbFile.exists && oldThumbFile.uri !== targetThumbFile.uri) {
+          oldThumbFile.delete();
+        }
+
+        toast.success(`${values.title} updated successfully.`);
+
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.push("/(tabs)/videos");
+        }
+      } catch (_error) {
+        if (targetThumbFile?.exists) {
+          targetThumbFile.delete();
+        }
+        toast.error(`Error updating ${values.title}!`);
+      } finally {
+        isSubmittingRef.current = false;
+        setIsSubmitting(false);
       }
+    },
+    [playerCurrentTime, videoInfo, updateVideo]
+  );
 
-      await updateVideo({
-        id: videoInfo.id,
-        values: {
-          ...parsedValues,
-          thumbUri: targetThumbFile.uri,
-          thumbTimestamp,
-          orientation: values.orientation.value,
-          createdAt: values.createdAt.toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      });
-
-      toast.success(`${values.title} updated successfully.`);
-
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.push("/(tabs)/videos");
-      }
-    } catch (_error) {
-      toast.error(`Error updating ${values.title}!`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+  const handleSubmitPress = useCallback(() => {
+    form.handleSubmit(onSubmit)();
+  }, [form, onSubmit]);
 
   return (
     <Form {...form}>
@@ -289,7 +311,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
             <Button
               disabled={isSubmitting}
               className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
-              onPress={form.handleSubmit(onSubmit)}>
+              onPress={handleSubmitPress}>
               <SaveIcon
                 className="text-white"
                 size={24}

@@ -10,7 +10,11 @@ import handleRedirect from "@/lib/handle-redirect";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { delay } from "@/lib/utils";
 
-export function LockScreenProvider({ children }: { children: ReactNode }) {
+interface LockScreenProviderProps {
+  children: ReactNode;
+}
+
+export function LockScreenProvider({ children }: LockScreenProviderProps) {
   const router = useRouter();
 
   const appState = useRef(AppState.currentState);
@@ -89,7 +93,6 @@ export function LockScreenProvider({ children }: { children: ReactNode }) {
         if (isLocked) {
           router.push("/(screens)/lock");
           await delay(250);
-          await SplashScreen.hideAsync();
           return;
         }
 

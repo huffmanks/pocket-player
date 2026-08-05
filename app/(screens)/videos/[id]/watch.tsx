@@ -1,4 +1,7 @@
-import { useLocalSearchParams } from "expo-router";
+import { NavigationBar } from "expo-navigation-bar";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useCallback } from "react";
 
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -19,6 +22,22 @@ export default function WatchVideoScreen() {
   if (videoQuery.error) {
     toast.error("Failed to get playlist videos.");
   }
+
+  useFocusEffect(
+    useCallback(() => {
+      try {
+        NavigationBar.setHidden(true);
+        StatusBar.setHidden(true);
+      } catch (_error) {}
+
+      return () => {
+        try {
+          NavigationBar.setHidden(false);
+          StatusBar.setHidden(false);
+        } catch (_error) {}
+      };
+    }, [])
+  );
 
   if (!videoQuery?.data?.length) return null;
 

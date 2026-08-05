@@ -52,6 +52,7 @@
     },
     "android": {
       "package": "com.anonymous.pocketplayer",
+      "versionCode": 4,
       "icon": "./assets/icons/android_adaptive_logo_foreground.png",
       "backgroundColor": "#09090b",
       "adaptiveIcon": {
@@ -74,7 +75,9 @@
         "expo-build-properties",
         {
           "android": {
-            "buildArchs": ["arm64-v8a"]
+            "buildArchs": [
+              "arm64-v8a"
+            ]
           }
         }
       ],
@@ -96,7 +99,8 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-splash-screen"
+      "expo-splash-screen",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true

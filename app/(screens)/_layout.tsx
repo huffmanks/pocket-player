@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { NAV_THEME } from "@/lib/constants";
 
+import GoBack from "@/components/go-back";
 import HeaderItems from "@/components/header-items";
 
 export default function ScreensLayout() {
@@ -21,8 +22,6 @@ export default function ScreensLayout() {
         name="playlists/[id]/watch"
         options={{
           headerShown: false,
-          statusBarHidden: true,
-          navigationBarHidden: true,
           animation: "fade",
         }}
       />
@@ -30,32 +29,39 @@ export default function ScreensLayout() {
         name="playlists/[id]/view"
         options={{
           title: "Playlist",
-          headerBackVisible: true,
           animation: "fade",
+          headerBackVisible: false,
+          presentation: "modal",
+          gestureEnabled: true,
+          headerLeft: () => <GoBack fallbackHref="/(tabs)/playlists" />,
         }}
       />
       <Stack.Screen
         name="playlists/[id]/edit"
         options={{
           title: "Edit playlist",
-          headerBackVisible: true,
           animation: "fade_from_bottom",
+          headerBackVisible: false,
+          presentation: "modal",
+          gestureEnabled: true,
+          headerLeft: () => <GoBack fallbackHref="/(tabs)/playlists" />,
         }}
       />
       <Stack.Screen
         name="playlists/create"
         options={{
           title: "Create playlist",
-          headerBackVisible: true,
           animation: "fade_from_bottom",
+          headerBackVisible: false,
+          presentation: "modal",
+          gestureEnabled: true,
+          headerLeft: () => <GoBack fallbackHref="/(tabs)/playlists" />,
         }}
       />
       <Stack.Screen
         name="videos/[id]/watch"
         options={{
           headerShown: false,
-          statusBarHidden: true,
-          navigationBarHidden: true,
           animation: "fade",
         }}
       />
@@ -63,8 +69,11 @@ export default function ScreensLayout() {
         name="videos/[id]/edit"
         options={{
           title: "Edit video",
-          headerBackVisible: true,
           animation: "fade_from_bottom",
+          headerBackVisible: false,
+          presentation: "modal",
+          gestureEnabled: true,
+          headerLeft: () => <GoBack fallbackHref="/(tabs)/videos" />,
         }}
       />
       <Stack.Screen
@@ -79,8 +88,11 @@ export default function ScreensLayout() {
         name="passcode"
         options={{
           title: "Passcode",
-          headerBackVisible: true,
           animation: "fade_from_bottom",
+          headerBackVisible: false,
+          presentation: "modal",
+          gestureEnabled: true,
+          headerLeft: () => <GoBack fallbackHref="/(tabs)/settings" />,
         }}
       />
     </Stack>

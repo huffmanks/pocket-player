@@ -7,7 +7,7 @@ SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
 node_version="$(node -v 2>/dev/null | sed 's/^v//' || echo "Not found")"
 pnpm_version="$(pnpm -v 2>/dev/null || echo "Not found")"
 java_version="$(java -version 2>&1 | head -n1 | sed -E 's/.*"([^"]+)".*/\1/' || echo "Not found")"
-eas_version="$(pnpm dlx eas-cli --version 2>/dev/null | sed -E 's|.*eas-cli/([0-9]+\.[0-9]+\.[0-9]+).*|\1|' || echo "Not found")"
+eas_version="$(pnpx eas-cli --version 2>/dev/null | sed -E 's|.*eas-cli/([0-9]+\.[0-9]+\.[0-9]+).*|\1|' || echo "Not found")"
 bundletool_version="$(bundletool version 2>/dev/null || echo "Not found")"
 
 compile_sdk="$(grep '^android.compileSdkVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 || true)"

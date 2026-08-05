@@ -1,9 +1,10 @@
+import { Asset } from "expo-asset";
 import * as DocumentPicker from "expo-document-picker";
 import { Directory, File, Paths } from "expo-file-system";
 import { useFocusEffect } from "expo-router";
 import { getVideoInfoAsync } from "expo-video-metadata";
 import * as VideoThumbnails from "expo-video-thumbnails";
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,6 +59,9 @@ const formSchema = z.object({
 export type UploadVideosFormData = z.infer<typeof formSchema>;
 
 export default function UploadForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
+
   const uploadVideos = useVideoStore((state) => state.uploadVideos);
 
   const { setIsLocked, setIsLockDisabled } = useSecurityStore(
@@ -79,6 +83,13 @@ export default function UploadForm() {
     name: "videos",
     defaultValue: [],
   });
+
+  function cleanupCacheFile(uri: string) {
+    try {
+      const file = new File(uri);
+      if (file.exists) file.delete();
+    } catch (_error) {}
+  }
 
   async function selectVideoFiles(
     setVideoFields: (
@@ -114,6 +125,7 @@ export default function UploadForm() {
       const result = await DocumentPicker.getDocumentAsync({
         type: "video/*",
         multiple: true,
+        copyToCacheDirectory: true,
       });
 
       if (result.assets && result.assets.length) {
@@ -160,7 +172,7 @@ export default function UploadForm() {
 
         setVideoFields(videos);
       }
-    } catch (_error) {
+    } catch (_error: any) {
       toast.error("Error trying to upload!");
     } finally {
       await delay(100);
@@ -169,31 +181,51 @@ export default function UploadForm() {
     }
   }
 
-  const handleReset = useCallback(() => {
+  async function handleAddVideos() {
+    if (isSubmittingRef.current) return;
+
     const prevVideos = form.getValues("videos");
+    prevVideos.forEach((v) => cleanupCacheFile(v.videoUri));
 
-    prevVideos.forEach(({ title, fileExtension }) => {
-      try {
-        const cacheVideoFile = new File(Paths.cache, `${title}.${fileExtension}`);
-
-        if (cacheVideoFile.exists) {
-          cacheVideoFile.delete();
-        }
-      } catch (_error) {}
+    await selectVideoFiles((videos) => {
+      // @ts-ignore
+      form.setValue("videos", videos, { shouldDirty: true, shouldTouch: true });
     });
+  }
+
+  const handleReset = useCallback(() => {
+    if (isSubmittingRef.current) return;
+
+    const prevVideos = form.getValues("videos");
+    prevVideos.forEach((v) => cleanupCacheFile(v.videoUri));
 
     form.reset();
   }, [form]);
 
-  async function onSubmit(values: UploadVideosFormData) {
-    const videosDir = new Directory(Paths.document, "videos");
-    if (!videosDir.exists) {
-      videosDir.create();
-    }
+  const onSubmit = useCallback(
+    async (values: UploadVideosFormData) => {
+      if (isSubmittingRef.current) return;
+      isSubmittingRef.current = true;
+      setIsSubmitting(true);
 
-    const promise = (async () => {
-      const processedVideos = await Promise.all(
-        values.videos.map(async (video) => {
+      const videosDir = new Directory(Paths.document, "videos");
+      if (!videosDir.exists) {
+        videosDir.create();
+      }
+
+      const promise = (async () => {
+        const placeholderAsset = Asset.fromModule(require("@/assets/images/video-placeholder.jpg"));
+        await placeholderAsset.downloadAsync();
+
+        const sharedPlaceholderFile = new File(VIDEOS_DIR, "_placeholder.jpg");
+        if (!sharedPlaceholderFile.exists) {
+          const srcPlaceholder = new File(placeholderAsset.localUri!);
+          await srcPlaceholder.copy(sharedPlaceholderFile);
+        }
+
+        const processedVideos = [];
+
+        for (const video of values.videos) {
           const sourceVideoFile = new File(video.videoUri);
           const targetVideoFile = new File(VIDEOS_DIR, `${video.title}.${video.fileExtension}`);
 
@@ -201,62 +233,77 @@ export default function UploadForm() {
             targetVideoFile.delete();
           }
 
-          sourceVideoFile.copy(targetVideoFile);
+          await sourceVideoFile.copy(targetVideoFile);
+
+          cleanupCacheFile(video.videoUri);
 
           const durationMs = video.duration > 1000 ? video.duration : video.duration * 1000;
           const safeTime =
             durationMs > 0 ? Math.min(3000, Math.max(0, Math.floor(durationMs / 2))) : 0;
 
-          let tempThumbUri: string;
+          let finalThumbUri: string;
+
           try {
             const thumbResult = await VideoThumbnails.getThumbnailAsync(targetVideoFile.uri, {
               time: safeTime,
             });
-            tempThumbUri = thumbResult.uri;
-          } catch (_err) {
-            const thumbResult = await VideoThumbnails.getThumbnailAsync(targetVideoFile.uri, {
-              time: 0,
-            });
-            tempThumbUri = thumbResult.uri;
+
+            const targetThumbFile = new File(video.thumbUri);
+            if (targetThumbFile.exists) {
+              targetThumbFile.delete();
+            }
+
+            const tempThumbFile = new File(thumbResult.uri);
+            await tempThumbFile.move(targetThumbFile);
+
+            finalThumbUri = targetThumbFile.uri;
+          } catch (err: any) {
+            console.warn(
+              "Thumbnail generation failed, using placeholder:",
+              err?.message ?? err,
+              targetVideoFile.uri
+            );
+
+            finalThumbUri = sharedPlaceholderFile.uri;
           }
 
-          const tempThumbFile = new File(tempThumbUri);
-          const targetThumbFile = new File(video.thumbUri);
-
-          if (targetThumbFile.exists) {
-            targetThumbFile.delete();
-          }
-
-          tempThumbFile.move(targetThumbFile);
-
-          return {
+          processedVideos.push({
             ...video,
             videoUri: targetVideoFile.uri,
-            thumbUri: targetThumbFile.uri,
+            thumbUri: finalThumbUri,
             ...(video.createdAt ? { createdAt: video.createdAt } : {}),
-          };
-        })
-      );
+          });
+        }
 
-      await uploadVideos(processedVideos);
+        await uploadVideos(processedVideos);
 
-      return {
-        message: `Video${values.videos.length > 1 ? "s" : ""} added successfully.`,
-      };
-    })();
+        return {
+          message: `Video${values.videos.length > 1 ? "s" : ""} added successfully.`,
+        };
+      })();
 
-    toast.promise(promise, {
-      loading: "Uploading videos...",
-      success: ({ message }) => message,
-      error: "Failed to upload videos.",
-    });
+      toast.promise(promise, {
+        loading: "Uploading videos...",
+        success: ({ message }) => message,
+        error: "Failed to upload videos.",
+      });
 
-    promise.finally(handleReset);
-  }
+      promise.finally(() => {
+        handleReset();
+        isSubmittingRef.current = false;
+        setIsSubmitting(false);
+      });
+    },
+    [handleReset, uploadVideos]
+  );
 
-  function handleErrors(_errors: FieldErrors<UploadVideosFormData>) {
+  const handleErrors = useCallback((_errors: FieldErrors<UploadVideosFormData>) => {
     toast.error("Something went wrong!");
-  }
+  }, []);
+
+  const handleSubmitPress = useCallback(() => {
+    form.handleSubmit(onSubmit, handleErrors)();
+  }, [form, onSubmit, handleErrors]);
 
   useFocusEffect(
     useCallback(() => {
@@ -276,18 +323,11 @@ export default function UploadForm() {
             <View className="justify-center rounded-lg border-[16px] border-primary-foreground bg-secondary">
               <View className="justify-center rounded-lg border border-dashed border-muted-foreground">
                 <Button
+                  disabled={isSubmitting}
                   className="p-12"
                   variant="ghost"
                   size="unset"
-                  onPress={async () =>
-                    await selectVideoFiles((videos) => {
-                      // @ts-ignore
-                      form.setValue("videos", videos, {
-                        shouldDirty: true,
-                        shouldTouch: true,
-                      });
-                    })
-                  }>
+                  onPress={handleAddVideos}>
                   <View className="items-center justify-center gap-2">
                     <CloudUploadIcon
                       className="text-foreground"
@@ -309,7 +349,7 @@ export default function UploadForm() {
 
         <View className="flex-row items-center justify-center gap-4">
           <Button
-            disabled={!isValid}
+            disabled={!isValid || isSubmitting}
             className="flex flex-1 flex-row items-center justify-center gap-4"
             variant="outline"
             size="lg"
@@ -326,10 +366,10 @@ export default function UploadForm() {
             </View>
           </Button>
           <Button
-            disabled={!isValid}
+            disabled={!isValid || isSubmitting}
             className="flex flex-1 flex-row items-center justify-center gap-4 bg-brand"
             size="lg"
-            onPress={form.handleSubmit(onSubmit, handleErrors)}>
+            onPress={handleSubmitPress}>
             <View className="flex-row items-center gap-4">
               <ImportIcon
                 className="text-white"

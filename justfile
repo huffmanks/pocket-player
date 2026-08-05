@@ -25,16 +25,31 @@ credentials:
 doctor:
     sh ./build-environment.sh
 
-# Manually extract connected device specs
-get-device-spec output_path="device-spec_adb.json":
-    bundletool get-device-spec --output={{ output_path }}
+# Bump package.json version, app.json expo.version, and increment expo.android.versionCode by 1
+bump version:
+    @node -e '\
+      const fs = require("fs"); \
+      \
+      const pkg = JSON.parse(fs.readFileSync("package.json", "utf8")); \
+      pkg.version = "{{version}}"; \
+      fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n"); \
+      \
+      const app = JSON.parse(fs.readFileSync("app.json", "utf8")); \
+      app.expo = app.expo || {}; \
+      app.expo.android = app.expo.android || {}; \
+      app.expo.version = "{{version}}"; \
+      app.expo.android.versionCode = (app.expo.android.versionCode || 0) + 1; \
+      fs.writeFileSync("app.json", JSON.stringify(app, null, 2) + "\n"); \
+      \
+      console.log(`Updated version to {{version}} and versionCode to ${app.expo.android.versionCode}`); \
+    '
 
 # --- BUILDS ---
 
 # Build production/optimized AAB bundle locally
 build-aab:
     mkdir -p builds
-    pnpm dlx eas-cli build --clear-cache --platform android --profile preview-bundle --local --output="builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab"
+    pnpx eas-cli build --clear-cache --platform android --profile preview-bundle --local --output="builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab"
 
 # Extract Universal APK from AAB with Versioning
 extract-universal-apk aab_file:
@@ -51,16 +66,32 @@ extract-universal-apk aab_file:
     rm builds/universal.apks
     @echo "Created: builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk"
 
+# Extract Device-Specific APK set from AAB (requires connected ADB device)
+extract-device-apks aab_file:
+    mkdir -p builds
+    @echo "Extracting device-specific APKS for {{ APP_NAME }} v{{ APP_VERSION }}..."
+
+    bundletool build-apks --connected-device --bundle={{ aab_file }} --output=builds/device.apks --overwrite \
+        --ks=$KEYSTORE --ks-pass=pass:$KEYSTORE_PASS --ks-key-alias=$KEY_ALIAS --key-pass=pass:$KEY_PASS
+
+    @echo "Created: builds/device.apks"
+
 # Build AAB and automatically extract APKs
 build-and-extract:
     just build-aab
     just extract-universal-apk "builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab"
+    just extract-device-apks "builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab"
 
 # --- DEPLOYMENT & GITHUB RELEASES ---
 
 # Deploy Universal APK directly
 deploy-universal:
     just deploy-apk "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk"
+
+# Deploy Device-Specific APK set via bundletool
+deploy-device:
+    @echo "Deploying device-specific APKS to connected ADB device..."
+    bundletool install-apks --apks=builds/device.apks
 
 # Create GitHub Release based on package.json version
 # Usage: just release-github

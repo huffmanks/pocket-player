@@ -24,7 +24,7 @@ interface VideoThumbPickerProps {
   setPlayerCurrentTime: Dispatch<SetStateAction<number>>;
 }
 
-export default function VideoThumbPickerNext({
+export default function VideoThumbPicker({
   videoInfo,
   setPlayerCurrentTime,
 }: VideoThumbPickerProps) {
@@ -42,6 +42,7 @@ export default function VideoThumbPickerNext({
 
   const videoRef = useRef<VideoView | null>(null);
   const timeUpdateRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeRef = useRef(time);
   const inputRef = useRef<TextInput>(null);
 
   const { isDarkColorScheme } = useColorScheme();
@@ -78,6 +79,10 @@ export default function VideoThumbPickerNext({
   }, [isPlayerReady, initialTimeResult?.delta, opacityDelay, opacityFast, player]);
 
   useEffect(() => {
+    timeRef.current = time;
+  }, [time]);
+
+  useEffect(() => {
     const listener = player.addListener("timeUpdate", ({ currentTime }) => {
       if (
         isScrubbing ||
@@ -85,7 +90,7 @@ export default function VideoThumbPickerNext({
         !isPlayerReady ||
         !isInitialized ||
         !currentTime ||
-        time === currentTime
+        timeRef.current === currentTime
       )
         return;
 
@@ -105,15 +110,7 @@ export default function VideoThumbPickerNext({
         clearTimeout(timeUpdateRef.current);
       }
     };
-  }, [
-    isScrubbing,
-    isPlayerUpdating,
-    isPlayerReady,
-    isInitialized,
-    time,
-    player,
-    setPlayerCurrentTime,
-  ]);
+  }, [isScrubbing, isPlayerUpdating, isPlayerReady, isInitialized, player, setPlayerCurrentTime]);
 
   function seekTo(absTime: number) {
     setIsPlayerUpdating(true);
