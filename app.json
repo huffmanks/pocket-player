@@ -75,9 +75,8 @@
         "expo-build-properties",
         {
           "android": {
-            "buildArchs": [
-              "arm64-v8a"
-            ]
+            "extraProguardRules": "-keep class expo.modules.videometadata.** { *; }",
+            "buildArchs": ["arm64-v8a"]
           }
         }
       ],

@@ -86,7 +86,8 @@ build-and-extract:
 
 # Deploy Universal APK directly
 deploy-universal:
-    just deploy-apk "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk"
+    @echo "Deploying universal APK to connected ADB device..."
+    adb install -r "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk"
 
 # Deploy Device-Specific APK set via bundletool
 deploy-device:

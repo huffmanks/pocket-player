@@ -38,15 +38,15 @@ const formSchema = z.object({
         videoUri: z.string().min(1),
         thumbUri: z.string().min(1),
         fileExtension: z.string().min(1),
-        fileSize: z.number().positive(),
+        fileSize: z.number().nonnegative(),
         fileSizeLabel: z.string().min(1),
-        duration: z.number().positive(),
+        duration: z.number().nonnegative(),
         durationLabel: z.string().min(1),
         orientation: z.string().min(1),
-        width: z.number().positive(),
-        height: z.number().positive(),
+        width: z.number().nonnegative(),
+        height: z.number().nonnegative(),
         resolution: z.string().min(1),
-        fps: z.number().positive(),
+        fps: z.number().nonnegative(),
         hasAudio: z.boolean(),
         videoCodec: z.string().nullable(),
         audioCodec: z.string().nullable(),
@@ -153,15 +153,15 @@ export default function UploadForm() {
               videoUri: uri,
               thumbUri: thumbFile.uri,
               fileExtension,
-              fileSize,
+              fileSize: videoMeta.fileSize ?? 0,
               fileSizeLabel,
-              duration: videoMeta.duration,
+              duration: videoMeta.duration ?? 0,
               durationLabel,
               orientation,
-              width,
-              height,
+              width: videoMeta.width ?? 0,
+              height: videoMeta.height ?? 0,
               resolution,
-              fps: videoMeta.fps,
+              fps: videoMeta.fps && videoMeta.fps > 0 ? videoMeta.fps : 30,
               hasAudio: !!videoMeta.hasAudio,
               videoCodec: videoMeta.codec ?? null,
               audioCodec: videoMeta.audioCodec ?? null,
@@ -219,8 +219,11 @@ export default function UploadForm() {
 
         const sharedPlaceholderFile = new File(VIDEOS_DIR, "_placeholder.jpg");
         if (!sharedPlaceholderFile.exists) {
-          const srcPlaceholder = new File(placeholderAsset.localUri!);
-          await srcPlaceholder.copy(sharedPlaceholderFile);
+          const assetUri = placeholderAsset.localUri || placeholderAsset.uri;
+          if (assetUri && assetUri.startsWith("file://")) {
+            const srcPlaceholder = new File(assetUri);
+            await srcPlaceholder.copy(sharedPlaceholderFile);
+          }
         }
 
         const processedVideos = [];
@@ -297,8 +300,13 @@ export default function UploadForm() {
     [handleReset, uploadVideos]
   );
 
-  const handleErrors = useCallback((_errors: FieldErrors<UploadVideosFormData>) => {
-    toast.error("Something went wrong!");
+  const handleErrors = useCallback((errors: FieldErrors<UploadVideosFormData>) => {
+    const err = Object.values(errors.videos?.[0] || {})[0];
+    const firstError =
+      typeof err === "object" && err !== null && "message" in err && typeof err.message === "string"
+        ? err.message
+        : undefined;
+    toast.error(firstError || "Form validation failed");
   }, []);
 
   const handleSubmitPress = useCallback(() => {
