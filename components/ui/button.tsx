@@ -20,6 +20,10 @@ const buttonVariants = cva(
           "bg-primary active:bg-primary/90 shadow-sm shadow-black/5",
           Platform.select({ web: "hover:bg-primary/90" })
         ),
+        brand: cn(
+          "bg-brand active:bg-brand/90 shadow-sm shadow-black/5",
+          Platform.select({ web: "hover:bg-brand/90" })
+        ),
         destructive: cn(
           "bg-destructive active:bg-destructive/90 dark:bg-destructive/60 shadow-sm shadow-black/5",
           Platform.select({
@@ -27,7 +31,7 @@ const buttonVariants = cva(
           })
         ),
         outline: cn(
-          "border-border bg-background active:bg-accent dark:bg-input/30 dark:border-input dark:active:bg-input/50 border shadow-sm shadow-black/5",
+          "border-border bg-background active:bg-accent dark:border-input dark:active:bg-input/50 border shadow-sm shadow-black/5",
           Platform.select({
             web: "hover:bg-accent dark:hover:bg-input/50",
           })
@@ -43,10 +47,10 @@ const buttonVariants = cva(
         link: "",
       },
       size: {
-        default: cn("h-10 px-4 py-2 sm:h-9", Platform.select({ web: "has-[>svg]:px-3" })),
-        sm: cn("h-9 gap-1.5 rounded-md px-3 sm:h-8", Platform.select({ web: "has-[>svg]:px-2.5" })),
-        lg: cn("h-11 rounded-md px-6 sm:h-10", Platform.select({ web: "has-[>svg]:px-4" })),
-        icon: "h-10 w-10 sm:h-9 sm:w-9",
+        default: cn("h-10 px-4 py-2", Platform.select({ web: "h-12 px-5 py-3 has-[>svg]:px-3" })),
+        sm: cn("h-9 gap-1.5 rounded-md px-3", Platform.select({ web: "has-[>svg]:px-2.5" })),
+        lg: cn("h-11 rounded-md px-8", Platform.select({ web: "h-14 has-[>svg]:px-4" })),
+        icon: "h-10 w-10",
         circle: "rounded-full p-2 w-12 h-12",
         unset: "",
       },
@@ -67,6 +71,7 @@ const buttonTextVariants = cva(
     variants: {
       variant: {
         default: "text-primary-foreground",
+        brand: "text-white",
         destructive: "text-white",
         outline: cn(
           "group-active:text-accent-foreground",

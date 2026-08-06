@@ -275,7 +275,8 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                 <Button
                   disabled={isSubmitting}
                   variant="secondary"
-                  className="flex w-full flex-row items-center justify-center gap-4">
+                  size="lg"
+                  className="flex w-full flex-row items-center justify-center">
                   <Icon
                     as={TrashIcon}
                     className="text-foreground"
@@ -312,7 +313,9 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
           <View className="flex-1">
             <Button
               disabled={isSubmitting}
-              className="flex w-full flex-row items-center justify-center gap-4 bg-brand"
+              variant="brand"
+              size="lg"
+              className="flex w-full flex-row items-center justify-center"
               onPress={handleSubmitPress}>
               <Icon
                 as={SaveIcon}
@@ -320,9 +323,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
                 size={24}
                 strokeWidth={1.5}
               />
-              <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
-                Save
-              </Text>
+              <Text className="native:text-base font-semibold uppercase tracking-wider">Save</Text>
             </Button>
           </View>
         </View>

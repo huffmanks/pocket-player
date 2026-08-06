@@ -197,7 +197,8 @@ export default function SettingsScreen() {
           <Button
             disabled={!enablePasscode}
             variant="secondary"
-            className="mt-2 flex flex-row items-center justify-center gap-4"
+            size="lg"
+            className="mt-2 flex flex-row items-center justify-center gap-3"
             onPress={() => router.push("/(screens)/passcode")}>
             <Icon
               as={KeyRoundIcon}
@@ -265,7 +266,8 @@ export default function SettingsScreen() {
                 <Button
                   disabled={isSubmitting}
                   variant="secondary"
-                  className="flex flex-row items-center justify-center gap-4">
+                  size="lg"
+                  className="flex flex-row items-center justify-center gap-3">
                   <Icon
                     as={SettingsIcon}
                     className="text-foreground"
@@ -302,7 +304,8 @@ export default function SettingsScreen() {
                 <Button
                   disabled={isSubmitting}
                   variant="destructive"
-                  className="flex flex-row items-center justify-center gap-4">
+                  size="lg"
+                  className="flex flex-row items-center justify-center gap-3">
                   <Icon
                     as={FileVideo2Icon}
                     className="text-destructive-foreground"
@@ -339,7 +342,8 @@ export default function SettingsScreen() {
                 <Button
                   disabled={isSubmitting}
                   variant="destructive"
-                  className="flex flex-row items-center justify-center gap-4">
+                  size="lg"
+                  className="flex flex-row items-center justify-center gap-3">
                   <Icon
                     as={TrashIcon}
                     className="text-destructive-foreground"

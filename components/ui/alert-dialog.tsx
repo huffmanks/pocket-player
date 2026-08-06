@@ -3,7 +3,6 @@ import { Platform, View, type ViewProps } from "react-native";
 
 import * as AlertDialogPrimitive from "@rn-primitives/alert-dialog";
 import { FadeIn, FadeOut } from "react-native-reanimated";
-import { FullWindowOverlay as RNFullWindowOverlay } from "react-native-screens";
 
 import { cn } from "@/lib/utils";
 
@@ -17,7 +16,7 @@ const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
 
 const AlertDialogPortal = AlertDialogPrimitive.Portal;
 
-const FullWindowOverlay = Platform.OS === "ios" ? RNFullWindowOverlay : React.Fragment;
+const FullWindowOverlay = React.Fragment;
 
 function AlertDialogOverlay({
   className,

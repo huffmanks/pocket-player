@@ -4,7 +4,6 @@ import { Platform, type StyleProp, StyleSheet, Text, View, type ViewStyle } from
 import * as DropdownMenuPrimitive from "@rn-primitives/dropdown-menu";
 import { CheckIcon, ChevronDownIcon, ChevronRightIcon, ChevronUpIcon } from "lucide-react-native";
 import { FadeIn } from "react-native-reanimated";
-import { FullWindowOverlay as RNFullWindowOverlay } from "react-native-screens";
 
 import { cn } from "@/lib/utils";
 
@@ -84,7 +83,7 @@ function DropdownMenuSubContent({
   );
 }
 
-const FullWindowOverlay = Platform.OS === "ios" ? RNFullWindowOverlay : React.Fragment;
+const FullWindowOverlay = React.Fragment;
 
 function DropdownMenuContent({
   className,

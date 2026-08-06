@@ -360,11 +360,11 @@ export default function UploadForm() {
         <View className="flex-row items-center justify-center gap-4">
           <Button
             disabled={!isValid || isSubmitting}
-            className="flex flex-1 flex-row items-center justify-center gap-4"
+            className="flex flex-1 flex-row items-center justify-center"
             variant="outline"
             size="lg"
             onPress={handleReset}>
-            <View className="flex-row items-center gap-4">
+            <View className="flex-row items-center gap-2">
               <Icon
                 as={CircleXIcon}
                 className="text-foreground"
@@ -378,10 +378,11 @@ export default function UploadForm() {
           </Button>
           <Button
             disabled={!isValid || isSubmitting}
-            className="flex flex-1 flex-row items-center justify-center gap-4 bg-brand"
+            variant="brand"
             size="lg"
+            className="flex flex-1 flex-row items-center justify-center"
             onPress={handleSubmitPress}>
-            <View className="flex-row items-center gap-4">
+            <View className="flex-row items-center gap-2">
               <Icon
                 as={ImportIcon}
                 className="text-white"
@@ -389,7 +390,7 @@ export default function UploadForm() {
                 strokeWidth={1.5}
               />
 
-              <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+              <Text className="native:text-base font-semibold uppercase tracking-wider">
                 Import
               </Text>
             </View>

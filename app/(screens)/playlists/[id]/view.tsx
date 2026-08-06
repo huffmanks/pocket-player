@@ -183,17 +183,16 @@ export default function ViewPlaylistScreen() {
             asChild>
             <Button
               size="lg"
+              variant="brand"
               disabled={!playlistVideosQuery.data?.length}
-              className="flex flex-row items-center justify-center gap-4 bg-brand">
+              className="flex flex-row items-center justify-center gap-4">
               <Icon
                 as={TvIcon}
                 className="text-white"
                 size={24}
                 strokeWidth={1.5}
               />
-              <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
-                Watch
-              </Text>
+              <Text className="native:text-base font-semibold uppercase tracking-wider">Watch</Text>
             </Button>
           </Link>
         </View>

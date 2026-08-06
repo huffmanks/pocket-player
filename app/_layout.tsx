@@ -33,6 +33,7 @@ export default function RootLayout() {
 
   const isAppReady = useAppStore((state) => state.isAppReady);
   const theme = useSettingsStore((state) => state.theme);
+  const isLocked = useSecurityStore((state) => state.isLocked);
 
   useEffect(() => {
     ScreenCapture.preventScreenCaptureAsync().catch(() => {});
@@ -121,7 +122,7 @@ export default function RootLayout() {
             position="bottom-center"
             offset={70}
           />
-          <PortalHost />
+          {!isLocked && <PortalHost />}
         </SafeAreaProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

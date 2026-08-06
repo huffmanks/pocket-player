@@ -29,16 +29,15 @@ export default function IndexScreen() {
           href="/(tabs)/upload">
           <Button
             size="lg"
-            className="flex flex-row items-center justify-center gap-4 bg-brand">
+            variant="brand"
+            className="flex flex-row items-center justify-center gap-4">
             <Icon
               as={CloudUploadIcon}
               className="text-white"
               size={24}
               strokeWidth={1.5}
             />
-            <Text className="native:text-lg font-semibold uppercase tracking-wider text-white">
-              Upload
-            </Text>
+            <Text className="native:text-lg font-semibold uppercase tracking-wider">Upload</Text>
           </Button>
         </Link>
       </View>

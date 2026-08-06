@@ -90,14 +90,15 @@ function ListEmptyComponent({ playlistId }: { playlistId: string }) {
         asChild>
         <Button
           size="lg"
-          className="flex flex-row items-center justify-center gap-4 bg-brand">
+          variant="brand"
+          className="flex flex-row items-center justify-center gap-4">
           <Icon
             as={ListVideoIcon}
             className="text-white"
             size={24}
             strokeWidth={1.5}
           />
-          <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+          <Text className="native:text-base font-semibold uppercase tracking-wider">
             Add videos
           </Text>
         </Button>

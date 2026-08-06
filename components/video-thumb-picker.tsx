@@ -14,7 +14,7 @@ import Animated, {
 
 import { VideoMeta } from "@/db/schema";
 import { SLIDER_THEME } from "@/lib/theme";
-import { cn, getClampedDelta } from "@/lib/utils";
+import { getClampedDelta } from "@/lib/utils";
 
 import TimerInput from "@/components/timer-input";
 import { Button } from "@/components/ui/button";
@@ -152,10 +152,8 @@ export default function VideoThumbPicker({
           <View className="absolute -right-3 -top-4 z-10">
             <Button
               size="circle"
-              className={cn(
-                "flex flex-row items-center justify-center",
-                isDisabled ? "bg-brand" : "bg-brand/50"
-              )}
+              variant="brand"
+              className="flex flex-row items-center justify-center"
               onPress={() => setIsDisabled((prev) => !prev)}>
               {isDisabled ? (
                 <Icon

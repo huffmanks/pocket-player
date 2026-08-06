@@ -131,17 +131,17 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
       <View>
         <Button
           disabled={isSubmitting}
-          className="bg-brand"
+          variant="brand"
           size="lg"
           onPress={form.handleSubmit(onSubmit)}>
-          <View className="flex-row items-center gap-4">
+          <View className="flex-row items-center gap-2">
             <Icon
               as={ListMusicIcon}
               className="text-white"
               size={24}
               strokeWidth={1.5}
             />
-            <Text className="native:text-base font-semibold uppercase tracking-wider text-white">
+            <Text className="native:text-base font-semibold uppercase tracking-wider">
               Create playlist
             </Text>
           </View>
