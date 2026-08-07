@@ -75,8 +75,8 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
     {
       enablePanDownToClose = true,
       enableDynamicSizing = false,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       index = 0,
+      snapPoints = ["60%", "80%"],
       backdropProps,
       backgroundStyle,
       android_keyboardInputMode = "adjustResize",
@@ -128,8 +128,8 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
     return (
       <BottomSheetModal
         ref={sheetRef}
-        index={0}
-        snapPoints={["60%", "80%"]}
+        index={index}
+        snapPoints={snapPoints}
         enablePanDownToClose={enablePanDownToClose}
         backdropComponent={renderBackdrop}
         enableDynamicSizing={enableDynamicSizing}

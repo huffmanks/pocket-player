@@ -283,7 +283,7 @@ export default function SettingsScreen() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will reset all settings.
+                    <Text>This action cannot be undone. This will reset all settings.</Text>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
 
@@ -291,8 +291,10 @@ export default function SettingsScreen() {
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction onPress={handleResetSettings}>
-                    <Text>Reset</Text>
+                  <AlertDialogAction
+                    className="bg-destructive"
+                    onPress={handleResetSettings}>
+                    <Text className="text-destructive-foreground">Delete</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -329,8 +331,10 @@ export default function SettingsScreen() {
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction onPress={handleDeleteFiles}>
-                    <Text>Delete</Text>
+                  <AlertDialogAction
+                    className="bg-destructive"
+                    onPress={handleDeleteFiles}>
+                    <Text className="text-destructive-foreground">Delete</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -367,8 +371,10 @@ export default function SettingsScreen() {
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction onPress={handleClearAllData}>
-                    <Text>Delete</Text>
+                  <AlertDialogAction
+                    className="bg-destructive"
+                    onPress={handleClearAllData}>
+                    <Text className="text-destructive-foreground">Delete</Text>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

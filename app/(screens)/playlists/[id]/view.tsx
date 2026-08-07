@@ -153,7 +153,11 @@ export default function ViewPlaylistScreen() {
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
                       <Text>This will delete the </Text>
-                      <Text className="font-semibold">“{playlistQuery.data[0].title}”</Text>
+                      <Text
+                        className="font-semibold text-destructive"
+                        numberOfLines={1}>
+                        “{playlistQuery.data[0].title}”
+                      </Text>
                       <Text> playlist permanently.</Text>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
@@ -161,8 +165,10 @@ export default function ViewPlaylistScreen() {
                     <AlertDialogCancel>
                       <Text>Cancel</Text>
                     </AlertDialogCancel>
-                    <AlertDialogAction onPress={handleDelete}>
-                      <Text>Delete</Text>
+                    <AlertDialogAction
+                      className="bg-destructive"
+                      onPress={handleDelete}>
+                      <Text className="text-destructive-foreground">Delete</Text>
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

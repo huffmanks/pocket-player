@@ -12,7 +12,7 @@ interface GoBackProps {
 export default function GoBack({ fallbackHref }: GoBackProps) {
   return (
     <Pressable
-      onPress={() => (router.canGoBack() ? router.back() : router.dismissTo(fallbackHref))}
+      onPress={() => (router.canGoBack() ? router.back() : router.push(fallbackHref))}
       hitSlop={12}
       className="pr-3 pt-0.5">
       <Icon

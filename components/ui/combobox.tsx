@@ -105,7 +105,11 @@ const Combobox = React.forwardRef<
             )}
             onPress={() => onItemToggle(listItem)}>
             <View className="flex-1 flex-row">
-              <Text className="text-lg text-foreground">{listItem.label}</Text>
+              <Text
+                className="text-lg text-foreground"
+                numberOfLines={1}>
+                {listItem.label}
+              </Text>
             </View>
             {isSelected && (
               <Icon
@@ -170,6 +174,7 @@ const Combobox = React.forwardRef<
         </BottomSheetOpenTrigger>
         <BottomSheetContent
           ref={bottomSheet.ref}
+          snapPoints={["50%", "85%"]}
           onDismiss={() => {
             setSearch("");
           }}>
@@ -251,6 +256,7 @@ const Combobox = React.forwardRef<
           )}
           <BottomSheetFlatList
             data={filteredItems}
+            initialNumToRender={items.length || 20}
             contentContainerStyle={{
               paddingTop: insets.top / 2,
               paddingBottom: HEADER_HEIGHT / 2 + insets.bottom,

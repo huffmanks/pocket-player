@@ -1,31 +1,31 @@
 export const NAV_THEME = {
   light: {
-    background: "rgb(255, 255, 255)",
-    border: "rgb(227, 227, 235)",
-    card: "rgb(239, 239, 240)",
-    notification: "rgb(255, 86, 86)",
-    primary: "rgb(26, 26, 36)",
-    text: "rgb(9, 9, 12)",
-    brand: "rgb(13, 150, 139)",
-    brandForeground: "rgb(20, 184, 165)",
+    background: "#ffffff",
+    border: "#e3e3eb",
+    card: "#efeff0",
+    notification: "#ff5656",
+    primary: "#1a1a24",
+    text: "#09090c",
+    brand: "#0d968b",
+    brandForeground: "#14b8a5",
   },
   dark: {
-    background: "rgb(9, 9, 11)",
-    border: "rgb(35, 35, 41)",
-    card: "rgb(21, 21, 24)",
-    notification: "rgb(217, 58, 58)",
-    primary: "rgb(250, 250, 250)",
-    text: "rgb(250, 250, 250)",
-    brand: "rgb(13, 150, 139)",
-    brandForeground: "rgb(20, 184, 165)",
+    background: "#09090b",
+    border: "#232329",
+    card: "#151518",
+    notification: "#d93a3a",
+    primary: "#fafafa",
+    text: "#fafafa",
+    brand: "#0d968b",
+    brandForeground: "#14b8a5",
   },
 };
 
 export const SLIDER_THEME = {
   thumbTintColor: NAV_THEME.dark.brandForeground,
-  thumbDisabledTintColor: "rgb(52, 52, 52)",
-  minimumTrackTintColor: "rgb(248, 250, 252)",
-  maximumTrackTintColor: "rgb(31, 36, 43)",
+  thumbDisabledTintColor: "#343434",
+  minimumTrackTintColor: "#f8fafc",
+  maximumTrackTintColor: "#1f242b",
 };
 
 const fontStyle = {

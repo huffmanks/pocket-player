@@ -97,7 +97,8 @@
           "imageWidth": 200
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-system-ui"
     ],
     "experiments": {
       "typedRoutes": true

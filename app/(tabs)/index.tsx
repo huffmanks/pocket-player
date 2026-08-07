@@ -30,7 +30,7 @@ export default function IndexScreen() {
           <Button
             size="lg"
             variant="brand"
-            className="flex flex-row items-center justify-center gap-4">
+            className="flex flex-row items-center justify-center gap-3">
             <Icon
               as={CloudUploadIcon}
               className="text-white"

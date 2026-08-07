@@ -92,9 +92,13 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-left">
               <Text>This will remove the </Text>
-              <Text className="font-semibold">“{item.title}”</Text>
+              <Text
+                className="font-semibold text-destructive"
+                numberOfLines={1}>
+                “{item.title}”
+              </Text>
               <Text> video from this playlist.</Text>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -102,8 +106,10 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
             <AlertDialogCancel>
               <Text>Cancel</Text>
             </AlertDialogCancel>
-            <AlertDialogAction onPress={handleRemoveFromPlaylist}>
-              <Text>Delete</Text>
+            <AlertDialogAction
+              className="bg-destructive"
+              onPress={handleRemoveFromPlaylist}>
+              <Text className="text-destructive-foreground">Delete</Text>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

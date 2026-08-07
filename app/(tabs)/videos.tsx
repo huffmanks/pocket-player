@@ -230,7 +230,7 @@ function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
             asChild>
             <Button
               size="lg"
-              className="flex flex-row items-center justify-center gap-4">
+              className="flex flex-row items-center justify-center gap-3">
               <Icon
                 as={CloudUploadIcon}
                 className="text-background"

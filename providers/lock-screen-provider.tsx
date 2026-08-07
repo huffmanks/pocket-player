@@ -91,7 +91,7 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
     async function restorePreviousRoute() {
       try {
         if (isLocked) {
-          router.push("/(screens)/lock");
+          router.replace("/(screens)/lock");
           return;
         }
 
