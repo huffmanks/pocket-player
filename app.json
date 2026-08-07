@@ -3,7 +3,7 @@
     "name": "Pocket Player",
     "slug": "pocket-player",
     "scheme": "pocket-player",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "orientation": "portrait",
     "icon": "./assets/icons/ios_app_logo_marketing.png",
     "userInterfaceStyle": "dark",
@@ -52,7 +52,7 @@
     },
     "android": {
       "package": "com.anonymous.pocketplayer",
-      "versionCode": 4,
+      "versionCode": 5,
       "icon": "./assets/icons/android_adaptive_logo_foreground.png",
       "backgroundColor": "#09090b",
       "adaptiveIcon": {

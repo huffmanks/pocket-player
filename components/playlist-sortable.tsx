@@ -5,7 +5,11 @@ import { ListRenderItemInfo, View } from "react-native";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { ListVideoIcon } from "lucide-react-native";
+import { useSharedValue, withTiming } from "react-native-reanimated";
 import ReorderableList, {
+  ReorderableListCellAnimations,
+  ReorderableListDragEndEvent,
+  ReorderableListDragStartEvent,
   ReorderableListReorderEvent,
   reorderItems,
 } from "react-native-reorderable-list";
@@ -25,6 +29,18 @@ interface PlaylistSortableProps {
 export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) {
   const db = useDatabaseStore.getState().db;
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
+
+  const opacity = useSharedValue(1);
+
+  const handleDragStart = (_: ReorderableListDragStartEvent) => {
+    "worklet";
+    opacity.value = withTiming(0.5);
+  };
+
+  const handleDragEnd = (_: ReorderableListDragEndEvent) => {
+    "worklet";
+    opacity.value = withTiming(1);
+  };
 
   const playlistVideosQuery = useLiveQuery(
     db.query.playlistVideos.findMany({
@@ -53,6 +69,13 @@ export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) 
     />
   );
 
+  const cellAnimations: ReorderableListCellAnimations = useMemo(
+    () => ({
+      opacity,
+    }),
+    [opacity]
+  );
+
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
     if (!videosData) return;
     const newData = reorderItems(videosData, from, to);
@@ -69,6 +92,9 @@ export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) 
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       onReorder={handleReorder}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      cellAnimations={cellAnimations}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={<View style={{ paddingTop: 40 }} />}
       ListFooterComponent={<View style={{ paddingBottom: 40 }} />}

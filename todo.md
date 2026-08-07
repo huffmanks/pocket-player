@@ -1,3 +1,3 @@
-- [ ] security screen/navbar make same black color.
-- [x] videothumbpicker is slow responsive.
-- [ ] drag/reorder playlist items when active moving make more noticeable. bgColor.
+- [-] security screen/navbar make same black color.
+- [-] make sure playlist-collage auto updates if thumbs change.
+- [-] check for embedded video thumb first and if not exist continue.
