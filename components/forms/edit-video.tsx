@@ -1,6 +1,6 @@
 import { File } from "expo-file-system";
+import { ImageManipulator } from "expo-image-manipulator";
 import { router } from "expo-router";
-import * as VideoThumbnails from "expo-video-thumbnails";
 import { useCallback, useRef, useState } from "react";
 import { View } from "react-native";
 
@@ -47,7 +47,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
-import VideoThumbPicker from "@/components/video-thumb-picker";
+import VideoThumbPicker, { VideoThumbPickerHandle } from "@/components/video-thumb-picker";
 
 const formSchema = z.object({
   title: z
@@ -73,9 +73,9 @@ interface EditFormProps {
 export default function EditVideoForm({ videoInfo }: EditFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
-  const [playerCurrentTime, setPlayerCurrentTime] = useState(0);
 
   const isSubmittingRef = useRef(false);
+  const pickerRef = useRef<VideoThumbPickerHandle>(null);
 
   const { updateVideo, deleteVideo } = useVideoStore(
     useShallow((state) => ({
@@ -131,14 +131,17 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       setIsSubmitting(true);
 
       const parsedValues = formSchema.parse(values);
-      const thumbTimestamp = Math.trunc(playerCurrentTime * 100000) / 100;
 
       let targetThumbFile: File | null = null;
 
       try {
-        const { uri } = await VideoThumbnails.getThumbnailAsync(videoInfo.videoUri, {
-          time: thumbTimestamp,
-        });
+        const thumbnail = await pickerRef.current?.generateThumbnail();
+        if (!thumbnail) throw new Error("Failed to generate thumbnail");
+
+        const rendered = await ImageManipulator.manipulate(thumbnail).renderAsync();
+        const { uri } = await rendered.saveAsync();
+
+        const thumbTimestamp = Math.round(thumbnail.requestedTime * 1000);
 
         const fileId = createId();
         targetThumbFile = new File(VIDEOS_DIR, `${videoInfo.title}-${fileId}.jpg`);
@@ -180,7 +183,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         setIsSubmitting(false);
       }
     },
-    [playerCurrentTime, videoInfo, updateVideo]
+    [videoInfo, updateVideo]
   );
 
   const handleSubmitPress = useCallback(() => {
@@ -192,8 +195,8 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
       <View className="mb-2">
         <Label className="native:text-lg mb-2">Thumbnail</Label>
         <VideoThumbPicker
+          ref={pickerRef}
           videoInfo={videoInfo}
-          setPlayerCurrentTime={setPlayerCurrentTime}
         />
       </View>
       <View className="flex-1 gap-7">

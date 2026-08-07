@@ -1,3 +1,3 @@
 - [ ] security screen/navbar make same black color.
-- [ ] videothumbpicker is slow responsive.
+- [x] videothumbpicker is slow responsive.
 - [ ] drag/reorder playlist items when active moving make more noticeable. bgColor.
