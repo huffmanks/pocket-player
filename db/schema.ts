@@ -7,15 +7,13 @@ import type { z } from "zod";
 export const videos = sqliteTable(
   "videos",
   {
-    id: text("id")
-      .$defaultFn(() => createId())
-      .primaryKey()
-      .notNull(),
+    id: text("id").primaryKey().notNull(),
     title: text("title").default("Untitled").notNull(),
     videoUri: text("video_uri").notNull(),
     thumbUri: text("thumb_uri").notNull(),
     thumbTimestamp: integer("thumb_timestamp", { mode: "number" }).default(3000).notNull(),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false).notNull(),
+    fileName: text("file_name").notNull(),
     fileExtension: text("file_extension").notNull(),
     fileSize: integer("file_size", { mode: "number" }).notNull(),
     fileSizeLabel: text("file_size_label").notNull(),

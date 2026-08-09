@@ -1,0 +1,1 @@
+ALTER TABLE `videos` ADD `file_name` text NOT NULL;

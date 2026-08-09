@@ -23,6 +23,7 @@
     "@miblanchard/react-native-slider": "^2.6.0",
     "@paralleldrive/cuid2": "^3.3.0",
     "@react-native-community/datetimepicker": "9.1.0",
+    "@rn-primitives/accordion": "^1.5.2",
     "@rn-primitives/alert-dialog": "^1.1.0",
     "@rn-primitives/checkbox": "^1.1.0",
     "@rn-primitives/dropdown-menu": "^1.1.0",

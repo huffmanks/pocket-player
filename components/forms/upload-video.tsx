@@ -8,6 +8,7 @@ import { useCallback, useRef, useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createId } from "@paralleldrive/cuid2";
 import { CircleXIcon, CloudUploadIcon, ImportIcon } from "lucide-react-native";
 import { FieldErrors, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner-native";
@@ -35,9 +36,11 @@ const formSchema = z.object({
   videos: z
     .array(
       z.object({
+        id: z.string().min(1),
         title: z.string().min(1),
         videoUri: z.string().min(1),
         thumbUri: z.string().min(1),
+        fileName: z.string().min(1),
         fileExtension: z.string().min(1),
         fileSize: z.number().nonnegative(),
         fileSizeLabel: z.string().min(1),
@@ -95,9 +98,11 @@ export default function UploadForm() {
   async function selectVideoFiles(
     setVideoFields: (
       videos: {
+        id: string;
         title: string;
         videoUri: string;
         thumbUri: string;
+        fileName: string;
         fileExtension: string;
         fileSize: number;
         fileSizeLabel: string;
@@ -136,9 +141,11 @@ export default function UploadForm() {
             const rawTitle = filename[0];
             const fileExtension = filename[1];
 
+            const fileId = createId();
             const { title, createdAt } = parseFilenameDateAndTitle(rawTitle);
 
-            const thumbFile = new File(VIDEOS_DIR, `${rawTitle}.jpg`);
+            const thumbFile = new File(VIDEOS_DIR, `ppid_${fileId}.jpg`);
+
             const videoMeta = await getVideoInfoAsync(uri);
 
             const durationLabel = formatDuration(videoMeta.duration);
@@ -150,6 +157,8 @@ export default function UploadForm() {
             const resolution = getResolutionLabel({ width, height });
 
             return {
+              id: fileId,
+              fileName: `ppid_${fileId}.${fileExtension}`,
               title,
               videoUri: uri,
               thumbUri: thumbFile.uri,
@@ -231,7 +240,7 @@ export default function UploadForm() {
 
         for (const video of values.videos) {
           const sourceVideoFile = new File(video.videoUri);
-          const targetVideoFile = new File(VIDEOS_DIR, `${video.title}.${video.fileExtension}`);
+          const targetVideoFile = new File(VIDEOS_DIR, video.fileName);
 
           if (targetVideoFile.exists) {
             targetVideoFile.delete();
@@ -261,13 +270,7 @@ export default function UploadForm() {
             await tempThumbFile.move(targetThumbFile);
 
             finalThumbUri = targetThumbFile.uri;
-          } catch (err: any) {
-            console.warn(
-              "Thumbnail generation failed, using placeholder:",
-              err?.message ?? err,
-              targetVideoFile.uri
-            );
-
+          } catch (_error) {
             finalThumbUri = sharedPlaceholderFile.uri;
           }
 

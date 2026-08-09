@@ -3,7 +3,13 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 
-import { FileVideo2Icon, KeyRoundIcon, SettingsIcon, TrashIcon } from "lucide-react-native";
+import {
+  FileVideo2Icon,
+  FolderClosedIcon,
+  KeyRoundIcon,
+  SettingsIcon,
+  TrashIcon,
+} from "lucide-react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
@@ -199,7 +205,7 @@ export default function SettingsScreen() {
             variant="secondary"
             size="lg"
             className="mt-2 flex flex-row items-center justify-center gap-3"
-            onPress={() => router.push("/(screens)/passcode")}>
+            onPress={() => router.push("/(screens)/settings/passcode")}>
             <Icon
               as={KeyRoundIcon}
               className="text-foreground"
@@ -259,6 +265,23 @@ export default function SettingsScreen() {
 
         <View className="mb-6 gap-6">
           <Text className="text-xl font-semibold">Data</Text>
+
+          <View className="mt-3">
+            <Button
+              size="lg"
+              className="flex flex-row items-center justify-center gap-3"
+              onPress={() => router.push("/(screens)/settings/file-manager")}>
+              <Icon
+                as={FolderClosedIcon}
+                className="text-background"
+                size={20}
+                strokeWidth={1.5}
+              />
+              <Text className="native:text-base font-semibold uppercase tracking-wider">
+                File Manager
+              </Text>
+            </Button>
+          </View>
 
           <View className="mt-3 gap-6">
             <AlertDialog>

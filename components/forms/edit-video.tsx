@@ -144,7 +144,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         const thumbTimestamp = Math.round(thumbnail.requestedTime * 1000);
 
         const fileId = createId();
-        targetThumbFile = new File(VIDEOS_DIR, `${videoInfo.title}-${fileId}.jpg`);
+        targetThumbFile = new File(VIDEOS_DIR, `${fileId}_ppid_${videoInfo.id}.jpg`);
 
         const tempThumbFile = new File(uri);
         await tempThumbFile.move(targetThumbFile);

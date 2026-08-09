@@ -84,12 +84,6 @@ Download the latest APK from the [Releases](https://github.com/huffmanks/pocket-
    just deploy-universal
    ```
 
-## Roadmap
-
-- [ ] Save timestamp of last view of video.
-  - [key = `videoProgress:${videoId}`](lib/store.ts#L453)
-  - value = `10` (player.currentTime | number | seconds)
-
 ## License
 
 [MIT License](LICENSE)

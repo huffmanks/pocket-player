@@ -86,7 +86,18 @@ export default function ScreensLayout() {
         }}
       />
       <Stack.Screen
-        name="passcode"
+        name="settings/file-manager"
+        options={{
+          title: "File Manager",
+          animation: "fade_from_bottom",
+          headerBackVisible: false,
+          presentation: "modal",
+          gestureEnabled: true,
+          headerLeft: () => <GoBack fallbackHref="/(tabs)/settings" />,
+        }}
+      />
+      <Stack.Screen
+        name="settings/passcode"
         options={{
           title: "Passcode",
           animation: "fade_from_bottom",
