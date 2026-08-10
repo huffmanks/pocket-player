@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Image, View } from "react-native";
 
+import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { cn, imagesToRows } from "@/lib/utils";
 
 interface PlaylistCollageProps {
@@ -26,6 +27,7 @@ const PlaylistCollage = memo(function PlaylistCollage({ images }: PlaylistCollag
       {isSingleImage ? (
         <ImageCard
           imgUri={rows[0][0].thumbUri}
+
           viewClassName="h-48 w-48 overflow-hidden rounded-lg bg-card"
         />
       ) : (
@@ -92,7 +94,7 @@ function ImageCard({ imgUri, viewClassName }: { imgUri?: string; viewClassName: 
     <View className={viewClassName}>
       {imgUri ? (
         <Image
-          source={{ uri: imgUri }}
+          source={imgUri ? { uri: imgUri } : VIDEO_PLACEHOLDER}
           resizeMode="cover"
           className="h-full w-full"
         />

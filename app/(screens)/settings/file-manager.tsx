@@ -1,10 +1,17 @@
+import { Asset } from "expo-asset";
+import { File } from "expo-file-system";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { ImageIcon, RefreshCwIcon, TrashIcon, VideoIcon } from "lucide-react-native";
+import { toast } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
 
 import { FileItem, FileType, getAllAppFiles } from "@/lib/app-files";
+import { VIDEO_PLACEHOLDER } from "@/lib/constants";
+import { errorHandler } from "@/lib/error-handler";
+import { useVideoStore } from "@/lib/store";
 import { formatFileSize } from "@/lib/utils";
 
 import {
@@ -35,36 +42,6 @@ export default function FileManagerScreen() {
   const [imageTotalSize, setImageTotalSize] = useState("");
   const [totalSize, setTotalSize] = useState("");
 
-  const refreshFiles = async () => {
-    const result = await getAllAppFiles();
-    setVideoFiles(result.videoFiles);
-    setImageFiles(result.imageFiles);
-    setVideoTotalSize(result.videoTotalSize);
-    setImageTotalSize(result.imageTotalSize);
-    setTotalSize(result.totalSize);
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const load = async () => {
-      const result = await getAllAppFiles();
-      if (isMounted) {
-        setVideoFiles(result.videoFiles);
-        setImageFiles(result.imageFiles);
-        setVideoTotalSize(result.videoTotalSize);
-        setImageTotalSize(result.imageTotalSize);
-        setTotalSize(result.totalSize);
-      }
-    };
-
-    load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   const sortedVideoData = useMemo(() => {
     const sorted = [...videoFiles];
     sorted.sort((a, b) => {
@@ -91,6 +68,36 @@ export default function FileManagerScreen() {
         <FileListItem item={item} />
       </View>
     );
+  }, []);
+
+  async function refreshFiles() {
+    const result = await getAllAppFiles();
+    setVideoFiles(result.videoFiles);
+    setImageFiles(result.imageFiles);
+    setVideoTotalSize(result.videoTotalSize);
+    setImageTotalSize(result.imageTotalSize);
+    setTotalSize(result.totalSize);
+  }
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const load = async () => {
+      const result = await getAllAppFiles();
+      if (isMounted) {
+        setVideoFiles(result.videoFiles);
+        setImageFiles(result.imageFiles);
+        setVideoTotalSize(result.videoTotalSize);
+        setImageTotalSize(result.imageTotalSize);
+        setTotalSize(result.totalSize);
+      }
+    };
+
+    load();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -225,6 +232,52 @@ function AccordionTriggerHeader({
 }
 
 function FileListItem({ item }: { item: FileItem }) {
+  const { findByUri, deleteVideo, updateVideo } = useVideoStore(
+    useShallow((state) => ({
+      findByUri: state.findByUri,
+      deleteVideo: state.deleteVideo,
+      updateVideo: state.updateVideo,
+    }))
+  );
+
+  async function handleDelete() {
+    try {
+      const result = await findByUri({ fileUri: item.uri, fileType: item.type });
+
+      if (!result) throw new Error("Failed to find associated file.");
+
+      if (item.type === "video") {
+        const { message, status } = await deleteVideo(result.id);
+
+        if (status === "success") {
+          toast.error(message);
+        }
+        return;
+      } else if (item.type === "image") {
+        const thumbFile = new File(item.uri);
+        if (thumbFile.exists) {
+          thumbFile.delete();
+        }
+
+        const placeholderUri = Asset.fromModule(VIDEO_PLACEHOLDER).uri;
+        const { status } = await updateVideo({
+          id: result.id,
+          values: { thumbUri: placeholderUri },
+        });
+
+        if (status === "success") {
+          toast.error("Image successfully deleted.");
+        }
+        return;
+      }
+
+      throw new Error("Unsupported file type.");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
+    }
+  }
+
   return (
     <View className="my-2 rounded-2xl bg-card p-3">
       <View className="flex flex-row items-center justify-between gap-4">
@@ -271,8 +324,7 @@ function FileListItem({ item }: { item: FileItem }) {
                 </AlertDialogCancel>
                 <AlertDialogAction
                   className="bg-destructive"
-                  // onPress={handleDelete}
-                >
+                  onPress={handleDelete}>
                   <Text className="text-destructive-foreground">Delete</Text>
                 </AlertDialogAction>
               </AlertDialogFooter>

@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 
 export interface VideoThumbPickerHandle {
+  getThumbTimestamp: () => number;
   generateThumbnail: () => Promise<VideoThumbnail>;
 }
 
@@ -67,6 +68,7 @@ const VideoThumbPicker = forwardRef<VideoThumbPickerHandle, VideoThumbPickerProp
     });
 
     useImperativeHandle(ref, () => ({
+      getThumbTimestamp: () => Math.round(player.currentTime * 1000),
       generateThumbnail: async () => {
         const [thumbnail] = await player.generateThumbnailsAsync([player.currentTime]);
         return thumbnail;

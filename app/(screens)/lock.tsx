@@ -17,7 +17,7 @@ import Animated, {
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
-import { ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
+import { BASE_LOGO, ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
 import handleRedirect from "@/lib/handle-redirect";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -128,7 +128,7 @@ export default function LockScreen() {
       <View className="mb-12 items-center justify-center">
         <Image
           style={{ width: 75, height: 75 }}
-          source={require("../../assets/icons/base_logo.png")}
+          source={BASE_LOGO}
         />
       </View>
 

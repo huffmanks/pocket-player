@@ -3,6 +3,8 @@ import { Image, View } from "react-native";
 
 import { CloudUploadIcon } from "lucide-react-native";
 
+import { BASE_LOGO } from "@/lib/constants";
+
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
@@ -13,7 +15,7 @@ export default function IndexScreen() {
       <Image
         className="mb-10"
         style={{ width: 75, height: 75 }}
-        source={require("../../assets/icons/base_logo.png")}
+        source={BASE_LOGO}
       />
       <Text
         variant="h1"

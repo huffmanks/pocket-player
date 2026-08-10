@@ -1,16 +1,17 @@
 - [-] security screen/navbar make same black color.
 - [-] check for embedded video thumb first and if not exist continue.
 - [ ] make sure playlist-collage auto updates if thumbs change.
-- [ ] editing video thumb
-  - [ ] only check/try creating thumb if changed.
-  - [ ] dont delete old unless successful. or can just replace same one/ same name.
-- [ ] video item if for some reason video does not have a valid thumbUri use placeholder image.
-- [ ] show cache and media files.
-  - [ ] to delete get video entity with findVideoByFileUri.
-  - [ ] if delete thumb make entry use placholder image.
-  - [ ] if delete video, also delete thumb.
-  - [ ] also store delete video doesnt delete video or thumb file just removes from db.
-- [ ] make image thumb name and video file same name.
+- [x] editing video thumb
+  - [x] only check/try creating thumb if changed.
+  - [x] dont delete old unless successful.
+- [x] video item if for some reason video does not have a valid thumbUri use placeholder image.
+- [x] show media files.
+  - [x] to delete get video entity with findVideoByFileUri.
+  - [-] if delete thumb make entry use placholder image.
+  - [x] if delete video, also delete thumb.
+  - [x] also store delete video doesnt delete video or thumb file just removes from db.
 - [ ] Save timestamp of last view of video.
   - [key = `videoProgress:${videoId}`](lib/store.ts#L453)
   - value = `10` (player.currentTime | number | seconds)
+- [ ] Add whitelist or ability to scan a folder to auto add videos.
+- [ ] Use error handler everywhere else.

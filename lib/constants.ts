@@ -3,6 +3,9 @@ import { Directory, Paths } from "expo-file-system";
 import { SettingId } from "@/components/setting-switch";
 
 export const VIDEOS_DIR = new Directory(Paths.document, "videos");
+export const BASE_LOGO = require("@/assets/icons/base_logo.png");
+export const VIDEO_PLACEHOLDER = require("@/assets/images/video-placeholder.jpg");
+
 export const ESTIMATED_VIDEO_ITEM_HEIGHT = 157;
 export const ESTIMATED_PLAYLIST_HEIGHT = 40;
 export const ESTIMATED_PLAYLIST_ITEM_HEIGHT = 80;

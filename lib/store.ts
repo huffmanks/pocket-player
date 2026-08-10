@@ -1,3 +1,5 @@
+import { File } from "expo-file-system";
+
 import { and, count, eq, inArray, notInArray } from "drizzle-orm";
 import { MMKV } from "react-native-mmkv";
 import { create } from "zustand";
@@ -11,6 +13,8 @@ import { LOCK_INTERVAL_DEFAULT } from "@/lib/constants";
 import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
 import { EditPlaylistFormData } from "@/components/forms/edit-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
+
+import { FileType } from "./app-files";
 
 const settingsStorage = new MMKV({ id: "settings" });
 const securityStorage = new MMKV({ id: "security", encryptionKey: "your-encryption-key" });
@@ -50,6 +54,13 @@ export const useAppStore = create<AppStoreState>((set) => ({
 }));
 
 type VideoStoreState = {
+  findByUri: ({
+    fileUri,
+    fileType,
+  }: {
+    fileUri: string;
+    fileType: FileType;
+  }) => Promise<typeof videos.$inferSelect | null>;
   uploadVideos: (
     uploadedVideos: UploadVideosFormData["videos"]
   ) => Promise<{ status: "success" | "error"; message: string }>;
@@ -67,6 +78,18 @@ type VideoStoreState = {
 };
 
 export const useVideoStore = create<VideoStoreState>(() => ({
+  findByUri: async ({ fileUri, fileType }) => {
+    try {
+      const db = useDatabaseStore.getState().db;
+      const targetColumn = fileType === "video" ? videos.videoUri : videos.thumbUri;
+
+      const [foundVideo] = await db.select().from(videos).where(eq(targetColumn, fileUri)).limit(1);
+
+      return foundVideo ?? null;
+    } catch (_error) {
+      return null;
+    }
+  },
   uploadVideos: async (uploadedVideos) => {
     try {
       const db = useDatabaseStore.getState().db;
@@ -102,6 +125,18 @@ export const useVideoStore = create<VideoStoreState>(() => ({
     try {
       const db = useDatabaseStore.getState().db;
       const [deletedVideo] = await db.delete(videos).where(eq(videos.id, id)).returning();
+
+      if (deletedVideo) {
+        const videoFile = new File(deletedVideo.videoUri);
+        if (videoFile.exists) {
+          videoFile.delete();
+        }
+
+        const thumbFile = new File(deletedVideo.thumbUri);
+        if (thumbFile.exists) {
+          thumbFile.delete();
+        }
+      }
 
       const [allVideos] = await db.select({ count: count() }).from(videos);
 

@@ -4,6 +4,7 @@ import { Image, Pressable, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
+import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { formatDateString } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +31,7 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
         <Image
           className="rounded-md bg-card"
           style={{ width: 225, height: 125 }}
-          source={{ uri: item.thumbUri }}
+          source={item.thumbUri ? { uri: item.thumbUri } : VIDEO_PLACEHOLDER}
           resizeMode={item.orientation === "Portrait" ? "contain" : "cover"}
         />
       </Pressable>

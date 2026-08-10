@@ -1,5 +1,7 @@
 import { Image, View } from "react-native";
 
+import { BASE_LOGO } from "@/lib/constants";
+
 import { Text } from "@/components/ui/text";
 
 export default function HeaderLogo() {
@@ -7,7 +9,7 @@ export default function HeaderLogo() {
     <View className="-mx-2 flex-row items-center gap-4">
       <Image
         style={{ width: 32, height: 32 }}
-        source={require("../assets/icons/base_logo.png")}
+        source={BASE_LOGO}
       />
       <Text className="native:text-xl font-semibold">Pocket Player</Text>
     </View>

@@ -15,7 +15,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { VIDEOS_DIR } from "@/lib/constants";
+import { VIDEOS_DIR, VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import {
   delay,
@@ -224,17 +224,7 @@ export default function UploadForm() {
       }
 
       const promise = (async () => {
-        const placeholderAsset = Asset.fromModule(require("@/assets/images/video-placeholder.jpg"));
-        await placeholderAsset.downloadAsync();
-
-        const sharedPlaceholderFile = new File(VIDEOS_DIR, "_placeholder.jpg");
-        if (!sharedPlaceholderFile.exists) {
-          const assetUri = placeholderAsset.localUri || placeholderAsset.uri;
-          if (assetUri && assetUri.startsWith("file://")) {
-            const srcPlaceholder = new File(assetUri);
-            await srcPlaceholder.copy(sharedPlaceholderFile);
-          }
-        }
+        const placeholderUri = Asset.fromModule(VIDEO_PLACEHOLDER).uri;
 
         const processedVideos = [];
 
@@ -271,7 +261,7 @@ export default function UploadForm() {
 
             finalThumbUri = targetThumbFile.uri;
           } catch (_error) {
-            finalThumbUri = sharedPlaceholderFile.uri;
+            finalThumbUri = placeholderUri;
           }
 
           processedVideos.push({

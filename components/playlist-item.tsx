@@ -6,6 +6,7 @@ import { useReorderableDrag } from "react-native-reorderable-list";
 import { toast } from "sonner-native";
 
 import { VideoMeta } from "@/db/schema";
+import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { usePlaylistStore } from "@/lib/store";
 
 import {
@@ -62,7 +63,7 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
           <Image
             className="ml-2 mr-3 rounded-md"
             style={{ width: 45, height: 45 }}
-            source={{ uri: item.thumbUri }}
+            source={item.thumbUri ? { uri: item.thumbUri } : VIDEO_PLACEHOLDER}
           />
           <View className="mr-2 flex-1">
             <Text
