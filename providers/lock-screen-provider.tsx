@@ -6,6 +6,7 @@ import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
+import { errorHandler } from "@/lib/error-handler";
 import handleRedirect from "@/lib/handle-redirect";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { delay } from "@/lib/utils";
@@ -96,8 +97,9 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
         }
 
         await handleRedirect({ lastVisitedPath, previousVisitedPath });
-      } catch (_error) {
-        toast.error("Restoring previous route failed.");
+      } catch (error) {
+        const message = errorHandler(error);
+        toast.error(message);
       } finally {
         hasRestoredRoute.current = true;
 

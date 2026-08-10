@@ -1,6 +1,7 @@
 import { migrate } from "drizzle-orm/expo-sqlite/migrator";
 
 import migrations from "@/db/migrations/migrations";
+import { errorHandler } from "@/lib/error-handler";
 import { useDatabaseStore } from "@/lib/store";
 
 export async function migrateDatabase() {
@@ -13,9 +14,10 @@ export async function migrateDatabase() {
       message: "Database migration completed",
       isError: false,
     };
-  } catch (_error) {
+  } catch (error) {
+    const message = errorHandler(error);
     return {
-      message: "Database migration failed.",
+      message,
       isError: true,
     };
   }

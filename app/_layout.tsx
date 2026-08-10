@@ -12,6 +12,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toaster, toast } from "sonner-native";
 
 import "@/global.css";
+import { errorHandler } from "@/lib/error-handler";
 import { migrateDatabase } from "@/lib/migrate-database";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { DARK_THEME, LIGHT_THEME } from "@/lib/theme";
@@ -62,8 +63,9 @@ export default function RootLayout() {
             setIsLocked(false);
           }
         }
-      } catch (_error) {
-        toast.error("Initializing app failed.");
+      } catch (error) {
+        const message = errorHandler(error);
+        toast.error(message);
       } finally {
         useAppStore.getState().setIsAppReady(true);
       }

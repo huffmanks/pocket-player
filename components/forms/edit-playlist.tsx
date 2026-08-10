@@ -10,6 +10,7 @@ import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { EditPlaylistInfo } from "@/app/(screens)/playlists/[id]/edit";
+import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore } from "@/lib/store";
 
 import {
@@ -81,8 +82,9 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
         toast.error(message);
         router.push("/(tabs)/playlists");
       }
-    } catch (_error) {
-      toast.error("Failed to delete playlist.");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     }
   }
 
@@ -94,8 +96,9 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
       toast.success(`${values.title} playlist updated successfully.`);
 
       router.dismissTo(`/(screens)/playlists/${editPlaylistInfo.id}/view`);
-    } catch (_error) {
-      toast.error("Error updating playlist!");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

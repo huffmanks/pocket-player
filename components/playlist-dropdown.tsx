@@ -6,6 +6,7 @@ import { toast } from "sonner-native";
 
 import { PlaylistMeta } from "@/db/schema";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
+import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore } from "@/lib/store";
 
 import {
@@ -56,8 +57,9 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
         toast.error(message);
         router.push("/(tabs)/playlists");
       }
-    } catch (_error) {
-      toast.error("Failed to delete playlist.");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     }
   }
 

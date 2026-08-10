@@ -8,13 +8,13 @@ import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 import { EditPlaylistInfo } from "@/app/(screens)/playlists/[id]/edit";
 import { db as drizzleDb } from "@/db/drizzle";
 import { VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
+import { FileType } from "@/lib/app-files";
 import { LOCK_INTERVAL_DEFAULT } from "@/lib/constants";
+import { errorHandler } from "@/lib/error-handler";
 
 import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
 import { EditPlaylistFormData } from "@/components/forms/edit-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
-
-import { FileType } from "./app-files";
 
 const settingsStorage = new MMKV({ id: "settings" });
 const securityStorage = new MMKV({ id: "security", encryptionKey: "your-encryption-key" });
@@ -103,8 +103,9 @@ export const useVideoStore = create<VideoStoreState>(() => ({
       await db.select().from(videos);
 
       return { status: "success", message: "Videos successfully uploaded." };
-    } catch (_error) {
-      return { status: "error", message: "Failed to create video." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
   updateVideo: async ({ id, values }) => {
@@ -117,8 +118,9 @@ export const useVideoStore = create<VideoStoreState>(() => ({
         .returning();
 
       return { status: "success", message: `Video ${updatedVideo.title} successfully updated.` };
-    } catch (_error) {
-      return { status: "error", message: "Failed to update video." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
   deleteVideo: async (id) => {
@@ -145,8 +147,9 @@ export const useVideoStore = create<VideoStoreState>(() => ({
       }
 
       return { status: "success", message: `Video ${deletedVideo.title} successfully deleted.` };
-    } catch (_error) {
-      return { status: "error", message: "Failed to delete video." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
   toggleFavorite: async (id) => {
@@ -161,8 +164,9 @@ export const useVideoStore = create<VideoStoreState>(() => ({
         isFavorite: updatedFavoriteStatus,
         message: `Video ${video.title} has been ${updatedFavoriteStatus === true ? "favorited" : "unfavorited"}.`,
       };
-    } catch (_error) {
-      return { status: "error", message: "Failed to toggle favorite video." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
 }));
@@ -293,8 +297,9 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
         status: "success",
         message: `Playlist ${updatedPlaylist.title} updated successfully.`,
       };
-    } catch (_error) {
-      return { status: "error", message: "Failed to update playlist." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
   deletePlaylist: async (id) => {
@@ -306,8 +311,9 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
         status: "success",
         message: `Playlist ${deletedPlaylist.title} deleted successfully.`,
       };
-    } catch (_error) {
-      return { status: "error", message: "Failed to delete playlist." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
   getPlaylistWithAllVideos: async (playlistId) => {
@@ -363,8 +369,9 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
       }
 
       return { status: "success", isAdded: false, message: "Video removed from playlist." };
-    } catch (_error) {
-      return { status: "error", message: "Failed to update playlist." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
   removeVideoFromPlaylist: async ({ playlistId, videoId }) => {
@@ -380,8 +387,9 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
         );
 
       return { status: "success", message: "Video removed from playlist successfully." };
-    } catch (_error) {
-      return { status: "error", message: "Failed to remove video from playlist." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
   updatePlaylistOrder: async ({ playlistId, videosOrder }) => {
@@ -400,8 +408,9 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
         );
       });
       return { status: "success", message: "Playlist order updated successfully." };
-    } catch (_error) {
-      return { status: "error", message: "Failed to update playlist order." };
+    } catch (error) {
+      const message = errorHandler(error);
+      return { status: "error", message };
     }
   },
   syncVideoPlaylists: async (videoId: string, playlists: { id: string }[]) => {

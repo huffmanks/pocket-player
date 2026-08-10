@@ -16,6 +16,7 @@ import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { VIDEOS_DIR, VIDEO_PLACEHOLDER } from "@/lib/constants";
+import { errorHandler } from "@/lib/error-handler";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import {
   delay,
@@ -182,8 +183,10 @@ export default function UploadForm() {
 
         setVideoFields(videos);
       }
-    } catch (_error: any) {
-      toast.error("Error trying to upload!");
+    } catch (error) {
+      const message = errorHandler(error);
+
+      toast.error(message);
     } finally {
       await delay(100);
       setIsLockDisabled(false);

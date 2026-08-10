@@ -7,6 +7,7 @@ import { toast } from "sonner-native";
 
 import { VideoMeta } from "@/db/schema";
 import { VIDEO_PLACEHOLDER } from "@/lib/constants";
+import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore } from "@/lib/store";
 
 import {
@@ -43,8 +44,9 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
       if (status === "success") {
         toast.error(message);
       }
-    } catch (_error) {
-      toast.error("Failed to remove from playlist.");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     }
   }
 

@@ -15,6 +15,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
 import { BOTTOM_TABS_OFFSET, VIDEOS_DIR, orientationOptions } from "@/lib/constants";
+import { errorHandler } from "@/lib/error-handler";
 import { useVideoStore } from "@/lib/store";
 
 import {
@@ -117,8 +118,9 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         toast.error(message);
         router.dismissTo("/(tabs)/videos");
       }
-    } catch (_error) {
-      toast.error("Failed to delete video.");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     } finally {
       isSubmittingRef.current = false;
     }
@@ -187,11 +189,13 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         } else {
           router.push("/(tabs)/videos");
         }
-      } catch (_error) {
+      } catch (error) {
         if (targetThumbFile?.exists) {
           targetThumbFile.delete();
         }
-        toast.error(`Error updating ${values.title}!`);
+
+        const message = errorHandler(error);
+        toast.error(message);
       } finally {
         isSubmittingRef.current = false;
         setIsSubmitting(false);

@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
+import { errorHandler } from "@/lib/error-handler";
 import { useSecurityStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
@@ -54,8 +55,9 @@ export default function CreatePasscodeForm() {
       toast.success("Passcode set successfully!");
 
       router.dismissTo("/(tabs)/settings");
-    } catch (_error) {
-      toast.error("Error setting passcode");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

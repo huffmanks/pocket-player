@@ -22,6 +22,7 @@ import {
   lockIntervalOptions,
   settingsSwitches,
 } from "@/lib/constants";
+import { errorHandler } from "@/lib/error-handler";
 import { resetPersistedStorage, useSecurityStore } from "@/lib/store";
 import { cn, withDelay } from "@/lib/utils";
 
@@ -90,8 +91,9 @@ export default function SettingsScreen() {
         success: ({ message }) => message,
         error: "Reset settings has failed.",
       });
-    } catch (_error) {
-      toast.error("Something went wrong!");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -114,8 +116,9 @@ export default function SettingsScreen() {
         success: ({ message }) => message,
         error: "File deletion has failed.",
       });
-    } catch (_error) {
-      toast.error("Something went wrong!");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -139,8 +142,9 @@ export default function SettingsScreen() {
         success: ({ message }) => message,
         error: "Data deletion has failed.",
       });
-    } catch (_error) {
-      toast.error("Something went wrong!");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

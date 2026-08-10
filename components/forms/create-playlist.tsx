@@ -9,6 +9,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 
 import { VideoData } from "@/app/(screens)/playlists/create";
+import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore } from "@/lib/store";
 
 import { Button } from "@/components/ui/button";
@@ -69,8 +70,9 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
       } else {
         toast.error(message);
       }
-    } catch (_error) {
-      toast.error("Error creating playlist!");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
       form.reset(defaultValues);

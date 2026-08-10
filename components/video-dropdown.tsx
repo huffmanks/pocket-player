@@ -18,6 +18,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
+import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore, useVideoStore } from "@/lib/store";
 import { NAV_THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -91,8 +92,9 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
       } else {
         toast.error(message);
       }
-    } catch (_error) {
-      toast.error("Failed to add to favorites.");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     }
   }
 
@@ -108,8 +110,9 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
       } else {
         toast.error(message);
       }
-    } catch (_error) {
-      toast.error("Failed to add to playlist.");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     }
   }
 
@@ -120,8 +123,9 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
       if (status === "success") {
         toast.error(message);
       }
-    } catch (_error) {
-      toast.error("Failed to delete video.");
+    } catch (error) {
+      const message = errorHandler(error);
+      toast.error(message);
     }
   }
 
