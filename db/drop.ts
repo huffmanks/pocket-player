@@ -13,8 +13,7 @@ export async function resetTables() {
 
     return { message: "Videos deleted from the database successfully.", type: "success" };
   } catch (error) {
-    const message = errorHandler(error);
-    return { message, type: "error" };
+    return { message: errorHandler(error), type: "error" };
   }
 }
 
@@ -29,7 +28,6 @@ export async function clearDirectory(directory: Directory | string) {
 
     return { message: "Directory cleared successfully.", type: "success" };
   } catch (error) {
-    const message = errorHandler(error);
-    return { message, type: "error" };
+    return { message: errorHandler(error), type: "error" };
   }
 }

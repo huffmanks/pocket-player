@@ -1,10 +1,11 @@
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import * as LocalAuthentication from "expo-local-authentication";
 import { NavigationBar } from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { DeleteIcon, ScanFaceIcon } from "lucide-react-native";
 import Animated, {

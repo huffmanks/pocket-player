@@ -56,8 +56,7 @@ export default function CreatePasscodeForm() {
 
       router.dismissTo("/(tabs)/settings");
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     } finally {
       setIsSubmitting(false);
     }

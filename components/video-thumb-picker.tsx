@@ -1,10 +1,10 @@
+import { Image } from "expo-image";
 import { VideoThumbnail, VideoView, useVideoPlayer } from "expo-video";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
 import { LockIcon, LockOpenIcon } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -13,6 +13,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { VideoMeta } from "@/db/schema";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { SLIDER_THEME } from "@/lib/theme";
 import { getClampedDelta } from "@/lib/utils";
 
@@ -47,8 +49,7 @@ const VideoThumbPicker = forwardRef<VideoThumbPickerHandle, VideoThumbPickerProp
     const videoRef = useRef<VideoView | null>(null);
     const inputRef = useRef<TextInput>(null);
 
-    const { colorScheme } = useColorScheme();
-    const isDarkColorScheme = colorScheme === "dark";
+    const { colorScheme, isDarkColorScheme } = useColorScheme();
 
     const opacityFast = useSharedValue(0);
     const opacityDelay = useSharedValue(0);
@@ -106,41 +107,52 @@ const VideoThumbPicker = forwardRef<VideoThumbPickerHandle, VideoThumbPickerProp
 
     return (
       <View>
-        <View className="mb-3 h-[215px] w-full rounded-md bg-card">
-          <Animated.View
-            className="relative h-[215px] w-full"
-            style={animatedStyleFast}>
-            <View className="absolute -right-3 -top-4 z-10">
-              <Button
-                size="circle"
-                variant="brand"
-                className="flex flex-row items-center justify-center"
-                onPress={() => setIsDisabled((prev) => !prev)}>
-                {isDisabled ? (
-                  <Icon
-                    as={LockIcon}
-                    className="text-white"
-                    size={24}
-                    strokeWidth={1.5}
-                  />
-                ) : (
-                  <Icon
-                    as={LockOpenIcon}
-                    className="text-white"
-                    size={24}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </Button>
-            </View>
-            <VideoView
-              ref={videoRef}
-              style={{ width: "100%", height: 215 }}
-              player={player}
-              contentFit="contain"
-              nativeControls={false}
-            />
-          </Animated.View>
+        <View className="relative mb-3 h-[215px]">
+          <View className="size-full overflow-hidden rounded-md bg-card">
+            <Animated.View
+              className="h-[215px] w-full"
+              style={animatedStyleFast}>
+              {isDisabled && !videoInfo?.thumbUri ? (
+                <Image
+                  style={{ width: "100%", height: 215 }}
+                  recyclingKey={`${videoInfo.id}_video-item_placeholder`}
+                  source={VIDEO_PLACEHOLDER[colorScheme]}
+                  contentFit="cover"
+                />
+              ) : (
+                <VideoView
+                  ref={videoRef}
+                  style={{ width: "100%", height: 215 }}
+                  player={player}
+                  contentFit="contain"
+                  nativeControls={false}
+                />
+              )}
+            </Animated.View>
+          </View>
+          <View className="absolute -right-3 -top-4 z-10">
+            <Button
+              size="circle"
+              variant="brand"
+              className="flex flex-row items-center justify-center"
+              onPress={() => setIsDisabled((prev) => !prev)}>
+              {isDisabled ? (
+                <Icon
+                  as={LockIcon}
+                  className="text-white"
+                  size={24}
+                  strokeWidth={1.5}
+                />
+              ) : (
+                <Icon
+                  as={LockOpenIcon}
+                  className="text-white"
+                  size={24}
+                  strokeWidth={1.5}
+                />
+              )}
+            </Button>
+          </View>
         </View>
 
         <View className="mb-2 gap-2">

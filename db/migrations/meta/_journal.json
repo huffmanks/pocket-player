@@ -22,6 +22,20 @@
       "when": 1786313184515,
       "tag": "0002_ambitious_timeslip",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1786464589839,
+      "tag": "0003_special_tempest",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1786466485332,
+      "tag": "0004_fresh_husk",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,6 @@
 import { Stack } from "expo-router";
 
-import { useColorScheme } from "nativewind";
-
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { NAV_THEME } from "@/lib/theme";
 
 import GoBack from "@/components/go-back";
@@ -9,14 +8,13 @@ import HeaderItems from "@/components/header-items";
 
 export default function ScreensLayout() {
   const { colorScheme } = useColorScheme();
-  const safeColorScheme = colorScheme ?? "dark";
 
   return (
     <Stack
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: NAV_THEME[safeColorScheme].background,
+          backgroundColor: NAV_THEME[colorScheme].background,
         },
         headerRight: () => <HeaderItems />,
       }}>

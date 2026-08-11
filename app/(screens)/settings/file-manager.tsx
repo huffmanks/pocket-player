@@ -1,4 +1,3 @@
-import { Asset } from "expo-asset";
 import { File } from "expo-file-system";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
@@ -9,7 +8,6 @@ import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { FileItem, FileType, getAllAppFiles } from "@/lib/app-files";
-import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { errorHandler } from "@/lib/error-handler";
 import { useVideoStore } from "@/lib/store";
 import { formatFileSize } from "@/lib/utils";
@@ -243,7 +241,6 @@ function FileListItem({ item }: { item: FileItem }) {
   async function handleDelete() {
     try {
       const result = await findByUri({ fileUri: item.uri, fileType: item.type });
-
       if (!result) throw new Error("Failed to find associated file.");
 
       if (item.type === "video") {
@@ -259,10 +256,9 @@ function FileListItem({ item }: { item: FileItem }) {
           thumbFile.delete();
         }
 
-        const placeholderUri = Asset.fromModule(VIDEO_PLACEHOLDER).uri;
         const { status } = await updateVideo({
           id: result.id,
-          values: { thumbUri: placeholderUri },
+          values: { thumbUri: null },
         });
 
         if (status === "success") {
@@ -273,8 +269,7 @@ function FileListItem({ item }: { item: FileItem }) {
 
       throw new Error("Unsupported file type.");
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     }
   }
 

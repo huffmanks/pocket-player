@@ -6,12 +6,12 @@ import { useEffect } from "react";
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@rn-primitives/portal";
-import { useColorScheme } from "nativewind";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toaster, toast } from "sonner-native";
 
 import "@/global.css";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { errorHandler } from "@/lib/error-handler";
 import { migrateDatabase } from "@/lib/migrate-database";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
@@ -29,8 +29,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { colorScheme, setColorScheme } = useColorScheme();
-  const isDarkColorScheme = colorScheme === "dark";
+  const { colorScheme, isDarkColorScheme, setColorScheme } = useColorScheme();
 
   const isAppReady = useAppStore((state) => state.isAppReady);
   const theme = useSettingsStore((state) => state.theme);
@@ -64,8 +63,7 @@ export default function RootLayout() {
           }
         }
       } catch (error) {
-        const message = errorHandler(error);
-        toast.error(message);
+        toast.error(errorHandler(error));
       } finally {
         useAppStore.getState().setIsAppReady(true);
       }

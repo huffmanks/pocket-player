@@ -8,7 +8,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
-import { playlists, videos } from "@/db/schema";
+import { playlistVideos, playlists, videos } from "@/db/schema";
 import { useDatabaseStore } from "@/lib/store";
 import { formatDuration } from "@/lib/utils";
 
@@ -24,50 +24,38 @@ export default function PlaylistsScreen() {
 
   const playlistsQuery = useLiveQuery(db.select().from(playlists).orderBy(playlists.title));
 
-  const thumbUrisQuery = useLiveQuery(
-    db.query.playlistVideos.findMany({
-      columns: { playlistId: true },
-      with: {
-        video: {
-          columns: { id: true, thumbUri: true, duration: true },
-        },
-      },
-    })
-  );
-
-  const videosQuery = useLiveQuery(db.select().from(videos).limit(1));
+  const playlistVideosQuery = useLiveQuery(db.select().from(playlistVideos));
+  const videosQuery = useLiveQuery(db.select().from(videos));
 
   const playlistsWithThumbUris = useMemo(() => {
-    if (!thumbUrisQuery.data?.length) {
-      return playlistsQuery.data.map((playlist) => ({
-        ...playlist,
-        playlistCount: null,
-        playlistDuration: null,
-        thumbUris: null,
-      }));
-    }
+    if (!playlistsQuery.data?.length) return [];
+
+    const videoMap = new Map(videosQuery.data?.map((video) => [video.id, video]) ?? []);
 
     return playlistsQuery.data.map((playlist) => {
-      const relatedThumbs = thumbUrisQuery.data.filter((item) => item.playlistId === playlist.id);
-
-      const playlistDuration = relatedThumbs.reduce(
-        (total, item) => total + item.video.duration,
-        0
+      const relatedPlaylistVideos = (playlistVideosQuery.data ?? []).filter(
+        (item) => item.playlistId === playlist.id
       );
+
+      const relatedVideos = relatedPlaylistVideos
+        .map((pv) => videoMap.get(pv.videoId))
+        .filter((v): v is NonNullable<typeof v> => v !== undefined);
+
+      const playlistDuration = relatedVideos.reduce((total, video) => total + video.duration, 0);
 
       return {
         ...playlist,
-        playlistCount: relatedThumbs.length,
+        playlistCount: relatedVideos.length,
         playlistDuration: formatDuration(playlistDuration),
-        thumbUris: relatedThumbs
-          .map((item) => ({
-            id: item.video.id,
-            thumbUri: item.video.thumbUri,
+        thumbUris: relatedVideos
+          .map((video) => ({
+            id: video.id,
+            thumbUri: video.thumbUri ? `${video.thumbUri}?v=${video.thumbTimestamp}` : undefined,
           }))
           .slice(0, 6),
       };
     });
-  }, [playlistsQuery.data, thumbUrisQuery.data]);
+  }, [playlistsQuery.data, playlistVideosQuery.data, videosQuery.data]);
 
   const playlistsExist = !!playlistsWithThumbUris.length;
   const videosExist = !!videosQuery.data?.length;

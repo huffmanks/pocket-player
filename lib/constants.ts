@@ -4,7 +4,11 @@ import { SettingId } from "@/components/setting-switch";
 
 export const VIDEOS_DIR = new Directory(Paths.document, "videos");
 export const BASE_LOGO = require("@/assets/icons/base_logo.png");
-export const VIDEO_PLACEHOLDER = require("@/assets/images/video-placeholder.jpg");
+
+export const VIDEO_PLACEHOLDER = {
+  dark: require("@/assets/images/video_placeholder_dark.jpg"),
+  light: require("@/assets/images/video_placeholder_light.jpg"),
+};
 
 export const ESTIMATED_VIDEO_ITEM_HEIGHT = 157;
 export const ESTIMATED_PLAYLIST_HEIGHT = 40;

@@ -17,12 +17,12 @@ import {
   Volume2Icon,
   VolumeXIcon,
 } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useVideoPlayerControls } from "@/hooks/useVideoPlayerControls";
 import { useSettingsStore } from "@/lib/store";
 import { SLIDER_THEME } from "@/lib/theme";
@@ -36,8 +36,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   useKeepAwake();
 
   const router = useRouter();
-  const { colorScheme } = useColorScheme();
-  const isDarkColorScheme = colorScheme === "dark";
+  const { isDarkColorScheme } = useColorScheme();
 
   const sourcesKey = videoSources.map((v) => v.id).join(",");
   const memoizedVideoSources = useMemo(

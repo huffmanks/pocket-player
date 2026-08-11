@@ -1,9 +1,11 @@
+import { Image } from "expo-image";
 import { router } from "expo-router";
-import { Image, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { formatDateString } from "@/lib/utils";
 
@@ -20,7 +22,12 @@ interface VideoItemProps {
 }
 
 function VideoItem({ item, allPlaylists }: VideoItemProps) {
+  const { colorScheme } = useColorScheme();
+
   const createdAt = formatDateString(item.createdAt);
+
+  const thumbUri = item?.thumbUri ? `${item.thumbUri}?v=${item.thumbTimestamp}` : undefined;
+  const thumbSource = thumbUri ? { uri: thumbUri } : VIDEO_PLACEHOLDER[colorScheme];
 
   return (
     <Animated.View
@@ -28,12 +35,16 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
       entering={FadeIn.duration(250)}
       exiting={FadeOut.duration(250)}>
       <Pressable onPress={() => router.push(`/(screens)/videos/${item.id}/watch`)}>
-        <Image
-          className="rounded-md bg-card"
-          style={{ width: 225, height: 125 }}
-          source={item.thumbUri ? { uri: item.thumbUri } : VIDEO_PLACEHOLDER}
-          resizeMode={item.orientation === "Portrait" ? "contain" : "cover"}
-        />
+        <View
+          className="overflow-hidden rounded-md bg-card"
+          style={{ width: 225, height: 125 }}>
+          <Image
+            style={{ width: "100%", height: "100%" }}
+            recyclingKey={thumbUri ?? "video-item_placeholder"}
+            source={thumbSource}
+            contentFit={thumbUri && item.orientation === "Portrait" ? "contain" : "cover"}
+          />
+        </View>
       </Pressable>
       <View className="flex-1 flex-row justify-between gap-4">
         <View className="w-4/5">
