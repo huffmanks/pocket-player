@@ -71,8 +71,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
         toast.error(message);
       }
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     } finally {
       setIsSubmitting(false);
       form.reset(defaultValues);

@@ -1,21 +1,26 @@
+import { Image } from "expo-image";
 import { memo } from "react";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 
-import { VIDEO_PLACEHOLDER } from "@/lib/constants";
+import { BASE_LOGO } from "@/lib/constants";
 import { cn, imagesToRows } from "@/lib/utils";
 
 interface PlaylistCollageProps {
   images:
     | {
         id: string;
-        thumbUri: string;
+        thumbUri?: string;
       }[]
     | null;
 }
 
 const PlaylistCollage = memo(function PlaylistCollage({ images }: PlaylistCollageProps) {
   if (!images || images.length === 0) {
-    return <ImageCard viewClassName="h-48 w-48 overflow-hidden rounded-lg bg-secondary" />;
+    return (
+      <View className="overflow-hidden rounded-lg bg-secondary">
+        <ImageCard viewClassName="size-48" />
+      </View>
+    );
   }
 
   const rows = imagesToRows(images);
@@ -23,15 +28,14 @@ const PlaylistCollage = memo(function PlaylistCollage({ images }: PlaylistCollag
   const isSingleImage = rows.length === 1 && rows[0].length === 1;
 
   return (
-    <View>
+    <View className="overflow-hidden rounded-lg bg-secondary">
       {isSingleImage ? (
         <ImageCard
-          imgUri={rows[0][0].thumbUri}
-
-          viewClassName="h-48 w-48 overflow-hidden rounded-lg bg-card"
+          imgUri={rows[0][0]?.thumbUri}
+          viewClassName="size-48"
         />
       ) : (
-        <View className="h-48 w-48 overflow-hidden rounded-lg bg-card">
+        <View className="size-48">
           {rows.map((item, rowIndex) => (
             <View
               key={`row-${rowIndex}`}
@@ -39,9 +43,9 @@ const PlaylistCollage = memo(function PlaylistCollage({ images }: PlaylistCollag
               {item.map((img, index) => (
                 <ImageCard
                   key={img.id}
-                  imgUri={img.thumbUri}
+                  imgUri={img?.thumbUri}
                   viewClassName={cn(
-                    "h-24 w-24 overflow-hidden rounded-lg",
+                    "size-24 overflow-hidden rounded-lg",
                     item.length === 3 && index === 0 && "-ml-8",
                     item.length === 3 && index === 2 && "-mr-8",
                     item.length === 2 && index === 0 && "-ml-2",
@@ -90,17 +94,16 @@ const PlaylistCollage = memo(function PlaylistCollage({ images }: PlaylistCollag
 });
 
 function ImageCard({ imgUri, viewClassName }: { imgUri?: string; viewClassName: string }) {
+  const isPlaceholder = !imgUri;
+
   return (
-    <View className={viewClassName}>
-      {imgUri ? (
-        <Image
-          source={imgUri ? { uri: imgUri } : VIDEO_PLACEHOLDER}
-          resizeMode="cover"
-          className="h-full w-full"
-        />
-      ) : (
-        <View className="h-full w-full" />
-      )}
+    <View className={cn("items-center justify-center bg-card", viewClassName)}>
+      <Image
+        style={{ width: isPlaceholder ? "65%" : "100%", height: isPlaceholder ? "65%" : "100%" }}
+        recyclingKey={!isPlaceholder ? imgUri : "playlist-collage-image-card_placeholder"}
+        source={!isPlaceholder ? { uri: imgUri } : BASE_LOGO}
+        contentFit="cover"
+      />
     </View>
   );
 }

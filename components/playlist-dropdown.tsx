@@ -58,8 +58,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
         router.push("/(tabs)/playlists");
       }
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     }
   }
 

@@ -98,8 +98,7 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
 
         await handleRedirect({ lastVisitedPath, previousVisitedPath });
       } catch (error) {
-        const message = errorHandler(error);
-        toast.error(message);
+        toast.error(errorHandler(error));
       } finally {
         hasRestoredRoute.current = true;
 

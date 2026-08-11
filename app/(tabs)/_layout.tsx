@@ -7,8 +7,8 @@ import {
   StarIcon,
   VideoIcon,
 } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { NAV_THEME } from "@/lib/theme";
 
 import HeaderItems from "@/components/header-items";
@@ -17,22 +17,21 @@ import { Icon } from "@/components/ui/icon";
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
-  const safeColorScheme = colorScheme ?? "dark";
 
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: NAV_THEME[safeColorScheme].background,
+          backgroundColor: NAV_THEME[colorScheme].background,
         },
         headerTitle: () => <HeaderLogo />,
         headerRight: () => <HeaderItems />,
         tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: NAV_THEME[safeColorScheme].brandForeground,
-        tabBarInactiveTintColor: NAV_THEME[safeColorScheme].text,
+        tabBarActiveTintColor: NAV_THEME[colorScheme].brandForeground,
+        tabBarInactiveTintColor: NAV_THEME[colorScheme].text,
         tabBarStyle: {
-          backgroundColor: NAV_THEME[safeColorScheme].background,
+          backgroundColor: NAV_THEME[colorScheme].background,
           paddingTop: 10,
           height: 90,
         },

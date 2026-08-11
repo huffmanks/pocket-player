@@ -104,8 +104,7 @@ export const useVideoStore = create<VideoStoreState>(() => ({
 
       return { status: "success", message: "Videos successfully uploaded." };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   updateVideo: async ({ id, values }) => {
@@ -119,8 +118,7 @@ export const useVideoStore = create<VideoStoreState>(() => ({
 
       return { status: "success", message: `Video ${updatedVideo.title} successfully updated.` };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   deleteVideo: async (id) => {
@@ -128,28 +126,26 @@ export const useVideoStore = create<VideoStoreState>(() => ({
       const db = useDatabaseStore.getState().db;
       const [deletedVideo] = await db.delete(videos).where(eq(videos.id, id)).returning();
 
-      if (deletedVideo) {
-        const videoFile = new File(deletedVideo.videoUri);
-        if (videoFile.exists) {
-          videoFile.delete();
-        }
-
-        const thumbFile = new File(deletedVideo.thumbUri);
-        if (thumbFile.exists) {
-          thumbFile.delete();
-        }
+      if (!deletedVideo) {
+        return { status: "error", message: "Video not found." };
       }
 
-      const [allVideos] = await db.select({ count: count() }).from(videos);
+      [deletedVideo.videoUri, deletedVideo?.thumbUri].forEach((uri) => {
+        if (uri) {
+          const file = new File(uri);
+          if (file.exists) file.delete();
+        }
+      });
 
-      if (allVideos.count === 0) {
+      const [{ count: totalVideos }] = await db.select({ count: count() }).from(videos);
+
+      if (totalVideos === 0) {
         await db.delete(playlists);
       }
 
       return { status: "success", message: `Video ${deletedVideo.title} successfully deleted.` };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   toggleFavorite: async (id) => {
@@ -165,8 +161,7 @@ export const useVideoStore = create<VideoStoreState>(() => ({
         message: `Video ${video.title} has been ${updatedFavoriteStatus === true ? "favorited" : "unfavorited"}.`,
       };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
 }));
@@ -243,13 +238,7 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
         message: `Playlist ${createdPlaylist.title} created successfully.`,
       };
     } catch (error) {
-      const message =
-        error instanceof Error &&
-        error.message.includes("UNIQUE constraint failed: playlists.title")
-          ? "Playlist title already exists."
-          : "Failed to create playlist.";
-
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   updatePlaylist: async ({ id, values }) => {
@@ -298,8 +287,7 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
         message: `Playlist ${updatedPlaylist.title} updated successfully.`,
       };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   deletePlaylist: async (id) => {
@@ -312,8 +300,7 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
         message: `Playlist ${deletedPlaylist.title} deleted successfully.`,
       };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   getPlaylistWithAllVideos: async (playlistId) => {
@@ -370,8 +357,7 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
 
       return { status: "success", isAdded: false, message: "Video removed from playlist." };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   removeVideoFromPlaylist: async ({ playlistId, videoId }) => {
@@ -388,8 +374,7 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
 
       return { status: "success", message: "Video removed from playlist successfully." };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   updatePlaylistOrder: async ({ playlistId, videosOrder }) => {
@@ -409,8 +394,7 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
       });
       return { status: "success", message: "Playlist order updated successfully." };
     } catch (error) {
-      const message = errorHandler(error);
-      return { status: "error", message };
+      return { status: "error", message: errorHandler(error) };
     }
   },
   syncVideoPlaylists: async (videoId: string, playlists: { id: string }[]) => {

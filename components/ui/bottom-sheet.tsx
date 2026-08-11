@@ -16,9 +16,9 @@ import {
 } from "@gorhom/bottom-sheet";
 import * as Slot from "@rn-primitives/slot";
 import { XIcon } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { NAV_THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
@@ -86,10 +86,7 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
   ) => {
     const insets = useSafeAreaInsets();
     const { sheetRef } = useBottomSheetContext();
-    const { colorScheme } = useColorScheme();
-
-    const safeColorScheme = colorScheme ?? "dark";
-    const isDarkColorScheme = safeColorScheme === "dark";
+    const { colorScheme, isDarkColorScheme } = useColorScheme();
 
     React.useImperativeHandle(ref, () => sheetRef.current as BottomSheetContentRef, [sheetRef]);
 
@@ -133,9 +130,9 @@ const BottomSheetContent = React.forwardRef<BottomSheetContentRef, BottomSheetCo
         enablePanDownToClose={enablePanDownToClose}
         backdropComponent={renderBackdrop}
         enableDynamicSizing={enableDynamicSizing}
-        backgroundStyle={[{ backgroundColor: NAV_THEME[safeColorScheme].card }, backgroundStyle]}
+        backgroundStyle={[{ backgroundColor: NAV_THEME[colorScheme].card }, backgroundStyle]}
         handleIndicatorStyle={{
-          backgroundColor: NAV_THEME[safeColorScheme].text,
+          backgroundColor: NAV_THEME[colorScheme].text,
         }}
         topInset={insets.top}
         android_keyboardInputMode={android_keyboardInputMode}

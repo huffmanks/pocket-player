@@ -2,9 +2,9 @@ import { useRouter } from "expo-router";
 import { View } from "react-native";
 
 import { LockIcon, MoonStarIcon, SunIcon } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import { useShallow } from "zustand/react/shallow";
 
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -21,14 +21,13 @@ export default function HeaderItems() {
 }
 
 function ThemeToggle() {
-  const { colorScheme, setColorScheme } = useColorScheme();
-  const isDarkColorScheme = colorScheme === "dark";
+  const { isDarkColorScheme, toggleColorScheme } = useColorScheme();
   const setTheme = useSettingsStore((state) => state.setTheme);
 
   function handlePress() {
     const newTheme = isDarkColorScheme ? "light" : "dark";
-    setColorScheme(newTheme);
     setTheme(newTheme);
+    toggleColorScheme();
   }
 
   return (

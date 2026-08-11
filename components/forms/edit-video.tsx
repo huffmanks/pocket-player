@@ -5,7 +5,6 @@ import { useCallback, useRef, useState } from "react";
 import { View } from "react-native";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createId } from "@paralleldrive/cuid2";
 import { SaveIcon, TrashIcon } from "lucide-react-native";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -119,8 +118,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         router.dismissTo("/(tabs)/videos");
       }
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     } finally {
       isSubmittingRef.current = false;
     }
@@ -134,12 +132,12 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
       const parsedValues = formSchema.parse(values);
 
-      let targetThumbFile: File | null = null;
+      let thumbTimestamp = videoInfo.thumbTimestamp;
+      let newThumbUri: string | null = videoInfo.thumbUri;
+      let tempThumbFile: File | null = null;
+      let finalThumbFile: File | null = null;
 
       try {
-        let thumbUri = videoInfo.thumbUri;
-        let thumbTimestamp = videoInfo.thumbTimestamp;
-
         const currentPickerTimestamp = pickerRef.current?.getThumbTimestamp();
 
         if (
@@ -152,22 +150,17 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
           const rendered = await ImageManipulator.manipulate(thumbnail).renderAsync();
           const { uri } = await rendered.saveAsync();
 
+          tempThumbFile = new File(uri);
+          finalThumbFile = new File(VIDEOS_DIR, `ppid_${videoInfo.id}.jpg`);
+          newThumbUri = finalThumbFile.uri;
           thumbTimestamp = Math.round(thumbnail.requestedTime * 1000);
-
-          const fileId = createId();
-          targetThumbFile = new File(VIDEOS_DIR, `${fileId}_ppid_${videoInfo.id}.jpg`);
-
-          const tempThumbFile = new File(uri);
-          await tempThumbFile.move(targetThumbFile);
-
-          thumbUri = targetThumbFile.uri;
         }
 
         await updateVideo({
           id: videoInfo.id,
           values: {
             ...parsedValues,
-            thumbUri,
+            thumbUri: newThumbUri,
             thumbTimestamp,
             orientation: values.orientation.value,
             createdAt: values.createdAt.toISOString(),
@@ -175,11 +168,11 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
           },
         });
 
-        if (targetThumbFile?.exists) {
-          const oldThumbFile = new File(videoInfo.thumbUri);
-          if (oldThumbFile.exists && oldThumbFile.uri !== targetThumbFile.uri) {
-            oldThumbFile.delete();
+        if (tempThumbFile && finalThumbFile) {
+          if (finalThumbFile.exists) {
+            finalThumbFile.delete();
           }
+          await tempThumbFile.move(finalThumbFile);
         }
 
         toast.success(`${values.title} updated successfully.`);
@@ -190,12 +183,11 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
           router.push("/(tabs)/videos");
         }
       } catch (error) {
-        if (targetThumbFile?.exists) {
-          targetThumbFile.delete();
+        if (tempThumbFile?.exists) {
+          tempThumbFile.delete();
         }
 
-        const message = errorHandler(error);
-        toast.error(message);
+        toast.error(errorHandler(error));
       } finally {
         isSubmittingRef.current = false;
         setIsSubmitting(false);

@@ -83,8 +83,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
         router.push("/(tabs)/playlists");
       }
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     }
   }
 
@@ -97,8 +96,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
 
       router.dismissTo(`/(screens)/playlists/${editPlaylistInfo.id}/view`);
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     } finally {
       setIsSubmitting(false);
     }

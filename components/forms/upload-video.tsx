@@ -1,4 +1,3 @@
-import { Asset } from "expo-asset";
 import * as DocumentPicker from "expo-document-picker";
 import { Directory, File, Paths } from "expo-file-system";
 import { useFocusEffect } from "expo-router";
@@ -15,7 +14,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { VIDEOS_DIR, VIDEO_PLACEHOLDER } from "@/lib/constants";
+import { VIDEOS_DIR } from "@/lib/constants";
 import { errorHandler } from "@/lib/error-handler";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
 import {
@@ -40,7 +39,7 @@ const formSchema = z.object({
         id: z.string().min(1),
         title: z.string().min(1),
         videoUri: z.string().min(1),
-        thumbUri: z.string().min(1),
+        thumbUri: z.string().nullable(),
         fileName: z.string().min(1),
         fileExtension: z.string().min(1),
         fileSize: z.number().nonnegative(),
@@ -68,7 +67,6 @@ export default function UploadForm() {
   const isSubmittingRef = useRef(false);
 
   const uploadVideos = useVideoStore((state) => state.uploadVideos);
-
   const { setIsLocked, setIsLockDisabled } = useSecurityStore(
     useShallow((state) => ({
       setIsLocked: state.setIsLocked,
@@ -184,9 +182,7 @@ export default function UploadForm() {
         setVideoFields(videos);
       }
     } catch (error) {
-      const message = errorHandler(error);
-
-      toast.error(message);
+      toast.error(errorHandler(error));
     } finally {
       await delay(100);
       setIsLockDisabled(false);
@@ -227,8 +223,6 @@ export default function UploadForm() {
       }
 
       const promise = (async () => {
-        const placeholderUri = Asset.fromModule(VIDEO_PLACEHOLDER).uri;
-
         const processedVideos = [];
 
         for (const video of values.videos) {
@@ -240,21 +234,20 @@ export default function UploadForm() {
           }
 
           await sourceVideoFile.copy(targetVideoFile);
-
           cleanupCacheFile(video.videoUri);
 
           const durationMs = video.duration > 1000 ? video.duration : video.duration * 1000;
           const safeTime =
             durationMs > 0 ? Math.min(3000, Math.max(0, Math.floor(durationMs / 2))) : 0;
 
-          let finalThumbUri: string;
+          let finalThumbUri: string | null;
 
           try {
             const thumbResult = await VideoThumbnails.getThumbnailAsync(targetVideoFile.uri, {
               time: safeTime,
             });
 
-            const targetThumbFile = new File(video.thumbUri);
+            const targetThumbFile = new File(VIDEOS_DIR, `ppid_${video.id}.jpg`);
             if (targetThumbFile.exists) {
               targetThumbFile.delete();
             }
@@ -264,7 +257,7 @@ export default function UploadForm() {
 
             finalThumbUri = targetThumbFile.uri;
           } catch (_error) {
-            finalThumbUri = placeholderUri;
+            finalThumbUri = null;
           }
 
           processedVideos.push({

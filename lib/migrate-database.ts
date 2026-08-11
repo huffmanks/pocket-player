@@ -15,9 +15,8 @@ export async function migrateDatabase() {
       isError: false,
     };
   } catch (error) {
-    const message = errorHandler(error);
     return {
-      message,
+      message: errorHandler(error),
       isError: true,
     };
   }

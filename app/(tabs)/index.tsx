@@ -1,5 +1,6 @@
+import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 
 import { CloudUploadIcon } from "lucide-react-native";
 
@@ -12,11 +13,12 @@ import { Text } from "@/components/ui/text";
 export default function IndexScreen() {
   return (
     <View className="flex-1 items-center justify-center pb-20">
-      <Image
-        className="mb-10"
-        style={{ width: 75, height: 75 }}
-        source={BASE_LOGO}
-      />
+      <View className="mb-10">
+        <Image
+          style={{ width: 75, height: 75 }}
+          source={BASE_LOGO}
+        />
+      </View>
       <Text
         variant="h1"
         className="mb-3 text-center text-foreground">

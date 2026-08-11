@@ -1,11 +1,13 @@
+import { Image } from "expo-image";
 import { memo } from "react";
-import { Image, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { GripVerticalIcon, XIcon } from "lucide-react-native";
 import { useReorderableDrag } from "react-native-reorderable-list";
 import { toast } from "sonner-native";
 
 import { VideoMeta } from "@/db/schema";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore } from "@/lib/store";
@@ -31,6 +33,7 @@ interface PlaylistItemProps {
 }
 
 function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
+  const { colorScheme } = useColorScheme();
   const drag = useReorderableDrag();
   const removeVideoFromPlaylist = usePlaylistStore((state) => state.removeVideoFromPlaylist);
 
@@ -45,10 +48,12 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
         toast.error(message);
       }
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     }
   }
+
+  const thumbUri = item?.thumbUri ? `${item.thumbUri}?v=${item.thumbTimestamp}` : undefined;
+  const thumbSource = thumbUri ? { uri: thumbUri } : VIDEO_PLACEHOLDER[colorScheme];
 
   return (
     <View className="mb-6 flex-row items-center justify-between gap-3">
@@ -62,11 +67,13 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
             size={24}
             strokeWidth={1.5}
           />
-          <Image
-            className="ml-2 mr-3 rounded-md"
-            style={{ width: 45, height: 45 }}
-            source={item.thumbUri ? { uri: item.thumbUri } : VIDEO_PLACEHOLDER}
-          />
+          <View className="ml-2 mr-3 h-[45] w-[45] overflow-hidden rounded-md bg-card">
+            <Image
+              style={{ width: "100%", height: "100%" }}
+              recyclingKey={thumbUri ?? "playlist-item_placeholder"}
+              source={thumbSource}
+            />
+          </View>
           <View className="mr-2 flex-1">
             <Text
               className="text-foreground"

@@ -10,13 +10,13 @@ import {
   TrashIcon,
   TvIcon,
 } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
 import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore, useVideoStore } from "@/lib/store";
@@ -62,7 +62,6 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colorScheme } = useColorScheme();
-  const safeColorScheme = colorScheme ?? "dark";
 
   const contentInsets = {
     top: insets.top + BOTTOM_TABS_OFFSET,
@@ -93,8 +92,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
         toast.error(message);
       }
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     }
   }
 
@@ -111,8 +109,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
         toast.error(message);
       }
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     }
   }
 
@@ -124,8 +121,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
         toast.error(message);
       }
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     }
   }
 
@@ -182,7 +178,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
             <Icon
               as={StarIcon}
               className="text-foreground"
-              fill={item.isFavorite ? NAV_THEME[safeColorScheme].text : "none"}
+              fill={item.isFavorite ? NAV_THEME[colorScheme].text : "none"}
               size={20}
               strokeWidth={1.5}
             />

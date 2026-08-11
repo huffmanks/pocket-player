@@ -1,13 +1,7 @@
 - [-] security screen/navbar make same black color.
 - [-] check for embedded video thumb first and if not exist continue.
-- [ ] make sure playlist-collage auto updates if thumbs change. (currently stale)
-- [-] show media files.
-  - [x] to delete get video entity with findVideoByFileUri.
-  - [x] if delete video, also delete thumb.
-  - [x] also store delete video doesnt delete video or thumb file just removes from db.
-  - [-] if delete thumb make entry use placholder image.
-  - [ ] Weird case where the BASE_LOGO is showing up as VIDEO_PLACEHOLDER image for VideoItem, etc.
 - [ ] Save timestamp of last view of video.
   - [key = `videoProgress:${videoId}`](lib/store.ts#L453)
   - value = `10` (player.currentTime | number | seconds)
 - [ ] Add whitelist or ability to scan a folder to auto add videos.
+- [ ] Show version number somewhere, (bottom of settings screen or nav icon)

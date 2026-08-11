@@ -10,7 +10,7 @@ export const videos = sqliteTable(
     id: text("id").primaryKey().notNull(),
     title: text("title").default("Untitled").notNull(),
     videoUri: text("video_uri").notNull(),
-    thumbUri: text("thumb_uri").notNull(),
+    thumbUri: text("thumb_uri"),
     thumbTimestamp: integer("thumb_timestamp", { mode: "number" }).default(3000).notNull(),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false).notNull(),
     fileName: text("file_name").notNull(),
@@ -35,7 +35,7 @@ export const videos = sqliteTable(
       .notNull(),
   },
   (t) => ({
-    thumbUriIdx: index("videos_thumb_uri_idx").on(t.thumbUri),
+    thumbTimestampIdx: index("videos_thumb_timestamp_idx").on(t.thumbTimestamp),
   })
 );
 

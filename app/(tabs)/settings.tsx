@@ -92,8 +92,7 @@ export default function SettingsScreen() {
         error: "Reset settings has failed.",
       });
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -117,8 +116,7 @@ export default function SettingsScreen() {
         error: "File deletion has failed.",
       });
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -143,8 +141,7 @@ export default function SettingsScreen() {
         error: "Data deletion has failed.",
       });
     } catch (error) {
-      const message = errorHandler(error);
-      toast.error(message);
+      toast.error(errorHandler(error));
     } finally {
       setIsSubmitting(false);
     }
