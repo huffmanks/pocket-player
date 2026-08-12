@@ -255,13 +255,13 @@ const FormDateTimePicker = React.forwardRef<any, FormItemProps<typeof DateTimePi
 
         <View
           className={cn(
-            "native:h-12 h-10 flex-row items-center justify-between rounded-md border border-input web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
+            "native:h-12 h-10 flex-row items-center justify-between rounded-md border border-input bg-input/30 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
             isInvalid && isTouched && "border-red-500"
           )}>
           <Input
             ref={ref}
             className={cn(
-              "flex-1 border-0 px-3 web:py-2",
+              "flex-1 border-0 bg-transparent px-3 web:py-2",
               isInvalid && isTouched && "text-destructive"
             )}
             style={{ height: "auto" }}

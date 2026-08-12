@@ -37,7 +37,7 @@ export default function IndexScreen() {
             className="flex flex-row items-center justify-center gap-3">
             <Icon
               as={CloudUploadIcon}
-              className="text-white"
+              color="white"
               size={24}
               strokeWidth={1.5}
             />

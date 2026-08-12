@@ -135,7 +135,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
           variant="brand"
           size="lg"
           onPress={form.handleSubmit(onSubmit)}>
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center gap-3">
             <Icon
               as={ListMusicIcon}
               className="text-white"

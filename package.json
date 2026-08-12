@@ -41,6 +41,7 @@
     "drizzle-orm": "^0.36.4",
     "drizzle-zod": "^0.5.1",
     "expo": "~57.0.12",
+    "expo-application": "^57.0.2",
     "expo-asset": "~57.0.10",
     "expo-constants": "~57.0.10",
     "expo-dev-client": "^57.0.11",

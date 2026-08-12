@@ -11,6 +11,7 @@ import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta, playlists } from "@/db/schema";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
 import { useDatabaseStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { formatDuration, throttle } from "@/lib/utils";
@@ -208,6 +209,8 @@ export default function VideosScreen() {
 }
 
 function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
+  const { isDarkColorScheme } = useColorScheme();
+
   return (
     <View className="px-4 py-2">
       {!videosExist && (
@@ -233,7 +236,7 @@ function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
               className="flex flex-row items-center justify-center gap-3">
               <Icon
                 as={CloudUploadIcon}
-                className="text-background"
+                color={isDarkColorScheme ? "black" : "white"}
                 size={24}
                 strokeWidth={1.5}
               />

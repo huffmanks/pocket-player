@@ -165,7 +165,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
                 <Icon
                   as={TrashIcon}
                   className="text-foreground"
-                  size={24}
+                  size={20}
                   strokeWidth={1.5}
                 />
                 <Text className="native:text-base font-semibold uppercase tracking-wider">
@@ -191,10 +191,12 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
                 <AlertDialogCancel>
                   <Text>Cancel</Text>
                 </AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-destructive"
-                  onPress={handleDelete}>
-                  <Text className="text-destructive-foreground">Delete</Text>
+                <AlertDialogAction asChild>
+                  <Button
+                    variant="destructive"
+                    onPress={handleDelete}>
+                    <Text>Delete</Text>
+                  </Button>
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -211,7 +213,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
             <Icon
               as={SaveIcon}
               className="text-white"
-              size={24}
+              size={20}
               strokeWidth={1.5}
             />
             <Text className="native:text-base font-semibold uppercase tracking-wider">Save</Text>

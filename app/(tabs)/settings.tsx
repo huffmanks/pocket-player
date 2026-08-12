@@ -1,7 +1,8 @@
+import * as Application from "expo-application";
 import { Paths } from "expo-file-system";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 
 import {
   FileVideo2Icon,
@@ -57,6 +58,9 @@ export default function SettingsScreen() {
   const [selectTriggerWidth, setSelectTriggerWidth] = useState(0);
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  const appVersion = Application.nativeApplicationVersion;
+  const buildVersion = Application.nativeBuildVersion;
 
   const contentInsets = {
     top: insets.top + BOTTOM_TABS_OFFSET,
@@ -169,11 +173,21 @@ export default function SettingsScreen() {
       contentContainerClassName="pt-6 pb-20 px-3"
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
-      <Text
-        variant="h1"
-        className="mb-6">
-        Settings
-      </Text>
+      <View className="mb-6">
+        <Text
+          variant="h1"
+          className="mb-4">
+          Settings
+        </Text>
+        <View className="flex-row items-center self-start overflow-hidden rounded-full border border-border bg-input">
+          <Text className="rounded-full bg-card px-2.5 py-1 font-mono text-sm font-bold uppercase leading-none text-foreground">
+            build
+          </Text>
+          <Text className="py-1 pl-1.5 pr-2.5 font-mono text-sm font-bold leading-none text-brand-foreground">
+            ${Platform.OS.toUpperCase()}::RELEASE.v{appVersion}+b{buildVersion}
+          </Text>
+        </View>
+      </View>
       <View className="px-3">
         <View className="mb-6 gap-6">
           <View>
@@ -310,15 +324,16 @@ export default function SettingsScreen() {
                     <Text>This action cannot be undone. This will reset all settings.</Text>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-
                 <AlertDialogFooter>
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive"
-                    onPress={handleResetSettings}>
-                    <Text className="text-destructive-foreground">Delete</Text>
+                  <AlertDialogAction asChild>
+                    <Button
+                      variant="destructive"
+                      onPress={handleResetSettings}>
+                      <Text>Reset</Text>
+                    </Button>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -355,10 +370,12 @@ export default function SettingsScreen() {
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive"
-                    onPress={handleDeleteFiles}>
-                    <Text className="text-destructive-foreground">Delete</Text>
+                  <AlertDialogAction asChild>
+                    <Button
+                      variant="destructive"
+                      onPress={handleDeleteFiles}>
+                      <Text>Delete</Text>
+                    </Button>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -395,10 +412,12 @@ export default function SettingsScreen() {
                   <AlertDialogCancel>
                     <Text>Cancel</Text>
                   </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive"
-                    onPress={handleClearAllData}>
-                    <Text className="text-destructive-foreground">Delete</Text>
+                  <AlertDialogAction asChild>
+                    <Button
+                      variant="destructive"
+                      onPress={handleClearAllData}>
+                      <Text>Delete</Text>
+                    </Button>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

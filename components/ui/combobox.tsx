@@ -152,7 +152,7 @@ const Combobox = React.forwardRef<
           className={buttonVariants({
             variant,
             size,
-            className: cn("native:h-14 h-12 w-full flex-row web:py-2", className),
+            className: cn("native:h-14 h-12 w-full flex-row bg-input/30 web:py-2", className),
           })}
           role="combobox"
           {...props}>

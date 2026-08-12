@@ -17,15 +17,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: cn(
-          "bg-primary active:bg-primary/90 shadow-sm shadow-black/5",
-          Platform.select({ web: "hover:bg-primary/90" })
+          "bg-foreground active:bg-foreground/90 shadow-sm shadow-black/5",
+          Platform.select({ web: "hover:bg-foreground/90" })
         ),
         brand: cn(
           "bg-brand active:bg-brand/90 shadow-sm shadow-black/5",
           Platform.select({ web: "hover:bg-brand/90" })
         ),
         destructive: cn(
-          "bg-destructive active:bg-destructive/90 dark:bg-destructive/60 shadow-sm shadow-black/5",
+          "bg-destructive active:bg-destructive/90 dark:bg-destructive dark:active:bg-destructive/80 shadow-sm shadow-black/5",
           Platform.select({
             web: "hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
           })
@@ -70,9 +70,9 @@ const buttonTextVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-primary-foreground",
+        default: "text-background",
         brand: "text-white",
-        destructive: "text-white",
+        destructive: "text-destructive-foreground",
         outline: cn(
           "group-active:text-accent-foreground",
           Platform.select({ web: "group-hover:text-accent-foreground" })
@@ -106,7 +106,7 @@ type ButtonProps = React.ComponentProps<typeof Pressable> &
 
 function Button({ className, variant, size, ...props }: ButtonProps) {
   return (
-    <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
+    <TextClassContext.Provider value={cn(buttonTextVariants({ variant, size }))}>
       <Pressable
         className={cn(props.disabled && "opacity-50", buttonVariants({ variant, size }), className)}
         role="button"

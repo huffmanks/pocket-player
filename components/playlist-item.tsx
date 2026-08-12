@@ -116,10 +116,12 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
             <AlertDialogCancel>
               <Text>Cancel</Text>
             </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive"
-              onPress={handleRemoveFromPlaylist}>
-              <Text className="text-destructive-foreground">Delete</Text>
+            <AlertDialogAction asChild>
+              <Button
+                variant="destructive"
+                onPress={handleRemoveFromPlaylist}>
+                <Text>Remove</Text>
+              </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

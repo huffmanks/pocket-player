@@ -274,10 +274,12 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
               <AlertDialogCancel>
                 <Text>Cancel</Text>
               </AlertDialogCancel>
-              <AlertDialogAction
-                className="bg-destructive"
-                onPress={handleDelete}>
-                <Text className="text-destructive-foreground">Delete</Text>
+              <AlertDialogAction asChild>
+                <Button
+                  variant="destructive"
+                  onPress={handleDelete}>
+                  <Text>Delete</Text>
+                </Button>
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

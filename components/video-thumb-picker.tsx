@@ -133,13 +133,13 @@ const VideoThumbPicker = forwardRef<VideoThumbPickerHandle, VideoThumbPickerProp
           <View className="absolute -right-3 -top-4 z-10">
             <Button
               size="circle"
-              variant="brand"
+              variant={isDisabled ? "destructive" : "brand"}
               className="flex flex-row items-center justify-center"
               onPress={() => setIsDisabled((prev) => !prev)}>
               {isDisabled ? (
                 <Icon
                   as={LockIcon}
-                  className="text-white"
+                  className="text-destructive-foreground"
                   size={24}
                   strokeWidth={1.5}
                 />

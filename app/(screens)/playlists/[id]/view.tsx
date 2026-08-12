@@ -166,10 +166,12 @@ export default function ViewPlaylistScreen() {
                     <AlertDialogCancel>
                       <Text>Cancel</Text>
                     </AlertDialogCancel>
-                    <AlertDialogAction
-                      className="bg-destructive"
-                      onPress={handleDelete}>
-                      <Text className="text-destructive-foreground">Delete</Text>
+                    <AlertDialogAction asChild>
+                      <Button
+                        variant="destructive"
+                        onPress={handleDelete}>
+                        <Text>Delete</Text>
+                      </Button>
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -192,7 +194,7 @@ export default function ViewPlaylistScreen() {
               size="lg"
               variant="brand"
               disabled={!playlistVideosQuery.data?.length}
-              className="flex flex-row items-center justify-center gap-4">
+              className="flex flex-row items-center justify-center gap-3">
               <Icon
                 as={TvIcon}
                 className="text-white"

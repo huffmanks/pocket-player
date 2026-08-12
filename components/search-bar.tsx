@@ -63,7 +63,7 @@ export default function SearchBar({
         </Pressable>
         <Input
           ref={inputRef}
-          className="native:text-xl flex-1 border-0 px-0 placeholder:text-muted-foreground"
+          className="native:text-xl flex-1 border-0 bg-transparent px-0 placeholder:text-muted-foreground"
           value={searchQuery}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}

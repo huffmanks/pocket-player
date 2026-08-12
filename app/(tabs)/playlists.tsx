@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
 import { playlistVideos, playlists, videos } from "@/db/schema";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useDatabaseStore } from "@/lib/store";
 import { formatDuration } from "@/lib/utils";
 
@@ -124,6 +125,8 @@ export default function PlaylistsScreen() {
 }
 
 function ListHeaderComponent() {
+  const { isDarkColorScheme } = useColorScheme();
+
   return (
     <View className="mb-10">
       <Link
@@ -131,10 +134,10 @@ function ListHeaderComponent() {
         asChild>
         <Button
           size="lg"
-          className="flex flex-row items-center justify-center gap-4">
+          className="flex flex-row items-center justify-center gap-3">
           <Icon
             as={ListMusicIcon}
-            className="text-background"
+            color={isDarkColorScheme ? "black" : "white"}
             size={24}
             strokeWidth={1.5}
           />
@@ -148,6 +151,8 @@ function ListHeaderComponent() {
 }
 
 function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
+  const { isDarkColorScheme } = useColorScheme();
+
   return (
     <View className="py-2">
       <Text
@@ -167,9 +172,9 @@ function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
           asChild>
           <Button
             size="lg"
-            className="flex flex-row items-center justify-center gap-4">
+            className="flex flex-row items-center justify-center gap-3">
             <ListMusicIcon
-              className="text-background"
+              color={isDarkColorScheme ? "black" : "white"}
               size={24}
               strokeWidth={1.5}
             />
