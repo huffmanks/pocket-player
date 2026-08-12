@@ -477,7 +477,7 @@ const initialSettingsStoreState: SettingsStoreState = {
   sortTitleOrder: "asc",
   scrollIndex: 0,
   lastVisitedPath: "/",
-  previousVisitedPath: "/",
+  previousVisitedPath: "/upload",
   videoProgress: {},
 };
 

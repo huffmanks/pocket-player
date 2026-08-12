@@ -2,26 +2,18 @@
 
 ## UI
 
-- [ ] File manager
-  - [ ] Refresh files should show `<ActivityIndicator />.
-  - [ ] Add video title to file item.
-- [ ] Playlist view screen
-  - [ ] Reordering causes items to flicker when released/dropped.
-- [ ] Videos screen
-  - [ ] On fresh app load if navigating to this route for first time, it flickers empty state at beginning.
-
-## Refactors
-
-- [ ] Move thumbnails to its own directory (thumbs).
-  - [ ] Add the ability to `delete all video`s and `delete all thumbs`.
+- [ ] Watch screens
+  - [ ] Add a button or dropdown to go to edit video screen.
+- [ ] Playlists and ID view screen
+  - [-] On fresh app load if navigating to this route for first time, it flickers empty state at beginning.
+  - [ ] View id page doesnt look great when loading.
 
 ## Issues
 
 - [-] Watch playlist broken.
 - [ ] Coming back from an inactive/closed app state:
   - [ ] Sometimes you have to double swipe right to go back.
-  - [ ] Ensure all alert dialogs/dropdowns auto dismiss.
-- [ ] Verify `index` route is not being tracked or saved as lastVisitedPath.
+  - [ ] Ensure all dropdowns/bottomsheets/combobox/select/alert dialogs auto dismiss.
 
 ## New features
 
@@ -29,6 +21,10 @@
 - [ ] Save timestamp of last view of video.
   - [key = `videoProgress:${videoId}`](lib/store.ts#L453)
   - value = `10` (player.currentTime | number | seconds)
+- [ ] Move thumbnails to its own directory (thumbs).
+  - [ ] Add the ability to `delete all video`s and `delete all thumbs`.
+- [ ] File manager
+  - [ ] Add video title to file item. (Would require getting from db)
 
 ## Future
 

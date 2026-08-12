@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
 import { router } from "expo-router";
+import { useMemo } from "react";
 import { Pressable, View } from "react-native";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -27,7 +28,10 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
   const createdAt = formatDateString(item.createdAt);
 
   const thumbUri = item?.thumbUri ? `${item.thumbUri}?v=${item.thumbTimestamp}` : undefined;
-  const thumbSource = thumbUri ? { uri: thumbUri } : VIDEO_PLACEHOLDER[colorScheme];
+  const thumbSource = useMemo(
+    () => (thumbUri ? { uri: thumbUri } : VIDEO_PLACEHOLDER[colorScheme]),
+    [thumbUri, colorScheme]
+  );
 
   return (
     <Animated.View

@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useMemo } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { ListMusicIcon } from "lucide-react-native";
@@ -24,9 +24,11 @@ export default function PlaylistsScreen() {
   const db = useDatabaseStore.getState().db;
 
   const playlistsQuery = useLiveQuery(db.select().from(playlists).orderBy(playlists.title));
-
   const playlistVideosQuery = useLiveQuery(db.select().from(playlistVideos));
   const videosQuery = useLiveQuery(db.select().from(videos));
+
+  const isInitialLoading =
+    !playlistsQuery.updatedAt || !playlistVideosQuery.updatedAt || !videosQuery.updatedAt;
 
   const playlistsWithThumbUris = useMemo(() => {
     if (!playlistsQuery.data?.length) return [];
@@ -63,6 +65,14 @@ export default function PlaylistsScreen() {
 
   if (playlistsQuery.error) {
     toast.error("Error loading data.");
+  }
+
+  if (isInitialLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (

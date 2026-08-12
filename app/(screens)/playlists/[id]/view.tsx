@@ -1,5 +1,5 @@
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -55,10 +55,11 @@ export default function ViewPlaylistScreen() {
   const playlistQuery = useLiveQuery(
     db.select().from(playlists).where(eq(playlists.id, id)).orderBy(playlists.title)
   );
-
   const playlistVideosQuery = useLiveQuery(
     db.select().from(playlistVideos).where(eq(playlistVideos.playlistId, id)).limit(1)
   );
+
+  const isInitialLoading = !playlistQuery.updatedAt || !playlistVideosQuery.updatedAt;
 
   async function handleDelete() {
     try {
@@ -75,6 +76,14 @@ export default function ViewPlaylistScreen() {
 
   if (playlistQuery.error || playlistVideosQuery.error) {
     toast.error("Error loading data.");
+  }
+
+  if (isInitialLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   if (!playlistQuery.data?.length) return null;
@@ -207,7 +216,10 @@ export default function ViewPlaylistScreen() {
         </View>
       </View>
 
-      <PlaylistSortable playlistId={id} />
+      <PlaylistSortable
+        isInitialLoading={isInitialLoading}
+        playlistId={id}
+      />
     </View>
   );
 }

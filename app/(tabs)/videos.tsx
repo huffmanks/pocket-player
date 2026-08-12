@@ -1,6 +1,6 @@
 import { Link, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import { FlashList, ViewToken } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -104,8 +104,6 @@ export default function VideosScreen() {
     }));
   }, [videosQuery, playlistVideosQuery]);
 
-  const videosExist = !!videosWithPlaylists.length;
-
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
@@ -134,18 +132,6 @@ export default function VideosScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
-  const isDataReady = videosExist && sortedData.length > 0;
-
-  function handleSortDate() {
-    setSortKey("date");
-    toggleSortDateOrder();
-  }
-
-  function handleSortTitle() {
-    setSortKey("title");
-    toggleSortTitleOrder();
-  }
-
   const renderItem = useCallback(
     ({ item }: { item: VideoMetaWithPlaylists }) => {
       return (
@@ -170,9 +156,32 @@ export default function VideosScreen() {
     }, [])
   );
 
+  const isInitialLoading =
+    !videosQuery.updatedAt || !playlistVideosQuery.updatedAt || !playlistsQuery.updatedAt;
+
+  if (isInitialLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  function handleSortDate() {
+    setSortKey("date");
+    toggleSortDateOrder();
+  }
+
+  function handleSortTitle() {
+    setSortKey("title");
+    toggleSortTitleOrder();
+  }
+
   if (videosQuery.error) {
     toast.error("Error loading data.");
   }
+
+  const videosExist = !!videosWithPlaylists.length;
 
   return (
     <View className="relative min-h-full pt-4">
@@ -185,7 +194,7 @@ export default function VideosScreen() {
         />
       )}
       <FlashList
-        key={isDataReady ? "loaded" : "loading"}
+        key={!isInitialLoading ? "loaded" : "loading"}
         data={sortedData}
         ref={flashListRef}
         keyExtractor={(item) => item.id}
@@ -193,9 +202,7 @@ export default function VideosScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         showsVerticalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
-        initialScrollIndex={
-          isDataReady && initialScrollIndex < sortedData.length ? initialScrollIndex : undefined
-        }
+        initialScrollIndex={initialScrollIndex < sortedData.length ? initialScrollIndex : undefined}
         ListHeaderComponent={
           <ListHeaderComponent
             videosExist={videosExist}

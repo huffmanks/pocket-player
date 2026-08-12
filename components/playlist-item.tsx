@@ -1,6 +1,6 @@
-import { Image } from "expo-image";
-import { memo } from "react";
-import { Pressable, View } from "react-native";
+// import { Image } from "expo-image";
+import { memo, useMemo } from "react";
+import { Image, Pressable, View } from "react-native";
 
 import { GripVerticalIcon, XIcon } from "lucide-react-native";
 import { useReorderableDrag } from "react-native-reorderable-list";
@@ -53,7 +53,10 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
   }
 
   const thumbUri = item?.thumbUri ? `${item.thumbUri}?v=${item.thumbTimestamp}` : undefined;
-  const thumbSource = thumbUri ? { uri: thumbUri } : VIDEO_PLACEHOLDER[colorScheme];
+  const thumbSource = useMemo(
+    () => (thumbUri ? { uri: thumbUri } : VIDEO_PLACEHOLDER[colorScheme]),
+    [thumbUri, colorScheme]
+  );
 
   return (
     <View className="mb-6 flex-row items-center justify-between gap-3">
@@ -69,8 +72,8 @@ function PlaylistItem({ item, playlistId }: PlaylistItemProps) {
           />
           <View className="ml-2 mr-3 h-[45] w-[45] overflow-hidden rounded-md bg-card">
             <Image
+              key={thumbUri ?? "playlist-item_placeholder"}
               style={{ width: "100%", height: "100%" }}
-              recyclingKey={thumbUri ?? "playlist-item_placeholder"}
               source={thumbSource}
             />
           </View>

@@ -1,6 +1,6 @@
 import { File } from "expo-file-system";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { ImageIcon, RefreshCwIcon, TrashIcon, VideoIcon } from "lucide-react-native";
@@ -10,7 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 import { FileItem, FileType, getAllAppFiles } from "@/lib/app-files";
 import { errorHandler } from "@/lib/error-handler";
 import { useVideoStore } from "@/lib/store";
-import { formatFileSize } from "@/lib/utils";
+import { cn, delay, formatFileSize } from "@/lib/utils";
 
 import {
   Accordion,
@@ -39,6 +39,7 @@ export default function FileManagerScreen() {
   const [videoTotalSize, setVideoTotalSize] = useState("");
   const [imageTotalSize, setImageTotalSize] = useState("");
   const [totalSize, setTotalSize] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const sortedVideoData = useMemo(() => {
     const sorted = [...videoFiles];
@@ -69,12 +70,22 @@ export default function FileManagerScreen() {
   }, []);
 
   async function refreshFiles() {
-    const result = await getAllAppFiles();
-    setVideoFiles(result.videoFiles);
-    setImageFiles(result.imageFiles);
-    setVideoTotalSize(result.videoTotalSize);
-    setImageTotalSize(result.imageTotalSize);
-    setTotalSize(result.totalSize);
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+
+    try {
+      const result = await getAllAppFiles();
+      setVideoFiles(result.videoFiles);
+      setImageFiles(result.imageFiles);
+      setVideoTotalSize(result.videoTotalSize);
+      setImageTotalSize(result.imageTotalSize);
+      setTotalSize(result.totalSize);
+    } catch (error) {
+      toast.error(errorHandler(error));
+    } finally {
+      await delay(1000);
+      setIsRefreshing(false);
+    }
   }
 
   useEffect(() => {
@@ -111,16 +122,28 @@ export default function FileManagerScreen() {
         </View>
 
         <Button
+          disabled={isRefreshing}
           size="lg"
-          className="flex flex-row items-center justify-center gap-3"
+          className="flex flex-row items-center justify-center gap-3 disabled:bg-brand disabled:opacity-100"
           onPress={refreshFiles}>
-          <Icon
-            as={RefreshCwIcon}
-            className="text-background"
-            size={20}
-            strokeWidth={1.5}
-          />
-          <Text className="native:text-base font-semibold uppercase tracking-wider">
+          {isRefreshing ? (
+            <ActivityIndicator
+              size="small"
+              color="white"
+            />
+          ) : (
+            <Icon
+              as={RefreshCwIcon}
+              className="text-background"
+              size={20}
+              strokeWidth={1.5}
+            />
+          )}
+          <Text
+            className={cn(
+              "native:text-base font-semibold uppercase tracking-wider",
+              isRefreshing ? "text-white" : "text-background"
+            )}>
             Refresh Files
           </Text>
         </Button>
@@ -281,7 +304,7 @@ function FileListItem({ item }: { item: FileItem }) {
             as={item.type === "image" ? ImageIcon : VideoIcon}
             className="text-muted-foreground"
             size={16}
-            strokeWidth={1.5}
+            strokeWidth={2}
           />
           <Text>{formatFileSize(item.size)}</Text>
         </View>

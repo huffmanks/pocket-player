@@ -23,24 +23,15 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 
 interface PlaylistSortableProps {
+  isInitialLoading: boolean;
   playlistId: string;
 }
 
-export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) {
+export default function PlaylistSortable({ isInitialLoading, playlistId }: PlaylistSortableProps) {
   const db = useDatabaseStore.getState().db;
   const updatePlaylistOrder = usePlaylistStore((state) => state.updatePlaylistOrder);
 
   const opacity = useSharedValue(1);
-
-  const handleDragStart = (_: ReorderableListDragStartEvent) => {
-    "worklet";
-    opacity.value = withTiming(0.5);
-  };
-
-  const handleDragEnd = (_: ReorderableListDragEndEvent) => {
-    "worklet";
-    opacity.value = withTiming(1);
-  };
 
   const playlistVideosQuery = useLiveQuery(
     db.query.playlistVideos.findMany({
@@ -62,19 +53,15 @@ export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) 
       .map(({ video }) => video);
   }, [playlistVideosQuery.data]);
 
-  const renderItem = ({ item }: ListRenderItemInfo<VideoMeta>) => (
-    <PlaylistItem
-      item={item}
-      playlistId={playlistId}
-    />
-  );
+  const handleDragStart = (_: ReorderableListDragStartEvent) => {
+    "worklet";
+    opacity.value = withTiming(0.5);
+  };
 
-  const cellAnimations: ReorderableListCellAnimations = useMemo(
-    () => ({
-      opacity,
-    }),
-    [opacity]
-  );
+  const handleDragEnd = (_: ReorderableListDragEndEvent) => {
+    "worklet";
+    opacity.value = withTiming(1);
+  };
 
   const handleReorder = async ({ from, to }: ReorderableListReorderEvent) => {
     if (!videosData) return;
@@ -82,12 +69,22 @@ export default function PlaylistSortable({ playlistId }: PlaylistSortableProps) 
     await updatePlaylistOrder({ playlistId, videosOrder: newData });
   };
 
+  const renderItem = ({ item }: ListRenderItemInfo<VideoMeta>) => (
+    <PlaylistItem
+      item={item}
+      playlistId={playlistId}
+    />
+  );
+
+  const cellAnimations: ReorderableListCellAnimations = useMemo(() => ({ opacity }), [opacity]);
+
   if (isLoaded && !videosData.length) {
     return <ListEmptyComponent playlistId={playlistId} />;
   }
 
   return (
     <ReorderableList
+      key={!isInitialLoading ? "loaded" : "loading"}
       data={videosData}
       keyExtractor={(item) => item.id}
       renderItem={renderItem}

@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
-import { View } from "react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -20,6 +20,7 @@ import VideoItem from "@/components/video-item";
 export default function FavoritesScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
+  const flashListRef = useRef<React.ComponentRef<typeof FlashList<VideoMeta>> | null>(null);
   const insets = useSafeAreaInsets();
 
   const {
@@ -70,8 +71,6 @@ export default function FavoritesScreen() {
     }));
   }, [videosQuery, playlistVideosQuery]);
 
-  const favoritesExist = !!videosWithPlaylists.length;
-
   const filteredData = useMemo(() => {
     if (!videosWithPlaylists) return [];
     if (!searchQuery) return videosWithPlaylists;
@@ -103,16 +102,6 @@ export default function FavoritesScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
-  function handleSortDate() {
-    setSortKey("date");
-    toggleSortDateOrder();
-  }
-
-  function handleSortTitle() {
-    setSortKey("title");
-    toggleSortTitleOrder();
-  }
-
   const renderItem = useCallback(
     ({ item }: { item: VideoMeta }) => {
       return (
@@ -127,9 +116,32 @@ export default function FavoritesScreen() {
     [playlistsQuery?.data]
   );
 
+  const isInitialLoading =
+    !videosQuery.updatedAt || !playlistVideosQuery.updatedAt || !playlistsQuery.updatedAt;
+
+  if (isInitialLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  function handleSortDate() {
+    setSortKey("date");
+    toggleSortDateOrder();
+  }
+
+  function handleSortTitle() {
+    setSortKey("title");
+    toggleSortTitleOrder();
+  }
+
   if (videosQuery.error) {
     toast.error("Error loading data.");
   }
+
+  const favoritesExist = !!videosWithPlaylists.length;
 
   return (
     <View className="relative min-h-full pt-4">
@@ -142,7 +154,9 @@ export default function FavoritesScreen() {
         />
       )}
       <FlashList
+        key={!isInitialLoading ? "loaded" : "loading"}
         data={sortedData}
+        ref={flashListRef}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
