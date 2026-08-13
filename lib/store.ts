@@ -1,4 +1,5 @@
 import { File } from "expo-file-system";
+import type { Href } from "expo-router";
 
 import { and, count, eq, inArray, notInArray } from "drizzle-orm";
 import { MMKV } from "react-native-mmkv";
@@ -438,6 +439,7 @@ export const usePlaylistStore = create<PlaylistStoreState>(() => ({
 }));
 
 type SettingsStoreState = {
+  _hasHydrated: boolean;
   autoPlay: boolean;
   loop: boolean;
   mute: boolean;
@@ -448,8 +450,8 @@ type SettingsStoreState = {
   sortDateOrder: "asc" | "desc";
   sortTitleOrder: "asc" | "desc";
   scrollIndex: number;
-  lastVisitedPath: string;
-  previousVisitedPath: string;
+  lastVisitedPath: Href;
+  previousVisitedPath: Href;
   videoProgress: Record<string, number>;
 };
 
@@ -464,12 +466,12 @@ type SettingsStoreActions = {
   toggleSortDateOrder: () => void;
   toggleSortTitleOrder: () => void;
   setScrollIndex: (index: number) => void;
-  setLastVisitedPath: (path: string) => void;
+  setLastVisitedPath: (path: Href) => void;
   setVideoProgress: (videoId: string, time: number) => void;
   reset: () => void;
 };
 
-const initialSettingsStoreState: SettingsStoreState = {
+const initialSettingsStoreState: Omit<SettingsStoreState, "_hasHydrated"> = {
   autoPlay: false,
   loop: false,
   mute: false,
@@ -489,6 +491,7 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
   persist(
     (set) => ({
       ...initialSettingsStoreState,
+      _hasHydrated: false,
       setAutoPlay: (autoPlay) => set({ autoPlay }),
       setLoop: (loop) => set({ loop }),
       setMute: (mute) => set({ mute }),
@@ -518,6 +521,11 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
     {
       name: "settings-store",
       storage: createJSONStorage(() => settingsZustandStorage),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state._hasHydrated = true;
+        }
+      },
     }
   )
 );

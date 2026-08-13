@@ -1,6 +1,9 @@
 import { Directory, Paths } from "expo-file-system";
+import type { Href } from "expo-router";
 
 import { SettingId } from "@/components/setting-switch";
+
+export const DEFAULT_FALLBACK: Href = "/(tabs)/videos";
 
 export const VIDEOS_DIR = new Directory(Paths.document, "videos");
 export const BASE_LOGO = require("@/assets/icons/base_logo.png");
@@ -28,7 +31,7 @@ export const EXCLUDED_PATHS = [
   "/",
   "/index",
   "/(tabs)/index",
-];
+] as Href[];
 
 export const settingsSwitches: { id: SettingId; label: string; description?: string }[] = [
   {

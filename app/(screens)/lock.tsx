@@ -2,7 +2,7 @@ import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import * as LocalAuthentication from "expo-local-authentication";
 import { NavigationBar } from "expo-navigation-bar";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
@@ -19,7 +19,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useShallow } from "zustand/react/shallow";
 
 import { BASE_LOGO, ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
-import handleRedirect from "@/lib/handle-redirect";
+import { getRedirectPath } from "@/lib/get-redirect-path";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,8 @@ import { Text } from "@/components/ui/text";
 export default function LockScreen() {
   const [code, setCode] = useState<number[]>([]);
   const [isPressed, setIsPressed] = useState(false);
-  const codeLength = Array(4).fill(0);
+
+  const router = useRouter();
   const insets = useSafeAreaInsets();
 
   const { lastVisitedPath, previousVisitedPath } = useSettingsStore(
@@ -46,6 +47,7 @@ export default function LockScreen() {
     }))
   );
 
+  const codeLength = Array(4).fill(0);
   const offset = useSharedValue(0);
   const offsetRef = useRef(offset);
 
@@ -61,8 +63,9 @@ export default function LockScreen() {
 
   const handleUnlockApp = useCallback(async () => {
     setIsLocked(false);
-    await handleRedirect({ lastVisitedPath, previousVisitedPath });
-  }, [setIsLocked, lastVisitedPath, previousVisitedPath]);
+    const targetPath = getRedirectPath({ lastVisitedPath, previousVisitedPath });
+    router.replace(targetPath);
+  }, [setIsLocked, lastVisitedPath, previousVisitedPath, router]);
 
   const handleNumberPress = useCallback((number: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
