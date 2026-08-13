@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { useState } from "react";
 
 import { EllipsisVerticalIcon, PencilIcon, TrashIcon, TvIcon, ViewIcon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,7 +19,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,8 @@ interface PlaylistDropdownProps {
 }
 
 export default function PlaylistDropdown({ item, playlistVideosExist }: PlaylistDropdownProps) {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
   const insets = useSafeAreaInsets();
   const deletePlaylist = usePlaylistStore((state) => state.deletePlaylist);
 
@@ -63,116 +65,111 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          className="px-0.5 py-1"
-          variant="ghost"
-          size="unset">
-          <Icon
-            as={EllipsisVerticalIcon}
-            className="text-foreground"
-            size={20}
-            strokeWidth={1.5}
-          />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="native:w-72 w-64"
-        insets={contentInsets}>
-        <DropdownMenuLabel
-          className="native:text-lg"
-          numberOfLines={1}>
-          {item.title}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem
-            disabled={!playlistVideosExist}
-            className="gap-4"
-            onPress={() => router.push(`/(screens)/playlists/${item.id}/watch`)}>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            className="px-0.5 py-1"
+            variant="ghost"
+            size="unset">
             <Icon
-              as={TvIcon}
+              as={EllipsisVerticalIcon}
               className="text-foreground"
               size={20}
               strokeWidth={1.5}
             />
-            <Text className="native:text-lg text-foreground">Watch</Text>
-          </DropdownMenuItem>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="native:w-72 w-64"
+          insets={contentInsets}>
+          <DropdownMenuLabel
+            className="native:text-lg"
+            numberOfLines={1}>
+            {item.title}
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              disabled={!playlistVideosExist}
+              className="gap-4"
+              onPress={() => router.push(`/(screens)/playlists/${item.id}/watch`)}>
+              <Icon
+                as={TvIcon}
+                className="text-foreground"
+                size={20}
+                strokeWidth={1.5}
+              />
+              <Text className="native:text-lg text-foreground">Watch</Text>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="gap-4"
+              onPress={() => router.push(`/(screens)/playlists/${item.id}/edit`)}>
+              <Icon
+                as={PencilIcon}
+                className="text-foreground"
+                size={20}
+                strokeWidth={1.5}
+              />
+              <Text className="native:text-lg text-foreground">Edit</Text>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="gap-4"
+              onPress={() => router.push(`/(screens)/playlists/${item.id}/view`)}>
+              <Icon
+                as={ViewIcon}
+                className="text-foreground"
+                size={20}
+                strokeWidth={1.5}
+              />
+              <Text className="native:text-lg text-foreground">View</Text>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="gap-4"
-            onPress={() => router.push(`/(screens)/playlists/${item.id}/edit`)}>
+            onPress={() => setIsAlertOpen(true)}>
             <Icon
-              as={PencilIcon}
-              className="text-foreground"
+              as={TrashIcon}
+              className="text-destructive"
               size={20}
               strokeWidth={1.5}
             />
-            <Text className="native:text-lg text-foreground">Edit</Text>
+            <Text className="native:text-lg font-normal text-destructive">Delete</Text>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="gap-4"
-            onPress={() => router.push(`/(screens)/playlists/${item.id}/view`)}>
-            <Icon
-              as={ViewIcon}
-              className="text-foreground"
-              size={20}
-              strokeWidth={1.5}
-            />
-            <Text className="native:text-lg text-foreground">View</Text>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-
-        <DropdownMenuSeparator />
-
-        <AlertDialog>
-          <DropdownMenuItem>
-            <AlertDialogTrigger asChild>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <AlertDialog
+        open={isAlertOpen}
+        onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <Text>This will delete the </Text>
+              <Text
+                className="font-semibold text-destructive"
+                numberOfLines={1}>
+                “{item.title}”
+              </Text>
+              <Text> playlist permanently.</Text>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              <Text>Cancel</Text>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
               <Button
-                style={{ margin: -8 }}
-                className="w-full flex-1 flex-row justify-start gap-4 rounded-sm p-2"
-                size="unset"
-                variant="ghost">
-                <Icon
-                  as={TrashIcon}
-                  className="text-destructive"
-                  size={20}
-                  strokeWidth={1.5}
-                />
-                <Text className="native:text-lg font-normal text-destructive">Delete</Text>
+                variant="destructive"
+                onPress={handleDelete}>
+                <Text>Delete</Text>
               </Button>
-            </AlertDialogTrigger>
-          </DropdownMenuItem>
-
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                <Text>This will delete the </Text>
-                <Text
-                  className="font-semibold text-destructive"
-                  numberOfLines={1}>
-                  “{item.title}”
-                </Text>
-                <Text> playlist permanently.</Text>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>
-                <Text>Cancel</Text>
-              </AlertDialogCancel>
-              <AlertDialogAction asChild>
-                <Button
-                  variant="destructive"
-                  onPress={handleDelete}>
-                  <Text>Delete</Text>
-                </Button>
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

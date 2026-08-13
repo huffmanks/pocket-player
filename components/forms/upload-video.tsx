@@ -14,6 +14,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { cleanupCacheFile } from "@/lib/app-files";
 import { VIDEOS_DIR } from "@/lib/constants";
 import { errorHandler } from "@/lib/error-handler";
 import { useSecurityStore, useVideoStore } from "@/lib/store";
@@ -86,13 +87,6 @@ export default function UploadForm() {
     name: "videos",
     defaultValue: [],
   });
-
-  function cleanupCacheFile(uri: string) {
-    try {
-      const file = new File(uri);
-      if (file.exists) file.delete();
-    } catch (_error) {}
-  }
 
   async function selectVideoFiles(
     setVideoFields: (
@@ -282,9 +276,9 @@ export default function UploadForm() {
       });
 
       promise.finally(() => {
-        handleReset();
         isSubmittingRef.current = false;
         setIsSubmitting(false);
+        handleReset();
       });
     },
     [handleReset, uploadVideos]

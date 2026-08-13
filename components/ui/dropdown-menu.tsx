@@ -5,13 +5,38 @@ import * as DropdownMenuPrimitive from "@rn-primitives/dropdown-menu";
 import { CheckIcon, ChevronDownIcon, ChevronRightIcon, ChevronUpIcon } from "lucide-react-native";
 import { FadeIn } from "react-native-reanimated";
 
+import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import { Icon } from "@/components/ui/icon";
 import { NativeOnlyAnimatedView } from "@/components/ui/native-only-animated-view";
 import { TextClassContext } from "@/components/ui/text";
 
-const DropdownMenu = DropdownMenuPrimitive.Root;
+function DropdownMenuAutoDismiss() {
+  const { open, onOpenChange } = DropdownMenuPrimitive.useRootContext();
+  const dismissAll = useAppStore((state) => state.dismissAll);
+
+  React.useEffect(() => {
+    if (dismissAll && open) {
+      onOpenChange(false);
+      useAppStore.setState({ dismissAll: false });
+    }
+  }, [dismissAll, open, onOpenChange]);
+
+  return null;
+}
+
+function DropdownMenu({
+  children,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
+  return (
+    <DropdownMenuPrimitive.Root {...props}>
+      <DropdownMenuAutoDismiss />
+      {children}
+    </DropdownMenuPrimitive.Root>
+  );
+}
 
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 

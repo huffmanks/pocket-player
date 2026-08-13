@@ -24,7 +24,12 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
 
   const { dismissAll } = useBottomSheetModal();
 
-  const isAppReady = useAppStore((state) => state.isAppReady);
+  const { isAppReady, triggerDismissAll } = useAppStore(
+    useShallow((state) => ({
+      isAppReady: state.isAppReady,
+      triggerDismissAll: state.triggerDismissAll,
+    }))
+  );
   const { lastVisitedPath, previousVisitedPath } = useSettingsStore(
     useShallow((state) => ({
       lastVisitedPath: state.lastVisitedPath,
@@ -58,8 +63,6 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
       if (nextAppState === "background") {
         backgroundTimestamp.current = Date.now();
       } else if (nextAppState === "active") {
-        dismissAll();
-
         if (backgroundTimestamp.current) {
           const elapsedTime = Date.now() - backgroundTimestamp.current;
           if (elapsedTime > lockInterval) {
@@ -73,8 +76,21 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
 
       appState.current = nextAppState;
     },
-    [dismissAll, enablePasscode, isLockDisabled, lockInterval, passcode, router, setIsLocked]
+    [enablePasscode, isLockDisabled, lockInterval, passcode, router, setIsLocked]
   );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "active") {
+        dismissAll();
+        triggerDismissAll();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [dismissAll, triggerDismissAll]);
 
   useEffect(() => {
     if (!isLockable || isLockDisabled) return;

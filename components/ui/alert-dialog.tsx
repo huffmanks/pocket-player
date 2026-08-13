@@ -4,13 +4,35 @@ import { Platform, View, type ViewProps } from "react-native";
 import * as AlertDialogPrimitive from "@rn-primitives/alert-dialog";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 
+import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import { buttonTextVariants, buttonVariants } from "@/components/ui/button";
 import { NativeOnlyAnimatedView } from "@/components/ui/native-only-animated-view";
 import { TextClassContext } from "@/components/ui/text";
 
-const AlertDialog = AlertDialogPrimitive.Root;
+const AlertDialog = ({
+  open,
+  onOpenChange,
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Root>) => {
+  const dismissAll = useAppStore((state) => state.dismissAll);
+
+  React.useEffect(() => {
+    if (dismissAll && open) {
+      onOpenChange?.(false);
+      useAppStore.setState({ dismissAll: false });
+    }
+  }, [dismissAll, open, onOpenChange]);
+
+  return (
+    <AlertDialogPrimitive.Root
+      open={open}
+      onOpenChange={onOpenChange}
+      {...props}
+    />
+  );
+};
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
 

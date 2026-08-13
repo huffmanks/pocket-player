@@ -1,4 +1,4 @@
-import { Directory, Paths } from "expo-file-system";
+import { Directory, File, Paths } from "expo-file-system";
 
 import { VIDEOS_DIR } from "@/lib/constants";
 import { formatFileSize } from "@/lib/utils";
@@ -27,7 +27,7 @@ function getFileType(fileName: string): FileType {
   return "other";
 }
 
-export function parseFilePath(uri: string) {
+function parseFilePath(uri: string) {
   if (!uri) {
     return { directoryPath: "", fullName: "", nameWithoutExtension: "", extension: "" };
   }
@@ -99,6 +99,13 @@ async function scanDirectoryForMedia(dir: Directory): Promise<FileItem[]> {
   } catch (_error) {}
 
   return items;
+}
+
+export function cleanupCacheFile(uri: string) {
+  try {
+    const file = new File(uri);
+    if (file.exists) file.delete();
+  } catch (_error) {}
 }
 
 export async function getAllAppFiles(): Promise<{

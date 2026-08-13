@@ -4,16 +4,18 @@
 
 - [ ] Watch screens
   - [ ] Add a button or dropdown to go to edit video screen.
-- [ ] Playlists and ID view screen
-  - [-] On fresh app load if navigating to this route for first time, it flickers empty state at beginning.
-  - [ ] View id page doesnt look great when loading.
+- [x] Playlists and ID view screen
+  - [x] On fresh app load if navigating to this route for first time, it flickers empty state at beginning.
+  - [x] View id page doesnt look great when loading.
 
 ## Issues
 
-- [-] Watch playlist broken.
+- [x] Watch playlist broken.
+- [x] On upload success/fail clear imports/reset.
+- [x] Dismiss dropdown if item triggered an alert dialog dropdown stays open.
 - [ ] Coming back from an inactive/closed app state:
   - [ ] Sometimes you have to double swipe right to go back.
-  - [ ] Ensure all dropdowns/bottomsheets/combobox/select/alert dialogs auto dismiss.
+  - [x] Ensure all dropdowns/alert dialogs auto dismiss.
 
 ## New features
 

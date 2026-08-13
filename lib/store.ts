@@ -44,6 +44,8 @@ type AppStoreState = {
   isAppReady: boolean;
   setIsAppStartUp: (bool: boolean) => void;
   setIsAppReady: (bool: boolean) => void;
+  dismissAll: boolean;
+  triggerDismissAll: () => void;
 };
 
 export const useAppStore = create<AppStoreState>((set) => ({
@@ -51,6 +53,8 @@ export const useAppStore = create<AppStoreState>((set) => ({
   isAppReady: false,
   setIsAppStartUp: (bool) => set({ isAppStartUp: bool }),
   setIsAppReady: (bool) => set({ isAppReady: bool }),
+  dismissAll: false,
+  triggerDismissAll: () => set({ dismissAll: true }),
 }));
 
 type VideoStoreState = {
@@ -477,7 +481,7 @@ const initialSettingsStoreState: SettingsStoreState = {
   sortTitleOrder: "asc",
   scrollIndex: 0,
   lastVisitedPath: "/",
-  previousVisitedPath: "/upload",
+  previousVisitedPath: "/",
   videoProgress: {},
 };
 
