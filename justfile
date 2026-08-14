@@ -114,6 +114,7 @@ release-github:
 
     gh release create "v{{ APP_VERSION }}" \
         "builds/{{ APP_NAME }}-v{{ APP_VERSION }}-universal.apk" \
+        "builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab" \
         --title "{{ APP_NAME }} v{{ APP_VERSION }}" \
         --notes-file release-notes.txt
 
