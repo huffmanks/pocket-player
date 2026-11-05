@@ -7,7 +7,7 @@ import GoBack from "@/components/go-back";
 import HeaderItems from "@/components/header-items";
 
 export const unstable_settings = {
-  anchor: "(tabs)",
+  anchor: "lock",
 };
 
 export default function ScreensLayout() {

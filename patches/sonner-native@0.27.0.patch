@@ -1,0 +1,52 @@
+diff --git a/src/gestures.tsx b/src/gestures.tsx
+index a27988c3740c6a15165dfc2aa72d66b7fada1899..7c8ec0a7853fb1bc629938c34448791ba0bd2098 100644
+--- a/src/gestures.tsx
++++ b/src/gestures.tsx
+@@ -165,30 +165,23 @@ export const ToastSwipeHandler: React.FC<
+   });
+ 
+   const isAndroid = Platform.OS === 'android';
+-  const animatedStyle = useAnimatedStyle(() => {
+-    const aStyle: ViewStyle = {
+-      transform: [
+-        direction === 'left'
+-          ? { translateX: translate.value }
+-          : {
+-              translateY:
+-                translate.value * (position === 'bottom-center' ? -1 : 1),
+-            },
+-      ],
+-    };
+-
+-    if (isAndroid) {
+-      aStyle.opacity = 1;
+-    } else {
+-      aStyle.opacity = interpolate(
+-        translate.value,
+-        [0, direction === 'left' ? -windowWidth : -60],
+-        [1, 0]
+-      );
+-    }
+-
+-    return aStyle;
+-  }, [direction, translate, windowWidth]);
++  const animatedStyle = useAnimatedStyle(() => ({
++    transform: [
++      direction === "left"
++        ? { translateX: translate.value }
++        : {
++            translateY:
++              translate.value * (position === "bottom-center" ? -1 : 1),
++          },
++    ],
++    opacity: isAndroid
++      ? 1
++      : interpolate(
++          translate.value,
++          [0, direction === "left" ? -windowWidth : -60],
++          [1, 0]
++        ),
++  }));
+ 
+   return (
+     <GestureDetector gesture={Gesture.Race(tap, pan)}>
