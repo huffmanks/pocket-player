@@ -32,7 +32,7 @@ export default function SearchBar({
   handleSortTitle,
 }: SearchBarProps) {
   const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
 
   const { sortDateOrder, sortTitleOrder } = useSettingsStore(
     useShallow((state) => ({

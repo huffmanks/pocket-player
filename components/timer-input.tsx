@@ -13,14 +13,14 @@ interface TimerInputProps {
   onChange: (seconds: number) => void;
 }
 
-type TextInputRef = React.ComponentRef<typeof TextInput>;
+export type TimerInputRef = React.ComponentRef<typeof TextInput>;
 
-const TimerInput = forwardRef<TextInputRef, TimerInputProps>(
+const TimerInput = forwardRef<TimerInputRef, TimerInputProps>(
   ({ value, max, disabled, onChange, ...props }, ref) => {
     const [numericInput, setNumericInput] = useState(formatTimerInputDisplay(value));
     const [isEditing, setIsEditing] = useState(false);
 
-    const inputRef = useRef<TextInputRef | null>(null);
+    const inputRef = useRef<TimerInputRef | null>(null);
     useImperativeHandle(ref, () => inputRef.current!);
 
     useEffect(() => {

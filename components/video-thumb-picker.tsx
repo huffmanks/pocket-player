@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { VideoThumbnail, VideoView, useVideoPlayer } from "expo-video";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { TextInput, View } from "react-native";
+import { View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
 import { LockIcon, LockOpenIcon } from "lucide-react-native";
@@ -18,7 +18,7 @@ import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { SLIDER_THEME } from "@/lib/theme";
 import { getClampedDelta } from "@/lib/utils";
 
-import TimerInput from "@/components/timer-input";
+import TimerInput, { TimerInputRef } from "@/components/timer-input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 
@@ -47,7 +47,7 @@ const VideoThumbPicker = forwardRef<VideoThumbPickerHandle, VideoThumbPickerProp
     const [progress, setProgress] = useState(initialTime / videoInfo.duration);
 
     const videoRef = useRef<VideoView | null>(null);
-    const inputRef = useRef<TextInput>(null);
+    const inputRef = useRef<TimerInputRef>(null);
 
     const { colorScheme, isDarkColorScheme } = useColorScheme();
 

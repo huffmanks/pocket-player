@@ -72,7 +72,7 @@ function Text({
   variant = "default",
   ...props
 }: React.ComponentProps<typeof RNText> &
-  React.RefAttributes<typeof RNText> &
+  React.RefAttributes<React.ComponentRef<typeof RNText>> &
   TextVariantProps & {
     asChild?: boolean;
   }) {

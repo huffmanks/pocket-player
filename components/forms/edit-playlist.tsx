@@ -209,7 +209,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
             variant="brand"
             size="lg"
             className="flex w-full flex-row items-center justify-center"
-            onPress={form.handleSubmit(onSubmit)}>
+            onPress={() => form.handleSubmit(onSubmit)()}>
             <Icon
               as={SaveIcon}
               className="text-white"

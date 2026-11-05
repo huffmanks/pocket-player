@@ -2,7 +2,7 @@ import { File } from "expo-file-system";
 import type { Href } from "expo-router";
 
 import { and, count, eq, inArray, notInArray } from "drizzle-orm";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 
@@ -17,19 +17,19 @@ import { CreatePlaylistFormData } from "@/components/forms/create-playlist";
 import { EditPlaylistFormData } from "@/components/forms/edit-playlist";
 import { UploadVideosFormData } from "@/components/forms/upload-video";
 
-const settingsStorage = new MMKV({ id: "settings" });
-const securityStorage = new MMKV({ id: "security", encryptionKey: "your-encryption-key" });
+const settingsStorage = createMMKV({ id: "settings" });
+const securityStorage = createMMKV({ id: "security", encryptionKey: "your-encryption-key" });
 
 const settingsZustandStorage: StateStorage = {
   setItem: (key, value) => settingsStorage.set(key, value),
   getItem: (key) => settingsStorage.getString(key) ?? null,
-  removeItem: (key) => settingsStorage.delete(key),
+  removeItem: (key) => settingsStorage.remove(key),
 };
 
 const securityZustandStorage: StateStorage = {
   setItem: (key, value) => securityStorage.set(key, value),
   getItem: (key) => securityStorage.getString(key) ?? null,
-  removeItem: (key) => securityStorage.delete(key),
+  removeItem: (key) => securityStorage.remove(key),
 };
 
 type DatabaseStore = {
@@ -135,12 +135,16 @@ export const useVideoStore = create<VideoStoreState>(() => ({
         return { status: "error", message: "Video not found." };
       }
 
-      [deletedVideo.videoUri, deletedVideo?.thumbUri].forEach((uri) => {
+      for (const uri of [deletedVideo.videoUri, deletedVideo?.thumbUri]) {
         if (uri) {
-          const file = new File(uri);
-          if (file.exists) file.delete();
+          try {
+            const file = new File(uri);
+            if (file.exists) {
+              await file.delete();
+            }
+          } catch (_error) {}
         }
-      });
+      }
 
       const [{ count: totalVideos }] = await db.select({ count: count() }).from(videos);
 
@@ -468,6 +472,7 @@ type SettingsStoreActions = {
   setScrollIndex: (index: number) => void;
   setLastVisitedPath: (path: Href) => void;
   setVideoProgress: (videoId: string, time: number) => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
   reset: () => void;
 };
 
@@ -516,15 +521,14 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
         set((state) => ({
           videoProgress: { ...state.videoProgress, [videoId]: time },
         })),
+      setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
       reset: () => set(initialSettingsStoreState),
     }),
     {
       name: "settings-store",
       storage: createJSONStorage(() => settingsZustandStorage),
       onRehydrateStorage: () => (state) => {
-        if (state) {
-          state._hasHydrated = true;
-        }
+        state?.setHasHydrated(true);
       },
     }
   )

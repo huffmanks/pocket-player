@@ -9,12 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 
 export type SettingId =
-  | "autoplay"
-  | "enablePasscode"
-  | "loop"
-  | "mute"
-  | "isNativeControls"
-  | "overrideOrientation";
+  "autoplay" | "enablePasscode" | "loop" | "mute" | "isNativeControls" | "overrideOrientation";
 
 interface SettingSwitchProps {
   id: SettingId;

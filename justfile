@@ -19,6 +19,10 @@ login:
 credentials:
     pnpx eas-cli credentials
 
+# Generate .env from example.env and EAS credentials
+setup-env:
+    @jq -r '"KEYSTORE=\(.android.keystore.keystorePath)\nKEYSTORE_PASS=\(.android.keystore.keystorePassword)\nKEY_ALIAS=\(.android.keystore.keyAlias)\nKEY_PASS=\(.android.keystore.keyPassword)"' credentials.json > .env
+
 # --- ENVIRONMENT & DEVICE CONFIGURATION ---
 
 # Print exact toolchain, SDKs and runtime versions driving current builds

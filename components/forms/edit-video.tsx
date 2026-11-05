@@ -58,7 +58,7 @@ const formSchema = z.object({
   orientation: z.object(
     { value: z.string(), label: z.string() },
     {
-      invalid_type_error: "Please select a favorite email.",
+      error: "Please select a favorite email.",
     }
   ),
   isFavorite: z.boolean(),
@@ -170,7 +170,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
         if (tempThumbFile && finalThumbFile) {
           if (finalThumbFile.exists) {
-            finalThumbFile.delete();
+            await finalThumbFile.delete();
           }
           await tempThumbFile.move(finalThumbFile);
         }
@@ -184,7 +184,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         }
       } catch (error) {
         if (tempThumbFile?.exists) {
-          tempThumbFile.delete();
+          await tempThumbFile.delete();
         }
 
         toast.error(errorHandler(error));

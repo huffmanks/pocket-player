@@ -175,7 +175,7 @@ export default function CreatePasscodeForm() {
           disabled={isSubmitting}
           variant="brand"
           size="lg"
-          onPress={form.handleSubmit(onSubmit)}>
+          onPress={() => form.handleSubmit(onSubmit)}>
           <View className="flex-row items-center gap-2">
             <Icon
               as={KeyRoundIcon}

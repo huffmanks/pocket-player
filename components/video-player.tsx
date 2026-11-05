@@ -77,11 +77,15 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   } = useVideoPlayerControls(memoizedVideoSources);
 
   function handleGoBack() {
+    const lastPathname =
+      typeof lastVisitedPath === "string" ? lastVisitedPath : lastVisitedPath.pathname;
+
     if (router.canGoBack()) {
       router.back();
-    } else if (lastVisitedPath.startsWith("/playlists")) {
+    }
+    if (lastPathname.startsWith("/playlists")) {
       router.dismissTo("/(tabs)/playlists");
-    } else if (lastVisitedPath.startsWith("/favorites")) {
+    } else if (lastPathname.startsWith("/favorites")) {
       router.dismissTo("/(tabs)/favorites");
     } else {
       router.dismissTo("/(tabs)/videos");

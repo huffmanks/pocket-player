@@ -1,0 +1,15 @@
+diff --git a/dist/runtime/components.js b/dist/runtime/components.js
+index 7bb1ae4e2cb50301e5b63687c572509e70c921ba..7cad0140d2b50b7a4ea292f9b5e6089098bb0267 100644
+--- a/dist/runtime/components.js
++++ b/dist/runtime/components.js
+@@ -31,10 +31,6 @@ const api_1 = require("./api");
+     columnWrapperClassName: "columnWrapperStyle",
+     contentContainerClassName: "contentContainerStyle",
+ });
+-(0, api_1.remapProps)(react_native_1.ImageBackground, {
+-    className: "style",
+-    imageClassName: "imageStyle",
+-});
+ (0, api_1.remapProps)(react_native_1.KeyboardAvoidingView, {
+     className: "style",
+     contentContainerClassName: "contentContainerStyle",

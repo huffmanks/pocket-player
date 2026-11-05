@@ -28,7 +28,7 @@ interface ComboboxOption {
 }
 
 const Combobox = React.forwardRef<
-  View,
+  React.ComponentRef<typeof Pressable>,
   Omit<React.ComponentPropsWithoutRef<typeof Button>, "children"> & {
     items: ComboboxOption[];
     includeSearch?: boolean;

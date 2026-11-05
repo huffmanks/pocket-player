@@ -3,12 +3,13 @@ import { Platform, TextInput } from "react-native";
 import { cn } from "@/lib/utils";
 
 function Textarea({
+  ref,
   className,
   multiline = true,
   numberOfLines = Platform.select({ web: 2, native: 8 }),
   placeholderClassName,
   ...props
-}: React.ComponentProps<typeof TextInput> & React.RefAttributes<TextInput>) {
+}: React.ComponentProps<typeof TextInput>) {
   return (
     <TextInput
       className={cn(

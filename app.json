@@ -3,7 +3,7 @@
     "name": "Pocket Player",
     "slug": "pocket-player",
     "scheme": "pocket-player",
-    "version": "1.7.0",
+    "version": "1.7.1",
     "orientation": "portrait",
     "icon": "./assets/icons/ios_app_logo_marketing.png",
     "userInterfaceStyle": "dark",

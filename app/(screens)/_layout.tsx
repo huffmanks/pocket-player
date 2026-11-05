@@ -6,6 +6,10 @@ import { NAV_THEME } from "@/lib/theme";
 import GoBack from "@/components/go-back";
 import HeaderItems from "@/components/header-items";
 
+export const unstable_settings = {
+  anchor: "(tabs)",
+};
+
 export default function ScreensLayout() {
   const { colorScheme } = useColorScheme();
 

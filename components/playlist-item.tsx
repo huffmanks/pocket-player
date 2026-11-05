@@ -1,4 +1,3 @@
-// import { Image } from "expo-image";
 import { memo, useMemo } from "react";
 import { Image, Pressable, View } from "react-native";
 
