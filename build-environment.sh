@@ -7,13 +7,34 @@ SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
 node_version="$(node -v 2>/dev/null | sed 's/^v//' || echo "Not found")"
 pnpm_version="$(pnpm -v 2>/dev/null || echo "Not found")"
 java_version="$(java -version 2>&1 | head -n1 | sed -E 's/.*"([^"]+)".*/\1/' || echo "Not found")"
-eas_version="$(pnpx eas-cli --version 2>/dev/null | sed -E 's|.*eas-cli/([0-9]+\.[0-9]+\.[0-9]+).*|\1|' || echo "Not found")"
+eas_version="$(eas --version 2>/dev/null | sed -E 's|.*eas-cli/([0-9]+\.[0-9]+\.[0-9]+).*|\1|' || echo "Not found")"
 bundletool_version="$(bundletool version 2>/dev/null || echo "Not found")"
 
-compile_sdk="$(grep '^android.compileSdkVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 || true)"
-target_sdk="$(grep '^android.targetSdkVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 || true)"
-min_sdk="$(grep '^android.minSdkVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 || true)"
-build_tools="$(grep '^android.buildToolsVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 || true)"
+compile_sdk="$(grep -E '^(android\.)?compileSdkVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true)"
+target_sdk="$(grep -E '^(android\.)?targetSdkVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true)"
+min_sdk="$(grep -E '^(android\.)?minSdkVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true)"
+build_tools="$(grep -E '^(android\.)?buildToolsVersion=' android/gradle.properties 2>/dev/null | cut -d= -f2 | tr -d '[:space:]' || true)"
+
+if [[ -z "$compile_sdk" ]]; then
+    compile_sdk="$(grep -oE 'compileSdkVersion\s*[=:]\s*[0-9]+|compileSdkVersion\s+[0-9]+' android/build.gradle 2>/dev/null | grep -oE '[0-9]+' | head -n1 || true)"
+fi
+if [[ -z "$target_sdk" ]]; then
+    target_sdk="$(grep -oE 'targetSdkVersion\s*[=:]\s*[0-9]+|targetSdkVersion\s+[0-9]+' android/build.gradle 2>/dev/null | grep -oE '[0-9]+' | head -n1 || true)"
+fi
+if [[ -z "$min_sdk" ]]; then
+    min_sdk="$(grep -oE 'minSdkVersion\s*[=:]\s*[0-9]+|minSdkVersion\s+[0-9]+' android/build.gradle 2>/dev/null | grep -oE '[0-9]+' | head -n1 || true)"
+fi
+
+if [[ -z "$compile_sdk" && -f "app.json" ]]; then
+    compile_sdk="$(node -p "try { const c = require('./app.json'); c.expo?.android?.compileSdkVersion || '' } catch(e) { '' }" 2>/dev/null || true)"
+    target_sdk="$(node -p "try { const c = require('./app.json'); c.expo?.android?.targetSdkVersion || '' } catch(e) { '' }" 2>/dev/null || true)"
+    min_sdk="$(node -p "try { const c = require('./app.json'); c.expo?.android?.minSdkVersion || '' } catch(e) { '' }" 2>/dev/null || true)"
+fi
+
+compile_sdk="${compile_sdk:-Not configured}"
+target_sdk="${target_sdk:-Not configured}"
+min_sdk="${min_sdk:-Not configured}"
+build_tools="${build_tools:-Not configured}"
 
 sdk_platforms="Not found"
 sdk_sources="Not found"

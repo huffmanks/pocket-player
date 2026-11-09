@@ -1,31 +1,31 @@
 toolchain:
     node: "24.18.0"
-    pnpm: "11.19.0"
-    java: "17.0.20"
-    easCli: "21.4.0"
+    pnpm: "12.18.0"
+    java: "17.0.21.0.3"
+    easCli: "27.5.0"
     bundletool: "1.18.3"
 
 project:
-    compileSdkVersion: "34"
-    targetSdkVersion: "34"
-    minSdkVersion: "24"
-    buildToolsVersion: "34.0.0"
+    compileSdkVersion: "Not configured"
+    targetSdkVersion: "Not configured"
+    minSdkVersion: "Not configured"
+    buildToolsVersion: "Not configured"
 
 androidStudio:
-    version: "2026.1"
+    version: "2026.2"
 
 androidSdk:
-    platforms: "android-37.0"
-    sources: "android-37.0"
+    platforms: "android-37.0,android-37.1"
+    sources: "android-37.1"
     platformTools:
         revision: "37.0.1"
         adbVersion: "1.0.41"
-    commandLineTools: "22.0"
+    commandLineTools: "1.1.16717390"
     emulator:
-        version: "37.1.11.0"
-        buildId: "15917651"
+        version: "37.2.13.0"
+        buildId: "16740729"
         installedAvds: "Pixel_10a"
-        runningAvd: "None"
+        runningAvd: "emulator-5554 (sdk_gphone16k_arm64, API 37)"
     cmake: "3.22.1"
     ndk: "27.1.12297006"
 
