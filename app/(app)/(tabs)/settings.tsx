@@ -220,7 +220,7 @@ export default function SettingsScreen() {
             variant="secondary"
             size="lg"
             className="mt-2 flex flex-row items-center justify-center gap-3"
-            onPress={() => router.push("/(screens)/settings/passcode")}>
+            onPress={() => router.push("/(app)/(screens)/settings/passcode")}>
             <Icon
               as={KeyRoundIcon}
               className="text-foreground"
@@ -285,7 +285,7 @@ export default function SettingsScreen() {
             <Button
               size="lg"
               className="flex flex-row items-center justify-center gap-3"
-              onPress={() => router.push("/(screens)/settings/file-manager")}>
+              onPress={() => router.push("/(app)/(screens)/settings/file-manager")}>
               <Icon
                 as={FolderClosedIcon}
                 className="text-background"

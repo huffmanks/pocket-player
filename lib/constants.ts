@@ -3,7 +3,7 @@ import type { Href } from "expo-router";
 
 import { SettingId } from "@/components/setting-switch";
 
-export const DEFAULT_FALLBACK: Href = "/(tabs)/videos";
+export const DEFAULT_FALLBACK: Href = "/(app)/(tabs)/videos";
 
 export const VIDEOS_DIR = new Directory(Paths.document, "videos");
 export const BASE_LOGO = require("@/assets/icons/base_logo.png");
@@ -25,12 +25,11 @@ export const ERROR_SHAKE_TIME = 80;
 
 export const EXCLUDED_PATHS = [
   "/settings/passcode",
-  "/(screens)/settings/passcode",
+  "/(app)/(screens)/settings/passcode",
   "/lock",
-  "/(screens)/lock",
   "/",
   "/index",
-  "/(tabs)/index",
+  "/(app)/(tabs)/index",
 ] as Href[];
 
 export const settingsSwitches: { id: SettingId; label: string; description?: string }[] = [

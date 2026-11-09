@@ -236,7 +236,7 @@ function ListEmptyComponent({ videosExist }: { videosExist: boolean }) {
         <>
           <Text className="mb-12">Your videos will be displayed here.</Text>
           <Link
-            href="/(tabs)/upload"
+            href="/(app)/(tabs)/upload"
             asChild>
             <Button
               size="lg"

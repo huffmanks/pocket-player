@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 import { useShallow } from "zustand/react/shallow";
 
-import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
+import { type VideoMetaWithPlaylists } from "@/app/(app)/(tabs)/videos";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { BOTTOM_TABS_OFFSET } from "@/lib/constants";
 import { errorHandler } from "@/lib/error-handler";
@@ -155,7 +155,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
           <DropdownMenuGroup>
             <DropdownMenuItem
               className="gap-4"
-              onPress={() => router.push(`/(screens)/videos/${item.id}/watch`)}>
+              onPress={() => router.push(`/(app)/(screens)/videos/${item.id}/watch`)}>
               <Icon
                 as={TvIcon}
                 className="text-foreground"
@@ -166,7 +166,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
             </DropdownMenuItem>
             <DropdownMenuItem
               className="gap-4"
-              onPress={() => router.push(`/(screens)/videos/${item.id}/edit`)}>
+              onPress={() => router.push(`/(app)/(screens)/videos/${item.id}/edit`)}>
               <Icon
                 as={PencilIcon}
                 className="text-foreground"

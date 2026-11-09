@@ -20,7 +20,7 @@ export default function IndexScreen() {
     async function hideSplashScreen() {
       try {
         if (isLocked) {
-          router.replace("/(screens)/lock");
+          router.replace("/lock");
           return;
         }
 

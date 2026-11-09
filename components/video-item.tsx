@@ -5,7 +5,7 @@ import { Pressable, View } from "react-native";
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
-import { type VideoMetaWithPlaylists } from "@/app/(tabs)/videos";
+import { type VideoMetaWithPlaylists } from "@/app/(app)/(tabs)/videos";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { VIDEO_PLACEHOLDER } from "@/lib/constants";
 import { formatDateString } from "@/lib/utils";
@@ -38,7 +38,7 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
       className="mb-8 flex-row items-start gap-4"
       entering={FadeIn.duration(250)}
       exiting={FadeOut.duration(250)}>
-      <Pressable onPress={() => router.push(`/(screens)/videos/${item.id}/watch`)}>
+      <Pressable onPress={() => router.push(`/(app)/(screens)/videos/${item.id}/watch`)}>
         <View
           className="overflow-hidden rounded-md bg-card"
           style={{ width: 225, height: 125 }}>

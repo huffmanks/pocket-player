@@ -6,10 +6,6 @@ import { NAV_THEME } from "@/lib/theme";
 import GoBack from "@/components/go-back";
 import HeaderItems from "@/components/header-items";
 
-export const unstable_settings = {
-  anchor: "lock",
-};
-
 export default function ScreensLayout() {
   const { colorScheme } = useColorScheme();
 
@@ -27,6 +23,10 @@ export default function ScreensLayout() {
         options={{
           headerShown: false,
           animation: "fade",
+          headerStyle: {
+            backgroundColor: NAV_THEME[colorScheme].background,
+          },
+          headerRight: () => <HeaderItems />,
         }}
       />
       <Stack.Screen
@@ -35,9 +35,8 @@ export default function ScreensLayout() {
           title: "Playlist",
           animation: "fade",
           headerBackVisible: false,
-          presentation: "modal",
           gestureEnabled: true,
-          headerLeft: () => <GoBack fallbackHref="/(tabs)/playlists" />,
+          headerLeft: () => <GoBack fallbackHref="/(app)/(tabs)/playlists" />,
         }}
       />
       <Stack.Screen
@@ -46,9 +45,8 @@ export default function ScreensLayout() {
           title: "Edit playlist",
           animation: "fade_from_bottom",
           headerBackVisible: false,
-          presentation: "modal",
           gestureEnabled: true,
-          headerLeft: () => <GoBack fallbackHref="/(tabs)/playlists" />,
+          headerLeft: () => <GoBack fallbackHref="/(app)/(tabs)/playlists" />,
         }}
       />
       <Stack.Screen
@@ -57,9 +55,8 @@ export default function ScreensLayout() {
           title: "Create playlist",
           animation: "fade_from_bottom",
           headerBackVisible: false,
-          presentation: "modal",
           gestureEnabled: true,
-          headerLeft: () => <GoBack fallbackHref="/(tabs)/playlists" />,
+          headerLeft: () => <GoBack fallbackHref="/(app)/(tabs)/playlists" />,
         }}
       />
       <Stack.Screen
@@ -75,16 +72,8 @@ export default function ScreensLayout() {
           title: "Edit video",
           animation: "fade_from_bottom",
           headerBackVisible: false,
-          presentation: "modal",
           gestureEnabled: true,
-          headerLeft: () => <GoBack fallbackHref="/(tabs)/videos" />,
-        }}
-      />
-      <Stack.Screen
-        name="lock"
-        options={{
-          headerShown: false,
-          animation: "fade",
+          headerLeft: () => <GoBack fallbackHref="/(app)/(tabs)/videos" />,
         }}
       />
       <Stack.Screen
@@ -93,9 +82,8 @@ export default function ScreensLayout() {
           title: "File Manager",
           animation: "fade_from_bottom",
           headerBackVisible: false,
-          presentation: "modal",
           gestureEnabled: true,
-          headerLeft: () => <GoBack fallbackHref="/(tabs)/settings" />,
+          headerLeft: () => <GoBack fallbackHref="/(app)/(tabs)/settings" />,
         }}
       />
       <Stack.Screen
@@ -104,9 +92,8 @@ export default function ScreensLayout() {
           title: "Passcode",
           animation: "fade_from_bottom",
           headerBackVisible: false,
-          presentation: "modal",
           gestureEnabled: true,
-          headerLeft: () => <GoBack fallbackHref="/(tabs)/settings" />,
+          headerLeft: () => <GoBack fallbackHref="/(app)/(tabs)/settings" />,
         }}
       />
     </Stack>

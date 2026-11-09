@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner-native";
 import * as z from "zod";
 
-import { VideoData } from "@/app/(screens)/playlists/create";
+import { VideoData } from "@/app/(app)/(screens)/playlists/create";
 import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore } from "@/lib/store";
 
@@ -66,7 +66,7 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
 
       if (status === "success") {
         toast.success(`${values.title} playlist created successfully.`);
-        router.push("/(tabs)/playlists");
+        router.push("/(app)/(tabs)/playlists");
       } else {
         toast.error(message);
       }
@@ -134,7 +134,9 @@ export default function CreatePlaylistForm({ videoData }: CreatePlaylistFormProp
           disabled={isSubmitting}
           variant="brand"
           size="lg"
-          onPress={() => form.handleSubmit(onSubmit)}>
+          onPress={() => {
+            void form.handleSubmit(onSubmit)();
+          }}>
           <View className="flex-row items-center gap-3">
             <Icon
               as={ListMusicIcon}

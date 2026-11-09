@@ -109,7 +109,7 @@ function ListEmptyComponent({ playlistId }: { playlistId: string }) {
       </Text>
       <Text className="mb-8 text-muted-foreground">Add some videos to this playlist.</Text>
       <Link
-        href={`/(screens)/playlists/${playlistId}/edit`}
+        href={`/(app)/(screens)/playlists/${playlistId}/edit`}
         asChild>
         <Button
           size="lg"

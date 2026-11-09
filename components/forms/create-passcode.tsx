@@ -54,7 +54,7 @@ export default function CreatePasscodeForm() {
 
       toast.success("Passcode set successfully!");
 
-      router.dismissTo("/(tabs)/settings");
+      router.dismissTo("/(app)/(tabs)/settings");
     } catch (error) {
       toast.error(errorHandler(error));
     } finally {
@@ -175,7 +175,9 @@ export default function CreatePasscodeForm() {
           disabled={isSubmitting}
           variant="brand"
           size="lg"
-          onPress={() => form.handleSubmit(onSubmit)}>
+          onPress={() => {
+            void form.handleSubmit(onSubmit)();
+          }}>
           <View className="flex-row items-center gap-2">
             <Icon
               as={KeyRoundIcon}

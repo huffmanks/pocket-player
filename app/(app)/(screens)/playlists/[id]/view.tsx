@@ -69,7 +69,7 @@ export default function ViewPlaylistScreen() {
 
       if (status === "success") {
         toast.error(message);
-        router.push("/(tabs)/playlists");
+        router.push("/(app)/(tabs)/playlists");
       }
     } catch (error) {
       toast.error(errorHandler(error));
@@ -129,7 +129,7 @@ export default function ViewPlaylistScreen() {
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     className="gap-4"
-                    onPress={() => router.push(`/(screens)/playlists/${id}/edit`)}>
+                    onPress={() => router.push(`/(app)/(screens)/playlists/${id}/edit`)}>
                     <Icon
                       as={PencilIcon}
                       className="text-foreground"
@@ -194,7 +194,7 @@ export default function ViewPlaylistScreen() {
       <View className="mb-1 flex-row items-center justify-center gap-2 px-2">
         <View className="flex-1">
           <Link
-            href={`/(screens)/playlists/${id}/watch`}
+            href={`/(app)/(screens)/playlists/${id}/watch`}
             asChild>
             <Button
               size="lg"

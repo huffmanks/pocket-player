@@ -78,7 +78,11 @@ export default function LockScreen() {
   }, []);
 
   const handleBiometricPress = useCallback(async () => {
-    const { success } = await LocalAuthentication.authenticateAsync();
+    const { success } = await LocalAuthentication.authenticateAsync({
+      promptMessage: "Unlock your app",
+      cancelLabel: "Use passcode",
+      disableDeviceFallback: true,
+    });
     setCode([]);
 
     if (success) {

@@ -11,7 +11,6 @@ import {
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { NAV_THEME } from "@/lib/theme";
 
-import HeaderItems from "@/components/header-items";
 import HeaderLogo from "@/components/header-logo";
 import { Icon } from "@/components/ui/icon";
 
@@ -21,12 +20,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: NAV_THEME[colorScheme].background,
-        },
         headerTitle: () => <HeaderLogo />,
-        headerRight: () => <HeaderItems />,
         tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: NAV_THEME[colorScheme].brandForeground,
         tabBarInactiveTintColor: NAV_THEME[colorScheme].text,

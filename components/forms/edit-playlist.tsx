@@ -9,7 +9,7 @@ import { toast } from "sonner-native";
 import * as z from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { EditPlaylistInfo } from "@/app/(screens)/playlists/[id]/edit";
+import { EditPlaylistInfo } from "@/app/(app)/(screens)/playlists/[id]/edit";
 import { errorHandler } from "@/lib/error-handler";
 import { usePlaylistStore } from "@/lib/store";
 
@@ -80,7 +80,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
 
       if (status === "success") {
         toast.error(message);
-        router.push("/(tabs)/playlists");
+        router.push("/(app)/(tabs)/playlists");
       }
     } catch (error) {
       toast.error(errorHandler(error));
@@ -94,7 +94,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
       await updatePlaylist({ id: editPlaylistInfo.id, values: parsedValues });
       toast.success(`${values.title} playlist updated successfully.`);
 
-      router.dismissTo(`/(screens)/playlists/${editPlaylistInfo.id}/view`);
+      router.dismissTo(`/(app)/(screens)/playlists/${editPlaylistInfo.id}/view`);
     } catch (error) {
       toast.error(errorHandler(error));
     } finally {
@@ -209,7 +209,9 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
             variant="brand"
             size="lg"
             className="flex w-full flex-row items-center justify-center"
-            onPress={() => form.handleSubmit(onSubmit)()}>
+            onPress={() => {
+              void form.handleSubmit(onSubmit)();
+            }}>
             <Icon
               as={SaveIcon}
               className="text-white"

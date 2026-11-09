@@ -68,7 +68,7 @@ function LockScreen() {
 
   function handlePress() {
     setIsLocked(true);
-    router.push("/(screens)/lock");
+    router.push("/lock");
   }
 
   return (

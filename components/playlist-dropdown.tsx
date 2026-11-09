@@ -57,7 +57,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
 
       if (status === "success") {
         toast.error(message);
-        router.push("/(tabs)/playlists");
+        router.push("/(app)/(tabs)/playlists");
       }
     } catch (error) {
       toast.error(errorHandler(error));
@@ -93,7 +93,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
             <DropdownMenuItem
               disabled={!playlistVideosExist}
               className="gap-4"
-              onPress={() => router.push(`/(screens)/playlists/${item.id}/watch`)}>
+              onPress={() => router.push(`/(app)/(screens)/playlists/${item.id}/watch`)}>
               <Icon
                 as={TvIcon}
                 className="text-foreground"
@@ -105,7 +105,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="gap-4"
-              onPress={() => router.push(`/(screens)/playlists/${item.id}/edit`)}>
+              onPress={() => router.push(`/(app)/(screens)/playlists/${item.id}/edit`)}>
               <Icon
                 as={PencilIcon}
                 className="text-foreground"
@@ -116,7 +116,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
             </DropdownMenuItem>
             <DropdownMenuItem
               className="gap-4"
-              onPress={() => router.push(`/(screens)/playlists/${item.id}/view`)}>
+              onPress={() => router.push(`/(app)/(screens)/playlists/${item.id}/view`)}>
               <Icon
                 as={ViewIcon}
                 className="text-foreground"

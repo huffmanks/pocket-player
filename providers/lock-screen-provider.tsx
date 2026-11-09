@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
 
@@ -12,8 +11,6 @@ interface LockScreenProviderProps {
 }
 
 export function LockScreenProvider({ children }: LockScreenProviderProps) {
-  const router = useRouter();
-
   const appState = useRef(AppState.currentState);
   const backgroundTimestamp = useRef<number | null>(null);
 
@@ -47,7 +44,6 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
           const elapsedTime = Date.now() - backgroundTimestamp.current;
           if (elapsedTime > lockInterval) {
             setIsLocked(true);
-            router.push("/(screens)/lock");
           }
 
           backgroundTimestamp.current = null;
@@ -64,7 +60,6 @@ export function LockScreenProvider({ children }: LockScreenProviderProps) {
       isLockable,
       lockInterval,
       passcode,
-      router,
       setIsLocked,
     ]
   );

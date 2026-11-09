@@ -84,11 +84,11 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
       router.back();
     }
     if (lastPathname.startsWith("/playlists")) {
-      router.dismissTo("/(tabs)/playlists");
+      router.dismissTo("/(app)/(tabs)/playlists");
     } else if (lastPathname.startsWith("/favorites")) {
-      router.dismissTo("/(tabs)/favorites");
+      router.dismissTo("/(app)/(tabs)/favorites");
     } else {
-      router.dismissTo("/(tabs)/videos");
+      router.dismissTo("/(app)/(tabs)/videos");
     }
   }
 

@@ -115,7 +115,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
       if (status === "success") {
         toast.error(message);
-        router.dismissTo("/(tabs)/videos");
+        router.dismissTo("/(app)/(tabs)/videos");
       }
     } catch (error) {
       toast.error(errorHandler(error));
@@ -170,7 +170,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
 
         if (tempThumbFile && finalThumbFile) {
           if (finalThumbFile.exists) {
-            await finalThumbFile.delete();
+            finalThumbFile.delete();
           }
           await tempThumbFile.move(finalThumbFile);
         }
@@ -180,11 +180,11 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         if (router.canGoBack()) {
           router.back();
         } else {
-          router.push("/(tabs)/videos");
+          router.push("/(app)/(tabs)/videos");
         }
       } catch (error) {
         if (tempThumbFile?.exists) {
-          await tempThumbFile.delete();
+          tempThumbFile.delete();
         }
 
         toast.error(errorHandler(error));

@@ -9,7 +9,7 @@ overrides:
 
 patchedDependencies:
   react-native-css-interop@0.2.7: 21d69fd7fd27377f66aed844020e51b1862835e1019b60976073e6a68f89250b
-  sonner-native@0.27.0: e2e9e1cb64ca8bcff8e66d176450ef07d5f61106e1a5a6b438d947d2ca9e9a96
+  sonner-native@0.27.0: 6ad44c6a89643e7697a8d32e301b7ef8c74f6cfa6ad9c2ad378498507c664d65
 
 importers:
 
@@ -218,7 +218,7 @@ importers:
         version: 0.13.0(@babel/core@7.29.13(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(@react-native-community/cli@20.2.0(supports-color@8.1.1)(typescript@6.0.3))(@react-native/metro-config@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)
       sonner-native:
         specifier: ^0.27.0
-        version: 0.27.0(patch_hash=e2e9e1cb64ca8bcff8e66d176450ef07d5f61106e1a5a6b438d947d2ca9e9a96)(fd21ff36b2914c0677424219f5a79d50)
+        version: 0.27.0(patch_hash=6ad44c6a89643e7697a8d32e301b7ef8c74f6cfa6ad9c2ad378498507c664d65)(fd21ff36b2914c0677424219f5a79d50)
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -12169,7 +12169,7 @@ snapshots:
 
   slugify@1.6.9: {}
 
-  sonner-native@0.27.0(patch_hash=e2e9e1cb64ca8bcff8e66d176450ef07d5f61106e1a5a6b438d947d2ca9e9a96)(fd21ff36b2914c0677424219f5a79d50):
+  sonner-native@0.27.0(patch_hash=6ad44c6a89643e7697a8d32e301b7ef8c74f6cfa6ad9c2ad378498507c664d65)(fd21ff36b2914c0677424219f5a79d50):
     dependencies:
       react: 19.3.0
       react-native: 0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(@react-native-community/cli@20.2.0(supports-color@8.1.1)(typescript@6.0.3))(@react-native/metro-config@0.88.1(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)

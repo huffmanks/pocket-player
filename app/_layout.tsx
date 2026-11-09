@@ -23,7 +23,7 @@ import { RouteTracker } from "@/components/route-tracker";
 export { ErrorBoundary } from "expo-router";
 
 export const unstable_settings = {
-  anchor: "(tabs)",
+  anchor: "(app)",
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -74,10 +74,13 @@ export default function RootLayout() {
   useEffect(() => {
     const navColorScheme = theme || colorScheme;
 
-    const { setTheme } = useSettingsStore.getState();
-    setTheme(navColorScheme);
+    if (theme !== navColorScheme) {
+      useSettingsStore.getState().setTheme(navColorScheme);
+    }
 
-    if (theme !== colorScheme) setColorScheme(navColorScheme);
+    if (colorScheme !== navColorScheme) {
+      setColorScheme(navColorScheme);
+    }
   }, [colorScheme, theme, setColorScheme]);
 
   if (!isAppReady) return null;
@@ -105,14 +108,21 @@ export default function RootLayout() {
                       : LIGHT_THEME.colors.background,
                   },
                 }}>
-                <Stack.Screen
-                  name="(screens)"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(tabs)"
-                  options={{ headerShown: false }}
-                />
+                <Stack.Protected
+                  guard={!isLocked}
+                  redirectTo="/lock">
+                  <Stack.Screen
+                    name="(app)"
+                    options={{ headerShown: false }}
+                  />
+                </Stack.Protected>
+
+                <Stack.Protected guard={isLocked}>
+                  <Stack.Screen
+                    name="lock"
+                    options={{ headerShown: false }}
+                  />
+                </Stack.Protected>
               </Stack>
             </LockScreenProvider>
           </BottomSheetModalProvider>

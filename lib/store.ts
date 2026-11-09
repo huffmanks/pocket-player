@@ -6,7 +6,7 @@ import { createMMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 
-import { EditPlaylistInfo } from "@/app/(screens)/playlists/[id]/edit";
+import { EditPlaylistInfo } from "@/app/(app)/(screens)/playlists/[id]/edit";
 import { db as drizzleDb } from "@/db/drizzle";
 import { VideoMeta, playlistVideos, playlists, videos } from "@/db/schema";
 import { FileType } from "@/lib/app-files";
@@ -140,7 +140,7 @@ export const useVideoStore = create<VideoStoreState>(() => ({
           try {
             const file = new File(uri);
             if (file.exists) {
-              await file.delete();
+              file.delete();
             }
           } catch (_error) {}
         }

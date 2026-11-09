@@ -1,33 +1,38 @@
-diff --git a/src/gestures.tsx b/src/gestures.tsx
-index a27988c3740c6a15165dfc2aa72d66b7fada1899..7c8ec0a7853fb1bc629938c34448791ba0bd2098 100644
---- a/src/gestures.tsx
-+++ b/src/gestures.tsx
-@@ -165,30 +165,23 @@ export const ToastSwipeHandler: React.FC<
-   });
+diff --git a/lib/module/gestures.js b/lib/module/gestures.js
+index 006393c2afe8dfe45719948c6df344a925e0c717..acf8fd074e30b14cc2cac9196460ceec71640dce 100644
+--- a/lib/module/gestures.js
++++ b/lib/module/gestures.js
+@@ -1,12 +1,11 @@
+ "use strict";
  
+-import * as React from 'react';
+ import { Platform, useWindowDimensions } from 'react-native';
+ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+ import Animated, { Easing, LinearTransition, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
++import { jsx as _jsx } from "react/jsx-runtime";
+ import { useToastContext } from "./context.js";
+ import { easeInOutCircFn } from "./easings.js";
+-import { jsx as _jsx } from "react/jsx-runtime";
+ export const ToastSwipeHandler = ({
+   children,
+   onRemove,
+@@ -128,21 +127,23 @@ export const ToastSwipeHandler = ({
+     }
+   });
    const isAndroid = Platform.OS === 'android';
 -  const animatedStyle = useAnimatedStyle(() => {
--    const aStyle: ViewStyle = {
--      transform: [
--        direction === 'left'
--          ? { translateX: translate.value }
--          : {
--              translateY:
--                translate.value * (position === 'bottom-center' ? -1 : 1),
--            },
--      ],
+-    const aStyle = {
+-      transform: [direction === 'left' ? {
+-        translateX: translate.value
+-      } : {
+-        translateY: translate.value * (position === 'bottom-center' ? -1 : 1)
+-      }]
 -    };
--
 -    if (isAndroid) {
 -      aStyle.opacity = 1;
 -    } else {
--      aStyle.opacity = interpolate(
--        translate.value,
--        [0, direction === 'left' ? -windowWidth : -60],
--        [1, 0]
--      );
+-      aStyle.opacity = interpolate(translate.value, [0, direction === 'left' ? -windowWidth : -60], [1, 0]);
 -    }
--
 -    return aStyle;
 -  }, [direction, translate, windowWidth]);
 +  const animatedStyle = useAnimatedStyle(() => ({
@@ -47,81 +52,34 @@ index a27988c3740c6a15165dfc2aa72d66b7fada1899..7c8ec0a7853fb1bc629938c34448791b
 +          [1, 0]
 +        ),
 +  }));
- 
-   return (
-     <GestureDetector gesture={Gesture.Race(tap, pan)}>
-diff --git a/src/toast.tsx b/src/toast.tsx
-index f55684258fb9002c9bee180dab6ae4f5326a5d04..730d93d9acabfe83a2f3362900750a2655f9e5f5 100644
---- a/src/toast.tsx
-+++ b/src/toast.tsx
-@@ -155,9 +155,9 @@ const ToastComponent = React.forwardRef<ToastRef, ToastInternalProps>(
-       wiggle: wiggleHandler,
-     }));
- 
--    const toastRef = React.useRef<
--      View & { getBoundingClientRect?: () => DOMRect }
--    >(null);
-+const toastRef = React.useRef<
-+  React.ComponentRef<typeof View> & { getBoundingClientRect?: () => DOMRect }
-+>(null);
- 
-     useToastLifecycle({
-       id,
-diff --git a/src/use-toast-animations.ts b/src/use-toast-animations.ts
-index 6da145f28a8c505e7e4326f0b6d604845c84015b..fc4402927903149a4d9536a211dd95b0a1690a06 100644
---- a/src/use-toast-animations.ts
-+++ b/src/use-toast-animations.ts
-@@ -1,5 +1,6 @@
- import * as React from 'react';
- import { useWindowDimensions } from 'react-native';
-+import type { SharedValue } from 'react-native-reanimated';
- import {
-   useAnimatedStyle,
-   useDerivedValue,
-@@ -7,7 +8,6 @@ import {
-   withRepeat,
-   withTiming,
- } from 'react-native-reanimated';
--import type { SharedValue } from 'react-native-reanimated';
- import { STACKING_ANIMATION_DURATION } from './animations';
- import { easeOutQuartFn } from './easings';
- import type { ToastPosition } from './types';
-@@ -39,7 +39,7 @@ export const useToastAnimations = ({
+   return /*#__PURE__*/_jsx(GestureDetector, {
+     gesture: Gesture.Race(tap, pan),
+     children: /*#__PURE__*/_jsx(Animated.View, {
+diff --git a/lib/module/use-toast-animations.js b/lib/module/use-toast-animations.js
+index 52e05b6a4c5e41e394ec87d8f7dbb009893d2dd1..0e7c63771cc6b651680909e0e9d2b5ac2ac44648 100644
+--- a/lib/module/use-toast-animations.js
++++ b/lib/module/use-toast-animations.js
+@@ -20,11 +20,9 @@ export const useToastAnimations = ({
+   const wiggleSharedValue = useSharedValue(1);
+   const wiggleAnimationStyle = useAnimatedStyle(() => {
      return {
-       transform: [{ scale: wiggleSharedValue.value }],
-     };
+-      transform: [{
+-        scale: wiggleSharedValue.value
+-      }]
+-    };
 -  }, [wiggleSharedValue]);
++        transform: [{ scale: wiggleSharedValue.value }],
++      };
 +  });
  
    // ScaleX: visual narrowing avoids layout-width changes that cause text rewrap
-   const { width: screenWidth } = useWindowDimensions();
-@@ -79,13 +79,15 @@ export const useToastAnimations = ({
-         { scaleX: stackScaleX.value },
-       ],
-     };
-+
-     if (toastPosition === 'bottom-center') {
-       base.bottom = 0;
-     } else {
+   const {
+@@ -63,7 +61,7 @@ export const useToastAnimations = ({
        base.top = 0;
      }
-+
      return base;
 -  }, [yPosition, toastPosition, stackScaleX]);
 +  });
- 
    const wiggle = React.useCallback(() => {
      'worklet';
-diff --git a/src/use-toast-lifecycle.ts b/src/use-toast-lifecycle.ts
-index c4a9b1a0357fb412737d8d58d9a6b329e72d676a..d9cb0962f5ba129e235fee628d41ff2d4a395331 100644
---- a/src/use-toast-lifecycle.ts
-+++ b/src/use-toast-lifecycle.ts
-@@ -6,7 +6,7 @@ import type { ToastProps } from './types';
- import { useAppStateListener } from './use-app-state';
  
- export type MeasurableToastRef = React.RefObject<
--  (View & { getBoundingClientRect?: () => DOMRect }) | null
-+  (React.ComponentRef<typeof View> & { getBoundingClientRect?: () => DOMRect }) | null
- >;
- 
- // Per-toast wiring that doesn't render anything: timer pause/resume on app
