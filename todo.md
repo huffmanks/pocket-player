@@ -4,7 +4,6 @@
 
 - [ ] passcode encryption.
 - [ ] mmkv encryptionKey use .env var.
-- [ ] check lock screen and flow "providers/lock-screen-provider.tsx,lib/get-redirect-path.ts,lib/constants.ts,lib/store.ts,components/route-tracker.ts,app/lock.tsx,app/_layout.tsx"
 
 ## UI
 

@@ -1,7 +1,7 @@
 import { NavigationBar } from "expo-navigation-bar";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -46,9 +46,12 @@ export default function WatchPlaylistScreen() {
     }, [])
   );
 
-  if (!playlistVideosQuery?.data?.length) return null;
+  const videoSources = useMemo(
+    () => playlistVideosQuery.data?.map((item) => item.videos) ?? [],
+    [playlistVideosQuery.data]
+  );
 
-  const videoSources = playlistVideosQuery.data.map((item) => item.videos);
+  if (!videoSources.length) return null;
 
   return <VideoPlayer videoSources={videoSources} />;
 }

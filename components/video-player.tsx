@@ -1,7 +1,6 @@
 import { useKeepAwake } from "expo-keep-awake";
 import { useRouter } from "expo-router";
 import { VideoView } from "expo-video";
-import { useMemo } from "react";
 import { View } from "react-native";
 
 import { Slider } from "@miblanchard/react-native-slider";
@@ -38,13 +37,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   const router = useRouter();
   const { isDarkColorScheme } = useColorScheme();
 
-  const sourcesKey = videoSources.map((v) => v.id).join(",");
-  const memoizedVideoSources = useMemo(
-    () => videoSources,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sourcesKey]
-  );
-
   const { lastVisitedPath, isNativeControls } = useSettingsStore(
     useShallow((state) => ({
       lastVisitedPath: state.lastVisitedPath,
@@ -74,7 +66,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
     handleButtonPressOut,
     animatedStyle,
     tapGesture,
-  } = useVideoPlayerControls(memoizedVideoSources);
+  } = useVideoPlayerControls(videoSources);
 
   function handleGoBack() {
     const lastPathname =

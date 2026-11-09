@@ -25,7 +25,7 @@ androidSdk:
         version: "37.2.13.0"
         buildId: "16740729"
         installedAvds: "Pixel_10a"
-        runningAvd: "emulator-5554 (sdk_gphone16k_arm64, API 37)"
+        runningAvd: "None"
     cmake: "3.22.1"
     ndk: "27.1.12297006"
 

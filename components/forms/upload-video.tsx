@@ -191,7 +191,6 @@ export default function UploadForm() {
     prevVideos.forEach((v) => cleanupCacheFile(v.videoUri));
 
     await selectVideoFiles((videos) => {
-      // @ts-ignore
       form.setValue("videos", videos, { shouldDirty: true, shouldTouch: true });
     });
   }

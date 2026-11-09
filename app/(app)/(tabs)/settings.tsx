@@ -1,7 +1,7 @@
 import * as Application from "expo-application";
 import { Paths } from "expo-file-system";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Platform, View } from "react-native";
 
 import {
@@ -69,16 +69,14 @@ export default function SettingsScreen() {
     right: 12,
   };
 
-  const { passcode, enablePasscode, lockInterval, setEnablePasscode, setLockInterval } =
-    useSecurityStore(
-      useShallow((state) => ({
-        passcode: state.passcode,
-        enablePasscode: state.enablePasscode,
-        lockInterval: state.lockInterval,
-        setEnablePasscode: state.setEnablePasscode,
-        setLockInterval: state.setLockInterval,
-      }))
-    );
+  const { passcode, enablePasscode, lockInterval, setLockInterval } = useSecurityStore(
+    useShallow((state) => ({
+      passcode: state.passcode,
+      enablePasscode: state.enablePasscode,
+      lockInterval: state.lockInterval,
+      setLockInterval: state.setLockInterval,
+    }))
+  );
 
   async function handleResetSettings() {
     try {
@@ -150,18 +148,6 @@ export default function SettingsScreen() {
       setIsSubmitting(false);
     }
   }
-
-  useEffect(() => {
-    const unsubscribe = useSecurityStore.subscribe((state, prevState) => {
-      if (state.enablePasscode !== prevState.enablePasscode) {
-        setEnablePasscode(state.enablePasscode);
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [setEnablePasscode]);
 
   const selectedOption = lockIntervalOptions.find(
     (option) => option.value === lockInterval?.toString()

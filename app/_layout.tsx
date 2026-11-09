@@ -9,6 +9,7 @@ import { PortalHost } from "@rn-primitives/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toaster, toast } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
 
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -32,8 +33,18 @@ export default function RootLayout() {
   const { colorScheme, isDarkColorScheme, setColorScheme } = useColorScheme();
 
   const isAppReady = useAppStore((state) => state.isAppReady);
-  const theme = useSettingsStore((state) => state.theme);
-  const isLocked = useSecurityStore((state) => state.isLocked);
+  const { isSettingsHydrated, theme } = useSettingsStore(
+    useShallow((state) => ({
+      isSettingsHydrated: state._hasHydrated,
+      theme: state.theme,
+    }))
+  );
+  const { isSecurityHydrated, isLocked } = useSecurityStore(
+    useShallow((state) => ({
+      isSecurityHydrated: state._hasHydrated,
+      isLocked: state.isLocked,
+    }))
+  );
 
   useEffect(() => {
     ScreenCapture.preventScreenCaptureAsync().catch(() => {});
@@ -44,18 +55,25 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
+    if (!isSettingsHydrated || !isSecurityHydrated) return;
+
     async function initializeApp() {
       try {
-        const { isAppStartUp, setIsAppStartUp, isAppReady } = useAppStore.getState();
-        const { isLockable, setEnablePasscode, setIsLocked } = useSecurityStore.getState();
+        const { setIsAppStartUp } = useAppStore.getState();
+        const { setEnablePasscode, setIsLocked } = useSecurityStore.getState();
 
-        if (!isAppStartUp) {
-          await migrateDatabase();
-          setIsAppStartUp(true);
+        if (!useAppStore.getState().isAppStartUp) {
+          const result = await migrateDatabase();
+
+          if (result.isError) {
+            toast.error(result.message);
+          } else {
+            setIsAppStartUp(true);
+          }
         }
 
-        if (!isAppReady) {
-          if (isLockable) {
+        if (!useAppStore.getState().isAppReady) {
+          if (useSecurityStore.getState().isLockable) {
             setIsLocked(true);
           } else {
             setEnablePasscode(false);
@@ -69,7 +87,7 @@ export default function RootLayout() {
       }
     }
     initializeApp();
-  }, []);
+  }, [isSettingsHydrated, isSecurityHydrated]);
 
   useEffect(() => {
     const navColorScheme = theme || colorScheme;
@@ -83,7 +101,9 @@ export default function RootLayout() {
     }
   }, [colorScheme, theme, setColorScheme]);
 
-  if (!isAppReady) return null;
+  if (!isSettingsHydrated || !isSecurityHydrated || !isAppReady) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView

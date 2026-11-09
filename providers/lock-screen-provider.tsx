@@ -1,76 +1,59 @@
-import { ReactNode, useCallback, useEffect, useRef } from "react";
-import { AppState, AppStateStatus } from "react-native";
+import { type ReactNode, useEffect, useRef } from "react";
+import { AppState } from "react-native";
 
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
-import { useShallow } from "zustand/react/shallow";
 
 import { useAppStore, useSecurityStore } from "@/lib/store";
 
-interface LockScreenProviderProps {
+type LockScreenProviderProps = {
   children: ReactNode;
-}
+};
 
 export function LockScreenProvider({ children }: LockScreenProviderProps) {
-  const appState = useRef(AppState.currentState);
   const backgroundTimestamp = useRef<number | null>(null);
 
   const { dismissAll } = useBottomSheetModal();
   const triggerDismissAll = useAppStore((state) => state.triggerDismissAll);
-  const { enablePasscode, passcode, isLockable, lockInterval, isLockDisabled, setIsLocked } =
-    useSecurityStore(
-      useShallow((state) => ({
-        enablePasscode: state.enablePasscode,
-        passcode: state.passcode,
-        isLockable: state.isLockable,
-        lockInterval: state.lockInterval,
-        isLockDisabled: state.isLockDisabled,
-        setIsLocked: state.setIsLocked,
-      }))
-    );
-
-  const handleAppStateChange = useCallback(
-    (nextAppState: AppStateStatus) => {
-      if (nextAppState === "active") {
-        dismissAll();
-        triggerDismissAll();
-      }
-
-      if (!enablePasscode || !passcode || isLockDisabled || !isLockable) return;
-
-      if (nextAppState === "background") {
-        backgroundTimestamp.current = Date.now();
-      } else if (nextAppState === "active") {
-        if (backgroundTimestamp.current) {
-          const elapsedTime = Date.now() - backgroundTimestamp.current;
-          if (elapsedTime > lockInterval) {
-            setIsLocked(true);
-          }
-
-          backgroundTimestamp.current = null;
-        }
-      }
-
-      appState.current = nextAppState;
-    },
-    [
-      dismissAll,
-      triggerDismissAll,
-      enablePasscode,
-      isLockDisabled,
-      isLockable,
-      lockInterval,
-      passcode,
-      setIsLocked,
-    ]
-  );
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", handleAppStateChange);
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "background") {
+        backgroundTimestamp.current ??= Date.now();
+        return;
+      }
+
+      if (nextAppState !== "active") return;
+
+      dismissAll();
+      triggerDismissAll();
+
+      const backgroundAt = backgroundTimestamp.current;
+      backgroundTimestamp.current = null;
+
+      if (backgroundAt === null) return;
+
+      const security = useSecurityStore.getState();
+
+      if (
+        !security.enablePasscode ||
+        !security.passcode ||
+        !security.isLockable ||
+        security.isLockDisabled
+      ) {
+        return;
+      }
+
+      const elapsedTime = Date.now() - backgroundAt;
+
+      if (elapsedTime >= security.lockInterval) {
+        security.setIsLocked(true);
+      }
+    });
 
     return () => {
       subscription.remove();
     };
-  }, [handleAppStateChange]);
+  }, [dismissAll, triggerDismissAll]);
 
   return children;
 }

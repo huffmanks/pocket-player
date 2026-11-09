@@ -16,6 +16,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { scheduleOnRN } from "react-native-worklets";
 import { useShallow } from "zustand/react/shallow";
 
 import { BASE_LOGO, ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
@@ -29,8 +30,10 @@ import { Text } from "@/components/ui/text";
 
 export default function LockScreen() {
   const [code, setCode] = useState<number[]>([]);
+  const [isShaking, setIsShaking] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
+  const isVerifying = useRef(false);
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -67,53 +70,85 @@ export default function LockScreen() {
     router.replace(targetPath);
   }, [setIsLocked, lastVisitedPath, previousVisitedPath, router]);
 
-  const handleNumberPress = useCallback((number: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setCode((prevCode) => [...prevCode, number]);
-  }, []);
+  const handleNumberPress = useCallback(
+    (number: number) => {
+      if (isVerifying.current || isShaking) return;
+
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+      setCode((previous) => (previous.length < 4 ? [...previous, number] : previous));
+    },
+    [isShaking]
+  );
 
   const handleBackspacePress = useCallback(() => {
+    if (isVerifying.current || isShaking) return;
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setCode((prevCode) => prevCode.slice(0, -1));
-  }, []);
+  }, [isShaking]);
 
   const handleBiometricPress = useCallback(async () => {
-    const { success } = await LocalAuthentication.authenticateAsync({
-      promptMessage: "Unlock your app",
-      cancelLabel: "Use passcode",
-      disableDeviceFallback: true,
-    });
-    setCode([]);
+    if (isVerifying.current) return;
 
-    if (success) {
-      await handleUnlockApp();
-    } else {
-      await handleErrorShake();
+    isVerifying.current = true;
+
+    try {
+      const { success } = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Unlock your app",
+        cancelLabel: "Use passcode",
+        disableDeviceFallback: true,
+      });
+
+      if (success) {
+        await handleUnlockApp();
+      } else {
+        await handleErrorShake();
+      }
+    } finally {
+      setCode([]);
+      isVerifying.current = false;
     }
   }, [handleUnlockApp, handleErrorShake]);
 
   const triggerShakeAnimation = useCallback(() => {
+    setIsShaking(true);
+
     offsetRef.current.value = withSequence(
       withTiming(-ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME / 2 }),
       withRepeat(withTiming(ERROR_SHAKE_OFFSET, { duration: ERROR_SHAKE_TIME }), 4, true),
-      withTiming(0, { duration: ERROR_SHAKE_TIME / 2 })
+      withTiming(0, { duration: ERROR_SHAKE_TIME / 2 }, (finished) => {
+        if (finished) {
+          scheduleOnRN(setIsShaking, false);
+        }
+      })
     );
   }, []);
 
   useEffect(() => {
-    if (code.length === 4) {
-      (async () => {
-        setCode([]);
+    if (code.length !== 4 || isVerifying.current) return;
 
-        if (code.join("") === passcode) {
+    isVerifying.current = true;
+
+    async function verifyPasscode() {
+      const isValid = code.join("") === passcode;
+
+      setCode([]);
+
+      try {
+        if (isValid) {
           await handleUnlockApp();
         } else {
           triggerShakeAnimation();
           await handleErrorShake();
         }
-      })();
+      } finally {
+        isVerifying.current = false;
+      }
     }
-  }, [code, passcode, triggerShakeAnimation, handleUnlockApp, handleErrorShake]);
+
+    verifyPasscode();
+  }, [code, passcode, handleUnlockApp, triggerShakeAnimation, handleErrorShake]);
 
   useFocusEffect(
     useCallback(() => {
@@ -170,7 +205,8 @@ export default function LockScreen() {
         <View className="flex-row justify-between">
           <Pressable
             className="flex items-center justify-center rounded-full px-5 py-4"
-            onPress={handleBiometricPress}>
+            onPress={handleBiometricPress}
+            disabled={isShaking}>
             <Icon
               as={ScanFaceIcon}
               size={26}

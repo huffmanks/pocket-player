@@ -1,10 +1,10 @@
-// https://docs.expo.dev/guides/using-eslint/
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
 const tseslint = require("typescript-eslint");
 
 module.exports = defineConfig([
   expoConfig,
+  ...tseslint.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -28,6 +28,7 @@ module.exports = defineConfig([
           ignoreRestSiblings: true,
         },
       ],
+      "@typescript-eslint/ban-ts-comment": "off",
     },
   },
 ]);
