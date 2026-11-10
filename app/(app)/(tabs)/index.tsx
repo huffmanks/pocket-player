@@ -1,40 +1,31 @@
-import { SplashScreen, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { getRedirectPath } from "@/lib/get-redirect-path";
-import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
-import { delay } from "@/lib/utils";
+import { useSettingsStore } from "@/lib/store";
 
 export default function IndexScreen() {
   const router = useRouter();
   const hasRedirected = useRef(false);
 
-  const isAppReady = useAppStore((state) => state.isAppReady);
-  const isLocked = useSecurityStore((state) => state.isLocked);
-  const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
+  const { lastVisitedPath, previousVisitedPath } = useSettingsStore(
+    useShallow((state) => ({
+      lastVisitedPath: state.lastVisitedPath,
+      previousVisitedPath: state.previousVisitedPath,
+    }))
+  );
 
   useEffect(() => {
-    if (!isAppReady || !_hasHydrated || hasRedirected.current) return;
+    if (hasRedirected.current) return;
+
     hasRedirected.current = true;
 
-    async function hideSplashScreen() {
-      try {
-        if (isLocked) {
-          router.replace("/lock");
-          return;
-        }
+    const targetPath = getRedirectPath({ lastVisitedPath, previousVisitedPath });
 
-        const { lastVisitedPath, previousVisitedPath } = useSettingsStore.getState();
-        const targetPath = getRedirectPath({ lastVisitedPath, previousVisitedPath });
-        router.replace(targetPath);
-      } finally {
-        await delay(1000);
-        await SplashScreen.hideAsync();
-      }
-    }
-
-    hideSplashScreen();
-  }, [isAppReady, isLocked, _hasHydrated, router]);
+    router.replace(targetPath);
+  }, [lastVisitedPath, previousVisitedPath, router]);
 
   return null;
 }

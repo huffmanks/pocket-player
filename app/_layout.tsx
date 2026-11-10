@@ -2,7 +2,7 @@ import { NavigationBar } from "expo-navigation-bar";
 import { SplashScreen, Stack, ThemeProvider } from "expo-router";
 import * as ScreenCapture from "expo-screen-capture";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@rn-primitives/portal";
@@ -17,6 +17,7 @@ import { errorHandler } from "@/lib/error-handler";
 import { migrateDatabase } from "@/lib/migrate-database";
 import { useAppStore, useSecurityStore, useSettingsStore } from "@/lib/store";
 import { DARK_THEME, LIGHT_THEME } from "@/lib/theme";
+import { delay } from "@/lib/utils";
 import { LockScreenProvider } from "@/providers/lock-screen-provider";
 
 import { RouteTracker } from "@/components/route-tracker";
@@ -45,6 +46,7 @@ export default function RootLayout() {
       isLocked: state.isLocked,
     }))
   );
+  const hasHiddenSplash = useRef(false);
 
   useEffect(() => {
     ScreenCapture.preventScreenCaptureAsync().catch(() => {});
@@ -100,6 +102,20 @@ export default function RootLayout() {
       setColorScheme(navColorScheme);
     }
   }, [colorScheme, theme, setColorScheme]);
+
+  useEffect(() => {
+    if (!isSettingsHydrated || !isSecurityHydrated || !isAppReady || hasHiddenSplash.current)
+      return;
+
+    hasHiddenSplash.current = true;
+
+    async function hideSplashScreen() {
+      await delay(1000);
+      await SplashScreen.hideAsync();
+    }
+
+    hideSplashScreen();
+  }, [isSettingsHydrated, isSecurityHydrated, isAppReady]);
 
   if (!isSettingsHydrated || !isSecurityHydrated || !isAppReady) {
     return null;

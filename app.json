@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Test Pocket Player",
+    "name": "Pocket Player",
     "slug": "pocket-player",
     "scheme": "pocket-player",
     "version": "1.7.1",
@@ -51,7 +51,7 @@
       "backgroundColor": "#09090b"
     },
     "android": {
-      "package": "com.anonymous.pocketplayer.test",
+      "package": "com.anonymous.pocketplayer",
       "versionCode": 8,
       "icon": "./assets/icons/android_adaptive_logo_foreground.png",
       "backgroundColor": "#09090b",
