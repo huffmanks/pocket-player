@@ -13,6 +13,8 @@ export const VIDEO_PLACEHOLDER = {
   light: require("@/assets/images/video_placeholder_light.jpg"),
 };
 
+export const VIDEO_PROGRESS_END_THRESHOLD = 5;
+
 export const ESTIMATED_VIDEO_ITEM_HEIGHT = 157;
 export const ESTIMATED_PLAYLIST_HEIGHT = 40;
 export const ESTIMATED_PLAYLIST_ITEM_HEIGHT = 80;

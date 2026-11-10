@@ -86,28 +86,20 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
 
   return (
     <>
-      {isNativeControls ? (
-        <View className="flex-1">
-          <VideoView
-            ref={videoRef}
-            style={{ flex: 1 }}
-            player={player}
-            nativeControls
-            allowsPictureInPicture
-          />
-        </View>
-      ) : (
-        <GestureDetector gesture={tapGesture}>
-          <View className="flex-1 bg-black">
-            <VideoView
-              ref={videoRef}
-              style={{ flex: 1 }}
-              player={player}
-              fullscreenOptions={{ enable: false }}
-              allowsPictureInPicture
-              nativeControls={false}
-            />
+      <View className="flex-1 bg-black">
+        <VideoView
+          ref={videoRef}
+          style={{ flex: 1 }}
+          player={player}
+          nativeControls={isNativeControls}
+          fullscreenOptions={{ enable: false }}
+          allowsPictureInPicture
+          surfaceType="textureView"
+          useExoShutter
+        />
 
+        {!isNativeControls && (
+          <GestureDetector gesture={tapGesture}>
             <Animated.View
               className={cn(
                 "absolute bottom-0 left-0 right-0 top-0",
@@ -290,7 +282,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         value={progress}
                         minimumValue={0}
                         maximumValue={1}
-                        step={0.01}
                         thumbTintColor={SLIDER_THEME.thumbTintColor}
                         minimumTrackTintColor={SLIDER_THEME.minimumTrackTintColor}
                         maximumTrackTintColor={SLIDER_THEME.maximumTrackTintColor}
@@ -303,9 +294,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                 </View>
               )}
             </Animated.View>
-          </View>
-        </GestureDetector>
-      )}
+          </GestureDetector>
+        )}
+      </View>
     </>
   );
 }

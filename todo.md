@@ -4,6 +4,9 @@
 
 - [ ] passcode encryption.
 - [ ] mmkv encryptionKey use .env var.
+- [ ] fix video slider when complete flashes play button and then pause if video was already playing.
+- [ ] move videoProgress to video store or db maybe.
+- [ ] Add videoProgress to video item bottom brand color.
 
 ## UI
 
@@ -18,11 +21,9 @@
 ## New features
 
 - [ ] Add whitelist or ability to scan a folder to auto add videos.
-- [ ] Save timestamp of last view of video.
-  - [key = `videoProgress:${videoId}`](lib/store.ts#L453)
-  - value = `10` (player.currentTime | number | seconds)
 - [ ] Move thumbnails to its own directory (thumbs).
   - [ ] Add the ability to `delete all video`s and `delete all thumbs`.
+  - [ ] Abilty to force redo video thumbs.
 - [ ] File manager
   - [ ] Add video title to file item. (Would require getting from db)
 

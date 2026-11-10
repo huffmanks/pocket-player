@@ -3,13 +3,15 @@ import { useFocusEffect } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AppState } from "react-native";
 
-import { Gesture } from "react-native-gesture-handler";
+import { useTapGesture } from "react-native-gesture-handler";
 import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import { useShallow } from "zustand/react/shallow";
 
 import { VideoMeta } from "@/db/schema";
+import { VIDEO_PROGRESS_END_THRESHOLD } from "@/lib/constants";
 import { useSecurityStore, useSettingsStore } from "@/lib/store";
 import { secondsToAdaptiveTime } from "@/lib/utils";
 
@@ -22,47 +24,62 @@ function togglePlayerMute(targetPlayer: ReturnType<typeof useVideoPlayer>) {
 }
 
 export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: boolean) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [time, setTime] = useState<string | null>("00:00");
-  const [progress, setProgress] = useState(0);
-  const [isButtonTouched, setIsButtonTouched] = useState(false);
-  const [showPlaybackControls, setShowPlaybackControls] = useState(true);
-  const [hasEnded, setHasEnded] = useState(false);
-  const [isOldPlaying, setIsOldPlaying] = useState(false);
-
-  const videoRef = useRef<VideoView | null>(null);
-  const controlsVisible = useSharedValue(1);
-  const isPlaylist = videoSources.length > 1;
-
   const setIsLockDisabled = useSecurityStore((state) => state.setIsLockDisabled);
-  const { autoPlay, mute, loop, isNativeControls, overrideOrientation } = useSettingsStore(
+  const {
+    autoPlay,
+    mute,
+    loop,
+    isNativeControls,
+    overrideOrientation,
+    getVideoProgress,
+    setVideoProgress,
+    clearVideoProgress,
+  } = useSettingsStore(
     useShallow((state) => ({
       autoPlay: state.autoPlay,
       mute: state.mute,
       loop: state.loop,
       isNativeControls: state.isNativeControls,
       overrideOrientation: state.overrideOrientation,
+      getVideoProgress: state.getVideoProgress,
+      setVideoProgress: state.setVideoProgress,
+      clearVideoProgress: state.clearVideoProgress,
     }))
   );
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [time, setTime] = useState<string | null>(() => {
+    const savedTime = getVideoProgress(videoSources[0].id);
+    return secondsToAdaptiveTime(savedTime);
+  });
+  const [progress, setProgress] = useState(() => {
+    const savedTime = getVideoProgress(videoSources[0].id);
+    const duration = videoSources[0].duration;
+    return duration > 0 ? savedTime / duration : 0;
+  });
+  const [isButtonTouched, setIsButtonTouched] = useState(false);
+  const [showPlaybackControls, setShowPlaybackControls] = useState(true);
+  const [hasEnded, setHasEnded] = useState(false);
+
+  const isScrubbing = useRef(false);
+  const pendingSeekTime = useRef<number | null>(null);
+  const videoRef = useRef<VideoView | null>(null);
+  const lastSavedTime = useRef(0);
+  const controlsVisible = useSharedValue(1);
+  const isPlaylist = videoSources.length > 1;
+
   const player = useVideoPlayer(videoSources[currentIndex].videoUri, (p) => {
-    p.timeUpdateEventInterval = 0.5;
-    p.loop = !isPlaylist && (loop ?? false);
+    const savedTime = getVideoProgress(videoSources[0].id);
+
+    p.timeUpdateEventInterval = 0.1;
+    p.loop = !isPlaylist && loop;
     p.muted = !!isThumbView || mute;
+    p.currentTime = savedTime;
+    p.pause();
 
-    if ((autoPlay || isPlaylist) && !isThumbView) {
-      controlsVisible.value = 0;
-      p.play();
-    } else {
-      p.pause();
-    }
+    lastSavedTime.current = savedTime;
   });
-
   const { isPlaying } = useEvent(player, "playingChange", { isPlaying: player.playing });
-  const { status, oldStatus } = useEvent(player, "statusChange", {
-    status: player.status,
-    oldStatus: player.status,
-  });
 
   const updateControlsVisible = useCallback(
     (newValue: number) => {
@@ -71,48 +88,96 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     [controlsVisible]
   );
 
+  const saveVideoProgress = useCallback(() => {
+    const video = videoSources[currentIndex];
+    const currentTime = player.currentTime;
+    const duration = player.duration;
+
+    if (!Number.isFinite(currentTime) || duration <= 0) return;
+
+    if (duration - currentTime <= VIDEO_PROGRESS_END_THRESHOLD) {
+      clearVideoProgress(video.id);
+      return;
+    }
+
+    setVideoProgress(video.id, currentTime);
+    lastSavedTime.current = currentTime;
+  }, [clearVideoProgress, currentIndex, player, setVideoProgress, videoSources]);
+
+  const replaceVideoSource = useCallback(
+    async (index: number) => {
+      setCurrentIndex(index);
+
+      await player.replaceAsync(videoSources[index].videoUri);
+    },
+    [player, videoSources]
+  );
+
   const handlePlayToEnd = useCallback(() => {
     if (isThumbView) return;
 
-    if (status === "readyToPlay" && oldStatus === "loading") {
-      const atLastVideo = currentIndex >= videoSources.length - 1;
+    saveVideoProgress();
 
-      if (atLastVideo) {
-        setHasEnded(!loop);
+    const atLastVideo = currentIndex >= videoSources.length - 1;
 
-        if (loop) {
-          player.replay();
-        } else {
-          updateControlsVisible(1);
-        }
+    if (atLastVideo) {
+      setHasEnded(!loop);
 
-        return;
+      if (loop) {
+        player.replay();
+      } else {
+        updateControlsVisible(1);
       }
 
-      setCurrentIndex((prev) => {
-        const next = prev + 1;
-        player.replaceAsync(videoSources[next].videoUri);
-        return next;
-      });
+      return;
     }
+
+    void replaceVideoSource(currentIndex + 1);
   }, [
     currentIndex,
     isThumbView,
     loop,
-    oldStatus,
     player,
-    status,
+    replaceVideoSource,
+    saveVideoProgress,
     updateControlsVisible,
-    videoSources,
+    videoSources.length,
   ]);
 
+  useEventListener(player, "sourceLoad", ({ duration, videoSource }) => {
+    const uri = typeof videoSource === "object" ? videoSource?.uri : videoSource;
+    const video = videoSources.find((source) => source.videoUri === uri);
+
+    if (!video) return;
+
+    const savedTime = getVideoProgress(video.id);
+    const targetTime =
+      savedTime > 0 && duration - savedTime > VIDEO_PROGRESS_END_THRESHOLD ? savedTime : 0;
+
+    setPlayerCurrentTime(player, targetTime);
+    lastSavedTime.current = targetTime;
+
+    if (targetTime === 0 && savedTime > 0) {
+      clearVideoProgress(video.id);
+    }
+
+    if (autoPlay || isPlaylist) {
+      player.play();
+    }
+  });
   useEventListener(player, "playToEnd", handlePlayToEnd);
   useEventListener(player, "timeUpdate", ({ currentTime }) => {
+    if (isScrubbing.current) return;
+
     const duration = player.duration;
 
     if (duration > 0) {
       setProgress(currentTime / duration);
       setTime(secondsToAdaptiveTime(currentTime));
+    }
+
+    if (Math.abs(currentTime - lastSavedTime.current) >= VIDEO_PROGRESS_END_THRESHOLD) {
+      saveVideoProgress();
     }
   });
 
@@ -147,11 +212,19 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       }
 
       return () => {
+        saveVideoProgress();
         isMounted = false;
         ScreenOrientation.unlockAsync();
         setIsLockDisabled(false);
       };
-    }, [currentOrientation, isNativeControls, isThumbView, overrideOrientation, setIsLockDisabled])
+    }, [
+      currentOrientation,
+      isNativeControls,
+      isThumbView,
+      overrideOrientation,
+      setIsLockDisabled,
+      saveVideoProgress,
+    ])
   );
 
   useEffect(() => {
@@ -162,31 +235,49 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     return () => clearTimeout(timeout);
   }, [isPlaying, isButtonTouched, updateControlsVisible]);
 
-  function onSliderChange(value: number) {
-    const duration = player.duration;
-    const targetTime = value * duration;
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState !== "active") {
+        saveVideoProgress();
+        return;
+      }
 
-    setPlayerCurrentTime(player, targetTime);
-    setProgress(value);
+      if (isThumbView || !(autoPlay || isPlaylist)) return;
+
+      if (player.status === "readyToPlay") {
+        player.play();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [autoPlay, isPlaylist, isThumbView, player, saveVideoProgress]);
+
+  function onSliderChange(value: number) {
+    const progress = Math.max(0, Math.min(value, 1));
+    const targetTime = progress * player.duration;
+
+    pendingSeekTime.current = targetTime;
+    setProgress(progress);
     setTime(secondsToAdaptiveTime(targetTime));
   }
 
   function onSlidingStart() {
+    isScrubbing.current = true;
     setIsButtonTouched(true);
     setShowPlaybackControls(false);
     setHasEnded(false);
-    setIsOldPlaying(isPlaying);
-    player.pause();
   }
 
   function onSlidingComplete() {
-    setIsButtonTouched(false);
+    const targetTime = pendingSeekTime.current;
 
-    if (isOldPlaying) {
-      player.play();
-      updateControlsVisible(0);
+    if (targetTime !== null) {
+      setPlayerCurrentTime(player, targetTime);
     }
 
+    pendingSeekTime.current = null;
+    isScrubbing.current = false;
+    setIsButtonTouched(false);
     setShowPlaybackControls(true);
   }
 
@@ -198,9 +289,7 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     if (hasEnded && !isPlaying) {
       setHasEnded(false);
 
-      setCurrentIndex(0);
-      player.replaceAsync(videoSources[0].videoUri);
-      player.play();
+      void replaceVideoSource(0);
 
       updateControlsVisible(0);
     } else if (isPlaying) {
@@ -220,9 +309,11 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
   }
 
   function changeVideoSource(inverse: number) {
+    saveVideoProgress();
+
     const newIndex = (currentIndex + inverse + videoSources.length) % videoSources.length;
-    setCurrentIndex(newIndex);
-    player.replaceAsync(videoSources[newIndex].videoUri);
+
+    void replaceVideoSource(newIndex);
   }
 
   function handleButtonPressIn() {
@@ -241,10 +332,12 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     updateControlsVisible(controlsVisible.get() === 1 ? 0 : 1);
   }
 
-  const tapGesture = Gesture.Tap().onEnd((_, success) => {
-    if (success && !isButtonTouched) {
-      scheduleOnRN(toggleControls);
-    }
+  const tapGesture = useTapGesture({
+    onDeactivate: (event) => {
+      if (!event.canceled && !isButtonTouched) {
+        scheduleOnRN(toggleControls);
+      }
+    },
   });
 
   return {

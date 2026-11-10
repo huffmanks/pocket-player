@@ -40,3 +40,5 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+repomix-output.xml
