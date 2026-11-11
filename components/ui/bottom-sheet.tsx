@@ -158,7 +158,7 @@ const BottomSheetOpenTrigger = React.forwardRef<
     }
     onPress?.(ev);
   }
-  const Trigger = asChild ? Slot.Pressable : Pressable;
+  const Trigger = asChild ? Slot.Slot : Pressable;
   return (
     <Trigger
       ref={ref}
@@ -184,7 +184,7 @@ const BottomSheetCloseTrigger = React.forwardRef<
     }
     onPress?.(ev);
   }
-  const Trigger = asChild ? Slot.Pressable : Pressable;
+  const Trigger = asChild ? Slot.Slot : Pressable;
   return (
     <Trigger
       ref={ref}

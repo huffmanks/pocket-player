@@ -1,23 +1,21 @@
-const { defineConfig } = require("eslint/config");
-const expoConfig = require("eslint-config-expo/flat");
-const tseslint = require("typescript-eslint");
+import expoConfig from "eslint-config-expo/flat.js";
+import { defineConfig } from "eslint/config";
+import { configs as tseslintConfigs } from "typescript-eslint";
 
-module.exports = defineConfig([
+export default defineConfig([
   expoConfig,
-  ...tseslint.configs.recommended,
+  ...tseslintConfigs.recommended,
+  {
+    ignores: ["dist/*", ".expo/*", "node_modules/*"],
+  },
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
-  {
-    ignores: ["dist/*", ".expo/*", "node_modules/*"],
-  },
-  {
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",
@@ -29,6 +27,7 @@ module.exports = defineConfig([
         },
       ],
       "@typescript-eslint/ban-ts-comment": "off",
+      "@typescript-eslint/no-deprecated": "warn",
     },
   },
 ]);

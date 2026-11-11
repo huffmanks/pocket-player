@@ -42,7 +42,7 @@ const thumbVariants = cva("rounded-full bg-background shadow-md shadow-foregroun
 
 type SwitchProps = SwitchPrimitives.RootProps & VariantProps<typeof switchVariants>;
 
-const SwitchWeb = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root>, SwitchProps>(
+const SwitchWeb = React.forwardRef<React.ComponentRef<typeof SwitchPrimitives.Root>, SwitchProps>(
   ({ className, ...props }, ref) => (
     <SwitchPrimitives.Root
       className={cn(
@@ -65,46 +65,47 @@ const SwitchWeb = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root
 
 SwitchWeb.displayName = "SwitchWeb";
 
-const SwitchNative = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root>, SwitchProps>(
-  ({ className, size = "default", ...props }, ref) => {
-    const { colorScheme } = useColorScheme();
+const SwitchNative = React.forwardRef<
+  React.ComponentRef<typeof SwitchPrimitives.Root>,
+  SwitchProps
+>(({ className, size = "default", ...props }, ref) => {
+  const { colorScheme } = useColorScheme();
 
-    const TRANSLATE_X_DISTANCE = size === "lg" ? 26 : size === "mega" ? 34 : 18;
+  const TRANSLATE_X_DISTANCE = size === "lg" ? 26 : size === "mega" ? 34 : 18;
 
-    const translateX = useDerivedValue(() => (props.checked ? TRANSLATE_X_DISTANCE : 0));
-    const animatedRootStyle = useAnimatedStyle(() => {
-      return {
-        backgroundColor: interpolateColor(
-          translateX.value,
-          [0, TRANSLATE_X_DISTANCE],
-          [NAV_THEME[colorScheme].border, NAV_THEME[colorScheme].primary]
-        ),
-      };
-    });
-    const animatedThumbStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: withTiming(translateX.value, { duration: 200 }) }],
-    }));
-    return (
-      <Animated.View
-        style={animatedRootStyle}
-        className={cn(props.disabled && "opacity-50", switchVariants({ size }))}>
-        <SwitchPrimitives.Root
-          className={cn(
-            "shrink-0 flex-row items-center rounded-full border-2 border-transparent",
-            props.checked ? "bg-primary" : "bg-input",
-            switchVariants({ size }),
-            className
-          )}
-          {...props}
-          ref={ref}>
-          <Animated.View style={animatedThumbStyle}>
-            <SwitchPrimitives.Thumb className={thumbVariants({ size })} />
-          </Animated.View>
-        </SwitchPrimitives.Root>
-      </Animated.View>
-    );
-  }
-);
+  const translateX = useDerivedValue(() => (props.checked ? TRANSLATE_X_DISTANCE : 0));
+  const animatedRootStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(
+        translateX.value,
+        [0, TRANSLATE_X_DISTANCE],
+        [NAV_THEME[colorScheme].border, NAV_THEME[colorScheme].primary]
+      ),
+    };
+  });
+  const animatedThumbStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: withTiming(translateX.value, { duration: 200 }) }],
+  }));
+  return (
+    <Animated.View
+      style={animatedRootStyle}
+      className={cn(props.disabled && "opacity-50", switchVariants({ size }))}>
+      <SwitchPrimitives.Root
+        className={cn(
+          "shrink-0 flex-row items-center rounded-full border-2 border-transparent",
+          props.checked ? "bg-primary" : "bg-input",
+          switchVariants({ size }),
+          className
+        )}
+        {...props}
+        ref={ref}>
+        <Animated.View style={animatedThumbStyle}>
+          <SwitchPrimitives.Thumb className={thumbVariants({ size })} />
+        </Animated.View>
+      </SwitchPrimitives.Root>
+    </Animated.View>
+  );
+});
 SwitchNative.displayName = "SwitchNative";
 
 const Switch = Platform.select({

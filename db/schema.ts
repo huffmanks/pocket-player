@@ -36,9 +36,7 @@ export const videos = sqliteTable(
       .$defaultFn(() => new Date().toISOString())
       .notNull(),
   },
-  (t) => ({
-    thumbTimestampIdx: index("videos_thumb_timestamp_idx").on(t.thumbTimestamp),
-  })
+  (t) => [index("videos_thumb_timestamp_idx").on(t.thumbTimestamp)]
 );
 
 export const playlists = sqliteTable("playlists", {
@@ -67,11 +65,11 @@ export const playlistVideos = sqliteTable(
       .references(() => videos.id, { onDelete: "cascade" }),
     order: integer("order").default(1).notNull(),
   },
-  (t) => ({
-    uniquePlaylistVideo: unique().on(t.playlistId, t.videoId),
-    playlistIdIdx: index("playlist_videos_playlist_id_idx").on(t.playlistId),
-    videoIdIdx: index("playlist_videos_video_id_idx").on(t.videoId),
-  })
+  (t) => [
+    unique().on(t.playlistId, t.videoId),
+    index("playlist_videos_playlist_id_idx").on(t.playlistId),
+    index("playlist_videos_video_id_idx").on(t.videoId),
+  ]
 );
 
 export const VideoSchema = createSelectSchema(videos);

@@ -14,8 +14,8 @@
     "build:aab": "pnpx eas-cli build --clear-cache --platform android --profile preview-bundle --local",
     "db:generate": "drizzle-kit generate",
     "check": "tsc --noEmit",
-    "format": "prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
-    "lint": "expo lint"
+    "format": "prettier \"**/*.{js,jsx,ts,tsx,mjs,json}\" --write",
+    "lint": "expo lint ."
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
