@@ -4,17 +4,11 @@
 
 - [ ] passcode encryption.
 - [ ] mmkv encryptionKey use .env var.
-- [ ] Add videoProgress to video item bottom brand color.
 
 ## UI
 
 - [ ] Watch screens
   - [ ] Add a button or dropdown to go to edit video screen.
-
-## Issues
-
-- [ ] Coming back from an inactive/closed app state:
-  - [-] Sometimes you have to double swipe right to go back.
 
 ## New features
 

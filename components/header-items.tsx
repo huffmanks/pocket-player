@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { View } from "react-native";
 
 import { LockIcon, MoonStarIcon, SunIcon } from "lucide-react-native";
@@ -57,8 +56,6 @@ function ThemeToggle() {
 }
 
 function LockScreen() {
-  const router = useRouter();
-
   const { isLockable, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       isLockable: state.isLockable,
@@ -68,7 +65,6 @@ function LockScreen() {
 
   function handlePress() {
     setIsLocked(true);
-    router.push("/lock");
   }
 
   return (

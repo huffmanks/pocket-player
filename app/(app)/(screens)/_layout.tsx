@@ -26,7 +26,6 @@ export default function ScreensLayout() {
           headerStyle: {
             backgroundColor: NAV_THEME[colorScheme].background,
           },
-          headerRight: () => <HeaderItems />,
         }}
       />
       <Stack.Screen

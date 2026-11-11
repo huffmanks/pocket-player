@@ -2,7 +2,7 @@ import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import * as LocalAuthentication from "expo-local-authentication";
 import { NavigationBar } from "expo-navigation-bar";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
@@ -20,8 +20,7 @@ import { scheduleOnRN } from "react-native-worklets";
 import { useShallow } from "zustand/react/shallow";
 
 import { BASE_LOGO, ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
-import { getRedirectPath } from "@/lib/get-redirect-path";
-import { useSecurityStore, useSettingsStore } from "@/lib/store";
+import { useSecurityStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 import KeypadRow from "@/components/keypad-row";
@@ -34,15 +33,8 @@ export default function LockScreen() {
   const [isPressed, setIsPressed] = useState(false);
 
   const isVerifying = useRef(false);
-  const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const { lastVisitedPath, previousVisitedPath } = useSettingsStore(
-    useShallow((state) => ({
-      lastVisitedPath: state.lastVisitedPath,
-      previousVisitedPath: state.previousVisitedPath,
-    }))
-  );
   const { passcode, setIsLocked } = useSecurityStore(
     useShallow((state) => ({
       passcode: state.passcode,
@@ -66,9 +58,7 @@ export default function LockScreen() {
 
   const handleUnlockApp = useCallback(async () => {
     setIsLocked(false);
-    const targetPath = getRedirectPath({ lastVisitedPath, previousVisitedPath });
-    router.replace(targetPath);
-  }, [setIsLocked, lastVisitedPath, previousVisitedPath, router]);
+  }, [setIsLocked]);
 
   const handleNumberPress = useCallback(
     (number: number) => {

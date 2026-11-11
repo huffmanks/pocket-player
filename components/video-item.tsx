@@ -38,7 +38,7 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
       className="mb-8 flex-row items-start gap-4"
       entering={FadeIn.duration(250)}
       exiting={FadeOut.duration(250)}>
-      <Pressable onPress={() => router.push(`/(app)/(screens)/videos/${item.id}/watch`)}>
+      <Pressable onPress={() => router.navigate(`/(app)/(screens)/videos/${item.id}/watch`)}>
         <View
           className="overflow-hidden rounded-md bg-card"
           style={{ width: 225, height: 125 }}>
@@ -48,6 +48,16 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
             source={thumbSource}
             contentFit={thumbUri && item.orientation === "Portrait" ? "contain" : "cover"}
           />
+          {item.resumePosition > 0 && item.duration > 0 && (
+            <View className="absolute bottom-0 left-0 right-0 h-1 bg-muted">
+              <View
+                className="h-full bg-brand"
+                style={{
+                  width: `${Math.min((item.resumePosition / item.duration) * 100, 100)}%`,
+                }}
+              />
+            </View>
+          )}
         </View>
       </Pressable>
       <View className="flex-1 flex-row justify-between gap-4">

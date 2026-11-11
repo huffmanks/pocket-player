@@ -155,7 +155,7 @@ export default function VideoDropdown({ item, allPlaylists }: VideoDropdownProps
           <DropdownMenuGroup>
             <DropdownMenuItem
               className="gap-4"
-              onPress={() => router.push(`/(app)/(screens)/videos/${item.id}/watch`)}>
+              onPress={() => router.navigate(`/(app)/(screens)/videos/${item.id}/watch`)}>
               <Icon
                 as={TvIcon}
                 className="text-foreground"

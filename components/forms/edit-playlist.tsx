@@ -80,7 +80,7 @@ export default function EditPlaylistForm({ editPlaylistInfo }: EditPlaylistFormP
 
       if (status === "success") {
         toast.error(message);
-        router.push("/(app)/(tabs)/playlists");
+        router.dismissTo("/(app)/(tabs)/playlists");
       }
     } catch (error) {
       toast.error(errorHandler(error));

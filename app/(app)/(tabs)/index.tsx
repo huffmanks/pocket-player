@@ -1,31 +1,5 @@
-import { useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
+import { Redirect } from "expo-router";
 
-import { useShallow } from "zustand/react/shallow";
-
-import { getRedirectPath } from "@/lib/get-redirect-path";
-import { useSettingsStore } from "@/lib/store";
-
-export default function IndexScreen() {
-  const router = useRouter();
-  const hasRedirected = useRef(false);
-
-  const { lastVisitedPath, previousVisitedPath } = useSettingsStore(
-    useShallow((state) => ({
-      lastVisitedPath: state.lastVisitedPath,
-      previousVisitedPath: state.previousVisitedPath,
-    }))
-  );
-
-  useEffect(() => {
-    if (hasRedirected.current) return;
-
-    hasRedirected.current = true;
-
-    const targetPath = getRedirectPath({ lastVisitedPath, previousVisitedPath });
-
-    router.replace(targetPath);
-  }, [lastVisitedPath, previousVisitedPath, router]);
-
-  return null;
+export default function TabsIndex() {
+  return <Redirect href="/(app)/(tabs)/videos" />;
 }

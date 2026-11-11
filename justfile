@@ -13,11 +13,11 @@ default:
 
 # Interactive browser login to EAS CLI
 login:
-    pnpx eas-cli login -b
+    eas login -b
 
 # Fetch and manage project credentials interactively
 credentials:
-    pnpx eas-cli credentials
+    eas credentials
 
 # Generate .env from example.env and EAS credentials
 setup-env:
@@ -53,7 +53,7 @@ bump version:
 # Build production/optimized AAB bundle locally
 build-aab:
     mkdir -p builds
-    pnpx eas-cli build --clear-cache --platform android --profile preview-bundle --local --output="builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab"
+    eas build --clear-cache --platform android --profile preview-bundle --local --output="builds/{{ APP_NAME }}-v{{ APP_VERSION }}.aab"
 
 # Extract Universal APK from AAB with Versioning
 extract-universal-apk aab_file:

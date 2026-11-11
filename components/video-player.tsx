@@ -37,9 +37,10 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   const router = useRouter();
   const { isDarkColorScheme } = useColorScheme();
 
-  const { lastVisitedPath, isNativeControls } = useSettingsStore(
+  const { lastVisitedPath, previousVisitedPath, isNativeControls } = useSettingsStore(
     useShallow((state) => ({
       lastVisitedPath: state.lastVisitedPath,
+      previousVisitedPath: state.previousVisitedPath,
       isNativeControls: state.isNativeControls,
     }))
   );
@@ -68,15 +69,23 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
   } = useVideoPlayerControls(videoSources);
 
   function handleGoBack() {
-    const lastPathname =
-      typeof lastVisitedPath === "string" ? lastVisitedPath : lastVisitedPath.pathname;
-
     if (router.canGoBack()) {
       router.back();
+      return;
     }
-    if (lastPathname.startsWith("/playlists")) {
+
+    const paths = [lastVisitedPath, previousVisitedPath].map((path) =>
+      typeof path === "string" ? path : path.pathname
+    );
+
+    const section = paths.find(
+      (path) =>
+        path.startsWith("/playlists") || path.startsWith("/favorites") || path.startsWith("/videos")
+    );
+
+    if (section?.startsWith("/playlists")) {
       router.dismissTo("/(app)/(tabs)/playlists");
-    } else if (lastPathname.startsWith("/favorites")) {
+    } else if (section?.startsWith("/favorites")) {
       router.dismissTo("/(app)/(tabs)/favorites");
     } else {
       router.dismissTo("/(app)/(tabs)/videos");

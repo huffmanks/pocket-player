@@ -69,7 +69,7 @@ export default function ViewPlaylistScreen() {
 
       if (status === "success") {
         toast.error(message);
-        router.push("/(app)/(tabs)/playlists");
+        router.replace("/(app)/(tabs)/playlists");
       }
     } catch (error) {
       toast.error(errorHandler(error));

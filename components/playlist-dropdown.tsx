@@ -57,7 +57,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
 
       if (status === "success") {
         toast.error(message);
-        router.push("/(app)/(tabs)/playlists");
+        router.replace("/(app)/(tabs)/playlists");
       }
     } catch (error) {
       toast.error(errorHandler(error));
@@ -93,7 +93,7 @@ export default function PlaylistDropdown({ item, playlistVideosExist }: Playlist
             <DropdownMenuItem
               disabled={!playlistVideosExist}
               className="gap-4"
-              onPress={() => router.push(`/(app)/(screens)/playlists/${item.id}/watch`)}>
+              onPress={() => router.navigate(`/(app)/(screens)/playlists/${item.id}/watch`)}>
               <Icon
                 as={TvIcon}
                 className="text-foreground"

@@ -1,7 +1,7 @@
 {
   "name": "pocket-player",
   "main": "expo-router/entry",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "scripts": {
     "dev": "expo start --dev-client --clear",
     "android": "expo run:android",
@@ -9,9 +9,9 @@
     "web": "expo start --web",
     "start": "expo start",
     "prebuild": "expo prebuild --platform android --clean",
-    "build:dev": "pnpx eas-cli build --clear-cache --platform android --profile development --local",
-    "build:apk": "pnpx eas-cli build --clear-cache --platform android --profile preview --local",
-    "build:aab": "pnpx eas-cli build --clear-cache --platform android --profile preview-bundle --local",
+    "build:dev": "eas build --clear-cache --platform android --profile development --local",
+    "build:apk": "eas build --clear-cache --platform android --profile preview --local",
+    "build:aab": "eas build --clear-cache --platform android --profile preview-bundle --local",
     "db:generate": "drizzle-kit generate",
     "check": "tsc --noEmit",
     "format": "prettier \"**/*.{js,jsx,ts,tsx,mjs,json}\" --write",

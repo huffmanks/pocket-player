@@ -180,7 +180,7 @@ export default function EditVideoForm({ videoInfo }: EditFormProps) {
         if (router.canGoBack()) {
           router.back();
         } else {
-          router.push("/(app)/(tabs)/videos");
+          router.replace("/(app)/(tabs)/videos");
         }
       } catch (error) {
         if (tempThumbFile?.exists) {
