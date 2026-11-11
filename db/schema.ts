@@ -27,6 +27,8 @@ export const videos = sqliteTable(
     hasAudio: integer("has_audio", { mode: "boolean" }).notNull(),
     videoCodec: text("video_codec"),
     audioCodec: text("audio_codec"),
+    resumePosition: real("resume_position").default(0).notNull(),
+    lastPlayedAt: text("last_played_at"),
     createdAt: text("created_at")
       .$defaultFn(() => new Date().toISOString())
       .notNull(),

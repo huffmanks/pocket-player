@@ -32,6 +32,9 @@ type VideoStoreState = {
   toggleFavorite: (
     id: string
   ) => Promise<{ status: "success" | "error"; isFavorite?: boolean; message: string }>;
+  getPlaybackProgress: (id: string) => Promise<number>;
+  savePlaybackProgress: (id: string, position: number) => Promise<void>;
+  clearPlaybackProgress: (id: string) => Promise<void>;
 };
 
 export const useVideoStore = create<VideoStoreState>(() => ({
@@ -124,5 +127,37 @@ export const useVideoStore = create<VideoStoreState>(() => ({
     } catch (error) {
       return { status: "error", message: errorHandler(error) };
     }
+  },
+  getPlaybackProgress: async (id) => {
+    const db = useDatabaseStore.getState().db;
+    const [video] = await db
+      .select({ position: videos.resumePosition })
+      .from(videos)
+      .where(eq(videos.id, id))
+      .limit(1);
+
+    return video?.position ?? 0;
+  },
+  savePlaybackProgress: async (id, position) => {
+    const db = useDatabaseStore.getState().db;
+
+    await db
+      .update(videos)
+      .set({
+        resumePosition: position,
+        lastPlayedAt: new Date().toISOString(),
+      })
+      .where(eq(videos.id, id));
+  },
+  clearPlaybackProgress: async (id) => {
+    const db = useDatabaseStore.getState().db;
+
+    await db
+      .update(videos)
+      .set({
+        resumePosition: 0,
+        lastPlayedAt: new Date().toISOString(),
+      })
+      .where(eq(videos.id, id));
   },
 }));

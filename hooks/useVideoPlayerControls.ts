@@ -1,4 +1,4 @@
-import { useEvent, useEventListener } from "expo";
+import { useEventListener } from "expo";
 import { useFocusEffect } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { VideoView, useVideoPlayer } from "expo-video";
@@ -10,76 +10,76 @@ import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reani
 import { scheduleOnRN } from "react-native-worklets";
 import { useShallow } from "zustand/react/shallow";
 
-import { VideoMeta } from "@/db/schema";
-import { VIDEO_PROGRESS_END_THRESHOLD } from "@/lib/constants";
-import { useSecurityStore, useSettingsStore } from "@/lib/store";
+import { type VideoMeta } from "@/db/schema";
+import { useSecurityStore, useSettingsStore, useVideoStore } from "@/lib/store";
 import { secondsToAdaptiveTime } from "@/lib/utils";
 
-function setPlayerCurrentTime(targetPlayer: ReturnType<typeof useVideoPlayer>, time: number) {
+type VideoPlayer = ReturnType<typeof useVideoPlayer>;
+
+const CONTROLS_HIDDEN = 0;
+const CONTROLS_VISIBLE = 1;
+const CONTROLS_AUTO_HIDE_DELAY_MS = 5000;
+const CONTROLS_FADE_DURATION_MS = 300;
+const TIME_UPDATE_INTERVAL_SECONDS = 0.1;
+const SEEK_SETTLE_TOLERANCE_SECONDS = 0.5;
+const VIDEO_PROGRESS_END_THRESHOLD = 5;
+const VIDEO_PROGRESS_SAVE_INTERVAL = 10;
+
+function setPlayerCurrentTime(targetPlayer: VideoPlayer, time: number) {
   targetPlayer.currentTime = time;
 }
 
-function togglePlayerMute(targetPlayer: ReturnType<typeof useVideoPlayer>) {
+function togglePlayerMute(targetPlayer: VideoPlayer) {
   targetPlayer.muted = !targetPlayer.muted;
 }
 
 export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: boolean) {
   const setIsLockDisabled = useSecurityStore((state) => state.setIsLockDisabled);
-  const {
-    autoPlay,
-    mute,
-    loop,
-    isNativeControls,
-    overrideOrientation,
-    getVideoProgress,
-    setVideoProgress,
-    clearVideoProgress,
-  } = useSettingsStore(
+  const { autoPlay, mute, loop, isNativeControls, overrideOrientation } = useSettingsStore(
     useShallow((state) => ({
       autoPlay: state.autoPlay,
       mute: state.mute,
       loop: state.loop,
       isNativeControls: state.isNativeControls,
       overrideOrientation: state.overrideOrientation,
-      getVideoProgress: state.getVideoProgress,
-      setVideoProgress: state.setVideoProgress,
-      clearVideoProgress: state.clearVideoProgress,
     }))
   );
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [time, setTime] = useState<string | null>(() => {
-    const savedTime = getVideoProgress(videoSources[0].id);
-    return secondsToAdaptiveTime(savedTime);
-  });
-  const [progress, setProgress] = useState(() => {
-    const savedTime = getVideoProgress(videoSources[0].id);
-    const duration = videoSources[0].duration;
-    return duration > 0 ? savedTime / duration : 0;
-  });
+  const initialPosition =
+    videoSources[0].resumePosition > 0 &&
+    videoSources[0].duration - videoSources[0].resumePosition > VIDEO_PROGRESS_END_THRESHOLD
+      ? videoSources[0].resumePosition
+      : 0;
+
+  const [time, setTime] = useState<string | null>(secondsToAdaptiveTime(initialPosition));
+  const [progress, setProgress] = useState(initialPosition / videoSources[0].duration);
   const [isButtonTouched, setIsButtonTouched] = useState(false);
-  const [showPlaybackControls, setShowPlaybackControls] = useState(true);
   const [hasEnded, setHasEnded] = useState(false);
 
+  const videoRef = useRef<VideoView | null>(null);
+  const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isScrubbing = useRef(false);
   const pendingSeekTime = useRef<number | null>(null);
-  const videoRef = useRef<VideoView | null>(null);
-  const lastSavedTime = useRef(0);
-  const controlsVisible = useSharedValue(1);
+  const currentTimeRef = useRef(0);
+  const lastSavedTimeRef = useRef(0);
+  const saveInFlightRef = useRef(false);
+  const savePendingRef = useRef(false);
+  const forceSavePendingRef = useRef(false);
+  const sourceLoadRequestRef = useRef(0);
+
   const isPlaylist = videoSources.length > 1;
+  const currentOrientation = videoSources[currentIndex]?.orientation;
+  const controlsVisible = useSharedValue(CONTROLS_VISIBLE);
 
   const player = useVideoPlayer(videoSources[currentIndex].videoUri, (p) => {
-    const savedTime = getVideoProgress(videoSources[0].id);
-
-    p.timeUpdateEventInterval = 0.1;
+    p.timeUpdateEventInterval = TIME_UPDATE_INTERVAL_SECONDS;
     p.loop = !isPlaylist && loop;
     p.muted = !!isThumbView || mute;
-    p.currentTime = savedTime;
     p.pause();
-
-    lastSavedTime.current = savedTime;
+    p.currentTime = initialPosition;
   });
-  const { isPlaying } = useEvent(player, "playingChange", { isPlaying: player.playing });
+  const [isPlaying, setIsPlaying] = useState(player.playing);
 
   const updateControlsVisible = useCallback(
     (newValue: number) => {
@@ -88,24 +88,56 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     [controlsVisible]
   );
 
-  const saveVideoProgress = useCallback(() => {
-    const video = videoSources[currentIndex];
-    const currentTime = player.currentTime;
-    const duration = player.duration;
+  const saveProgress = useCallback(
+    async function saveProgress(force = false) {
+      if (isThumbView) return;
 
-    if (!Number.isFinite(currentTime) || duration <= 0) return;
+      if (saveInFlightRef.current) {
+        savePendingRef.current = true;
+        forceSavePendingRef.current ||= force;
+        return;
+      }
 
-    if (duration - currentTime <= VIDEO_PROGRESS_END_THRESHOLD) {
-      clearVideoProgress(video.id);
-      return;
-    }
+      saveInFlightRef.current = true;
 
-    setVideoProgress(video.id, currentTime);
-    lastSavedTime.current = currentTime;
-  }, [clearVideoProgress, currentIndex, player, setVideoProgress, videoSources]);
+      try {
+        let shouldForce = force;
+
+        do {
+          savePendingRef.current = false;
+          forceSavePendingRef.current = false;
+
+          const video = videoSources[currentIndex];
+          const currentTime = currentTimeRef.current;
+          const duration = player.duration;
+
+          if (!Number.isFinite(currentTime) || duration <= 0) break;
+
+          if (duration - currentTime <= VIDEO_PROGRESS_END_THRESHOLD) {
+            await useVideoStore.getState().clearPlaybackProgress(video.id);
+            lastSavedTimeRef.current = 0;
+          } else if (
+            shouldForce ||
+            Math.abs(currentTime - lastSavedTimeRef.current) >= VIDEO_PROGRESS_SAVE_INTERVAL
+          ) {
+            await useVideoStore.getState().savePlaybackProgress(video.id, currentTime);
+            lastSavedTimeRef.current = currentTime;
+          }
+
+          shouldForce = forceSavePendingRef.current;
+        } while (savePendingRef.current);
+      } catch (_error) {
+        return;
+      } finally {
+        saveInFlightRef.current = false;
+      }
+    },
+    [currentIndex, isThumbView, player, videoSources]
+  );
 
   const replaceVideoSource = useCallback(
     async (index: number) => {
+      sourceLoadRequestRef.current += 1;
       setCurrentIndex(index);
 
       await player.replaceAsync(videoSources[index].videoUri);
@@ -113,61 +145,101 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     [player, videoSources]
   );
 
-  const handlePlayToEnd = useCallback(() => {
+  const handlePlayToEnd = useCallback(async () => {
     if (isThumbView) return;
 
-    saveVideoProgress();
+    await saveProgress(true);
 
     const atLastVideo = currentIndex >= videoSources.length - 1;
 
-    if (atLastVideo) {
-      setHasEnded(!loop);
-
-      if (loop) {
-        player.replay();
-      } else {
-        updateControlsVisible(1);
-      }
-
+    if (!atLastVideo) {
+      await replaceVideoSource(currentIndex + 1);
       return;
     }
 
-    void replaceVideoSource(currentIndex + 1);
+    setHasEnded(!loop);
+
+    if (loop) {
+      player.replay();
+    } else {
+      updateControlsVisible(CONTROLS_VISIBLE);
+    }
   }, [
     currentIndex,
     isThumbView,
     loop,
     player,
     replaceVideoSource,
-    saveVideoProgress,
+    saveProgress,
     updateControlsVisible,
     videoSources.length,
   ]);
 
+  const clearControlsTimeout = useCallback(() => {
+    if (controlsTimeoutRef.current === null) return;
+
+    clearTimeout(controlsTimeoutRef.current);
+    controlsTimeoutRef.current = null;
+  }, []);
+
+  const restartControlsTimeout = useCallback(() => {
+    clearControlsTimeout();
+
+    if (!player.playing || isButtonTouched) return;
+
+    controlsTimeoutRef.current = setTimeout(() => {
+      controlsVisible.set(CONTROLS_HIDDEN);
+      controlsTimeoutRef.current = null;
+    }, CONTROLS_AUTO_HIDE_DELAY_MS);
+  }, [clearControlsTimeout, player, controlsVisible, isButtonTouched]);
+
+  useEventListener(player, "playingChange", ({ isPlaying: nextIsPlaying }) => {
+    if (!nextIsPlaying && pendingSeekTime.current !== null) return;
+
+    setIsPlaying(nextIsPlaying);
+  });
   useEventListener(player, "sourceLoad", ({ duration, videoSource }) => {
     const uri = typeof videoSource === "object" ? videoSource?.uri : videoSource;
     const video = videoSources.find((source) => source.videoUri === uri);
 
     if (!video) return;
 
-    const savedTime = getVideoProgress(video.id);
-    const targetTime =
-      savedTime > 0 && duration - savedTime > VIDEO_PROGRESS_END_THRESHOLD ? savedTime : 0;
+    const requestId = ++sourceLoadRequestRef.current;
 
-    setPlayerCurrentTime(player, targetTime);
-    lastSavedTime.current = targetTime;
+    void (async () => {
+      const savedTime = video.resumePosition;
 
-    if (targetTime === 0 && savedTime > 0) {
-      clearVideoProgress(video.id);
-    }
+      if (requestId !== sourceLoadRequestRef.current) return;
 
-    if (autoPlay || isPlaylist) {
-      player.play();
-    }
+      const targetTime =
+        savedTime > 0 && duration - savedTime > VIDEO_PROGRESS_END_THRESHOLD ? savedTime : 0;
+
+      currentTimeRef.current = targetTime;
+      lastSavedTimeRef.current = targetTime;
+
+      setPlayerCurrentTime(player, targetTime);
+      updateProgressDisplay(targetTime, duration);
+
+      if (targetTime === 0 && savedTime > 0) {
+        void useVideoStore.getState().clearPlaybackProgress(video.id);
+      }
+
+      if (autoPlay || isPlaylist) {
+        player.play();
+      }
+    })();
   });
   useEventListener(player, "playToEnd", handlePlayToEnd);
   useEventListener(player, "timeUpdate", ({ currentTime }) => {
     if (isScrubbing.current) return;
+
+    if (pendingSeekTime.current !== null) {
+      if (Math.abs(currentTime - pendingSeekTime.current) > SEEK_SETTLE_TOLERANCE_SECONDS) return;
+
+      pendingSeekTime.current = null;
+    }
+
+    currentTimeRef.current = currentTime;
 
     const duration = player.duration;
 
@@ -176,12 +248,10 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       setTime(secondsToAdaptiveTime(currentTime));
     }
 
-    if (Math.abs(currentTime - lastSavedTime.current) >= VIDEO_PROGRESS_END_THRESHOLD) {
-      saveVideoProgress();
+    if (Math.abs(currentTime - lastSavedTimeRef.current) >= VIDEO_PROGRESS_SAVE_INTERVAL) {
+      void saveProgress();
     }
   });
-
-  const currentOrientation = videoSources[currentIndex]?.orientation;
 
   useFocusEffect(
     useCallback(() => {
@@ -205,16 +275,16 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
         }
       };
 
-      enableOrientation();
+      void enableOrientation();
 
       if (isNativeControls) {
         setIsLockDisabled(true);
       }
 
       return () => {
-        saveVideoProgress();
+        void saveProgress(true);
         isMounted = false;
-        ScreenOrientation.unlockAsync();
+        void ScreenOrientation.unlockAsync();
         setIsLockDisabled(false);
       };
     }, [
@@ -222,23 +292,26 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       isNativeControls,
       isThumbView,
       overrideOrientation,
+      saveProgress,
       setIsLockDisabled,
-      saveVideoProgress,
     ])
   );
 
   useEffect(() => {
-    if (!isPlaying || isButtonTouched) return;
+    if (!isPlaying || isButtonTouched) {
+      clearControlsTimeout();
+      return;
+    }
 
-    const timeout = setTimeout(() => updateControlsVisible(0), 5000);
+    restartControlsTimeout();
 
-    return () => clearTimeout(timeout);
-  }, [isPlaying, isButtonTouched, updateControlsVisible]);
+    return clearControlsTimeout;
+  }, [isPlaying, isButtonTouched, restartControlsTimeout, clearControlsTimeout]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextState) => {
       if (nextState !== "active") {
-        saveVideoProgress();
+        void saveProgress();
         return;
       }
 
@@ -250,86 +323,16 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     });
 
     return () => subscription.remove();
-  }, [autoPlay, isPlaylist, isThumbView, player, saveVideoProgress]);
-
-  function onSliderChange(value: number) {
-    const progress = Math.max(0, Math.min(value, 1));
-    const targetTime = progress * player.duration;
-
-    pendingSeekTime.current = targetTime;
-    setProgress(progress);
-    setTime(secondsToAdaptiveTime(targetTime));
-  }
-
-  function onSlidingStart() {
-    isScrubbing.current = true;
-    setIsButtonTouched(true);
-    setShowPlaybackControls(false);
-    setHasEnded(false);
-  }
-
-  function onSlidingComplete() {
-    const targetTime = pendingSeekTime.current;
-
-    if (targetTime !== null) {
-      setPlayerCurrentTime(player, targetTime);
-    }
-
-    pendingSeekTime.current = null;
-    isScrubbing.current = false;
-    setIsButtonTouched(false);
-    setShowPlaybackControls(true);
-  }
-
-  function toggleMute() {
-    togglePlayerMute(player);
-  }
-
-  function togglePlay() {
-    if (hasEnded && !isPlaying) {
-      setHasEnded(false);
-
-      void replaceVideoSource(0);
-
-      updateControlsVisible(0);
-    } else if (isPlaying) {
-      player.pause();
-
-      updateControlsVisible(1);
-    } else {
-      player.play();
-
-      updateControlsVisible(0);
-    }
-  }
-
-  function safeSeekBy(offset: number) {
-    const target = Math.min(Math.max(player.currentTime + offset, 0), player.duration);
-    player.seekBy(target - player.currentTime);
-  }
-
-  function changeVideoSource(inverse: number) {
-    saveVideoProgress();
-
-    const newIndex = (currentIndex + inverse + videoSources.length) % videoSources.length;
-
-    void replaceVideoSource(newIndex);
-  }
-
-  function handleButtonPressIn() {
-    setIsButtonTouched(true);
-  }
-
-  function handleButtonPressOut() {
-    setIsButtonTouched(false);
-  }
+  }, [autoPlay, isPlaylist, isThumbView, player, saveProgress]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(controlsVisible.get(), { duration: 300 }),
+    opacity: withTiming(controlsVisible.get(), { duration: CONTROLS_FADE_DURATION_MS }),
   }));
 
   function toggleControls() {
-    updateControlsVisible(controlsVisible.get() === 1 ? 0 : 1);
+    const shouldShow = controlsVisible.get() === CONTROLS_HIDDEN;
+
+    updateControlsVisible(shouldShow ? CONTROLS_VISIBLE : CONTROLS_HIDDEN);
   }
 
   const tapGesture = useTapGesture({
@@ -339,6 +342,99 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       }
     },
   });
+
+  function updateProgressDisplay(targetTime: number, duration: number) {
+    setProgress(duration > 0 ? targetTime / duration : 0);
+    setTime(secondsToAdaptiveTime(targetTime));
+  }
+
+  function onSliderChange(value: number) {
+    const nextProgress = Math.max(0, Math.min(value, 1));
+    const targetTime = nextProgress * player.duration;
+
+    pendingSeekTime.current = targetTime;
+
+    setProgress(nextProgress);
+    setTime(secondsToAdaptiveTime(targetTime));
+  }
+
+  function onSlidingStart() {
+    isScrubbing.current = true;
+    setIsButtonTouched(true);
+    setHasEnded(false);
+    updateControlsVisible(CONTROLS_VISIBLE);
+  }
+
+  function onSlidingComplete() {
+    const targetTime = pendingSeekTime.current;
+
+    if (targetTime !== null) {
+      currentTimeRef.current = targetTime;
+      setPlayerCurrentTime(player, targetTime);
+      void saveProgress(true);
+    }
+
+    isScrubbing.current = false;
+    setIsButtonTouched(false);
+
+    updateControlsVisible(CONTROLS_VISIBLE);
+    restartControlsTimeout();
+  }
+
+  function toggleMute() {
+    togglePlayerMute(player);
+  }
+
+  function togglePlay() {
+    if (hasEnded && !isPlaying) {
+      setHasEnded(false);
+      void replaceVideoSource(0);
+      updateControlsVisible(CONTROLS_VISIBLE);
+      return;
+    }
+
+    if (isPlaying) {
+      pendingSeekTime.current = null;
+      currentTimeRef.current = player.currentTime;
+      player.pause();
+      void saveProgress(true);
+      updateControlsVisible(CONTROLS_VISIBLE);
+      return;
+    }
+
+    player.play();
+    updateControlsVisible(CONTROLS_HIDDEN);
+  }
+
+  function safeSeekBy(offset: number) {
+    const target = Math.min(Math.max(currentTimeRef.current + offset, 0), player.duration);
+
+    pendingSeekTime.current = target;
+    currentTimeRef.current = target;
+
+    setPlayerCurrentTime(player, target);
+    updateProgressDisplay(target, player.duration);
+
+    updateControlsVisible(CONTROLS_VISIBLE);
+    restartControlsTimeout();
+  }
+
+  async function changeVideoSource(direction: number) {
+    currentTimeRef.current = player.currentTime;
+    await saveProgress(true);
+
+    const newIndex = (currentIndex + direction + videoSources.length) % videoSources.length;
+
+    await replaceVideoSource(newIndex);
+  }
+
+  function handleButtonPressIn() {
+    setIsButtonTouched(true);
+  }
+
+  function handleButtonPressOut() {
+    setIsButtonTouched(false);
+  }
 
   return {
     videoRef,
@@ -350,7 +446,6 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     setProgress,
     isPlaylist,
     controlsVisible,
-    showPlaybackControls,
     hasEnded,
     onSliderChange,
     onSlidingStart,

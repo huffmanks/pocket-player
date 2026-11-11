@@ -6,6 +6,7 @@ import m0001 from './0001_smart_lorna_dane.sql';
 import m0002 from './0002_ambitious_timeslip.sql';
 import m0003 from './0003_special_tempest.sql';
 import m0004 from './0004_fresh_husk.sql';
+import m0005 from './0005_wakeful_firebrand.sql';
 
   export default {
     journal,
@@ -14,7 +15,8 @@ import m0004 from './0004_fresh_husk.sql';
 m0001,
 m0002,
 m0003,
-m0004
+m0004,
+m0005
     }
   }
   

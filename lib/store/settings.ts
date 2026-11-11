@@ -26,7 +26,6 @@ type SettingsStoreState = {
   scrollIndex: number;
   lastVisitedPath: Href;
   previousVisitedPath: Href;
-  videoProgress: Record<string, number>;
 };
 
 type SettingsStoreActions = {
@@ -41,9 +40,6 @@ type SettingsStoreActions = {
   toggleSortTitleOrder: () => void;
   setScrollIndex: (index: number) => void;
   setLastVisitedPath: (path: Href) => void;
-  getVideoProgress: (videoId: string) => number;
-  setVideoProgress: (videoId: string, time: number) => void;
-  clearVideoProgress: (videoId: string) => void;
   setHasHydrated: (hasHydrated: boolean) => void;
   reset: () => void;
 };
@@ -61,7 +57,6 @@ const initialSettingsStoreState: Omit<SettingsStoreState, "_hasHydrated"> = {
   scrollIndex: 0,
   lastVisitedPath: "/",
   previousVisitedPath: "/",
-  videoProgress: {},
 };
 
 export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions>()(
@@ -89,11 +84,6 @@ export const useSettingsStore = create<SettingsStoreState & SettingsStoreActions
             lastVisitedPath: path,
           };
         }),
-      getVideoProgress: (videoId) => settingsStorage.getNumber(`videoProgress:${videoId}`) ?? 0,
-      setVideoProgress: (videoId, time) => {
-        settingsStorage.set(`videoProgress:${videoId}`, time);
-      },
-      clearVideoProgress: (videoId) => settingsStorage.remove(`videoProgress:${videoId}`),
       setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
       reset: () => set({ ...initialSettingsStoreState, _hasHydrated: true }),
     }),

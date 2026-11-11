@@ -53,7 +53,6 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
     progress,
     isPlaylist,
     controlsVisible,
-    showPlaybackControls,
     hasEnded,
     onSliderChange,
     onSlidingStart,
@@ -133,28 +132,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       </Text>
                     </View>
                   </View>
-                  {showPlaybackControls && (
-                    <View className="flex-row items-center justify-center gap-5">
-                      {isPlaylist && (
-                        <Button
-                          className="rounded-full p-1 active:bg-transparent"
-                          variant="ghost"
-                          size="unset"
-                          disabled={hasEnded}
-                          onPressIn={handleButtonPressIn}
-                          onPressOut={handleButtonPressOut}
-                          onPress={() => changeVideoSource(-1)}>
-                          <Icon
-                            as={SkipBackIcon}
-                            className="group-active:opacity-70"
-                            fill="white"
-                            stroke="white"
-                            size={32}
-                            strokeWidth={1.25}
-                          />
-                        </Button>
-                      )}
-
+                  <View className="flex-row items-center justify-center gap-5">
+                    {isPlaylist && (
                       <Button
                         className="rounded-full p-1 active:bg-transparent"
                         variant="ghost"
@@ -162,9 +141,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         disabled={hasEnded}
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
-                        onPress={() => safeSeekBy(-5)}>
+                        onPress={() => changeVideoSource(-1)}>
                         <Icon
-                          as={RewindIcon}
+                          as={SkipBackIcon}
                           className="group-active:opacity-70"
                           fill="white"
                           stroke="white"
@@ -172,42 +151,80 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                           strokeWidth={1.25}
                         />
                       </Button>
+                    )}
 
-                      <Button
-                        className="rounded-full p-1 active:bg-transparent"
-                        variant="ghost"
-                        size="unset"
-                        onPressIn={handleButtonPressIn}
-                        onPressOut={handleButtonPressOut}
-                        onPress={togglePlay}>
-                        {hasEnded ? (
-                          <Icon
-                            as={RotateCcwIcon}
-                            className="group-active:opacity-70"
-                            stroke="white"
-                            size={32}
-                            strokeWidth={2.25}
-                          />
-                        ) : isPlaying ? (
-                          <Icon
-                            as={PauseIcon}
-                            className="group-active:opacity-70"
-                            fill="white"
-                            stroke="white"
-                            size={32}
-                            strokeWidth={1.25}
-                          />
-                        ) : (
-                          <Icon
-                            as={PlayIcon}
-                            className="group-active:opacity-70"
-                            fill="white"
-                            stroke="white"
-                            size={32}
-                            strokeWidth={1.25}
-                          />
-                        )}
-                      </Button>
+                    <Button
+                      className="rounded-full p-1 active:bg-transparent"
+                      variant="ghost"
+                      size="unset"
+                      disabled={hasEnded}
+                      onPressIn={handleButtonPressIn}
+                      onPressOut={handleButtonPressOut}
+                      onPress={() => safeSeekBy(-5)}>
+                      <Icon
+                        as={RewindIcon}
+                        className="group-active:opacity-70"
+                        fill="white"
+                        stroke="white"
+                        size={32}
+                        strokeWidth={1.25}
+                      />
+                    </Button>
+
+                    <Button
+                      className="rounded-full p-1 active:bg-transparent"
+                      variant="ghost"
+                      size="unset"
+                      onPressIn={handleButtonPressIn}
+                      onPressOut={handleButtonPressOut}
+                      onPress={togglePlay}>
+                      {hasEnded ? (
+                        <Icon
+                          as={RotateCcwIcon}
+                          className="group-active:opacity-70"
+                          stroke="white"
+                          size={32}
+                          strokeWidth={2.25}
+                        />
+                      ) : isPlaying ? (
+                        <Icon
+                          as={PauseIcon}
+                          className="group-active:opacity-70"
+                          fill="white"
+                          stroke="white"
+                          size={32}
+                          strokeWidth={1.25}
+                        />
+                      ) : (
+                        <Icon
+                          as={PlayIcon}
+                          className="group-active:opacity-70"
+                          fill="white"
+                          stroke="white"
+                          size={32}
+                          strokeWidth={1.25}
+                        />
+                      )}
+                    </Button>
+                    <Button
+                      className="rounded-full p-1 active:bg-transparent"
+                      variant="ghost"
+                      size="unset"
+                      disabled={hasEnded}
+                      onPressIn={handleButtonPressIn}
+                      onPressOut={handleButtonPressOut}
+                      onPress={() => safeSeekBy(5)}>
+                      <Icon
+                        as={FastForwardIcon}
+                        className="group-active:opacity-70"
+                        fill="white"
+                        stroke="white"
+                        size={32}
+                        strokeWidth={1.25}
+                      />
+                    </Button>
+
+                    {isPlaylist && (
                       <Button
                         className="rounded-full p-1 active:bg-transparent"
                         variant="ghost"
@@ -215,9 +232,9 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                         disabled={hasEnded}
                         onPressIn={handleButtonPressIn}
                         onPressOut={handleButtonPressOut}
-                        onPress={() => safeSeekBy(5)}>
+                        onPress={() => changeVideoSource(1)}>
                         <Icon
-                          as={FastForwardIcon}
+                          as={SkipForwardIcon}
                           className="group-active:opacity-70"
                           fill="white"
                           stroke="white"
@@ -225,28 +242,8 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                           strokeWidth={1.25}
                         />
                       </Button>
-
-                      {isPlaylist && (
-                        <Button
-                          className="rounded-full p-1 active:bg-transparent"
-                          variant="ghost"
-                          size="unset"
-                          disabled={hasEnded}
-                          onPressIn={handleButtonPressIn}
-                          onPressOut={handleButtonPressOut}
-                          onPress={() => changeVideoSource(1)}>
-                          <Icon
-                            as={SkipForwardIcon}
-                            className="group-active:opacity-70"
-                            fill="white"
-                            stroke="white"
-                            size={32}
-                            strokeWidth={1.25}
-                          />
-                        </Button>
-                      )}
-                    </View>
-                  )}
+                    )}
+                  </View>
 
                   <View className="portrait:mb-20 portrait:px-3 landscape:mb-16 landscape:px-16">
                     <View className="flex-row items-center justify-between gap-4 landscape:pl-4">

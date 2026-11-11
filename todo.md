@@ -4,8 +4,6 @@
 
 - [ ] passcode encryption.
 - [ ] mmkv encryptionKey use .env var.
-- [ ] fix video slider when complete flashes play button and then pause if video was already playing.
-- [ ] move videoProgress to video store or db maybe.
 - [ ] Add videoProgress to video item bottom brand color.
 
 ## UI
