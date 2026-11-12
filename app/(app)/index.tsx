@@ -22,14 +22,7 @@ export default function RootIndex() {
 
     hasRedirected.current = true;
 
-    const previousPath = getRedirectPath({ lastVisitedPath: previousVisitedPath });
     const targetPath = getRedirectPath({ lastVisitedPath, previousVisitedPath });
-
-    if (previousPath !== targetPath) {
-      router.replace(previousPath);
-      router.push(targetPath);
-      return;
-    }
 
     router.replace(targetPath);
   }, [lastVisitedPath, previousVisitedPath, router]);

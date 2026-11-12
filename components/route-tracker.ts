@@ -16,6 +16,7 @@ export function RouteTracker() {
 
     if (!EXCLUDED_PATHS.includes(pathname)) {
       setLastVisitedPath(pathname);
+      useAppStore.getState().setIsRestored();
     }
   }, [isAppReady, isLocked, pathname, setLastVisitedPath]);
 

@@ -24,16 +24,17 @@ import { RouteTracker } from "@/components/route-tracker";
 
 export { ErrorBoundary } from "expo-router";
 
-export const unstable_settings = {
-  anchor: "(app)",
-};
-
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { colorScheme, isDarkColorScheme, setColorScheme } = useColorScheme();
 
-  const isAppReady = useAppStore((state) => state.isAppReady);
+  const { isAppReady, isRestored } = useAppStore(
+    useShallow((state) => ({
+      isAppReady: state.isAppReady,
+      isRestored: state.isRestored,
+    }))
+  );
   const { isSettingsHydrated, theme } = useSettingsStore(
     useShallow((state) => ({
       isSettingsHydrated: state._hasHydrated,
@@ -107,6 +108,8 @@ export default function RootLayout() {
     if (!isSettingsHydrated || !isSecurityHydrated || !isAppReady || hasHiddenSplash.current)
       return;
 
+    if (!isLocked && !isRestored) return;
+
     hasHiddenSplash.current = true;
 
     async function hideSplashScreen() {
@@ -115,7 +118,7 @@ export default function RootLayout() {
     }
 
     hideSplashScreen();
-  }, [isSettingsHydrated, isSecurityHydrated, isAppReady]);
+  }, [isSettingsHydrated, isSecurityHydrated, isAppReady, isRestored, isLocked]);
 
   if (!isSettingsHydrated || !isSecurityHydrated || !isAppReady) {
     return null;

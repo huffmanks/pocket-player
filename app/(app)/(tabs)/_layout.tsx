@@ -15,7 +15,7 @@ import HeaderItems from "@/components/header-items";
 import HeaderLogo from "@/components/header-logo";
 import { Icon } from "@/components/ui/icon";
 
-export default function TabLayout() {
+export default function TabsLayout() {
   const { colorScheme } = useColorScheme();
 
   return (
@@ -32,13 +32,6 @@ export default function TabLayout() {
           height: 90,
         },
       }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          headerShown: false,
-          href: null,
-        }}
-      />
       <Tabs.Screen
         name="videos"
         options={{

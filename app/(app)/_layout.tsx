@@ -11,6 +11,10 @@ export default function AppLayout() {
         headerShown: false,
       }}>
       <Stack.Screen
+        name="index"
+        options={{ animation: "none" }}
+      />
+      <Stack.Screen
         name="(tabs)"
         options={{ headerShown: false }}
       />
