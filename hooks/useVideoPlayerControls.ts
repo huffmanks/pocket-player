@@ -134,6 +134,8 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
     },
     [currentIndex, isThumbView, player, videoSources]
   );
+  const saveProgressRef = useRef(saveProgress);
+  saveProgressRef.current = saveProgress;
 
   const replaceVideoSource = useCallback(
     async (index: number) => {
@@ -195,6 +197,10 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
 
   useEventListener(player, "playingChange", ({ isPlaying: nextIsPlaying }) => {
     if (!nextIsPlaying && pendingSeekTime.current !== null) return;
+
+    if (!nextIsPlaying && isPlaying) {
+      void saveProgress(true);
+    }
 
     setIsPlaying(nextIsPlaying);
   });
@@ -282,19 +288,12 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       }
 
       return () => {
-        void saveProgress(true);
+        void saveProgressRef.current(true);
         isMounted = false;
         void ScreenOrientation.unlockAsync();
         setIsLockDisabled(false);
       };
-    }, [
-      currentOrientation,
-      isNativeControls,
-      isThumbView,
-      overrideOrientation,
-      saveProgress,
-      setIsLockDisabled,
-    ])
+    }, [currentOrientation, isNativeControls, isThumbView, overrideOrientation, setIsLockDisabled])
   );
 
   useEffect(() => {
@@ -397,7 +396,6 @@ export function useVideoPlayerControls(videoSources: VideoMeta[], isThumbView?: 
       pendingSeekTime.current = null;
       currentTimeRef.current = player.currentTime;
       player.pause();
-      void saveProgress(true);
       updateControlsVisible(CONTROLS_VISIBLE);
       return;
     }

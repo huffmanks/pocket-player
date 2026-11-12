@@ -43,6 +43,7 @@ export default function TabLayout() {
         name="videos"
         options={{
           title: "Videos",
+          lazy: false,
           tabBarIcon: ({ color }) => (
             <Icon
               as={VideoIcon}

@@ -119,7 +119,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                   <View className="flex-row items-center justify-between gap-4 portrait:pt-12 landscape:px-14 landscape:pt-2">
                     <View>
                       <Button
-                        className="rounded-full p-1 active:bg-transparent"
+                        className="size-12 rounded-full p-2 active:bg-transparent"
                         variant="ghost"
                         size="unset"
                         onPressIn={handleButtonPressIn}
@@ -141,10 +141,10 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       </Text>
                     </View>
                   </View>
-                  <View className="flex-row items-center justify-center gap-5">
+                  <View className="flex-row items-center justify-center gap-3">
                     {isPlaylist && (
                       <Button
-                        className="rounded-full p-1 active:bg-transparent"
+                        className="size-16 rounded-full p-4 active:bg-transparent"
                         variant="ghost"
                         size="unset"
                         disabled={hasEnded}
@@ -163,7 +163,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                     )}
 
                     <Button
-                      className="rounded-full p-1 active:bg-transparent"
+                      className="size-16 rounded-full p-4 active:bg-transparent"
                       variant="ghost"
                       size="unset"
                       disabled={hasEnded}
@@ -181,7 +181,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                     </Button>
 
                     <Button
-                      className="rounded-full p-1 active:bg-transparent"
+                      className="size-16 rounded-full p-4 active:bg-transparent"
                       variant="ghost"
                       size="unset"
                       onPressIn={handleButtonPressIn}
@@ -216,7 +216,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                       )}
                     </Button>
                     <Button
-                      className="rounded-full p-1 active:bg-transparent"
+                      className="size-16 rounded-full p-4 active:bg-transparent"
                       variant="ghost"
                       size="unset"
                       disabled={hasEnded}
@@ -235,7 +235,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
 
                     {isPlaylist && (
                       <Button
-                        className="rounded-full p-1 active:bg-transparent"
+                        className="size-16 rounded-full p-4 active:bg-transparent"
                         variant="ghost"
                         size="unset"
                         disabled={hasEnded}
@@ -258,7 +258,7 @@ export default function VideoPlayer({ videoSources }: { videoSources: VideoMeta[
                     <View className="flex-row items-center justify-between gap-4 landscape:pl-4">
                       <Text className="text-base text-white/90">{time}</Text>
                       <Button
-                        className="rounded-full p-1 active:bg-transparent"
+                        className="size-12 rounded-full p-2 active:bg-transparent"
                         variant="ghost"
                         size="unset"
                         onPressIn={handleButtonPressIn}
