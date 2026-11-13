@@ -21,7 +21,7 @@ credentials:
 
 # Generate .env from example.env and EAS credentials
 setup-env:
-    @jq -r '"KEYSTORE=\(.android.keystore.keystorePath)\nKEYSTORE_PASS=\(.android.keystore.keystorePassword)\nKEY_ALIAS=\(.android.keystore.keyAlias)\nKEY_PASS=\(.android.keystore.keyPassword)"' credentials.json > .env
+    @jq -r '"KEYSTORE=\(.android.keystore.keystorePath)\nKEYSTORE_PASS=\(.android.keystore.keystorePassword)\nKEY_ALIAS=\(.android.keystore.keyAlias)\nKEY_PASS=\(.android.keystore.keyPassword)\nSECURITY_STORAGE_KEY=\(.android.keystore.keystorePassword)"' credentials.json > .env
 
 # --- ENVIRONMENT & DEVICE CONFIGURATION ---
 

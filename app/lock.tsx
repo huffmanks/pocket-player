@@ -20,6 +20,7 @@ import { scheduleOnRN } from "react-native-worklets";
 import { useShallow } from "zustand/react/shallow";
 
 import { BASE_LOGO, ERROR_SHAKE_OFFSET, ERROR_SHAKE_TIME } from "@/lib/constants";
+import { verifyPasscode } from "@/lib/passcode";
 import { useSecurityStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -116,16 +117,16 @@ export default function LockScreen() {
   }, []);
 
   useEffect(() => {
-    if (code.length !== 4 || isVerifying.current) return;
+    if (code.length !== 4 || isVerifying.current || !passcode) return;
 
     isVerifying.current = true;
 
-    async function verifyPasscode() {
-      const isValid = code.join("") === passcode;
-
-      setCode([]);
-
+    async function verifyEnteredPasscode() {
       try {
+        const isValid = await verifyPasscode(code.join(""), passcode ?? "");
+
+        setCode([]);
+
         if (isValid) {
           await handleUnlockApp();
         } else {
@@ -137,7 +138,7 @@ export default function LockScreen() {
       }
     }
 
-    verifyPasscode();
+    void verifyEnteredPasscode();
   }, [code, passcode, handleUnlockApp, triggerShakeAnimation, handleErrorShake]);
 
   useFocusEffect(

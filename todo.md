@@ -1,10 +1,5 @@
 # Todos
 
-## Fixes
-
-- [ ] passcode encryption.
-- [ ] mmkv encryptionKey use .env var.
-
 ## UI
 
 - [ ] Watch screens

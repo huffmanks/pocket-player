@@ -50,7 +50,7 @@ export default function CreatePasscodeForm() {
       setIsSubmitting(true);
       const parsedValues = formSchema.parse(values);
 
-      setPasscode(parsedValues.passcode);
+      await setPasscode(parsedValues.passcode);
 
       toast.success("Passcode set successfully!");
 

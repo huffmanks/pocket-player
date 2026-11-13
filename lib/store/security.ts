@@ -3,8 +3,12 @@ import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 
 import { LOCK_INTERVAL_DEFAULT } from "@/lib/constants";
+import { hashPasscode } from "@/lib/passcode";
 
-export const securityStorage = createMMKV({ id: "security", encryptionKey: "your-encryption-key" });
+export const securityStorage = createMMKV({
+  id: "security",
+  encryptionKey: process.env?.SECURITY_STORAGE_KEY ?? "your-encryption-key",
+});
 
 const securityZustandStorage: StateStorage = {
   setItem: (key, value) => securityStorage.set(key, value),
@@ -23,7 +27,7 @@ type SecurityStoreState = {
 };
 
 type SecurityStoreActions = {
-  setPasscode: (code: string | null) => void;
+  setPasscode: (code: string) => Promise<void>;
   setIsLocked: (lock: boolean) => void;
   setEnablePasscode: (enable: boolean) => void;
   setLockInterval: (milliseconds: number) => void;
@@ -46,10 +50,15 @@ export const useSecurityStore = create<SecurityStoreState & SecurityStoreActions
   persist(
     (set) => ({
       ...initialSecurityStoreState,
-      setPasscode: (code) =>
-        set(() => {
-          return { passcode: code, isLockable: true, enablePasscode: true };
-        }),
+      setPasscode: async (code) => {
+        const hashedPasscode = code ? await hashPasscode(code) : null;
+
+        set({
+          passcode: hashedPasscode,
+          isLockable: true,
+          enablePasscode: true,
+        });
+      },
       setIsLocked: (lock) => set({ isLocked: lock }),
       setEnablePasscode: (enable) =>
         set((state) => {
