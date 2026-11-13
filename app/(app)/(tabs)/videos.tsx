@@ -190,7 +190,19 @@ export default function VideosScreen() {
     toast.error("Error loading data.");
   }
 
+  const isDataReady = Boolean(
+    videosQuery.updatedAt && playlistVideosQuery.updatedAt && playlistsQuery.updatedAt
+  );
+
   const videosExist = !!videosWithPlaylists.length;
+
+  if (!isDataReady && !videosExist) {
+    return (
+      <View className="absolute inset-0 z-10 items-center justify-center bg-background">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View className="relative min-h-full flex-1 pt-4">
@@ -211,8 +223,6 @@ export default function VideosScreen() {
         showsVerticalScrollIndicator={false}
         onLoad={onLoad}
         onViewableItemsChanged={onViewableItemsChanged}
-        style={{ opacity: isListReady ? 1 : 0 }}
-        pointerEvents={isListReady ? "auto" : "none"}
         ListHeaderComponent={
           <ListHeaderComponent
             videosExist={videosExist}
@@ -221,11 +231,6 @@ export default function VideosScreen() {
         }
         ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
       />
-      {!isListReady && (
-        <View className="absolute inset-0 z-10 items-center justify-center bg-background">
-          <ActivityIndicator size="large" />
-        </View>
-      )}
     </View>
   );
 }

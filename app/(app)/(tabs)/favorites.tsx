@@ -19,7 +19,7 @@ import VideoItem from "@/components/video-item";
 
 export default function FavoritesScreen() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isListReady, setIsListReady] = useState(false);
+  // const [isListReady, setIsListReady] = useState(false);
 
   const flashListRef = useRef<React.ComponentRef<typeof FlashList<VideoMeta>> | null>(null);
   const insets = useSafeAreaInsets();
@@ -103,9 +103,10 @@ export default function FavoritesScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
-  const onLoad = useCallback(() => {
-    setIsListReady(true);
-  }, []);
+  // const onLoad = useCallback(() => {
+  //   console.log("LOADED ___");
+  //   setIsListReady(true);
+  // }, []);
 
   const renderItem = useCallback(
     ({ item }: { item: VideoMeta }) => {
@@ -135,10 +136,22 @@ export default function FavoritesScreen() {
     toast.error("Error loading data.");
   }
 
+  const isDataReady = Boolean(
+    videosQuery.updatedAt && playlistVideosQuery.updatedAt && playlistsQuery.updatedAt
+  );
+
   const favoritesExist = !!videosWithPlaylists.length;
 
+  if (!isDataReady && !favoritesExist) {
+    return (
+      <View className="absolute inset-0 z-10 items-center justify-center bg-background">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <View className="relative min-h-full pt-4">
+    <View className="relative min-h-full flex-1 pt-4">
       {favoritesExist && (
         <SearchBar
           searchQuery={searchQuery}
@@ -154,9 +167,6 @@ export default function FavoritesScreen() {
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         showsVerticalScrollIndicator={false}
-        onLoad={onLoad}
-        style={{ opacity: isListReady ? 1 : 0 }}
-        pointerEvents={isListReady ? "auto" : "none"}
         ListHeaderComponent={
           <ListHeaderComponent
             favoritesExist={favoritesExist}
@@ -165,11 +175,6 @@ export default function FavoritesScreen() {
         }
         ListEmptyComponent={<ListEmptyComponent favoritesExist={favoritesExist} />}
       />
-      {!isListReady && (
-        <View className="absolute inset-0 z-10 items-center justify-center bg-background">
-          <ActivityIndicator size="large" />
-        </View>
-      )}
     </View>
   );
 }
