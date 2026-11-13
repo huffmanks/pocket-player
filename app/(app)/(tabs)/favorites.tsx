@@ -19,6 +19,7 @@ import VideoItem from "@/components/video-item";
 
 export default function FavoritesScreen() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isListReady, setIsListReady] = useState(false);
 
   const flashListRef = useRef<React.ComponentRef<typeof FlashList<VideoMeta>> | null>(null);
   const insets = useSafeAreaInsets();
@@ -102,6 +103,10 @@ export default function FavoritesScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
+  const onLoad = useCallback(() => {
+    setIsListReady(true);
+  }, []);
+
   const renderItem = useCallback(
     ({ item }: { item: VideoMeta }) => {
       return (
@@ -115,17 +120,6 @@ export default function FavoritesScreen() {
     },
     [playlistsQuery?.data]
   );
-
-  const isInitialLoading =
-    !videosQuery.updatedAt || !playlistVideosQuery.updatedAt || !playlistsQuery.updatedAt;
-
-  if (isInitialLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
 
   function handleSortDate() {
     setSortKey("date");
@@ -154,13 +148,15 @@ export default function FavoritesScreen() {
         />
       )}
       <FlashList
-        key={!isInitialLoading ? "loaded" : "loading"}
         data={sortedData}
         ref={flashListRef}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         showsVerticalScrollIndicator={false}
+        onLoad={onLoad}
+        style={{ opacity: isListReady ? 1 : 0 }}
+        pointerEvents={isListReady ? "auto" : "none"}
         ListHeaderComponent={
           <ListHeaderComponent
             favoritesExist={favoritesExist}
@@ -169,6 +165,11 @@ export default function FavoritesScreen() {
         }
         ListEmptyComponent={<ListEmptyComponent favoritesExist={favoritesExist} />}
       />
+      {!isListReady && (
+        <View className="absolute inset-0 z-10 items-center justify-center bg-background">
+          <ActivityIndicator size="large" />
+        </View>
+      )}
     </View>
   );
 }

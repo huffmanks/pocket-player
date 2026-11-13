@@ -3,8 +3,6 @@ import { router } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, View } from "react-native";
 
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-
 import { type VideoMetaWithPlaylists } from "@/app/(app)/(tabs)/videos";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { VIDEO_PLACEHOLDER } from "@/lib/constants";
@@ -34,10 +32,7 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
   );
 
   return (
-    <Animated.View
-      className="mb-8 flex-row items-start gap-4"
-      entering={FadeIn.duration(250)}
-      exiting={FadeOut.duration(250)}>
+    <View className="mb-8 min-h-[125px] flex-row items-start gap-4">
       <Pressable onPress={() => router.navigate(`/(app)/(screens)/videos/${item.id}/watch`)}>
         <View
           className="overflow-hidden rounded-md bg-card"
@@ -61,7 +56,7 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
         </View>
       </Pressable>
       <View className="flex-1 flex-row justify-between gap-4">
-        <View className="w-4/5">
+        <View className="flex-1">
           <Text
             className="mb-2 text-lg font-medium"
             numberOfLines={2}>
@@ -103,7 +98,7 @@ function VideoItem({ item, allPlaylists }: VideoItemProps) {
           allPlaylists={allPlaylists}
         />
       </View>
-    </Animated.View>
+    </View>
   );
 }
 

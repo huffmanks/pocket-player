@@ -26,6 +26,7 @@ export type VideoMetaWithPlaylists = VideoMeta & { playlists?: string[] };
 
 export default function VideosScreen() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isListReady, setIsListReady] = useState(false);
 
   const flashListRef = useRef<React.ComponentRef<typeof FlashList<VideoMeta>> | null>(null);
   const hasUserScrolled = useRef(false);
@@ -132,6 +133,25 @@ export default function VideosScreen() {
     return sorted;
   }, [filteredData, sortKey, sortDateOrder, sortTitleOrder]);
 
+  const onLoad = useCallback(() => {
+    if (initialScrollIndex > 0 && initialScrollIndex < sortedData.length) {
+      requestAnimationFrame(() => {
+        flashListRef.current?.scrollToIndex({
+          index: initialScrollIndex,
+          animated: false,
+        });
+
+        requestAnimationFrame(() => {
+          setIsListReady(true);
+        });
+      });
+
+      return;
+    }
+
+    setIsListReady(true);
+  }, [initialScrollIndex, sortedData.length]);
+
   const renderItem = useCallback(
     ({ item }: { item: VideoMetaWithPlaylists }) => {
       return (
@@ -148,24 +168,13 @@ export default function VideosScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      canSaveScroll.current = true;
+      canSaveScroll.current = isListReady;
 
       return () => {
         canSaveScroll.current = false;
       };
-    }, [])
+    }, [isListReady])
   );
-
-  const isInitialLoading =
-    !videosQuery.updatedAt || !playlistVideosQuery.updatedAt || !playlistsQuery.updatedAt;
-
-  if (isInitialLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
 
   function handleSortDate() {
     setSortKey("date");
@@ -184,7 +193,7 @@ export default function VideosScreen() {
   const videosExist = !!videosWithPlaylists.length;
 
   return (
-    <View className="relative min-h-full pt-4">
+    <View className="relative min-h-full flex-1 pt-4">
       {videosExist && (
         <SearchBar
           searchQuery={searchQuery}
@@ -194,15 +203,16 @@ export default function VideosScreen() {
         />
       )}
       <FlashList
-        key={!isInitialLoading ? "loaded" : "loading"}
         data={sortedData}
         ref={flashListRef}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: insets.bottom + BOTTOM_TABS_OFFSET }}
         showsVerticalScrollIndicator={false}
+        onLoad={onLoad}
         onViewableItemsChanged={onViewableItemsChanged}
-        initialScrollIndex={initialScrollIndex < sortedData.length ? initialScrollIndex : undefined}
+        style={{ opacity: isListReady ? 1 : 0 }}
+        pointerEvents={isListReady ? "auto" : "none"}
         ListHeaderComponent={
           <ListHeaderComponent
             videosExist={videosExist}
@@ -211,6 +221,11 @@ export default function VideosScreen() {
         }
         ListEmptyComponent={<ListEmptyComponent videosExist={videosExist} />}
       />
+      {!isListReady && (
+        <View className="absolute inset-0 z-10 items-center justify-center bg-background">
+          <ActivityIndicator size="large" />
+        </View>
+      )}
     </View>
   );
 }
