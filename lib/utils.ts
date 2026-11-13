@@ -254,9 +254,18 @@ export function getResolutionLabel({ width, height }: { width: number; height: n
 export function parseFilenameDateAndTitle(rawTitle: string): {
   title: string;
   createdAt?: string;
+  thumbTimestamp?: number;
 } {
   let extractedDate: string | undefined;
+  let thumbTimestamp: number | undefined;
   let cleanTitle = rawTitle;
+
+  const thumbMatch = cleanTitle.match(/_thumb-(\d+)(?=\.[^.]+$|$)/i);
+
+  if (thumbMatch) {
+    thumbTimestamp = Number(thumbMatch[1]);
+    cleanTitle = cleanTitle.replace(thumbMatch[0], "");
+  }
 
   const isoMatch = cleanTitle.match(
     /((?:19|20)\d{2})[-._/\s]?(0[1-9]|1[0-2])[-._/\s]?(0[1-9]|[12]\d|3[01])(?:[-._/\s]?\d{6})?/
@@ -303,5 +312,6 @@ export function parseFilenameDateAndTitle(rawTitle: string): {
   return {
     title: cleanTitle,
     createdAt: extractedDate,
+    thumbTimestamp,
   };
 }

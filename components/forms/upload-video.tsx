@@ -41,6 +41,7 @@ const formSchema = z.object({
         title: z.string().min(1),
         videoUri: z.string().min(1),
         thumbUri: z.string().nullable(),
+        thumbTimestamp: z.number().nonnegative().optional(),
         fileName: z.string().min(1),
         fileExtension: z.string().min(1),
         fileSize: z.number().nonnegative(),
@@ -135,7 +136,7 @@ export default function UploadForm() {
             const fileExtension = filename[1];
 
             const fileId = createId();
-            const { title, createdAt } = parseFilenameDateAndTitle(rawTitle);
+            const { title, createdAt, thumbTimestamp } = parseFilenameDateAndTitle(rawTitle);
 
             const thumbFile = new File(VIDEOS_DIR, `ppid_${fileId}.jpg`);
 
@@ -155,6 +156,7 @@ export default function UploadForm() {
               title,
               videoUri: uri,
               thumbUri: thumbFile.uri,
+              thumbTimestamp,
               fileExtension,
               fileSize: videoMeta.fileSize ?? 0,
               fileSizeLabel,
@@ -231,7 +233,9 @@ export default function UploadForm() {
 
           const durationMs = video.duration > 1000 ? video.duration : video.duration * 1000;
           const safeTime =
-            durationMs > 0 ? Math.min(3000, Math.max(0, Math.floor(durationMs / 2))) : 0;
+            durationMs > 0
+              ? Math.min(video.thumbTimestamp ?? 3000, Math.max(0, Math.floor(durationMs / 2)))
+              : 0;
 
           let finalThumbUri: string | null;
 
